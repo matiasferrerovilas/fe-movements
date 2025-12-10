@@ -110,3 +110,13 @@ export async function deleteExpenseApi(id: number) {
 
   return response.data;
 }
+
+export async function deleteAllMovements() {
+  return api
+    .delete("/expenses/all")
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error deleting all movements:", error);
+      throw error;
+    });
+}

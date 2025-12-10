@@ -32,10 +32,3 @@ export interface CreateMovementForm {
   category?: string;
   group: string;
 }
-
-export interface LastIngreso {
-  id: number;
-  amount: number;
-  bank: string;
-  currency: Currency | null;
-}

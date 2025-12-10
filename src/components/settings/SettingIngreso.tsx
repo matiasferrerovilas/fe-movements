@@ -2,69 +2,100 @@ import {
   Button,
   Card,
   Col,
+  Empty,
   Form,
   InputNumber,
+  Popconfirm,
   Row,
   Select,
+  Space,
   theme,
   Typography,
 } from "antd";
-import { useSettingsLastIngreso } from "../../apis/hooks/useSettings";
-import type { IngresoSettingForm } from "../../models/Settings";
-import { BankEnum } from "../../enums/BankEnum";
-import { CurrencyEnum } from "../../enums/CurrencyEnum";
-import { useMutation } from "@tanstack/react-query";
-import { updateIngreso } from "../../apis/SettingApi";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGroups } from "../../apis/hooks/useGroups";
+import { useIncome } from "../../apis/hooks/useIncome";
+import { DeleteOutlined, PlusOutlined, TeamOutlined } from "@ant-design/icons";
+import { addIncome, deleteIncome } from "../../apis/income/IncomeAPI";
+import type { Income, IncomeAddForm } from "../../models/Income";
+import { CurrencyEnum } from "../../enums/CurrencyEnum";
+import { BankEnum } from "../../enums/BankEnum";
+const { Title } = Typography;
 
 export function SettingIngreso() {
-  const [form] = Form.useForm<IngresoSettingForm>();
-  const { data: ingreso, isLoading } = useSettingsLastIngreso();
+  const [form] = Form.useForm<IncomeAddForm>();
+  const { data: ingresos, isLoading } = useIncome();
   const { token } = theme.useToken();
   const { data: userGroups = [] } = useGroups();
 
-  const addGroupMutation = useMutation({
-    mutationFn: ({ ingreso }: { ingreso: IngresoSettingForm }) =>
-      updateIngreso(ingreso),
-    onError: (err) => {
-      console.error("Error subiendo el ingreso:", err);
+  const queryClient = useQueryClient();
+
+  const createIngresoMutation = useMutation({
+    mutationFn: ({ income }: { income: IncomeAddForm }) => addIncome(income),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["income-all"] });
+      form.resetFields();
     },
   });
-  const onFinish = (values: IngresoSettingForm) => {
-    addGroupMutation.mutate({ ingreso: values });
+
+  const deleteIngresoMutation = useMutation({
+    mutationFn: ({ id }: { id: number }) => deleteIncome(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["income-all"] });
+    },
+  });
+  const onFinish = (values: IncomeAddForm) => {
+    createIngresoMutation.mutate({ income: values });
     form.resetFields();
   };
+
   return (
-    <Card loading={isLoading} title="Configuración de Ingreso">
-      <Typography.Paragraph
+    <Card loading={isLoading}>
+      <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+        <Col xs={24} sm={12} lg={24}>
+          <Space align="baseline">
+            <TeamOutlined style={{ fontSize: 20, color: "#0D59A4" }} />
+            <Title level={5} style={{ margin: 0 }}>
+              Gestionar Ingresos
+            </Title>
+          </Space>
+          <Typography.Paragraph
+            style={{
+              color: token.colorTextSecondary,
+              marginBottom: 8,
+              fontSize: 14,
+              lineHeight: 1.6,
+            }}
+          >
+            Configurá tu ingreso mensual indicando el monto, la moneda y el
+            grupo. Se generará automáticamente un movimiento una vez por mes con
+            estos datos.
+          </Typography.Paragraph>
+        </Col>
+      </Row>
+
+      <Card
         style={{
-          color: token.colorTextSecondary,
-          marginBottom: 16,
+          borderRadius: 12,
+          background: "#e8ebf0",
+          padding: 0,
+          marginBottom: 20,
         }}
       >
-        Define tu ingreso mensual y la moneda que utilizas.
-      </Typography.Paragraph>
-      <Row
-        gutter={16}
-        align="middle"
-        justify="center"
-        title="Configuracion de Ingreso"
-      >
+        <Title
+          level={5}
+          style={{
+            margin: 0,
+            color: "#111827",
+          }}
+        >
+          Agregar Ingreso
+        </Title>
         <Form
-          key={ingreso?.id ?? "empty"}
           form={form}
           layout="vertical"
           style={{ width: "100%" }}
           onFinish={onFinish}
-          initialValues={
-            ingreso &&
-            userGroups && {
-              bank: ingreso.bank,
-              currency: ingreso.currency?.symbol ?? CurrencyEnum.ARS,
-              amount: ingreso.amount,
-              group: userGroups[0]?.description,
-            }
-          }
         >
           <Row gutter={16}>
             <Col xs={24} sm={12} lg={12}>
@@ -131,18 +162,71 @@ export function SettingIngreso() {
             </Col>
           </Row>
           <Button
+            icon={<PlusOutlined />}
             block
             htmlType="submit"
-            style={{
-              marginTop: 16,
-              borderRadius: 8,
-            }}
-            type="primary"
+            loading={createIngresoMutation.isPending}
+            style={{ borderRadius: 8, height: 40 }}
           >
-            Guardar
+            Agregar ingreso
           </Button>
         </Form>
-      </Row>
+        {ingresos?.length === 0 ? (
+          <Empty
+            description="Todavía no configuraste ingresos"
+            style={{ marginTop: 24 }}
+          />
+        ) : (
+          <Space
+            orientation="vertical"
+            size={12}
+            style={{ width: "100%", marginTop: 10 }}
+          >
+            {ingresos?.map((ingreso: Income) => (
+              <Card
+                key={ingreso.id}
+                size="small"
+                style={{
+                  borderRadius: 12,
+                  background: "#fafafa",
+                }}
+              >
+                <Row justify="space-between" align="middle">
+                  {/* Izquierda */}
+                  <Col>
+                    <Typography.Text strong style={{ fontSize: 14 }}>
+                      {ingreso.groups.description}
+                    </Typography.Text>
+
+                    <br />
+
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      {ingreso.bank}
+                    </Typography.Text>
+                  </Col>
+
+                  {/* Derecha */}
+                  <Space align="center">
+                    <Typography.Text strong style={{ fontSize: 14 }}>
+                      {ingreso.amount.toFixed(2)} {ingreso.currency?.symbol}
+                    </Typography.Text>
+
+                    <Popconfirm
+                      title="Eliminar ingreso"
+                      description="Este ingreso dejará de generar movimientos mensuales."
+                      onConfirm={() =>
+                        deleteIngresoMutation.mutate({ id: ingreso.id })
+                      }
+                    >
+                      <Button danger type="text" icon={<DeleteOutlined />} />
+                    </Popconfirm>
+                  </Space>
+                </Row>
+              </Card>
+            ))}
+          </Space>
+        )}
+      </Card>
     </Card>
   );
 }

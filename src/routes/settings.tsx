@@ -5,6 +5,7 @@ import { SettingGroups } from "../components/settings/SettingGroups";
 import { SettingInviteGroups } from "../components/settings/SettingInviteGroups";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
+import SettingAccount from "../components/settings/SettingAccount";
 
 export const Route = createFileRoute("/settings")({
   beforeLoad: protectedRouteGuard({
@@ -29,6 +30,11 @@ function RouteComponent() {
       <Row gutter={24} justify="center">
         <Col xs={24} md={20} lg={16}>
           <SettingGroups />
+        </Col>
+      </Row>
+      <Row gutter={24} justify="center">
+        <Col xs={24} md={20} lg={16}>
+          <SettingAccount />
         </Col>
       </Row>
     </Col>
