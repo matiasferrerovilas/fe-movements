@@ -103,6 +103,7 @@ function MovementTable({ filters }: MovementTableProps) {
         dataIndex: "owner",
         key: "owner",
         align: "center",
+        render: (_: unknown, record) => capitalizeFirst(record.owner.email),
       },
       {
         title: "Tarjeta",
@@ -196,6 +197,9 @@ function MovementTable({ filters }: MovementTableProps) {
       bordered
       loading={loadingConfig}
       pagination={paginationConfig}
+      rowClassName={(record) =>
+        record.type === TypeEnum.INGRESO ? "row-ingreso" : ""
+      }
     />
   );
 }

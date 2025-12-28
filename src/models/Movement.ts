@@ -2,15 +2,14 @@ import type { Dayjs } from "dayjs";
 import type { Category } from "./Category";
 import type { Currency } from "./Currency";
 import type { AccountWithoutMembers } from "./UserGroup";
+import type { User } from "./User";
 
 export interface Movement {
   id: number;
   amount: number;
   description: string;
   date: string;
-  user: string;
-  year: number;
-  month: number;
+  owner: User;
   bank: string;
   category: Category | null;
   currency: Currency | null;

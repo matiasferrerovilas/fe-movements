@@ -1,0 +1,23 @@
+:root {
+  --rojo-falta-pago: #ffe6e6;
+  --rojo-falta-pago-borde: #ffa39e;
+
+  --verde-pagado: #f0fff0;
+  --verde-pagado-borde: #b7eb8f;
+  --verde-ingreso-tabla: #f6ffed;
+  --verde-ingreso-tabla-hover: #b7eb8f;
+
+  --fondo-boton-activo: #f5faff;
+  --fondo-general: #ffffff;
+
+  --texto-activo-azul: #1677ff;
+}
+
+
+.row-ingreso td {
+  background-color: var(--verde-ingreso-tabla) !important; 
+}
+
+.ant-table-tbody > tr.row-ingreso:hover > td {
+  background-color: var(--verde-ingreso-tabla-hover) !important;
+}
