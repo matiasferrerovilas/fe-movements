@@ -29,7 +29,7 @@ interface CreateServiceForm {
   currency: string;
   isPaid: boolean;
   lastPayment?: dayjs.Dayjs;
-  group: string;
+  accountId: number;
 }
 interface ServiceCardFormProps extends React.HTMLAttributes<HTMLElement> {
   handleAddService: (service: ServiceToAdd) => Promise<void> | void;
@@ -38,7 +38,7 @@ interface ServiceCardFormProps extends React.HTMLAttributes<HTMLElement> {
 export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const [form] = Form.useForm<CreateServiceForm>();
   const [isPaid, setIsPaid] = useState(false);
-  const { data: userGroups = [] } = useGroups();
+  const { data: accounts = [] } = useGroups();
 
   const onFinish = (values: CreateServiceForm) => {
     const service: ServiceToAdd = {
@@ -47,7 +47,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
       lastPayment: values.lastPayment ? values.lastPayment.toDate() : null,
       isPaid: values.isPaid,
       currency: { symbol: values.currency },
-      group: values.group,
+      accountId: values.accountId,
     };
     handleAddService(service);
     form.resetFields();
@@ -119,8 +119,8 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
         onFinish={onFinish}
         style={{ marginTop: 16 }}
         initialValues={
-          userGroups && {
-            group: userGroups[0]?.id,
+          accounts && {
+            accountId: accounts[0]?.id,
             isPaid: false,
             currency: CurrencyEnum.ARS,
           }
@@ -138,14 +138,14 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
           </Col>
           <Col span={12}>
             <Form.Item
-              name="group"
+              name="accountId"
               label="Grupo"
               rules={[{ required: true, message: "Seleccione un grupo" }]}
             >
               <Select placeholder="Seleccionar grupo">
-                {userGroups.map((group) => (
-                  <Select.Option key={group.id} value={group.name}>
-                    {group.name}
+                {accounts.map((account) => (
+                  <Select.Option key={account.id} value={account.id}>
+                    {account.name}
                   </Select.Option>
                 ))}
               </Select>

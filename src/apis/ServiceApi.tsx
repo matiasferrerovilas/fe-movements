@@ -8,7 +8,7 @@ export interface ServiceToAdd {
   currency: CurrencyRecord;
   lastPayment: Date | null;
   isPaid: boolean;
-  group: string;
+  accountId: number;
 }
 export async function getServicesApi() {
   return api
