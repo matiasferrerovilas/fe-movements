@@ -17,7 +17,7 @@ export const Route = createFileRoute("/balance")({
   component: RouteComponent,
 });
 export type BalanceFilters = {
-  groups: number[] | null;
+  account: number[] | null;
   currency: CurrencyEnum;
   year?: number;
   month?: number;
@@ -26,7 +26,7 @@ export type BalanceFilters = {
 function RouteComponent() {
   const [filters, setFilters] = useState<BalanceFilters>({
     currency: CurrencyEnum.ARS,
-    groups: [1],
+    account: [1],
   });
   const filtersRef = useRef(filters);
 

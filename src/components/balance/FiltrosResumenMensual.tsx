@@ -15,7 +15,7 @@ export default function FiltrosResumenMensual({
   initialFilters,
   onFiltersChange,
 }: Props) {
-  const { data: userGroups = [] } = useGroups();
+  const { data: accounts = [] } = useGroups();
 
   const [filters, setFilters] = useState<BalanceFilters>(initialFilters);
 
@@ -51,17 +51,17 @@ export default function FiltrosResumenMensual({
         <Col>
           <Select
             mode="multiple"
-            value={filters.groups}
+            value={filters.account}
             onChange={(val: number[]) =>
-              handleChange("groups", val as number[])
+              handleChange("account", val as number[])
             }
             style={{ minWidth: 200 }}
             allowClear
             placeholder="Seleccionar grupo"
           >
-            {userGroups.map((group) => (
-              <Select.Option key={group.id} value={group.id}>
-                {capitalize(group.name)}
+            {accounts.map((account) => (
+              <Select.Option key={account.id} value={account.id}>
+                {capitalize(account.name)}
               </Select.Option>
             ))}
           </Select>

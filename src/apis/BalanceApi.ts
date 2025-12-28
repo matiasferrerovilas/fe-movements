@@ -13,7 +13,7 @@ export async function getBalance(filters: BalanceFilters) {
     if (filters.month) params.set("month", String(filters.month));
     if (filters.currency?.length)
       params.set("currencies", String(filters.currency));
-    filters.groups?.forEach((g) => params.append("groups", String(g)));
+    filters.account?.forEach((g) => params.append("groups", String(g)));
 
     const { data } = await api.get<BalanceResponse>("/balance", {
       params,
@@ -38,8 +38,8 @@ export async function getBalanceWithCategoryByYear(filters: BalanceFilters) {
     params.set("currencies", String(filters.currency));
 
   // groups: number[]
-  if (filters.groups?.length) {
-    filters.groups.forEach((g) => params.append("groups", String(g)));
+  if (filters.account?.length) {
+    filters.account.forEach((g) => params.append("groups", String(g)));
   }
 
   return api
