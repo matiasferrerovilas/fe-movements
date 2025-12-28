@@ -88,8 +88,6 @@ export async function updateExpenseApi(expense: Movement) {
     category: expense.category || null,
     cuotaActual: expense.cuotaActual ?? null,
     cuotasTotales: expense.cuotasTotales ?? null,
-    year: expense.year,
-    month: expense.month,
   };
 
   const response = await api.patch(`/expenses/${expense.id}`, payload, {
