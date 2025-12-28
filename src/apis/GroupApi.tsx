@@ -1,16 +1,17 @@
 import type {
+  AccountsWithUsersCount,
+  AccountWithMembers,
   ConfirmInvitations,
   CreateGroupForm,
   CreateInvitationForm,
-  GroupWithUsersrs,
   Invitations,
-  UserGroup,
 } from "../models/UserGroup";
 import { api } from "./axios";
 
+const baseUrl = "/account";
 export async function exitGroupApi(id: number) {
   return api
-    .delete("/groups/" + id)
+    .delete(baseUrl + "/" + id)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error exiting group:", error);
@@ -20,7 +21,7 @@ export async function exitGroupApi(id: number) {
 
 export async function addGroupApi(group: CreateGroupForm) {
   return api
-    .post("/groups", group)
+    .post(baseUrl, group)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error adding a group:", error);
@@ -30,7 +31,7 @@ export async function addGroupApi(group: CreateGroupForm) {
 
 export async function addInvitationGroupApi(invitation: CreateInvitationForm) {
   return api
-    .post("/groups/" + invitation.group.id + "/invitations", invitation)
+    .post(baseUrl + "/" + invitation.accountId + "/invitations", invitation)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error adding a group:", error);
@@ -40,7 +41,7 @@ export async function addInvitationGroupApi(invitation: CreateInvitationForm) {
 
 export async function getAllInvitations() {
   return api
-    .get<Invitations[]>("/groups/invitations")
+    .get<Invitations[]>(baseUrl + "/invitations")
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error fetching expenses:", error);
@@ -52,7 +53,10 @@ export async function acceptRejectGroupInvitationApi(
   confirmInvitations: ConfirmInvitations
 ) {
   return api
-    .patch("/groups/invitations/" + confirmInvitations.id, confirmInvitations)
+    .patch(
+      baseUrl + "/invitations/" + confirmInvitations.id,
+      confirmInvitations
+    )
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error adding a group:", error);
@@ -62,20 +66,20 @@ export async function acceptRejectGroupInvitationApi(
 
 export async function getAllGroupsWithUsers() {
   return api
-    .get<GroupWithUsersrs[]>("/groups/count")
+    .get<AccountsWithUsersCount[]>(baseUrl + "/count")
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error fetching expenses:", error);
+      console.error("Error fetching groups count:", error);
       throw error;
     });
 }
 
 export async function getAllUserGroups() {
   return api
-    .get<UserGroup[]>("/groups")
+    .get<AccountWithMembers[]>(baseUrl)
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error fetching expenses:", error);
+      console.error("Error fetching all groups:", error);
       throw error;
     });
 }

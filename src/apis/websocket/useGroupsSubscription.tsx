@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
 import type { EventWrapper } from "./EventWrapper";
-import type { GroupWithUsersrs } from "../../models/UserGroup";
+import type { AccountsWithUsersCount } from "../../models/UserGroup";
 
 const USER_GROUPS_QUERY_KEY = ["user-groups"] as const;
 
@@ -11,7 +11,9 @@ export const useGroupsSubscription = () => {
   const ws = useWebSocket();
 
   const callbackRef =
-    useRef<(event: EventWrapper<GroupWithUsersrs[]>) => void | null>(null);
+    useRef<(event: EventWrapper<AccountsWithUsersCount[]>) => void | null>(
+      null
+    );
 
   // Inicializamos el callback una sola vez
   if (!callbackRef.current) {

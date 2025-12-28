@@ -1,12 +1,25 @@
-export interface UserGroup {
+import type { User } from "./User";
+
+export interface AccountWithoutMembers {
   id: number;
-  description: string;
+  name: string;
+}
+export interface AccountWithMembers {
+  id: number;
+  name: string;
+  owner: User;
+  members: AccountMember[];
+}
+export interface AccountMember {
+  id: number;
+  user: User;
+  role: string;
 }
 
-export interface GroupWithUsersrs {
-  id: number;
-  description: string;
-  memberCount: number;
+export interface AccountsWithUsersCount {
+  accountId: number;
+  name: string;
+  membersCount: number;
 }
 
 export interface CreateGroupForm {
@@ -15,12 +28,12 @@ export interface CreateGroupForm {
 
 export interface CreateInvitationForm {
   emails: string[];
-  group: UserGroup;
+  accountId: number;
 }
 
 export interface Invitations {
   id: number;
-  group: UserGroup;
+  nameAccount: string;
 }
 
 export interface ConfirmInvitations {

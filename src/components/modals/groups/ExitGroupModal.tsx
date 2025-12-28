@@ -1,15 +1,15 @@
 import { Button, Popconfirm } from "antd";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import { useMutation } from "@tanstack/react-query";
-import type { GroupWithUsersrs } from "../../../models/UserGroup";
+import type { AccountsWithUsersCount } from "../../../models/UserGroup";
 import { exitGroupApi } from "../../../apis/GroupApi";
 
 interface ExitGroupModalProps {
-  group: GroupWithUsersrs;
+  group: AccountsWithUsersCount;
 }
 export default function ExitGroupModal({ group }: ExitGroupModalProps) {
   const exitGroupMutation = useMutation({
-    mutationFn: () => exitGroupApi(group.id),
+    mutationFn: () => exitGroupApi(group.accountId),
     onError: (err) => {
       console.error("Error saliendo del grupo:", err);
     },

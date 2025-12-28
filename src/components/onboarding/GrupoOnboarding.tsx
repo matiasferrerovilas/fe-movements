@@ -7,7 +7,7 @@ interface Props {
 }
 
 export default function GrupoOnboarding({ initialValues, onNext }: Props) {
-  const [form] = Form.useForm<{ groups: string[] }>();
+  const [form] = Form.useForm<{ accountsToAdd: string[] }>();
 
   const handleSubmit = () => {
     form.validateFields().then((values) => onNext(values));
@@ -30,10 +30,10 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
       <Form
         form={form}
         layout="vertical"
-        initialValues={{ groups: initialValues.groups || [""] }}
+        initialValues={{ accountsToAdd: initialValues.accountsToAdd || [""] }}
         style={{ width: "100%" }}
       >
-        <Form.List name="groups">
+        <Form.List name="accountsToAdd">
           {(fields, { add, remove }) => (
             <>
               {fields.map(({ key, name, ...restField }) => (

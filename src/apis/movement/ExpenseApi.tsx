@@ -51,12 +51,12 @@ export async function getExpenseApi({
 
 export async function uploadExpenseApi(form: UploadPayload) {
   const formData = new FormData();
-  if (form.file == null || form.bank == null || form.group == null) {
+  if (form.file == null || form.bank == null || form.accountId == null) {
     return;
   }
   formData.append("file", form.file);
   formData.append("bank", form.bank);
-  formData.append("group", form.group);
+  formData.append("accountId", form.accountId.toString());
 
   const response = await api.post("/expenses/import-file", formData, {
     headers: {
@@ -72,7 +72,7 @@ export async function uploadExpense(movement: CreateMovementForm) {
     .post("/expenses", movement)
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error adding a group:", error);
+      console.error("Error adding movement:", error);
       throw error;
     });
 }

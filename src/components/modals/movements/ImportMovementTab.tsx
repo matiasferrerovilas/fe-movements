@@ -11,13 +11,13 @@ const { Text } = Typography;
 export interface UploadForm {
   fileList: UploadFile<File>[] | null;
   bank: string | null;
-  group: string | null;
+  accountId: number | null;
 }
 
 export interface UploadPayload {
   file: File | null;
   bank: string | null;
-  group: string | null;
+  accountId: number | null;
 }
 
 interface ImportMovementTabProps {
@@ -26,7 +26,7 @@ interface ImportMovementTabProps {
 
 const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
   ({ onSuccess }, ref) => {
-    const { data: userGroups = [] } = useGroups();
+    const { data: accounts = [] } = useGroups();
     const [form] = Form.useForm<UploadForm>();
 
     const uploadMutation = useMutation({
@@ -49,7 +49,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         const payload: UploadForm = {
           fileList: values.fileList,
           bank: values.bank,
-          group: values.group,
+          accountId: values.accountId,
         };
 
         uploadMutation.mutate({
@@ -69,7 +69,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
       <Form
         form={form}
         layout="vertical"
-        initialValues={userGroups && { group: userGroups[0]?.description }}
+        initialValues={accounts && { accountId: accounts[0]?.id }}
       >
         <div style={{ marginBottom: 10 }}>
           <Text type="secondary">
@@ -103,14 +103,14 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         </Form.Item>
 
         <Form.Item
-          name="group"
+          name="accountId"
           label="Grupo"
           rules={[{ required: true, message: "Seleccione un grupo" }]}
         >
           <Select placeholder="Seleccionar grupo">
-            {userGroups.map((group) => (
-              <Select.Option key={group.id} value={group.description}>
-                {group.description}
+            {accounts.map((account) => (
+              <Select.Option key={account.id} value={account.id}>
+                {account.name}
               </Select.Option>
             ))}
           </Select>

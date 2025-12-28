@@ -16,7 +16,7 @@ interface AddMovementExpenseTabProps {
 
 const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
   ({ onSuccess }, ref) => {
-    const { data: userGroups = [] } = useGroups();
+    const { data: accounts = [] } = useGroups();
     const [form] = Form.useForm<CreateMovementForm>();
     const { data: categories = [] } = useCategory();
 
@@ -49,9 +49,9 @@ const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
         form={form}
         layout="vertical"
         initialValues={
-          userGroups && {
+          accounts && {
             date: dayjs(),
-            group: userGroups[0]?.description,
+            accountId: accounts[0]?.id,
             currency: CurrencyEnum.ARS,
           }
         }
@@ -132,14 +132,14 @@ const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
           </Row>
         )}
         <Form.Item
-          name="group"
+          name="accountId"
           label="Grupo"
           rules={[{ required: true, message: "Seleccione un grupo" }]}
         >
           <Select placeholder="Seleccionar grupo">
-            {userGroups.map((group) => (
-              <Select.Option key={group.id} value={group.description}>
-                {group.description}
+            {accounts.map((account) => (
+              <Select.Option key={account.id} value={account.id}>
+                {account.name}
               </Select.Option>
             ))}
           </Select>

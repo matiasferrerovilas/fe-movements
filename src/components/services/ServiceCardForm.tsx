@@ -120,7 +120,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
         style={{ marginTop: 16 }}
         initialValues={
           userGroups && {
-            group: userGroups[0]?.description,
+            group: userGroups[0]?.id,
             isPaid: false,
             currency: CurrencyEnum.ARS,
           }
@@ -144,8 +144,8 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
             >
               <Select placeholder="Seleccionar grupo">
                 {userGroups.map((group) => (
-                  <Select.Option key={group.id} value={group.description}>
-                    {group.description}
+                  <Select.Option key={group.id} value={group.name}>
+                    {group.name}
                   </Select.Option>
                 ))}
               </Select>

@@ -61,7 +61,7 @@ export default function FiltrosResumenMensual({
           >
             {userGroups.map((group) => (
               <Select.Option key={group.id} value={group.id}>
-                {capitalize(group.description)}
+                {capitalize(group.name)}
               </Select.Option>
             ))}
           </Select>

@@ -1,7 +1,7 @@
 import type { Dayjs } from "dayjs";
 import type { Category } from "./Category";
 import type { Currency } from "./Currency";
-import type { UserGroup } from "./UserGroup";
+import type { AccountWithoutMembers } from "./UserGroup";
 
 export interface Movement {
   id: number;
@@ -17,7 +17,7 @@ export interface Movement {
   type: string;
   cuotasTotales: number | null;
   cuotaActual: number | null;
-  userGroups: UserGroup;
+  account: AccountWithoutMembers;
 }
 
 export interface CreateMovementForm {
@@ -30,5 +30,5 @@ export interface CreateMovementForm {
   cuotaActual?: number;
   cuotasTotales?: number;
   category?: string;
-  group: string;
+  accountId: number;
 }

@@ -27,10 +27,6 @@ const capitalizeFirst = (text?: string): string => {
 
 interface FormattedMovement extends Movement {
   formattedDate: string;
-  bankName: React.ReactNode;
-  groupName: React.ReactNode;
-  typeName: React.ReactNode;
-  categoryName: React.ReactNode;
   currencySymbol: React.ReactNode;
   installments: string;
   isDebit: boolean;
@@ -69,16 +65,6 @@ function MovementTable({ filters }: MovementTableProps) {
       return {
         ...m,
         formattedDate: dayjs(m.date).format("DD/MM/YYYY"),
-        bankName: <Tag color="magenta">{capitalizeFirst(m.bank)}</Tag>,
-        groupName: (
-          <Tag color="magenta">
-            {capitalizeFirst(m.userGroups?.description)}
-          </Tag>
-        ),
-        typeName: <Tag color="green">{capitalizeFirst(m.type)}</Tag>,
-        categoryName: (
-          <Tag color="success">{capitalizeFirst(m.category?.description)}</Tag>
-        ),
         currencySymbol: <Tag color="blue">{m.currency?.symbol || "-"}</Tag>,
         installments: m.cuotasTotales
           ? `${m.cuotaActual ?? "-"}/${m.cuotasTotales}`
@@ -98,26 +84,43 @@ function MovementTable({ filters }: MovementTableProps) {
         key: "date",
         align: "left",
       },
-      { title: "Banco", dataIndex: "bankName", key: "bank", align: "left" },
+      {
+        title: "Banco",
+        dataIndex: "bank",
+        key: "bank",
+        align: "left",
+        render: (_: unknown, record) => capitalizeFirst(record.bank),
+      },
       {
         title: "Grupo",
-        dataIndex: "groupName",
-        key: "userGroups",
+        dataIndex: "account",
+        key: "account",
         align: "left",
+        render: (_: unknown, record) => capitalizeFirst(record.account.name),
       },
-      { title: "Tarjeta", dataIndex: "typeName", key: "type" },
+      {
+        title: "Cargado Por",
+        dataIndex: "owner",
+        key: "owner",
+        align: "center",
+      },
+      {
+        title: "Tarjeta",
+        dataIndex: "typeName",
+        key: "type",
+        render: (_: unknown, record) => capitalizeFirst(record.type),
+      },
       {
         title: "Categoria",
-        dataIndex: "categoryName",
+        dataIndex: "category",
         key: "category",
         align: "center",
+        render: (_: unknown, record) =>
+          record.category
+            ? capitalizeFirst(record.category.description)
+            : capitalizeFirst("Sin Categoria Asignada"),
       },
-      {
-        title: "Moneda",
-        dataIndex: "currencySymbol",
-        key: "currency",
-        align: "center",
-      },
+
       {
         title: "Descripcion",
         dataIndex: "description",
@@ -139,6 +142,12 @@ function MovementTable({ filters }: MovementTableProps) {
             {`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}
           </Text>
         ),
+      },
+      {
+        title: "Moneda",
+        dataIndex: "currencySymbol",
+        key: "currency",
+        align: "center",
       },
       {
         title: "",

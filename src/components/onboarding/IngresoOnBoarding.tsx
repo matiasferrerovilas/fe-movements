@@ -15,7 +15,7 @@ import { BankEnum } from "../../enums/BankEnum";
 const { Text } = Typography;
 
 interface Props {
-  initialValues: any; // { bank, currency, groups: string[] }
+  initialValues: any; // { bank, currency, accountsToAdd: string[] }
   onNext: (values: any) => void;
   onPrev: () => void;
 }
@@ -31,9 +31,9 @@ export default function IngresoOnBoarding({
     form.validateFields().then((values) => onNext(values));
   };
 
-  const groupOptions: string[] = (initialValues.groups || []).filter(
-    (g: string) => g && g.trim()
-  );
+  const accountsToAddOptions: string[] = (
+    initialValues.accountsToAdd || []
+  ).filter((g: string) => g && g.trim());
 
   return (
     <Space orientation="vertical" style={{ width: "100%" }}>
@@ -85,17 +85,20 @@ export default function IngresoOnBoarding({
           </Form.Item>
         </Col>
 
-        {groupOptions.length > 0 && (
+        {accountsToAddOptions.length > 0 && (
           <Col xs={24} md={18} lg={24} style={{ marginBottom: 16 }}>
             <Text strong>Grupo</Text>
 
             <Form.Item
-              name="group"
+              name="accountToAdd"
               rules={[{ required: true, message: "Selecciona un grupo" }]}
             >
               <Select
                 placeholder="Selecciona un grupo"
-                options={groupOptions.map((g) => ({ label: g, value: g }))}
+                options={accountsToAddOptions.map((g) => ({
+                  label: g,
+                  value: g,
+                }))}
               />
             </Form.Item>
           </Col>

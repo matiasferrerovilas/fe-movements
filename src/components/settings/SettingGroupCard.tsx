@@ -1,18 +1,18 @@
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import { Card, Space, Tag, Typography } from "antd";
-import type { GroupWithUsersrs } from "../../models/UserGroup";
+import type { AccountsWithUsersCount } from "../../models/UserGroup";
 import InviteUserToGroup from "../modals/groups/InviteUserToGroup";
 import ExitGroupModal from "../modals/groups/ExitGroupModal";
 const { Text } = Typography;
 
 interface SettingGroupCardProps {
-  group: GroupWithUsersrs;
+  group: AccountsWithUsersCount;
 }
 export default function SettingGroupCard({ group }: SettingGroupCardProps) {
   return (
     <>
       <Card
-        key={group.id}
+        key={group.accountId}
         hoverable
         styles={{
           body: {
@@ -52,8 +52,8 @@ export default function SettingGroupCard({ group }: SettingGroupCardProps) {
               <TeamOutlined style={{ color: "#fff", fontSize: 18 }} />
             </div>
             <Space>
-              <Text strong>{group.description}</Text>
-              {group.description === "DEFAULT" && (
+              <Text strong>{group.name}</Text>
+              {group.name === "DEFAULT" && (
                 <Tag color="default" style={{ fontSize: 11 }}>
                   Por defecto
                 </Tag>
@@ -64,7 +64,7 @@ export default function SettingGroupCard({ group }: SettingGroupCardProps) {
             <ExitGroupModal group={group} />
             <InviteUserToGroup group={group} />
             <Text type="secondary" style={{ fontSize: 16 }}>
-              {group.memberCount} miembro{group.memberCount > 1 && "s"}
+              {group.membersCount} miembro{group.membersCount > 1 && "s"}
             </Text>
           </div>
         </Space>

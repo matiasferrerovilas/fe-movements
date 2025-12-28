@@ -74,7 +74,7 @@ export default function SettingInviteGroupCard({
               <TeamOutlined style={{ color: "#fff", fontSize: 18 }} />
             </div>
             <Space>
-              <Text strong>{invite.group.description}</Text>
+              <Text strong>{invite.nameAccount}</Text>
             </Space>
           </Space>
           <Space>

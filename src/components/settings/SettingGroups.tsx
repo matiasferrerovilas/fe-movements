@@ -13,14 +13,17 @@ import { useAllGroupsWithUsers } from "../../apis/hooks/useGroups";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import SettingGroupCard from "./SettingGroupCard";
-import type { CreateGroupForm, GroupWithUsersrs } from "../../models/UserGroup";
+import type {
+  CreateGroupForm,
+  AccountsWithUsersCount,
+} from "../../models/UserGroup";
 import { useMutation } from "@tanstack/react-query";
 import { useGroupsSubscription } from "../../apis/websocket/useGroupsSubscription";
 import { addGroupApi } from "../../apis/GroupApi";
 const { Title } = Typography;
 
 export function SettingGroups() {
-  const { data: groups, isLoading } = useAllGroupsWithUsers();
+  const { data: groups = [], isLoading } = useAllGroupsWithUsers();
   const { token } = theme.useToken();
   const [form] = Form.useForm<CreateGroupForm>();
 
@@ -113,7 +116,7 @@ export function SettingGroups() {
         </Form>
       </Card>
       <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
-        {groups?.map((group: GroupWithUsersrs) => (
+        {groups?.map((group: AccountsWithUsersCount) => (
           <SettingGroupCard group={group} />
         ))}
       </Space>

@@ -13,6 +13,7 @@ import { onBoardingGuard } from "../apis/auth/onBoardingGuard";
 import { useKeycloak } from "@react-keycloak/web";
 import { AuthContext } from "../apis/auth/AuthContext";
 import TipoOnboarding from "../components/onboarding/TipoOnboarding";
+import { GroupEnum } from "../enums/GroupEnum";
 
 const { Title, Text } = Typography;
 
@@ -29,6 +30,7 @@ function RouteComponent() {
   const { completeOnboarding } = useContext(AuthContext);
 
   const handleNext = (values: Partial<OnboardingForm>) => {
+    console.log(formData);
     setFormData((prev) => ({ ...prev, ...values }));
     setCurrentStep((prev) => prev + 1);
   };
@@ -80,21 +82,26 @@ function RouteComponent() {
           initialValues={formData}
           onPrev={handlePrev}
           onNext={(values: OnboardingIngresoForm) => {
-            const selectedGroup = values.group;
-            const newGroups = (formData.groups || []).filter(
+            const newGroups = (formData.accountsToAdd || []).filter(
               (g: string) => g && g.trim()
             );
             if (!formData.userType) {
               console.error("UserType no definido");
               return;
             }
+            if (newGroups.length === 0) {
+              newGroups.push(GroupEnum.DEFAULT);
+            }
+            const selectedGroup = values.accountToAdd || newGroups[0];
+
             const finalData: OnboardingForm = {
-              ...values,
-              groups: newGroups,
+              accountsToAdd: newGroups,
               userType: formData.userType,
               onBoardingAmount: {
                 amount: values.amount,
-                group: selectedGroup,
+                bank: values.bank,
+                currency: values.currency,
+                accountToAdd: selectedGroup,
               },
             };
             setFormData(finalData);

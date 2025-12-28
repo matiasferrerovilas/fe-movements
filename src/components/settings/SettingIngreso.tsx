@@ -26,7 +26,7 @@ export function SettingIngreso() {
   const [form] = Form.useForm<IncomeAddForm>();
   const { data: ingresos, isLoading } = useIncome();
   const { token } = theme.useToken();
-  const { data: userGroups = [] } = useGroups();
+  const { data: accountWithMembers = [] } = useGroups();
 
   const queryClient = useQueryClient();
 
@@ -120,9 +120,9 @@ export function SettingIngreso() {
                 rules={[{ required: true, message: "Seleccione un grupo" }]}
               >
                 <Select placeholder="Seleccionar grupo">
-                  {userGroups.map((group) => (
-                    <Select.Option key={group.id} value={group.description}>
-                      {group.description}
+                  {accountWithMembers.map((group) => (
+                    <Select.Option key={group.id} value={group.name}>
+                      {group.name}
                     </Select.Option>
                   ))}
                 </Select>
@@ -195,7 +195,7 @@ export function SettingIngreso() {
                   {/* Izquierda */}
                   <Col>
                     <Typography.Text strong style={{ fontSize: 14 }}>
-                      {ingreso.groups.description}
+                      {ingreso.accountName}
                     </Typography.Text>
 
                     <br />

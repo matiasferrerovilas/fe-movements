@@ -6,13 +6,13 @@ import UserAddOutlined from "@ant-design/icons/UserAddOutlined";
 import { useMutation } from "@tanstack/react-query";
 import type {
   CreateInvitationForm,
-  GroupWithUsersrs,
+  AccountsWithUsersCount,
 } from "../../../models/UserGroup";
 import { addInvitationGroupApi } from "../../../apis/GroupApi";
 import { ColorEnum } from "../../../enums/ColorEnum";
 
 interface InviteUserToGroupProps {
-  group: GroupWithUsersrs;
+  group: AccountsWithUsersCount;
 }
 export default function InviteUserToGroup({ group }: InviteUserToGroupProps) {
   const [form] = Form.useForm();
@@ -35,7 +35,7 @@ export default function InviteUserToGroup({ group }: InviteUserToGroupProps) {
   const handleSubmit = (values: { email: string }) => {
     addInvitationMutation.mutate({
       emails: [values.email],
-      group: { description: group.description, id: group.id },
+      accountId: group.accountId,
     });
   };
 

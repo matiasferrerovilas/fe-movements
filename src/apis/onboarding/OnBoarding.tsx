@@ -1,20 +1,22 @@
 import { api } from "../axios";
 
 export interface OnboardingForm {
-  bank: string;
-  currency: string;
-  groups: string[];
+  accountsToAdd: string[];
   userType: string;
-  onBoardingAmount: {
-    amount: number;
-    group: string;
-  };
+  onBoardingAmount: OnBoardingIngreso;
+}
+
+export interface OnBoardingIngreso {
+  amount: number;
+  bank: string;
+  accountToAdd: string;
+  currency: string;
 }
 
 export interface OnboardingIngresoForm {
   bank: string;
   currency: string;
-  group: string;
+  accountToAdd: string;
   amount: number;
   userType: string;
 }
