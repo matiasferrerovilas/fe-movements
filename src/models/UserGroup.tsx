@@ -34,6 +34,7 @@ export interface CreateInvitationForm {
 export interface Invitations {
   id: number;
   nameAccount: string;
+  invitedBy: string;
 }
 
 export interface ConfirmInvitations {

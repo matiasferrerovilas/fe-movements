@@ -18,6 +18,7 @@ export const useGroupsSubscription = () => {
   // Inicializamos el callback una sola vez
   if (!callbackRef.current) {
     callbackRef.current = (event) => {
+      console.info("📨 Nuevo movimiento recibido:", event);
       const payload = event.message;
       queryClient.setQueryData(USER_GROUPS_QUERY_KEY, payload);
     };
@@ -27,7 +28,7 @@ export const useGroupsSubscription = () => {
     if (!ws?.isConnected) return;
 
     const callback = callbackRef.current!;
-    const topics = ["/topic/groups/update", "/topic/groups/new"];
+    const topics = ["/topic/account/update", "/topic/account/new"];
 
     // Suscripción
     topics.forEach((topic) => ws.subscribe(topic, callback));
