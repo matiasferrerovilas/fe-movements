@@ -25,9 +25,17 @@ export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
         display: "flex",
         alignItems: "center",
         marginBottom: 30,
+        padding: 0,
       }}
     >
-      <Col xs={24} md={8}>
+      <Col
+        xs={24}
+        md={12}
+        lg={8}
+        style={{
+          marginBottom: 10,
+        }}
+      >
         <Card
           loading={isFetching}
           title="Total Servicios"
@@ -42,7 +50,14 @@ export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
         </Card>
       </Col>
 
-      <Col xs={24} md={8}>
+      <Col
+        xs={24}
+        md={12}
+        lg={8}
+        style={{
+          marginBottom: 10,
+        }}
+      >
         <Card
           loading={isFetching}
           title="Pagados"
@@ -57,7 +72,14 @@ export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
         </Card>
       </Col>
 
-      <Col xs={24} md={8}>
+      <Col
+        xs={24}
+        md={12}
+        lg={8}
+        style={{
+          marginBottom: 10,
+        }}
+      >
         <Card
           loading={isFetching}
           title="Pendientes"

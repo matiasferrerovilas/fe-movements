@@ -7,6 +7,7 @@ import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import { useCategory } from "../../apis/hooks/useCategory";
 import HistoryOutlined from "@ant-design/icons/HistoryOutlined";
 import RiseOutlined from "@ant-design/icons/RiseOutlined";
+import { useCurrency } from "../../apis/hooks/useCurrency";
 
 const { Option } = Select;
 
@@ -26,6 +27,7 @@ export default function FiltrosMovement({
 }: Props) {
   const { data: categories = [] } = useCategory();
   const [filters, setFilters] = useState<MovementFilters>(initialFilters);
+  const {data: currencies = []} = useCurrency();
 
   const handleChange = useCallback(
     (
@@ -144,9 +146,9 @@ export default function FiltrosMovement({
               placeholder="Todas las Monedas"
               allowClear
             >
-              {Object.values(CurrencyEnum).map((currency) => (
-                <Option key={currency} value={currency}>
-                  {capitalize(currency)}
+              {currencies.map((currency) => (
+                <Option key={currency.id} value={currency.symbol}>
+                  {capitalize(currency.symbol)}
                 </Option>
               ))}
             </Select>

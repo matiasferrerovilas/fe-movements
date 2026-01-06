@@ -3,6 +3,7 @@ import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import type { BalanceFilters } from "../../routes/balance";
 import { useCallback, useEffect, useState } from "react";
 import { useGroups } from "../../apis/hooks/useGroups";
+import { useCurrency } from "../../apis/hooks/useCurrency";
 
 const capitalize = (str: string) =>
   str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -16,7 +17,7 @@ export default function FiltrosResumenMensual({
   onFiltersChange,
 }: Props) {
   const { data: accounts = [] } = useGroups();
-
+  const {data: currencies = []} = useCurrency();
   const [filters, setFilters] = useState<BalanceFilters>(initialFilters);
 
   useEffect(() => {
@@ -41,9 +42,9 @@ export default function FiltrosResumenMensual({
             placeholder="Todas las Monedas"
             allowClear
           >
-            {Object.values(CurrencyEnum).map((currency) => (
-              <Select.Option key={currency} value={currency}>
-                {capitalize(currency)}
+            {currencies.map((currency) => (
+              <Select.Option key={currency.id} value={currency.symbol}>
+                {capitalize(currency.symbol)}
               </Select.Option>
             ))}
           </Select>

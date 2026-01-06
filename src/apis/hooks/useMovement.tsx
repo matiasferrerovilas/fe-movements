@@ -11,6 +11,5 @@ export const useMovement = (
 ) =>
   useQuery({
     queryKey: [MOVEMENT_QUERY_KEY, page, filters],
-    queryFn: () => getExpenseApi({ page, size: defaultPage, filters }),
-    staleTime: Infinity,
+    queryFn: () => getExpenseApi({ page, size: defaultPage, filters })
   });

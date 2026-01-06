@@ -5,7 +5,6 @@ import MovementTable from "../components/movements/tables/MovementTable";
 import FiltrosMovement from "../components/movements/FiltrosMovement";
 import { BankEnum } from "../enums/BankEnum";
 import { TypeEnum } from "../enums/TypeExpense";
-import { CurrencyEnum } from "../enums/CurrencyEnum";
 import AddMovementModal from "../components/modals/movements/AddMovementModal";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
@@ -23,7 +22,7 @@ export type MovementFilters = {
   bank: BankEnum[];
   categories: string[];
   isLive: boolean;
-  currency: CurrencyEnum[];
+  currency: string[];
 };
 
 function RouteComponent() {

@@ -21,6 +21,7 @@ import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import type { ServiceToAdd } from "../../apis/ServiceApi";
 import { useGroups } from "../../apis/hooks/useGroups";
 import { ColorEnum } from "../../enums/ColorEnum";
+import { useCurrency } from "../../apis/hooks/useCurrency";
 
 const { Title } = Typography;
 interface CreateServiceForm {
@@ -39,6 +40,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const [form] = Form.useForm<CreateServiceForm>();
   const [isPaid, setIsPaid] = useState(false);
   const { data: accounts = [] } = useGroups();
+  const {data: currencies = []} = useCurrency();
 
   const onFinish = (values: CreateServiceForm) => {
     const service: ServiceToAdd = {
@@ -175,9 +177,9 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
               rules={[{ required: true, message: "Ingrese Moneda" }]}
             >
               <Select placeholder="Ingrese Moneda" style={{ width: "100%" }}>
-                {Object.values(CurrencyEnum).map((currency) => (
-                  <Select.Option key={currency} value={currency}>
-                    {currency}
+                {currencies.map((currency) => (
+                  <Select.Option key={currency.id} value={currency.symbol}>
+                    {currency.symbol}
                   </Select.Option>
                 ))}
               </Select>

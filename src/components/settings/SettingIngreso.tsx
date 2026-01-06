@@ -18,8 +18,8 @@ import { useIncome } from "../../apis/hooks/useIncome";
 import { DeleteOutlined, PlusOutlined, TeamOutlined } from "@ant-design/icons";
 import { addIncome, deleteIncome } from "../../apis/income/IncomeAPI";
 import type { Income, IncomeAddForm } from "../../models/Income";
-import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import { BankEnum } from "../../enums/BankEnum";
+import { useCurrency } from "../../apis/hooks/useCurrency";
 const { Title } = Typography;
 
 export function SettingIngreso() {
@@ -27,6 +27,7 @@ export function SettingIngreso() {
   const { data: ingresos, isLoading } = useIncome();
   const { token } = theme.useToken();
   const { data: accountWithMembers = [] } = useGroups();
+  const { data: currencies = [] } = useCurrency();
 
   const queryClient = useQueryClient();
 
@@ -138,9 +139,9 @@ export function SettingIngreso() {
                 rules={[{ required: true, message: "Ingrese Moneda" }]}
               >
                 <Select placeholder="Ingrese Moneda" style={{ width: "100%" }}>
-                  {Object.values(CurrencyEnum).map((currency) => (
-                    <Select.Option key={currency} value={currency}>
-                      {currency}
+                  {currencies.map((currency) => (
+                    <Select.Option key={currency.id} value={currency.symbol}>
+                      {currency.symbol}
                     </Select.Option>
                   ))}
                 </Select>

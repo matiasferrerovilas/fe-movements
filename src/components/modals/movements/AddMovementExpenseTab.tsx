@@ -9,6 +9,7 @@ import { useCategory } from "../../../apis/hooks/useCategory";
 import dayjs from "dayjs";
 import { CurrencyEnum } from "../../../enums/CurrencyEnum";
 import { uploadExpense } from "../../../apis/movement/ExpenseApi";
+import { useCurrency } from "../../../apis/hooks/useCurrency";
 
 interface AddMovementExpenseTabProps {
   onSuccess?: () => void;
@@ -19,6 +20,7 @@ const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
     const { data: accounts = [] } = useGroups();
     const [form] = Form.useForm<CreateMovementForm>();
     const { data: categories = [] } = useCategory();
+  const {data: currencies = []} = useCurrency();
 
     const uploadMutation = useMutation({
       mutationFn: (expenseData: CreateMovementForm) => {
@@ -190,9 +192,9 @@ const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
               rules={[{ required: true, message: "Ingrese Moneda" }]}
             >
               <Select placeholder="Ingrese Moneda" style={{ width: "100%" }}>
-                {Object.values(CurrencyEnum).map((currency) => (
-                  <Select.Option key={currency} value={currency}>
-                    {currency}
+                {currencies.map((currency) => (
+                  <Select.Option key={currency.id} value={currency.symbol}>
+                    {currency.symbol}
                   </Select.Option>
                 ))}
               </Select>

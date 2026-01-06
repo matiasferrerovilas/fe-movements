@@ -9,8 +9,8 @@ import {
   Typography,
 } from "antd";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
-import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import { BankEnum } from "../../enums/BankEnum";
+import { useCurrency } from "../../apis/hooks/useCurrency";
 
 const { Text } = Typography;
 
@@ -26,6 +26,7 @@ export default function IngresoOnBoarding({
   onPrev,
 }: Props) {
   const [form] = Form.useForm();
+  const { data: currencies = [] } = useCurrency();
 
   const handleSubmit = () => {
     form.validateFields().then((values) => onNext(values));
@@ -63,9 +64,9 @@ export default function IngresoOnBoarding({
           <Text strong>Moneda</Text>
           <Form.Item name="currency">
             <Select placeholder="En qué moneda recibe su ingreso">
-              {Object.values(CurrencyEnum).map((currency) => (
-                <Select.Option key={currency} value={currency}>
-                  {currency}
+              {currencies.map((currency) => (
+                <Select.Option key={currency.id} value={currency.symbol}>
+                  {currency.symbol}
                 </Select.Option>
               ))}
             </Select>
