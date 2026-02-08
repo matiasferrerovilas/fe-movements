@@ -22,7 +22,7 @@ export interface Movement {
 export interface CreateMovementForm {
   bank: string;
   description: string;
-  date: Dayjs;
+  date: Date;
   currency: string;
   amount: number;
   type: string;

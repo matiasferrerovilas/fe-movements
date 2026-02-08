@@ -10,17 +10,22 @@ import dayjs from "dayjs";
 import { CurrencyEnum } from "../../../enums/CurrencyEnum";
 import { uploadExpense } from "../../../apis/movement/ExpenseApi";
 import { useCurrency } from "../../../apis/hooks/useCurrency";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 interface AddMovementExpenseTabProps {
   onSuccess?: () => void;
 }
+
+const dateFormat = "YYYY/MM/DD";
 
 const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
   ({ onSuccess }, ref) => {
     const { data: accounts = [] } = useGroups();
     const [form] = Form.useForm<CreateMovementForm>();
     const { data: categories = [] } = useCategory();
-  const {data: currencies = []} = useCurrency();
+    const { data: currencies = [] } = useCurrency();
 
     const uploadMutation = useMutation({
       mutationFn: (expenseData: CreateMovementForm) => {
@@ -39,7 +44,17 @@ const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
       handleConfirm: async () => {
         try {
           const values = await form.validateFields();
-          uploadMutation.mutate(values as CreateMovementForm);
+          const date = dayjs(values.date)
+            .hour(12)
+            .minute(0)
+            .second(0)
+            .millisecond(0)
+            .toDate();
+          const payload = {
+            ...values,
+            date: date,
+          };
+          uploadMutation.mutate(payload as CreateMovementForm);
         } catch (err) {
           console.warn("❌ Validación fallida:", err);
         }
@@ -110,8 +125,8 @@ const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
                       }
                       return Promise.reject(
                         new Error(
-                          "La cuota actual no puede ser mayor que el total"
-                        )
+                          "La cuota actual no puede ser mayor que el total",
+                        ),
                       );
                     },
                   }),
@@ -130,7 +145,7 @@ const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
               >
                 <InputNumber style={{ width: "100%" }} controls={false} />
               </Form.Item>
-            </Col>{" "}
+            </Col>
           </Row>
         )}
         <Form.Item
@@ -182,7 +197,7 @@ const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
           name="date"
           rules={[{ required: true, message: "Seleccione una fecha" }]}
         >
-          <DatePicker style={{ width: "100%" }} />
+          <DatePicker style={{ width: "100%" }} format={dateFormat} />
         </Form.Item>
         <Row gutter={16}>
           <Col span={12}>
@@ -217,7 +232,7 @@ const AddMovementExpenseTab = forwardRef<unknown, AddMovementExpenseTabProps>(
         </Row>
       </Form>
     );
-  }
+  },
 );
 
 export default AddMovementExpenseTab;
