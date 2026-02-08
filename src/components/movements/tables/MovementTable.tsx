@@ -12,6 +12,7 @@ import { TypeEnum } from "../../../enums/TypeExpense";
 import { useMovementSubscription } from "../../../apis/websocket/useMovementSubscription";
 import { useMutation } from "@tanstack/react-query";
 import { deleteExpenseApi } from "../../../apis/movement/ExpenseApi";
+import { BankEnumHelper } from "../../../enums/BankEnum";
 const { Text } = Typography;
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -89,7 +90,8 @@ function MovementTable({ filters }: MovementTableProps) {
         dataIndex: "bank",
         key: "bank",
         align: "left",
-        render: (_: unknown, record) => capitalizeFirst(record.bank),
+        render: (_: unknown, record) =>
+          capitalizeFirst(BankEnumHelper.fromString(record.bank)),
       },
       {
         title: "Grupo",
@@ -162,7 +164,7 @@ function MovementTable({ filters }: MovementTableProps) {
         ),
       },
     ],
-    []
+    [],
   );
 
   const loadingConfig = useMemo(
@@ -170,7 +172,7 @@ function MovementTable({ filters }: MovementTableProps) {
       spinning: isFetching,
       indicator: <LoadingOutlined style={{ fontSize: 80 }} spin />,
     }),
-    [isFetching]
+    [isFetching],
   );
 
   const paginationConfig = useMemo(
@@ -184,7 +186,7 @@ function MovementTable({ filters }: MovementTableProps) {
         else if (p - 1 < page && canGoPrev) prevPage();
       },
     }),
-    [movements?.totalElements, page, nextPage, prevPage, canGoPrev]
+    [movements?.totalElements, page, nextPage, prevPage, canGoPrev],
   );
 
   return (

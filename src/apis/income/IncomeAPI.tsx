@@ -30,3 +30,13 @@ export async function addIncome(incomeToAdd: IncomeAddForm) {
       throw error;
     });
 }
+
+export async function reloadIncome(id: number) {
+  return api
+    .post("/income/" + id + "/reload")
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error reloading the income:", error);
+      throw error;
+    });
+}

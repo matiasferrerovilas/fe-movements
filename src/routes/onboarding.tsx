@@ -30,7 +30,6 @@ function RouteComponent() {
   const { completeOnboarding } = useContext(AuthContext);
 
   const handleNext = (values: Partial<OnboardingForm>) => {
-    console.log(formData);
     setFormData((prev) => ({ ...prev, ...values }));
     setCurrentStep((prev) => prev + 1);
   };
@@ -83,7 +82,7 @@ function RouteComponent() {
           onPrev={handlePrev}
           onNext={(values: OnboardingIngresoForm) => {
             const newGroups = (formData.accountsToAdd || []).filter(
-              (g: string) => g && g.trim()
+              (g: string) => g && g.trim(),
             );
             if (!formData.userType) {
               console.error("UserType no definido");

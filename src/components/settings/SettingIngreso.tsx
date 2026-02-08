@@ -15,8 +15,17 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGroups } from "../../apis/hooks/useGroups";
 import { useIncome } from "../../apis/hooks/useIncome";
-import { DeleteOutlined, PlusOutlined, TeamOutlined } from "@ant-design/icons";
-import { addIncome, deleteIncome } from "../../apis/income/IncomeAPI";
+import {
+  DeleteOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
+import {
+  addIncome,
+  deleteIncome,
+  reloadIncome,
+} from "../../apis/income/IncomeAPI";
 import type { Income, IncomeAddForm } from "../../models/Income";
 import { BankEnum } from "../../enums/BankEnum";
 import { useCurrency } from "../../apis/hooks/useCurrency";
@@ -41,6 +50,13 @@ export function SettingIngreso() {
 
   const deleteIngresoMutation = useMutation({
     mutationFn: ({ id }: { id: number }) => deleteIncome(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["income-all"] });
+    },
+  });
+
+  const addIngresoMutation = useMutation({
+    mutationFn: ({ id }: { id: number }) => reloadIncome(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["income-all"] });
     },
@@ -193,7 +209,6 @@ export function SettingIngreso() {
                 }}
               >
                 <Row justify="space-between" align="middle">
-                  {/* Izquierda */}
                   <Col>
                     <Typography.Text strong style={{ fontSize: 14 }}>
                       {ingreso.accountName}
@@ -206,11 +221,25 @@ export function SettingIngreso() {
                     </Typography.Text>
                   </Col>
 
-                  {/* Derecha */}
-                  <Space align="center">
+                  <Space align="center" size={4}>
                     <Typography.Text strong style={{ fontSize: 14 }}>
                       {ingreso.amount.toFixed(2)} {ingreso.currency?.symbol}
                     </Typography.Text>
+
+                    <Popconfirm
+                      title="Ingresar movimiento manualmente"
+                      description="Este ingreso sera agregado como movimiento."
+                      onConfirm={() =>
+                        addIngresoMutation.mutate({ id: ingreso.id })
+                      }
+                    >
+                      <Button
+                        danger
+                        type="text"
+                        icon={<ReloadOutlined />}
+                        style={{ padding: 2 }}
+                      />
+                    </Popconfirm>
 
                     <Popconfirm
                       title="Eliminar ingreso"
@@ -219,7 +248,12 @@ export function SettingIngreso() {
                         deleteIngresoMutation.mutate({ id: ingreso.id })
                       }
                     >
-                      <Button danger type="text" icon={<DeleteOutlined />} />
+                      <Button
+                        danger
+                        type="text"
+                        icon={<DeleteOutlined />}
+                        style={{ padding: 2 }}
+                      />
                     </Popconfirm>
                   </Space>
                 </Row>

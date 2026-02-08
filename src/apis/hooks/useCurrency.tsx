@@ -7,6 +7,6 @@ export const useCurrency = () =>
   useQuery({
     queryKey: [CURRENCY_QUERY_KEY],
     queryFn: () => getAllCurrencies(),
-    staleTime: 10 * 60 * 1000,
+    staleTime: 10000,
     select: (data) => data,
   });
