@@ -1,4 +1,3 @@
-import type { Dayjs } from "dayjs";
 import type { Category } from "./Category";
 import type { Currency } from "./Currency";
 import type { AccountWithoutMembers } from "./UserGroup";
