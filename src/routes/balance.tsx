@@ -22,7 +22,7 @@ export type BalanceFilters = {
   currency: CurrencyEnum;
   year?: number;
   month?: number;
-  dates?: [Date, Date];
+  dates: [Date, Date];
 };
 
 function RouteComponent() {

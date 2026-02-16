@@ -41,8 +41,10 @@ export default function FiltrosResumenMensual({
   }, [filters, onFiltersChange]);
 
   const handleChange = useCallback(
-    (key: keyof BalanceFilters, value: string[] | CurrencyEnum | number[]) =>
-      setFilters((prev) => ({ ...prev, [key]: value })),
+    (
+      key: keyof BalanceFilters,
+      value: string[] | CurrencyEnum | number[] | Date[],
+    ) => setFilters((prev) => ({ ...prev, [key]: value })),
     [],
   );
   return (
@@ -84,10 +86,21 @@ export default function FiltrosResumenMensual({
               if (!dates) return;
 
               const [start, end] = dates;
-              const startDate: Date | null = start ? start.toDate() : null;
-              const endDate: Date | null = end ? end.toDate() : null;
+              if (!start || !end) return;
+              const startDateFormated = dayjs(start)
+                .hour(12)
+                .minute(0)
+                .second(0)
+                .millisecond(0)
+                .toDate();
+              const endDateFormated = dayjs(end)
+                .hour(12)
+                .minute(0)
+                .second(0)
+                .millisecond(0)
+                .toDate();
 
-              console.log({ startDate, endDate });
+              handleChange("dates", [startDateFormated, endDateFormated]);
             }}
           />
         </Col>

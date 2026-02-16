@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import type { BalanceResponse } from "../models/Balance";
 import type {
   BalanceByCategory,
@@ -5,6 +6,9 @@ import type {
 } from "../models/BalanceByCategory";
 import type { BalanceFilters } from "../routes/balance";
 import { api } from "./axios";
+
+const formatDate = (date: Date) => dayjs(date).format("YYYY-MM-DD");
+
 export async function getBalance(filters: BalanceFilters) {
   try {
     const params = new URLSearchParams();
@@ -14,7 +18,12 @@ export async function getBalance(filters: BalanceFilters) {
     if (filters.currency?.length)
       params.set("currencies", String(filters.currency));
     filters.account?.forEach((g) => params.append("groups", String(g)));
+    if (filters.dates) {
+      params.set("startDate", formatDate(filters.dates[0]));
+      params.set("endDate", formatDate(filters.dates[1]));
+    }
 
+    console.log("Fetching balance with params:", params.toString());
     const { data } = await api.get<BalanceResponse>("/balance", {
       params,
       paramsSerializer: () => params.toString(),
