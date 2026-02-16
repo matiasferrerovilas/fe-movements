@@ -8,6 +8,7 @@ import { useCallback, useRef, useState } from "react";
 import FiltrosResumenMensual from "../components/balance/FiltrosResumenMensual";
 import BalanceGrupoGastado from "../components/balance/BalanceGrupoGastado";
 import { RoleEnum } from "../enums/RoleEnum";
+import dayjs from "dayjs";
 const { Title, Text } = Typography;
 
 export const Route = createFileRoute("/balance")({
@@ -21,12 +22,14 @@ export type BalanceFilters = {
   currency: CurrencyEnum;
   year?: number;
   month?: number;
+  dates?: [Date, Date];
 };
 
 function RouteComponent() {
   const [filters, setFilters] = useState<BalanceFilters>({
     currency: CurrencyEnum.ARS,
     account: [1],
+    dates: [dayjs().startOf("month").toDate(), dayjs().endOf("month").toDate()],
   });
   const filtersRef = useRef(filters);
 
@@ -37,8 +40,8 @@ function RouteComponent() {
 
   return (
     <div style={{ paddingTop: 30 }}>
-      <Row>
-        <Col xs={24} sm={12} lg={8}>
+      <Row align="middle" style={{ marginBottom: 30 }}>
+        <Col flex="auto">
           <Space orientation="vertical" size={1}>
             <Title level={2} style={{ margin: 0 }}>
               Balance Financiero
@@ -48,11 +51,15 @@ function RouteComponent() {
             </Text>
           </Space>
         </Col>
+
+        <Col>
+          <FiltrosResumenMensual
+            initialFilters={filters}
+            onFiltersChange={handleFiltersChange}
+          />
+        </Col>
       </Row>
-      <FiltrosResumenMensual
-        initialFilters={filters}
-        onFiltersChange={handleFiltersChange}
-      />
+
       <ResumenMensual filters={filters} />
 
       <Row gutter={16} justify="center">

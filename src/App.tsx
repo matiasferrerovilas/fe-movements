@@ -9,6 +9,7 @@ import type { RootRouteContext } from "./routes/__root";
 import { useContext } from "react";
 import { AuthContext } from "./apis/auth/AuthContext";
 import { useKeycloak } from "@react-keycloak/web";
+import esES from "antd/locale/es_ES";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -50,6 +51,7 @@ function RouterWithAuth() {
 function App() {
   return (
     <ConfigProvider
+      locale={esES}
       theme={{
         token: {
           fontFamily: "Inter",
