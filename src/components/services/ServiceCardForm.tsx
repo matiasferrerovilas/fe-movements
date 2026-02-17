@@ -40,13 +40,20 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const [form] = Form.useForm<CreateServiceForm>();
   const [isPaid, setIsPaid] = useState(false);
   const { data: accounts = [] } = useGroups();
-  const {data: currencies = []} = useCurrency();
+  const { data: currencies = [] } = useCurrency();
 
   const onFinish = (values: CreateServiceForm) => {
     const service: ServiceToAdd = {
       description: values.description,
       amount: values.amount,
-      lastPayment: values.lastPayment ? values.lastPayment.toDate() : null,
+      lastPayment: values.lastPayment
+        ? dayjs(values.lastPayment)
+            .hour(12)
+            .minute(0)
+            .second(0)
+            .millisecond(0)
+            .toDate()
+        : null,
       isPaid: values.isPaid,
       currency: { symbol: values.currency },
       accountId: values.accountId,
