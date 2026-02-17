@@ -13,7 +13,7 @@ export const useBalance = (filters: BalanceFilters) =>
   useQuery({
     queryKey: [BALANCE_QUERY_KEY, filters],
     queryFn: () => getBalance(filters),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 1000,
   });
 
 export const useBalanceSeparateByCategory = (filters: BalanceFilters) =>

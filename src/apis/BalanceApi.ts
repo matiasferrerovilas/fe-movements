@@ -22,8 +22,6 @@ export async function getBalance(filters: BalanceFilters) {
       params.set("startDate", formatDate(filters.dates[0]));
       params.set("endDate", formatDate(filters.dates[1]));
     }
-
-    console.log("Fetching balance with params:", params.toString());
     const { data } = await api.get<BalanceResponse>("/balance", {
       params,
       paramsSerializer: () => params.toString(),
