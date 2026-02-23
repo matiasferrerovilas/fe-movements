@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
-import { Card, Col, Row, Tag, Typography } from "antd";
+import { Card, Col, Pagination, Row, Tag, Typography } from "antd";
 import DeleteTwoTone from "@ant-design/icons/DeleteTwoTone";
-import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
 import type { Movement } from "../../../models/Movement";
 import type { MovementFilters } from "../../../routes/movement";
 import { useMovement } from "../../../apis/hooks/useMovement";
@@ -34,7 +33,7 @@ interface FormattedMovement extends Movement {
 }
 
 export default function MovementTable({ filters }: MovementTableProps) {
-  const { page, nextPage, prevPage, canGoPrev } = usePagination();
+  const { page, goToPage } = usePagination();
   useMovementSubscription();
 
   const uploadMutation = useMutation({
@@ -49,10 +48,8 @@ export default function MovementTable({ filters }: MovementTableProps) {
     },
   });
 
-  const {
-    data: movements = { content: [], totalElements: 0, totalPages: 0 },
-    isFetching,
-  } = useMovement(filters, page, DEFAULT_PAGE_SIZE);
+  const { data: movements = { content: [], totalElements: 0, totalPages: 0 } } =
+    useMovement(filters, page, DEFAULT_PAGE_SIZE);
 
   const handleDelete = (id: number) => {
     uploadMutation.mutate(id);
@@ -75,27 +72,6 @@ export default function MovementTable({ filters }: MovementTableProps) {
     });
   }, [movements.content]);
 
-  const loadingConfig = useMemo(
-    () => ({
-      spinning: isFetching,
-      indicator: <LoadingOutlined style={{ fontSize: 80 }} spin />,
-    }),
-    [isFetching],
-  );
-
-  const paginationConfig = useMemo(
-    () => ({
-      showSizeChanger: false,
-      defaultPageSize: DEFAULT_PAGE_SIZE,
-      total: movements?.totalElements || 0,
-      current: page + 1,
-      onChange: (p: number) => {
-        if (p - 1 > page) nextPage();
-        else if (p - 1 < page && canGoPrev) prevPage();
-      },
-    }),
-    [movements?.totalElements, page, nextPage, prevPage, canGoPrev],
-  );
   const COL_PADDING = "8px 16px";
 
   return (
@@ -184,6 +160,17 @@ export default function MovementTable({ filters }: MovementTableProps) {
           </Card>
         ))}
       </div>
+      <Row justify="end" style={{ marginTop: 16 }}>
+        <Pagination
+          showSizeChanger={false}
+          defaultPageSize={DEFAULT_PAGE_SIZE}
+          total={movements?.totalElements || 0}
+          current={page + 1}
+          onChange={(p: number) => {
+            goToPage(p - 1);
+          }}
+        />
+      </Row>
     </>
   );
 }
