@@ -1,18 +1,21 @@
 import React, { useMemo } from "react";
-import { Table, Tag, Typography } from "antd";
+import { Card, Col, Row, Tag, Typography } from "antd";
 import DeleteTwoTone from "@ant-design/icons/DeleteTwoTone";
 import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
 import type { Movement } from "../../../models/Movement";
 import type { MovementFilters } from "../../../routes/movement";
 import { useMovement } from "../../../apis/hooks/useMovement";
 import { usePagination } from "../../../apis/hooks/usePagination";
-import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import { TypeEnum } from "../../../enums/TypeExpense";
 import { useMovementSubscription } from "../../../apis/websocket/useMovementSubscription";
 import { useMutation } from "@tanstack/react-query";
 import { deleteExpenseApi } from "../../../apis/movement/ExpenseApi";
 import { BankEnumHelper } from "../../../enums/BankEnum";
+import { EditTwoTone } from "@ant-design/icons";
+import CategoryCircleTable from "./CategoryCircleTable";
+import { capitalizeFirst } from "../../utils/stringFunctions";
+import { ColorEnum } from "../../../enums/ColorEnum";
 const { Text } = Typography;
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -20,11 +23,6 @@ const DEFAULT_PAGE_SIZE = 25;
 interface MovementTableProps {
   filters: MovementFilters;
 }
-
-const capitalizeFirst = (text?: string): string => {
-  if (!text) return "-";
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-};
 
 interface FormattedMovement extends Movement {
   formattedDate: string;
@@ -35,7 +33,7 @@ interface FormattedMovement extends Movement {
   amountSign: string;
 }
 
-function MovementTable({ filters }: MovementTableProps) {
+export default function MovementTable({ filters }: MovementTableProps) {
   const { page, nextPage, prevPage, canGoPrev } = usePagination();
   useMovementSubscription();
 
@@ -77,96 +75,6 @@ function MovementTable({ filters }: MovementTableProps) {
     });
   }, [movements.content]);
 
-  const columns = useMemo<ColumnsType<FormattedMovement>>(
-    () => [
-      {
-        title: "Fecha",
-        dataIndex: "formattedDate",
-        key: "date",
-        align: "left",
-      },
-      {
-        title: "Banco",
-        dataIndex: "bank",
-        key: "bank",
-        align: "left",
-        render: (_: unknown, record) =>
-          capitalizeFirst(BankEnumHelper.fromString(record.bank)),
-      },
-      {
-        title: "Grupo",
-        dataIndex: "account",
-        key: "account",
-        align: "left",
-        render: (_: unknown, record) => capitalizeFirst(record.account.name),
-      },
-      {
-        title: "Cargado Por",
-        dataIndex: "owner",
-        key: "owner",
-        align: "center",
-        render: (_: unknown, record) => capitalizeFirst(record.owner.email),
-      },
-      {
-        title: "Tarjeta",
-        dataIndex: "typeName",
-        key: "type",
-        render: (_: unknown, record) => capitalizeFirst(record.type),
-      },
-      {
-        title: "Categoria",
-        dataIndex: "category",
-        key: "category",
-        align: "center",
-        render: (_: unknown, record) =>
-          record.category
-            ? capitalizeFirst(record.category.description)
-            : capitalizeFirst("Sin Categoria Asignada"),
-      },
-
-      {
-        title: "Descripcion",
-        dataIndex: "description",
-        key: "description",
-        align: "left",
-      },
-      {
-        title: "Cuotas",
-        dataIndex: "installments",
-        key: "cuotasTotales",
-        align: "right",
-      },
-      {
-        title: "Dinero",
-        dataIndex: "amount",
-        key: "amount",
-        render: (_: unknown, record) => (
-          <Text style={{ color: record.amountColor }}>
-            {`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}
-          </Text>
-        ),
-      },
-      {
-        title: "Moneda",
-        dataIndex: "currencySymbol",
-        key: "currency",
-        align: "center",
-      },
-      {
-        title: "",
-        key: "actions",
-        align: "right",
-        render: (_, record) => (
-          <DeleteTwoTone
-            style={{ fontSize: 20, cursor: "pointer" }}
-            onClick={() => handleDelete(record.id)}
-          />
-        ),
-      },
-    ],
-    [],
-  );
-
   const loadingConfig = useMemo(
     () => ({
       spinning: isFetching,
@@ -188,22 +96,94 @@ function MovementTable({ filters }: MovementTableProps) {
     }),
     [movements?.totalElements, page, nextPage, prevPage, canGoPrev],
   );
+  const COL_PADDING = "8px 16px";
 
   return (
-    <Table<FormattedMovement>
-      rowKey="id"
-      dataSource={formattedMovements}
-      columns={columns}
-      size="small"
-      scroll={{ x: 1400 }}
-      bordered
-      loading={loadingConfig}
-      pagination={paginationConfig}
-      rowClassName={(record) =>
-        record.type === TypeEnum.INGRESO ? "row-ingreso" : ""
-      }
-    />
+    <>
+      <Card
+        hoverable
+        style={{
+          marginBottom: 8,
+          borderRadius: 6,
+          transition: "all 0.3s",
+          marginLeft: 0,
+          marginRight: 0,
+        }}
+        styles={{ body: { padding: COL_PADDING } }}
+      >
+        <Row justify="center" align="middle">
+          <Col span={2}>Fecha</Col>
+          <Col span={2}>Categoria</Col>
+          <Col span={2}>Banco</Col>
+          <Col span={2}>Grupo</Col>
+          <Col span={2}>Cargado por</Col>
+          <Col span={2}>Tipo</Col>
+          <Col span={4}>Descripcion</Col>
+          <Col span={1}>Cuotas</Col>
+          <Col span={2}>Monto</Col>
+          <Col span={1}>Moneda</Col>
+          <Col span={3} style={{ textAlign: "right" }}>
+            Acciones
+          </Col>
+        </Row>
+      </Card>
+      <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
+        {formattedMovements?.map((record) => (
+          <Card
+            key={record.id}
+            hoverable
+            style={{
+              marginBottom: 8,
+              backgroundColor:
+                record.type === TypeEnum.DEBITO ||
+                record.type === TypeEnum.CREDITO
+                  ? ColorEnum.ROJO_FALTA_PAGO
+                  : ColorEnum.VERDE_PAGADO,
+              borderColor:
+                record.type === TypeEnum.DEBITO ||
+                record.type === TypeEnum.CREDITO
+                  ? ColorEnum.ROJO_FALTA_PAGO_BORDE
+                  : ColorEnum.VERDE_PAGADO_BORDE,
+              borderRadius: 6,
+              transition: "all 0.3s",
+              marginLeft: 0,
+              marginRight: 0,
+            }}
+            styles={{ body: { padding: COL_PADDING } }}
+          >
+            <Row justify="center" align="middle">
+              <Col span={2}>{dayjs(record.date).format("DD/MM/YYYY")}</Col>
+              <Col span={2}>
+                <CategoryCircleTable category={record.category?.description} />
+              </Col>
+              <Col span={2}>
+                {capitalizeFirst(BankEnumHelper.fromString(record.bank))}
+              </Col>
+              <Col span={2}>{capitalizeFirst(record.account.name)}</Col>
+              <Col span={2}>{capitalizeFirst(record.owner.email)}</Col>
+              <Col span={2}>{capitalizeFirst(record.type)}</Col>
+              <Col span={4}>{record.description}</Col>
+              <Col span={1}>{record.installments}</Col>
+              <Col span={2}>
+                <Text>
+                  {`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}
+                </Text>
+              </Col>
+              <Col span={1}>{record.currency?.symbol ?? "-"}</Col>
+              <Col span={3} style={{ textAlign: "right" }}>
+                <DeleteTwoTone
+                  style={{ fontSize: 20, cursor: "pointer", marginRight: 8 }}
+                  onClick={() => handleDelete(record.id)}
+                />
+                <EditTwoTone
+                  style={{ fontSize: 20, cursor: "pointer" }}
+                  onClick={() => handleDelete(record.id)}
+                />
+              </Col>
+            </Row>
+          </Card>
+        ))}
+      </div>
+    </>
   );
 }
-
-export default React.memo(MovementTable);
