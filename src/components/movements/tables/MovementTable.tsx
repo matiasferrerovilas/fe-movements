@@ -1,6 +1,14 @@
 import React, { useMemo } from "react";
-import { Card, Col, Pagination, Row, Tag, Typography } from "antd";
-import DeleteTwoTone from "@ant-design/icons/DeleteTwoTone";
+import {
+  Button,
+  Card,
+  Col,
+  Pagination,
+  Popconfirm,
+  Row,
+  Tag,
+  Typography,
+} from "antd";
 import type { Movement } from "../../../models/Movement";
 import type { MovementFilters } from "../../../routes/movement";
 import { useMovement } from "../../../apis/hooks/useMovement";
@@ -11,10 +19,11 @@ import { useMovementSubscription } from "../../../apis/websocket/useMovementSubs
 import { useMutation } from "@tanstack/react-query";
 import { deleteExpenseApi } from "../../../apis/movement/ExpenseApi";
 import { BankEnumHelper } from "../../../enums/BankEnum";
-import { EditTwoTone } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import CategoryCircleTable from "./CategoryCircleTable";
 import { capitalizeFirst } from "../../utils/stringFunctions";
 import { ColorEnum } from "../../../enums/ColorEnum";
+import EditMovementModal from "../../modals/movements/EditMovementModal";
 const { Text } = Typography;
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -77,7 +86,6 @@ export default function MovementTable({ filters }: MovementTableProps) {
   return (
     <>
       <Card
-        hoverable
         style={{
           marginBottom: 8,
           borderRadius: 6,
@@ -147,14 +155,34 @@ export default function MovementTable({ filters }: MovementTableProps) {
               </Col>
               <Col span={1}>{record.currency?.symbol ?? "-"}</Col>
               <Col span={3} style={{ textAlign: "right" }}>
-                <DeleteTwoTone
-                  style={{ fontSize: 20, cursor: "pointer", marginRight: 8 }}
-                  onClick={() => handleDelete(record.id)}
-                />
-                <EditTwoTone
-                  style={{ fontSize: 20, cursor: "pointer" }}
-                  onClick={() => handleDelete(record.id)}
-                />
+                <Popconfirm
+                  title="¿Estás seguro de que quieres eliminar el movimiento?"
+                  onConfirm={() => handleDelete(record.id)}
+                  okText="Sí"
+                  cancelText="No"
+                  placement="topRight"
+                >
+                  <Button
+                    type="text"
+                    icon={
+                      <DeleteOutlined
+                        style={{
+                          fontSize: 20,
+                          cursor: "pointer",
+                          marginRight: 8,
+                        }}
+                      />
+                    }
+                    style={{
+                      color: "gray",
+                      borderRadius: 8,
+                      padding: "4px 8px",
+                      fontSize: 18,
+                    }}
+                    title="Eliminar el movimiento"
+                  />
+                </Popconfirm>
+                <EditMovementModal movement={record} />
               </Col>
             </Row>
           </Card>

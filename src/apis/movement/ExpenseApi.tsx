@@ -24,7 +24,7 @@ export async function getExpenseApi({
   };
 
   Object.keys(params).forEach(
-    (key) => params[key] == null && delete params[key]
+    (key) => params[key] == null && delete params[key],
   );
 
   return api
@@ -65,6 +65,24 @@ export async function uploadExpenseApi(form: UploadPayload) {
   });
 
   return response.data;
+}
+
+export async function updateExpense(id: number, movement: CreateMovementForm) {
+  const payload = {
+    ...movement,
+    category: movement.category
+      ? { description: movement.category }
+      : undefined,
+    date: movement.date.toISOString().split("T")[0],
+  };
+  console.log("Updating movement with payload:", payload);
+  return api
+    .patch(`/expenses/${id}`, payload)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error updating movement:", error);
+      throw error;
+    });
 }
 
 export async function uploadExpense(movement: CreateMovementForm) {
