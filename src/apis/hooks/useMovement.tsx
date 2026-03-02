@@ -7,9 +7,9 @@ const MOVEMENT_QUERY_KEY = "movement-history" as const;
 export const useMovement = (
   filters: MovementFilters,
   page: number,
-  defaultPage: number
+  defaultPage: number,
 ) =>
   useQuery({
-    queryKey: [MOVEMENT_QUERY_KEY, page, filters],
-    queryFn: () => getExpenseApi({ page, size: defaultPage, filters })
+    queryKey: [MOVEMENT_QUERY_KEY, page, defaultPage, filters],
+    queryFn: () => getExpenseApi({ page, size: defaultPage, filters }),
   });

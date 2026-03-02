@@ -42,7 +42,7 @@ interface FormattedMovement extends Movement {
 }
 
 export default function MovementTable({ filters }: MovementTableProps) {
-  const { page, goToPage } = usePagination();
+  const { page, goToPage, pageSize, changePageSize } = usePagination();
   useMovementSubscription();
 
   const uploadMutation = useMutation({
@@ -58,7 +58,7 @@ export default function MovementTable({ filters }: MovementTableProps) {
   });
 
   const { data: movements = { content: [], totalElements: 0, totalPages: 0 } } =
-    useMovement(filters, page, DEFAULT_PAGE_SIZE);
+    useMovement(filters, page, pageSize);
 
   const handleDelete = (id: number) => {
     uploadMutation.mutate(id);
@@ -190,13 +190,13 @@ export default function MovementTable({ filters }: MovementTableProps) {
       </div>
       <Row justify="end" style={{ marginTop: 16 }}>
         <Pagination
-          showSizeChanger={false}
-          defaultPageSize={DEFAULT_PAGE_SIZE}
+          showSizeChanger
+          pageSizeOptions={[10, 25, 50, 100]}
+          pageSize={pageSize}
           total={movements?.totalElements || 0}
           current={page + 1}
-          onChange={(p: number) => {
-            goToPage(p - 1);
-          }}
+          onChange={(p: number) => goToPage(p - 1)}
+          onShowSizeChange={(_current, size) => changePageSize(size)}
         />
       </Row>
     </>

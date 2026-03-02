@@ -1,7 +1,13 @@
 import { useCallback, useState } from "react";
 
-export function usePagination(initialPage: number = 0) {
+const DEFAULT_PAGE_SIZE = 25;
+
+export function usePagination(
+  initialPage: number = 0,
+  initialPageSize: number = DEFAULT_PAGE_SIZE,
+) {
   const [page, setPage] = useState(initialPage);
+  const [pageSize, setPageSize] = useState(initialPageSize);
 
   const nextPage = useCallback(() => {
     setPage((p) => p + 1);
@@ -17,12 +23,19 @@ export function usePagination(initialPage: number = 0) {
     setPage(initialPage);
   }, [initialPage]);
 
+  const changePageSize = useCallback((size: number) => {
+    setPageSize(size);
+    setPage(0);
+  }, []);
+
   return {
     page,
+    pageSize,
     nextPage,
     prevPage,
     resetPage,
     goToPage,
+    changePageSize,
     canGoPrev: page > 0,
   };
 }
