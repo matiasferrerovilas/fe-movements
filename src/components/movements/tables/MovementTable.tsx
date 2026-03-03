@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   Col,
+  Grid,
   Pagination,
   Popconfirm,
   Row,
@@ -24,7 +25,9 @@ import CategoryCircleTable from "./CategoryCircleTable";
 import { capitalizeFirst } from "../../utils/stringFunctions";
 import { ColorEnum } from "../../../enums/ColorEnum";
 import EditMovementModal from "../../modals/movements/EditMovementModal";
+
 const { Text } = Typography;
+const { useBreakpoint } = Grid;
 
 interface MovementTableProps {
   filters: MovementFilters;
@@ -41,30 +44,25 @@ interface FormattedMovement extends Movement {
 
 export default function MovementTable({ filters }: MovementTableProps) {
   const { page, goToPage, pageSize, changePageSize } = usePagination();
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
+
   useMovementSubscription();
 
   const uploadMutation = useMutation({
-    mutationFn: (id: number) => {
-      return deleteExpenseApi(id);
-    },
-    onSuccess: () => {
-      console.debug("✅ Movimiento eliminado correctamente");
-    },
-    onError: (err) => {
-      console.error("❌ Error eliminado el movimiento", err);
-    },
+    mutationFn: (id: number) => deleteExpenseApi(id),
+    onSuccess: () => console.debug("✅ Movimiento eliminado correctamente"),
+    onError: (err) => console.error("❌ Error eliminado el movimiento", err),
   });
 
   const { data: movements = { content: [], totalElements: 0, totalPages: 0 } } =
     useMovement(filters, page, pageSize);
 
-  const handleDelete = (id: number) => {
-    uploadMutation.mutate(id);
-  };
+  const handleDelete = (id: number) => uploadMutation.mutate(id);
+
   const formattedMovements = useMemo<FormattedMovement[]>(() => {
     return movements.content.map((m) => {
       const isDebit = m.type === TypeEnum.DEBITO || m.type === TypeEnum.CREDITO;
-
       return {
         ...m,
         formattedDate: dayjs(m.date).format("DD/MM/YYYY"),
@@ -81,111 +79,182 @@ export default function MovementTable({ filters }: MovementTableProps) {
 
   const COL_PADDING = "8px 16px";
 
+  const getCardStyle = (record: FormattedMovement) => ({
+    marginBottom: 8,
+    backgroundColor:
+      record.type === TypeEnum.DEBITO || record.type === TypeEnum.CREDITO
+        ? ColorEnum.ROJO_FALTA_PAGO
+        : ColorEnum.VERDE_PAGADO,
+    borderColor:
+      record.type === TypeEnum.DEBITO || record.type === TypeEnum.CREDITO
+        ? ColorEnum.ROJO_FALTA_PAGO_BORDE
+        : ColorEnum.VERDE_PAGADO_BORDE,
+    borderRadius: 6,
+    transition: "all 0.3s",
+    marginLeft: 0,
+    marginRight: 0,
+  });
+
+  const ActionButtons = ({ record }: { record: FormattedMovement }) => (
+    <>
+      <Popconfirm
+        title="¿Estás seguro de que quieres eliminar el movimiento?"
+        onConfirm={() => handleDelete(record.id)}
+        okText="Sí"
+        cancelText="No"
+        placement="topRight"
+      >
+        <Button
+          type="text"
+          icon={
+            <DeleteOutlined
+              style={{ fontSize: 20, cursor: "pointer", marginRight: 8 }}
+            />
+          }
+          style={{
+            color: "gray",
+            borderRadius: 8,
+            padding: "4px 8px",
+            fontSize: 18,
+          }}
+          title="Eliminar el movimiento"
+        />
+      </Popconfirm>
+      <EditMovementModal movement={record} />
+    </>
+  );
+
   return (
     <>
-      <Card
-        style={{
-          marginBottom: 8,
-          borderRadius: 6,
-          transition: "all 0.3s",
-          marginLeft: 0,
-          marginRight: 0,
-        }}
-        styles={{ body: { padding: COL_PADDING } }}
-      >
-        <Row justify="center" align="middle">
-          <Col span={2}>Fecha</Col>
-          <Col span={2}>Categoria</Col>
-          <Col span={2}>Banco</Col>
-          <Col span={2}>Grupo</Col>
-          <Col span={2}>Cargado por</Col>
-          <Col span={2}>Tipo</Col>
-          <Col span={4}>Descripcion</Col>
-          <Col span={1}>Cuotas</Col>
-          <Col span={2}>Monto</Col>
-          <Col span={1}>Moneda</Col>
-          <Col span={3} style={{ textAlign: "right" }}>
-            Acciones
-          </Col>
-        </Row>
-      </Card>
-      <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
-        {formattedMovements?.map((record) => (
+      {!isMobile && (
+        <>
           <Card
-            key={record.id}
-            hoverable
-            style={{
-              marginBottom: 8,
-              backgroundColor:
-                record.type === TypeEnum.DEBITO ||
-                record.type === TypeEnum.CREDITO
-                  ? ColorEnum.ROJO_FALTA_PAGO
-                  : ColorEnum.VERDE_PAGADO,
-              borderColor:
-                record.type === TypeEnum.DEBITO ||
-                record.type === TypeEnum.CREDITO
-                  ? ColorEnum.ROJO_FALTA_PAGO_BORDE
-                  : ColorEnum.VERDE_PAGADO_BORDE,
-              borderRadius: 6,
-              transition: "all 0.3s",
-              marginLeft: 0,
-              marginRight: 0,
-            }}
+            style={{ marginBottom: 8, borderRadius: 6 }}
             styles={{ body: { padding: COL_PADDING } }}
           >
             <Row justify="center" align="middle">
-              <Col span={2}>{dayjs(record.date).format("DD/MM/YYYY")}</Col>
-              <Col span={2}>
-                <CategoryCircleTable category={record.category?.description} />
-              </Col>
-              <Col span={2}>
-                {capitalizeFirst(BankEnumHelper.fromString(record.bank))}
-              </Col>
-              <Col span={2}>{capitalizeFirst(record.account.name)}</Col>
-              <Col span={2}>{capitalizeFirst(record.owner.email)}</Col>
-              <Col span={2}>{capitalizeFirst(record.type)}</Col>
-              <Col span={4}>{record.description}</Col>
-              <Col span={1}>{record.installments}</Col>
-              <Col span={2}>
-                <Text>
-                  {`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}
-                </Text>
-              </Col>
-              <Col span={1}>{record.currency?.symbol ?? "-"}</Col>
+              <Col span={2}>Fecha</Col>
+              <Col span={2}>Categoria</Col>
+              <Col span={2}>Banco</Col>
+              <Col span={2}>Grupo</Col>
+              <Col span={2}>Cargado por</Col>
+              <Col span={2}>Tipo</Col>
+              <Col span={4}>Descripcion</Col>
+              <Col span={1}>Cuotas</Col>
+              <Col span={2}>Monto</Col>
+              <Col span={1}>Moneda</Col>
               <Col span={3} style={{ textAlign: "right" }}>
-                <Popconfirm
-                  title="¿Estás seguro de que quieres eliminar el movimiento?"
-                  onConfirm={() => handleDelete(record.id)}
-                  okText="Sí"
-                  cancelText="No"
-                  placement="topRight"
-                >
-                  <Button
-                    type="text"
-                    icon={
-                      <DeleteOutlined
-                        style={{
-                          fontSize: 20,
-                          cursor: "pointer",
-                          marginRight: 8,
-                        }}
-                      />
-                    }
-                    style={{
-                      color: "gray",
-                      borderRadius: 8,
-                      padding: "4px 8px",
-                      fontSize: 18,
-                    }}
-                    title="Eliminar el movimiento"
-                  />
-                </Popconfirm>
-                <EditMovementModal movement={record} />
+                Acciones
               </Col>
             </Row>
           </Card>
-        ))}
-      </div>
+
+          <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
+            {formattedMovements.map((record) => (
+              <Card
+                key={record.id}
+                hoverable
+                style={getCardStyle(record)}
+                styles={{ body: { padding: COL_PADDING } }}
+              >
+                <Row justify="center" align="middle">
+                  <Col span={2}>{dayjs(record.date).format("DD/MM/YYYY")}</Col>
+                  <Col span={2}>
+                    <CategoryCircleTable
+                      category={record.category?.description}
+                    />
+                  </Col>
+                  <Col span={2}>
+                    {capitalizeFirst(BankEnumHelper.fromString(record.bank))}
+                  </Col>
+                  <Col span={2}>{capitalizeFirst(record.account.name)}</Col>
+                  <Col span={2}>{capitalizeFirst(record.owner.email)}</Col>
+                  <Col span={2}>{capitalizeFirst(record.type)}</Col>
+                  <Col span={4}>{record.description}</Col>
+                  <Col span={1}>{record.installments}</Col>
+                  <Col span={2}>
+                    <Text>{`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}</Text>
+                  </Col>
+                  <Col span={1}>{record.currency?.symbol ?? "-"}</Col>
+                  <Col span={3} style={{ textAlign: "right" }}>
+                    <ActionButtons record={record} />
+                  </Col>
+                </Row>
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
+
+      {isMobile && (
+        <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
+          {formattedMovements.map((record) => (
+            <Card
+              key={record.id}
+              hoverable
+              style={getCardStyle(record)}
+              styles={{ body: { padding: "10px 12px" } }}
+            >
+              <Row
+                justify="space-between"
+                align="middle"
+                style={{ marginBottom: 6 }}
+              >
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  {record.formattedDate}
+                </Text>
+                <Text
+                  strong
+                  style={{ color: record.amountColor, fontSize: 16 }}
+                >
+                  {`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}
+                  <Tag color="blue" style={{ marginLeft: 6, fontSize: 11 }}>
+                    {record.currency?.symbol ?? "-"}
+                  </Tag>
+                </Text>
+              </Row>
+
+              {record.description && (
+                <Text style={{ display: "block", marginBottom: 4 }}>
+                  {record.description}
+                </Text>
+              )}
+
+              <Row gutter={[8, 4]} style={{ marginBottom: 4 }}>
+                <Col>
+                  <CategoryCircleTable
+                    category={record.category?.description}
+                  />
+                </Col>
+                <Col>
+                  <Tag>
+                    {capitalizeFirst(BankEnumHelper.fromString(record.bank))}
+                  </Tag>
+                </Col>
+                <Col>
+                  <Tag>{capitalizeFirst(record.type)}</Tag>
+                </Col>
+                {record.cuotasTotales != null && record.cuotasTotales > 0 && (
+                  <Col>
+                    <Tag color="orange">{record.installments} cuotas</Tag>
+                  </Col>
+                )}
+              </Row>
+
+              <Row justify="space-between" align="middle">
+                <Text type="secondary" style={{ fontSize: 11 }}>
+                  {capitalizeFirst(record.account.name)} ·{" "}
+                  {capitalizeFirst(record.owner.email)}
+                </Text>
+                <div>
+                  <ActionButtons record={record} />
+                </div>
+              </Row>
+            </Card>
+          ))}
+        </div>
+      )}
+
       <Row justify="end" style={{ marginTop: 16 }}>
         <Pagination
           showSizeChanger
