@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SettingIngreso } from "../components/settings/SettingIngreso";
-import { Col, Row } from "antd";
+import { Col, Row, Tabs } from "antd";
 import { SettingGroups } from "../components/settings/SettingGroups";
 import { SettingInviteGroups } from "../components/settings/SettingInviteGroups";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
 import SettingAccount from "../components/settings/SettingAccount";
+import { UserOutlined, TeamOutlined } from "@ant-design/icons";
 
 export const Route = createFileRoute("/settings")({
   beforeLoad: protectedRouteGuard({
@@ -14,29 +15,55 @@ export const Route = createFileRoute("/settings")({
   component: RouteComponent,
 });
 
+const TABS = [
+  {
+    key: "cuenta",
+    label: "Cuenta",
+    icon: <UserOutlined />,
+    children: (
+      <>
+        <SettingIngreso />
+        <div style={{ marginTop: 16 }}>
+          <SettingAccount />
+        </div>
+      </>
+    ),
+  },
+  {
+    key: "grupos",
+    label: "Grupos",
+    icon: <TeamOutlined />,
+    children: (
+      <>
+        <SettingInviteGroups />
+        <div style={{ marginTop: 16 }}>
+          <SettingGroups />
+        </div>
+      </>
+    ),
+  },
+];
+
 function RouteComponent() {
   return (
-    <Col style={{ paddingTop: 30 }}>
-      <Row gutter={[16, 16]} justify="center" style={{ paddingBottom: 10 }}>
-        <Col xs={24} md={20} lg={16}>
-          <SettingIngreso />
-        </Col>
-      </Row>
-      <Row gutter={[16, 16]} justify="center">
-        <Col xs={24} md={20} lg={16}>
-          <SettingInviteGroups />
-        </Col>
-      </Row>
-      <Row gutter={24} justify="center">
-        <Col xs={24} md={20} lg={16}>
-          <SettingGroups />
-        </Col>
-      </Row>
-      <Row gutter={24} justify="center">
-        <Col xs={24} md={20} lg={16}>
-          <SettingAccount />
-        </Col>
-      </Row>
-    </Col>
+    <Row justify="center" style={{ paddingTop: 30 }}>
+      <Col xs={24} md={20} lg={16}>
+        <Tabs
+          tabPlacement="start"
+          defaultActiveKey="cuenta"
+          size="middle"
+          items={TABS.map(({ key, label, icon, children }) => ({
+            key,
+            label: (
+              <span>
+                {icon}
+                {label}
+              </span>
+            ),
+            children: <div style={{ paddingTop: 16 }}>{children}</div>,
+          }))}
+        />
+      </Col>
+    </Row>
   );
 }
