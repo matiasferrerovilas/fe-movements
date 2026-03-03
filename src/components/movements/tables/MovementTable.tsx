@@ -26,8 +26,6 @@ import { ColorEnum } from "../../../enums/ColorEnum";
 import EditMovementModal from "../../modals/movements/EditMovementModal";
 const { Text } = Typography;
 
-const DEFAULT_PAGE_SIZE = 25;
-
 interface MovementTableProps {
   filters: MovementFilters;
 }
