@@ -27,19 +27,19 @@ export default function FiltrosMovement({
 }: Props) {
   const { data: categories = [] } = useCategory();
   const [filters, setFilters] = useState<MovementFilters>(initialFilters);
-  const {data: currencies = []} = useCurrency();
+  const { data: currencies = [] } = useCurrency();
 
   const handleChange = useCallback(
     (
       key: keyof MovementFilters,
-      value: string | boolean | null | BankEnum[] | TypeEnum[] | string[]
+      value: string | boolean | null | BankEnum[] | TypeEnum[] | string[],
     ) => setFilters((prev) => ({ ...prev, [key]: value })),
-    []
+    [],
   );
 
   const handleLiveChange = useCallback(
     (value: boolean) => setFilters((prev) => ({ ...prev, isLive: value })),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function FiltrosMovement({
         value: false,
       },
     ],
-    []
+    [],
   );
   const Modal = useMemo(() => <AddEditMovementModal />, [AddEditMovementModal]);
 
@@ -127,9 +127,9 @@ export default function FiltrosMovement({
               placeholder="Todos los Bancos"
               allowClear
             >
-              {Object.values(BankEnum).map((bank) => (
-                <Option key={bank} value={bank}>
-                  {capitalize(bank)}
+              {Object.entries(BankEnum).map(([key, label]) => (
+                <Option key={key} value={key}>
+                  {capitalize(label)}
                 </Option>
               ))}
             </Select>
