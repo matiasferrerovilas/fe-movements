@@ -300,7 +300,7 @@ export const ServiceCard = React.memo(function ServiceCard({
                   <Button
                     block
                     icon={<CheckOutlined />}
-                    color="success"
+                    color="blue"
                     variant="outlined"
                     onClick={handleSaveAmount}
                   >
