@@ -1,5 +1,5 @@
 import type {
-  AccountsWithUsersCount,
+  GroupsWithMembers,
   AccountWithMembers,
   ConfirmInvitations,
   CreateGroupForm,
@@ -29,6 +29,15 @@ export async function addGroupApi(group: CreateGroupForm) {
     });
 }
 
+export const setDefaultGroupApi = (accountId: number) =>
+  api
+    .patch(baseUrl + `/${accountId}/default`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error setting default group:", error);
+      throw error;
+    });
+
 export async function addInvitationGroupApi(invitation: CreateInvitationForm) {
   return api
     .post(baseUrl + "/" + invitation.accountId + "/invitations", invitation)
@@ -50,12 +59,12 @@ export async function getAllInvitations() {
 }
 
 export async function acceptRejectGroupInvitationApi(
-  confirmInvitations: ConfirmInvitations
+  confirmInvitations: ConfirmInvitations,
 ) {
   return api
     .patch(
       baseUrl + "/invitations/" + confirmInvitations.id,
-      confirmInvitations
+      confirmInvitations,
     )
     .then((response) => response.data)
     .catch((error) => {
@@ -66,7 +75,7 @@ export async function acceptRejectGroupInvitationApi(
 
 export async function getAllGroupsWithUsers() {
   return api
-    .get<AccountsWithUsersCount[]>(baseUrl + "/count")
+    .get<GroupsWithMembers[]>(baseUrl + "/count")
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error fetching groups count:", error);

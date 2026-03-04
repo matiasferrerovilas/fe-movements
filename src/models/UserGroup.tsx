@@ -16,10 +16,11 @@ export interface AccountMember {
   role: string;
 }
 
-export interface AccountsWithUsersCount {
+export interface GroupsWithMembers {
   accountId: number;
   name: string;
   membersCount: number;
+  isDefault: boolean;
 }
 
 export interface CreateGroupForm {

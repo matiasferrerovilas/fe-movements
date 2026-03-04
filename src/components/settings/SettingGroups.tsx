@@ -15,11 +15,11 @@ import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import SettingGroupCard from "./SettingGroupCard";
 import type {
   CreateGroupForm,
-  AccountsWithUsersCount,
+  GroupsWithMembers,
 } from "../../models/UserGroup";
 import { useMutation } from "@tanstack/react-query";
 import { useGroupsSubscription } from "../../apis/websocket/useGroupsSubscription";
-import { addGroupApi } from "../../apis/GroupApi";
+import { addGroupApi, setDefaultGroupApi } from "../../apis/GroupApi";
 const { Title } = Typography;
 
 export function SettingGroups() {
@@ -34,6 +34,10 @@ export function SettingGroups() {
     onError: (err) => {
       console.error("Error subiendo archivo:", err);
     },
+  });
+  const setDefaultMutation = useMutation({
+    mutationFn: (accountId: number) => setDefaultGroupApi(accountId),
+    onError: (err) => console.error("Error cambiando grupo default:", err),
   });
 
   const onFinish = (values: CreateGroupForm) => {
@@ -116,8 +120,11 @@ export function SettingGroups() {
         </Form>
       </Card>
       <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
-        {groups?.map((group: AccountsWithUsersCount) => (
-          <SettingGroupCard group={group} />
+        {groups?.map((group: GroupsWithMembers) => (
+          <SettingGroupCard
+            group={group}
+            onSetDefault={setDefaultMutation.mutate}
+          />
         ))}
       </Space>
     </Card>
