@@ -9,7 +9,7 @@ interface ExitGroupModalProps {
 }
 export default function ExitGroupModal({ group }: ExitGroupModalProps) {
   const exitGroupMutation = useMutation({
-    mutationFn: () => exitGroupApi(group.groupId),
+    mutationFn: () => exitGroupApi(group.id),
     onError: (err) => {
       console.error("Error saliendo del grupo:", err);
     },

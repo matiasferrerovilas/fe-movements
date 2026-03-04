@@ -35,7 +35,7 @@ export default function InviteUserToGroup({ group }: InviteUserToGroupProps) {
   const handleSubmit = (values: { email: string }) => {
     addInvitationMutation.mutate({
       emails: [values.email],
-      groupId: group.groupId,
+      groupId: group.id,
     });
   };
 
