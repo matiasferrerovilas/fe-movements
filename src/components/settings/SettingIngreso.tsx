@@ -2,13 +2,15 @@ import {
   Button,
   Card,
   Col,
+  Divider,
   Empty,
+  Flex,
   Form,
   InputNumber,
   Popconfirm,
   Row,
   Select,
-  Space,
+  Tag,
   theme,
   Typography,
 } from "antd";
@@ -17,9 +19,9 @@ import { useGroups } from "../../apis/hooks/useGroups";
 import { useIncome } from "../../apis/hooks/useIncome";
 import {
   DeleteOutlined,
+  DollarOutlined,
   PlusOutlined,
   ReloadOutlined,
-  TeamOutlined,
 } from "@ant-design/icons";
 import {
   addIncome,
@@ -29,7 +31,8 @@ import {
 import type { Income, IncomeAddForm } from "../../models/Income";
 import { BankEnum } from "../../enums/BankEnum";
 import { useCurrency } from "../../apis/hooks/useCurrency";
-const { Title } = Typography;
+
+const { Title, Text } = Typography;
 
 export function SettingIngreso() {
   const [form] = Form.useForm<IncomeAddForm>();
@@ -37,7 +40,6 @@ export function SettingIngreso() {
   const { token } = theme.useToken();
   const { data: accountWithMembers = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
-
   const queryClient = useQueryClient();
 
   const createIngresoMutation = useMutation({
@@ -61,61 +63,59 @@ export function SettingIngreso() {
       queryClient.invalidateQueries({ queryKey: ["income-all"] });
     },
   });
+
   const onFinish = (values: IncomeAddForm) => {
     createIngresoMutation.mutate({ income: values });
     form.resetFields();
   };
 
   return (
-    <Card loading={isLoading}>
-      <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} lg={24}>
-          <Space align="baseline">
-            <TeamOutlined style={{ fontSize: 20, color: "#0D59A4" }} />
-            <Title level={5} style={{ margin: 0 }}>
-              Gestionar Ingresos
-            </Title>
-          </Space>
-          <Typography.Paragraph
-            style={{
-              color: token.colorTextSecondary,
-              marginBottom: 8,
-              fontSize: 14,
-              lineHeight: 1.6,
-            }}
-          >
-            Configurá tu ingreso mensual indicando el monto, la moneda y el
-            grupo. Se generará automáticamente un movimiento una vez por mes con
-            estos datos.
-          </Typography.Paragraph>
-        </Col>
-      </Row>
-
-      <Card
-        style={{
-          borderRadius: 12,
-          background: "#e8ebf0",
-          padding: 0,
-          marginBottom: 20,
-        }}
-      >
-        <Title
-          level={5}
+    <Card loading={isLoading} style={{ borderRadius: token.borderRadiusLG }}>
+      {/* Header */}
+      <Flex align="center" gap={12} style={{ marginBottom: 4 }}>
+        <div
           style={{
-            margin: 0,
-            color: "#111827",
+            width: 38,
+            height: 38,
+            borderRadius: token.borderRadius,
+            background: token.colorPrimary,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
           }}
         >
+          <DollarOutlined style={{ color: "#fff", fontSize: 18 }} />
+        </div>
+        <div>
+          <Title level={5} style={{ margin: 0 }}>
+            Gestionar Ingresos
+          </Title>
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            Configurá tu ingreso mensual por grupo. Se genera un movimiento
+            automático cada mes.
+          </Text>
+        </div>
+      </Flex>
+
+      <Divider style={{ margin: "14px 0" }} />
+
+      {/* Form card */}
+      <Card
+        size="small"
+        style={{
+          borderRadius: token.borderRadiusLG,
+          background: token.colorFillAlter,
+          borderColor: token.colorBorderSecondary,
+          marginBottom: token.marginMD,
+        }}
+      >
+        <Text strong style={{ display: "block", marginBottom: token.marginSM }}>
           Agregar Ingreso
-        </Title>
-        <Form
-          form={form}
-          layout="vertical"
-          style={{ width: "100%" }}
-          onFinish={onFinish}
-        >
-          <Row gutter={16}>
-            <Col xs={24} sm={12} lg={12}>
+        </Text>
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Row gutter={[12, 0]}>
+            <Col xs={24} sm={12}>
               <Form.Item
                 name="bank"
                 label="Banco"
@@ -130,7 +130,7 @@ export function SettingIngreso() {
                 </Select>
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} lg={12}>
+            <Col xs={24} sm={12}>
               <Form.Item
                 name="group"
                 label="Grupo"
@@ -145,16 +145,13 @@ export function SettingIngreso() {
                 </Select>
               </Form.Item>
             </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col xs={24} sm={12} lg={12}>
+            <Col xs={24} sm={12}>
               <Form.Item
                 name="currency"
                 label="Moneda"
                 rules={[{ required: true, message: "Ingrese Moneda" }]}
               >
-                <Select placeholder="Ingrese Moneda" style={{ width: "100%" }}>
+                <Select placeholder="Seleccionar moneda">
                   {currencies.map((currency) => (
                     <Select.Option key={currency.id} value={currency.symbol}>
                       {currency.symbol}
@@ -163,105 +160,117 @@ export function SettingIngreso() {
                 </Select>
               </Form.Item>
             </Col>
-
-            <Col xs={24} sm={12} lg={12}>
+            <Col xs={24} sm={12}>
               <Form.Item
-                label="Monto"
                 name="amount"
+                label="Monto"
                 rules={[{ required: true, message: "Ingresar Monto" }]}
               >
                 <InputNumber
                   precision={2}
                   style={{ width: "100%" }}
                   controls={false}
+                  placeholder="0.00"
                 />
               </Form.Item>
             </Col>
           </Row>
           <Button
             icon={<PlusOutlined />}
+            type="primary"
             block
             htmlType="submit"
             loading={createIngresoMutation.isPending}
-            style={{ borderRadius: 8, height: 40 }}
           >
             Agregar ingreso
           </Button>
         </Form>
-        {ingresos?.length === 0 ? (
-          <Empty
-            description="Todavía no configuraste ingresos"
-            style={{ marginTop: 24 }}
-          />
-        ) : (
-          <Space
-            orientation="vertical"
-            size={12}
-            style={{ width: "100%", marginTop: 10 }}
-          >
-            {ingresos?.map((ingreso: Income) => (
-              <Card
-                key={ingreso.id}
-                size="small"
-                style={{
-                  borderRadius: 12,
-                  background: "#fafafa",
-                }}
-              >
-                <Row justify="space-between" align="middle">
-                  <Col>
-                    <Typography.Text strong style={{ fontSize: 14 }}>
-                      {ingreso.accountName}
-                    </Typography.Text>
-
-                    <br />
-
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {ingreso.bank}
-                    </Typography.Text>
-                  </Col>
-
-                  <Space align="center" size={4}>
-                    <Typography.Text strong style={{ fontSize: 14 }}>
-                      {ingreso.amount.toFixed(2)} {ingreso.currency?.symbol}
-                    </Typography.Text>
-
-                    <Popconfirm
-                      title="Ingresar movimiento manualmente"
-                      description="Este ingreso sera agregado como movimiento."
-                      onConfirm={() =>
-                        addIngresoMutation.mutate({ id: ingreso.id })
-                      }
-                    >
-                      <Button
-                        danger
-                        type="text"
-                        icon={<ReloadOutlined />}
-                        style={{ padding: 2 }}
-                      />
-                    </Popconfirm>
-
-                    <Popconfirm
-                      title="Eliminar ingreso"
-                      description="Este ingreso dejará de generar movimientos mensuales."
-                      onConfirm={() =>
-                        deleteIngresoMutation.mutate({ id: ingreso.id })
-                      }
-                    >
-                      <Button
-                        danger
-                        type="text"
-                        icon={<DeleteOutlined />}
-                        style={{ padding: 2 }}
-                      />
-                    </Popconfirm>
-                  </Space>
-                </Row>
-              </Card>
-            ))}
-          </Space>
-        )}
       </Card>
+
+      {/* Lista de ingresos */}
+      {!ingresos || ingresos.length === 0 ? (
+        <Empty description="Todavía no configuraste ingresos" />
+      ) : (
+        <Flex vertical gap={10}>
+          {ingresos.map((ingreso: Income) => (
+            <Card
+              key={ingreso.id}
+              size="small"
+              style={{
+                borderRadius: token.borderRadiusLG,
+                borderColor: token.colorBorderSecondary,
+              }}
+            >
+              <Flex justify="space-between" align="center">
+                {/* Left */}
+                <Flex align="center" gap={10}>
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: token.borderRadius,
+                      background: token.colorFillSecondary,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <DollarOutlined
+                      style={{ color: token.colorPrimary, fontSize: 16 }}
+                    />
+                  </div>
+                  <div>
+                    <Text strong style={{ fontSize: 14, display: "block" }}>
+                      {ingreso.accountName}
+                    </Text>
+                    <Tag color="blue" style={{ fontSize: 11, marginTop: 2 }}>
+                      {ingreso.bank}
+                    </Tag>
+                  </div>
+                </Flex>
+
+                {/* Right */}
+                <Flex align="center" gap={8}>
+                  <Text
+                    strong
+                    style={{ fontSize: 15, color: token.colorSuccess }}
+                  >
+                    + {ingreso.amount.toFixed(2)}{" "}
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {ingreso.currency?.symbol}
+                    </Text>
+                  </Text>
+
+                  <Popconfirm
+                    title="Ingresar movimiento manualmente"
+                    description="Este ingreso será agregado como movimiento."
+                    onConfirm={() =>
+                      addIngresoMutation.mutate({ id: ingreso.id })
+                    }
+                  >
+                    <Button
+                      type="text"
+                      icon={<ReloadOutlined />}
+                      style={{ color: token.colorWarning }}
+                    />
+                  </Popconfirm>
+
+                  <Popconfirm
+                    title="Eliminar ingreso"
+                    description="Este ingreso dejará de generar movimientos mensuales."
+                    onConfirm={() =>
+                      deleteIngresoMutation.mutate({ id: ingreso.id })
+                    }
+                  >
+                    <Button danger type="text" icon={<DeleteOutlined />} />
+                  </Popconfirm>
+                </Flex>
+              </Flex>
+            </Card>
+          ))}
+        </Flex>
+      )}
     </Card>
   );
 }
