@@ -1,6 +1,6 @@
 import Card from "antd/es/card/Card";
 import type { ConfirmInvitations, Invitations } from "../../models/UserGroup";
-import { Button, Col, Row, Space, Tag, Typography } from "antd";
+import { Button, Col, Row, Typography } from "antd";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
