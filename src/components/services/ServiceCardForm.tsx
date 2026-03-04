@@ -1,29 +1,32 @@
 import { useState } from "react";
 import {
-  Card,
-  Space,
-  Typography,
   Button,
+  Card,
+  Col,
+  DatePicker,
+  Divider,
+  Flex,
   Form,
   Input,
   InputNumber,
-  Select,
-  DatePicker,
-  Switch,
   Row,
-  Col,
+  Select,
+  Switch,
+  theme,
+  Typography,
 } from "antd";
 import ApartmentOutlined from "@ant-design/icons/ApartmentOutlined";
 import CheckCircleOutlined from "@ant-design/icons/CheckCircleOutlined";
 import CloseCircleOutlined from "@ant-design/icons/CloseCircleOutlined";
+import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import dayjs from "dayjs";
 import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import type { ServiceToAdd } from "../../apis/ServiceApi";
 import { useGroups } from "../../apis/hooks/useGroups";
-import { ColorEnum } from "../../enums/ColorEnum";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 
-const { Title } = Typography;
+const { Text } = Typography;
+
 interface CreateServiceForm {
   description: string;
   amount: number;
@@ -32,6 +35,7 @@ interface CreateServiceForm {
   lastPayment?: dayjs.Dayjs;
   groupId: number;
 }
+
 interface ServiceCardFormProps extends React.HTMLAttributes<HTMLElement> {
   handleAddService: (service: ServiceToAdd) => Promise<void> | void;
 }
@@ -41,6 +45,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const [isPaid, setIsPaid] = useState(false);
   const { data: accounts = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
+  const { token } = theme.useToken();
 
   const onFinish = (values: CreateServiceForm) => {
     const service: ServiceToAdd = {
@@ -63,70 +68,63 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
     setIsPaid(false);
   };
 
-  const icon = isPaid ? (
-    <CheckCircleOutlined style={{ color: "#52c41a", fontSize: 20 }} />
-  ) : (
-    <CloseCircleOutlined style={{ color: "#ff4d4f", fontSize: 20 }} />
-  );
-  const buttonStyle = isPaid
-    ? {
-        backgroundColor: ColorEnum.VERDE_PAGADO,
-        borderColor: ColorEnum.VERDE_PAGADO_BORDE,
-        borderRadius: 8,
-        borderWidth: 2,
-      }
-    : {
-        backgroundColor: ColorEnum.ROJO_FALTA_PAGO,
-        borderColor: ColorEnum.ROJO_FALTA_PAGO_BORDE,
-        borderRadius: 8,
-        borderWidth: 2,
-      };
-
   return (
     <Card
-      variant="outlined"
       style={{
-        borderRadius: 16,
-        borderWidth: 3,
-        borderColor: isPaid ? "#b7eb8f" : "#ffa39e",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+        borderRadius: token.borderRadiusLG,
+        borderColor: isPaid ? token.colorSuccessBorder : token.colorErrorBorder,
+        borderWidth: 2,
       }}
-      styles={{
-        body: { padding: 20 },
-      }}
+      styles={{ body: { padding: 20 } }}
     >
-      <Space
-        orientation="horizontal"
-        style={{ width: "100%", justifyContent: "space-between" }}
-      >
-        <Space align="center">
+      {/* Header */}
+      <Flex align="center" justify="space-between" style={{ marginBottom: 4 }}>
+        <Flex align="center" gap={10}>
           <div
             style={{
-              backgroundColor: isPaid ? "#f6ffed" : "#fff1f0",
-              borderRadius: "50%",
-              width: 36,
-              height: 36,
+              width: 38,
+              height: 38,
+              borderRadius: token.borderRadius,
+              background: isPaid ? token.colorSuccessBg : token.colorErrorBg,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              flexShrink: 0,
             }}
           >
             <ApartmentOutlined
-              style={{ color: isPaid ? "#52c41a" : "#ff4d4f" }}
+              style={{
+                fontSize: 18,
+                color: isPaid ? token.colorSuccess : token.colorError,
+              }}
             />
           </div>
-          <Title level={5} style={{ margin: 0 }}>
-            Nuevo Servicio
-          </Title>
-        </Space>
-        {icon}
-      </Space>
+          <div>
+            <Text strong style={{ fontSize: 15 }}>
+              Nuevo Servicio
+            </Text>
+            <Text type="secondary" style={{ fontSize: 12, display: "block" }}>
+              {isPaid ? "Marcado como pagado" : "Pendiente de pago"}
+            </Text>
+          </div>
+        </Flex>
+        {isPaid ? (
+          <CheckCircleOutlined
+            style={{ color: token.colorSuccess, fontSize: 22 }}
+          />
+        ) : (
+          <CloseCircleOutlined
+            style={{ color: token.colorError, fontSize: 22 }}
+          />
+        )}
+      </Flex>
+
+      <Divider style={{ margin: "14px 0" }} />
 
       <Form
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        style={{ marginTop: 16 }}
         initialValues={
           accounts && {
             groupId: accounts[0]?.id,
@@ -135,8 +133,8 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
           }
         }
       >
-        <Row gutter={8}>
-          <Col span={12}>
+        <Row gutter={[12, 0]}>
+          <Col xs={24} sm={12}>
             <Form.Item
               name="description"
               label="Descripción"
@@ -145,7 +143,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
               <Input placeholder="Ej: Internet, Luz, Netflix..." />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col xs={24} sm={12}>
             <Form.Item
               name="groupId"
               label="Grupo"
@@ -160,10 +158,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
               </Select>
             </Form.Item>
           </Col>
-        </Row>
-
-        <Row gutter={8}>
-          <Col span={12}>
+          <Col xs={24} sm={12}>
             <Form.Item
               name="amount"
               label="Monto"
@@ -173,17 +168,17 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
                 precision={2}
                 style={{ width: "100%" }}
                 controls={false}
-                placeholder="Monto del servicio"
+                placeholder="0.00"
               />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col xs={24} sm={12}>
             <Form.Item
               name="currency"
               label="Moneda"
               rules={[{ required: true, message: "Ingrese Moneda" }]}
             >
-              <Select placeholder="Ingrese Moneda" style={{ width: "100%" }}>
+              <Select placeholder="Seleccionar moneda">
                 {currencies.map((currency) => (
                   <Select.Option key={currency.id} value={currency.symbol}>
                     {currency.symbol}
@@ -192,25 +187,17 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
               </Select>
             </Form.Item>
           </Col>
-        </Row>
-
-        <Row gutter={8}>
-          <Col span={12}>
-            <Form.Item
-              name="isPaid"
-              label="¿Está pagado?"
-              valuePropName="checked"
-            >
+          <Col xs={24} sm={isPaid ? 12 : 24}>
+            <Form.Item name="isPaid" label="Estado" valuePropName="checked">
               <Switch
                 checkedChildren="Pagado"
                 unCheckedChildren="Pendiente"
-                style={{ width: "100%" }}
                 onChange={(checked) => setIsPaid(checked)}
               />
             </Form.Item>
           </Col>
-          <Col span={12}>
-            {isPaid && (
+          {isPaid && (
+            <Col xs={24} sm={12}>
               <Form.Item
                 name="lastPayment"
                 label="Fecha de pago"
@@ -224,11 +211,22 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
                   disabledDate={(d) => d.isAfter(dayjs())}
                 />
               </Form.Item>
-            )}
-          </Col>
+            </Col>
+          )}
         </Row>
 
-        <Button htmlType="submit" block style={buttonStyle}>
+        <Button
+          htmlType="submit"
+          block
+          variant="solid"
+          icon={<PlusOutlined />}
+          style={{
+            background: isPaid ? token.colorSuccess : token.colorError,
+            borderColor: isPaid ? token.colorSuccess : token.colorError,
+            color: "#fff",
+            transition: "background 0.4s ease, border-color 0.4s ease",
+          }}
+        >
           Agregar Servicio
         </Button>
       </Form>
