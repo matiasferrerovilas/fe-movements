@@ -17,7 +17,7 @@ export interface AccountMember {
 }
 
 export interface GroupsWithMembers {
-  accountId: number;
+  id: number;
   name: string;
   membersCount: number;
   isDefault: boolean;
@@ -29,7 +29,7 @@ export interface CreateGroupForm {
 
 export interface CreateInvitationForm {
   emails: string[];
-  accountId: number;
+  groupId: number;
 }
 
 export interface Invitations {

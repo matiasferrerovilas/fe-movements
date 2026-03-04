@@ -51,12 +51,12 @@ export async function getExpenseApi({
 
 export async function uploadExpenseApi(form: UploadPayload) {
   const formData = new FormData();
-  if (form.file == null || form.bank == null || form.accountId == null) {
+  if (form.file == null || form.bank == null || form.groupId == null) {
     return;
   }
   formData.append("file", form.file);
   formData.append("bank", form.bank);
-  formData.append("accountId", form.accountId.toString());
+  formData.append("groupId", form.groupId.toString());
 
   const response = await api.post("/expenses/import-file", formData, {
     headers: {

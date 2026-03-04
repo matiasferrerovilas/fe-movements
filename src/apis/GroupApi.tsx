@@ -29,9 +29,9 @@ export async function addGroupApi(group: CreateGroupForm) {
     });
 }
 
-export const setDefaultGroupApi = (accountId: number) =>
+export const setDefaultGroupApi = (id: number) =>
   api
-    .patch(baseUrl + `/${accountId}/default`)
+    .patch(baseUrl + `/${id}/default`)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error setting default group:", error);
@@ -40,7 +40,7 @@ export const setDefaultGroupApi = (accountId: number) =>
 
 export async function addInvitationGroupApi(invitation: CreateInvitationForm) {
   return api
-    .post(baseUrl + "/" + invitation.accountId + "/invitations", invitation)
+    .post(baseUrl + "/" + invitation.groupId + "/invitations", invitation)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error adding a group:", error);

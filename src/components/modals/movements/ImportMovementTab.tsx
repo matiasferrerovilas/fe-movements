@@ -11,13 +11,13 @@ const { Text } = Typography;
 export interface UploadForm {
   fileList: UploadFile<File>[] | null;
   bank: string | null;
-  accountId: number | null;
+  groupId: number | null;
 }
 
 export interface UploadPayload {
   file: File | null;
   bank: string | null;
-  accountId: number | null;
+  groupId: number | null;
 }
 
 interface ImportMovementTabProps {
@@ -49,7 +49,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         const payload: UploadForm = {
           fileList: values.fileList,
           bank: values.bank,
-          accountId: values.accountId,
+          groupId: values.groupId,
         };
 
         uploadMutation.mutate({
@@ -69,7 +69,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
       <Form
         form={form}
         layout="vertical"
-        initialValues={accounts && { accountId: accounts[0]?.id }}
+        initialValues={accounts && { groupId: accounts[0]?.id }}
       >
         <div style={{ marginBottom: 10 }}>
           <Text type="secondary">
@@ -92,7 +92,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
           <Select placeholder="Seleccionar banco">
             {Object.values(BankEnum)
               .filter(
-                (bank) => bank == BankEnum.GALICIA || bank == BankEnum.BBVA
+                (bank) => bank == BankEnum.GALICIA || bank == BankEnum.BBVA,
               )
               .map((bank) => (
                 <Select.Option key={bank} value={bank}>
@@ -103,7 +103,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         </Form.Item>
 
         <Form.Item
-          name="accountId"
+          name="groupId"
           label="Grupo"
           rules={[{ required: true, message: "Seleccione un grupo" }]}
         >
@@ -129,7 +129,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         </Form.Item>
       </Form>
     );
-  }
+  },
 );
 
 export default ImportMovementTab;

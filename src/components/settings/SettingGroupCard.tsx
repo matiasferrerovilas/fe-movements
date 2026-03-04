@@ -9,7 +9,7 @@ const { Text } = Typography;
 
 interface SettingGroupCardProps {
   group: GroupsWithMembers;
-  onSetDefault: (accountId: number) => void;
+  onSetDefault: (groupId: number) => void;
   isSettingDefault?: boolean;
 }
 
@@ -136,7 +136,7 @@ export default function SettingGroupCard({
                 type="text"
                 className="star-btn"
                 disabled={group.isDefault || isSettingDefault}
-                onClick={() => onSetDefault(group.accountId)}
+                onClick={() => onSetDefault(group.id)}
                 icon={
                   group.isDefault ? (
                     <StarFilled style={{ color: "#f5a623", fontSize: 18 }} />

@@ -30,7 +30,7 @@ interface CreateServiceForm {
   currency: string;
   isPaid: boolean;
   lastPayment?: dayjs.Dayjs;
-  accountId: number;
+  groupId: number;
 }
 interface ServiceCardFormProps extends React.HTMLAttributes<HTMLElement> {
   handleAddService: (service: ServiceToAdd) => Promise<void> | void;
@@ -56,7 +56,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
         : null,
       isPaid: values.isPaid,
       currency: { symbol: values.currency },
-      accountId: values.accountId,
+      groupId: values.groupId,
     };
     handleAddService(service);
     form.resetFields();
@@ -129,7 +129,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
         style={{ marginTop: 16 }}
         initialValues={
           accounts && {
-            accountId: accounts[0]?.id,
+            groupId: accounts[0]?.id,
             isPaid: false,
             currency: CurrencyEnum.ARS,
           }
@@ -147,7 +147,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
           </Col>
           <Col span={12}>
             <Form.Item
-              name="accountId"
+              name="groupId"
               label="Grupo"
               rules={[{ required: true, message: "Seleccione un grupo" }]}
             >

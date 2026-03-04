@@ -44,7 +44,7 @@ const AddMovementExpenseTab = forwardRef<
       type: movementToEdit.type,
       cuotaActual: movementToEdit.cuotaActual ?? undefined,
       cuotasTotales: movementToEdit.cuotasTotales ?? undefined,
-      accountId: movementToEdit.account?.id,
+      groupId: movementToEdit.account?.id,
       category: movementToEdit.category?.description,
       currency: movementToEdit.currency?.symbol,
       date: dayjs(movementToEdit.date),
@@ -94,7 +94,7 @@ const AddMovementExpenseTab = forwardRef<
       initialValues={
         accounts && {
           date: dayjs(),
-          accountId: accounts[0]?.id,
+          groupId: accounts[0]?.id,
           currency: CurrencyEnum.ARS,
         }
       }
@@ -175,7 +175,7 @@ const AddMovementExpenseTab = forwardRef<
         </Row>
       )}
       <Form.Item
-        name="accountId"
+        name="groupId"
         label="Grupo"
         rules={[{ required: true, message: "Seleccione un grupo" }]}
       >

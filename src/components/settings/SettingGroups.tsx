@@ -36,7 +36,7 @@ export function SettingGroups() {
     },
   });
   const setDefaultMutation = useMutation({
-    mutationFn: (accountId: number) => setDefaultGroupApi(accountId),
+    mutationFn: (id: number) => setDefaultGroupApi(id),
     onError: (err) => console.error("Error cambiando grupo default:", err),
   });
 
