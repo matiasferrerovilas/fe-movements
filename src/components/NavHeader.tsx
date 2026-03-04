@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
 import {
   Avatar,
-  Card,
-  Grid,
-  Typography,
-  Space,
-  Menu,
+  Button,
+  Drawer,
   Dropdown,
+  Flex,
+  Grid,
+  Menu,
   type MenuProps,
+  Typography,
 } from "antd";
 import BookOutlined from "@ant-design/icons/BookOutlined";
 import LineChartOutlined from "@ant-design/icons/LineChartOutlined";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
+import MenuOutlined from "@ant-design/icons/MenuOutlined";
 import PieChartOutlined from "@ant-design/icons/PieChartOutlined";
 import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import { useKeycloak } from "@react-keycloak/web";
 import { useRouter } from "@tanstack/react-router";
-import { ColorEnum } from "../enums/ColorEnum";
 import { Header } from "antd/es/layout/layout";
 import { useUserRoles } from "../apis/hooks/useUserRole";
 import { RoleEnum } from "../enums/RoleEnum";
@@ -33,7 +34,7 @@ type SideBarItem = {
   roles?: string[];
 };
 
-const items: SideBarItem[] = [
+const NAV_ITEMS: SideBarItem[] = [
   {
     key: "balance",
     icon: <PieChartOutlined />,
@@ -58,7 +59,7 @@ const items: SideBarItem[] = [
   {
     key: "settings",
     icon: <SettingOutlined />,
-    label: "Configuración",
+    label: "Settings",
     path: "/settings",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
@@ -75,131 +76,151 @@ export default function NavHeader() {
   const router = useRouter();
   const currentPath = router.state.location.pathname;
   const { hasAnyRole } = useUserRoles();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const visibleItems = items.filter((item) => {
-    if (!item.roles || item.roles.length === 0) return true;
-    return hasAnyRole(...item.roles);
-  });
+  const visibleItems = NAV_ITEMS.filter(
+    (item) => !item.roles?.length || hasAnyRole(...(item.roles ?? [])),
+  );
 
   const getActiveKey = () =>
     visibleItems.find((i) => i.path === currentPath)?.key || "balance";
   const [active, setActive] = useState(getActiveKey());
-
   useEffect(() => setActive(getActiveKey()), [currentPath]);
 
   const handleClick = (item: SideBarItem) => {
     setActive(item.key);
+    setDrawerOpen(false);
     router.navigate({ to: item.path });
   };
+
   const dropdownItems: MenuProps["items"] = [
     {
       key: "logout",
       label: "Cerrar sesión",
       icon: <LogoutOutlined />,
+      danger: true,
       onClick: () => keycloak.logout(),
     },
   ];
-  return (
-    <Header
-      style={{
-        position: "sticky",
-        top: 0,
-        width: "100%",
-        zIndex: 100,
-        background: "white",
-        padding: "12px 16px",
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-        display: "flex",
-        alignItems: "center",
-        gap: 16,
-      }}
+
+  const UserAvatar = (
+    <Dropdown
+      menu={{ items: dropdownItems }}
+      placement="bottomRight"
+      styles={{ root: { marginTop: 8 } }}
+      trigger={["click"]}
     >
-      <Menu
-        theme="light"
-        mode="horizontal"
-        selectedKeys={[active]}
-        style={{
-          flex: 1,
-          minWidth: 0,
-          background: "transparent",
-          display: "flex",
-          justifyContent: "center",
-          border: "none",
-        }}
-        items={visibleItems.map((item) => ({
-          key: item.key,
-          label: (
-            <Card
-              hoverable
-              onClick={() => handleClick(item)}
-              styles={{
-                body: {
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  padding: "10px 12px",
-                  height: "100%",
-                  color:
-                    active === item.key
-                      ? ColorEnum.TEXTO_ACTIVO_AZUL
-                      : "rgba(0,0,0,0.65)",
-                  fontWeight: active === item.key ? 600 : 500,
-                },
-              }}
-              style={{
-                width: 140,
-                height: 48,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-                background:
-                  active === item.key
-                    ? ColorEnum.FONDO_BOTON_ACTIVO
-                    : "transparent",
-
-                border: "none",
-                boxShadow: "none",
-
-                borderTopLeftRadius: active === item.key ? 10 : 0,
-                borderTopRightRadius: active === item.key ? 10 : 0,
-              }}
-            >
-              <span style={{ fontSize: 18 }}>{item.icon}</span>
-              <span style={{ fontSize: 14 }}>{item.label}</span>
-            </Card>
-          ),
-        }))}
-      />
-
-      <Dropdown
-        menu={{ items: dropdownItems }}
-        placement="bottomRight"
-        trigger={["click"]}
-      >
-        <Space align="center" size={12} style={{ cursor: "pointer" }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: isMobile ? "center" : "flex-end",
-            }}
-          >
-            <Text strong>{username}</Text>
-            <Text type="secondary" style={{ fontSize: 14 }}>
+      <Flex align="center" gap={10} style={{ cursor: "pointer" }}>
+        {!isMobile && (
+          <Flex vertical align="flex-end">
+            <Text strong style={{ fontSize: 13, lineHeight: 1.3 }}>
+              {username}
+            </Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>
               {email}
             </Text>
-          </div>
+          </Flex>
+        )}
+        <Avatar
+          size={36}
+          icon={<UserOutlined />}
+          style={{ backgroundColor: "#4f9cf7", flexShrink: 0 }}
+        />
+      </Flex>
+    </Dropdown>
+  );
 
-          <Avatar
-            size={40}
-            icon={<UserOutlined />}
-            style={{ backgroundColor: "#686f79", color: "#fff" }}
-          />
-        </Space>
-      </Dropdown>
-    </Header>
+  return (
+    <>
+      <Header
+        style={{
+          position: "sticky",
+          top: 0,
+          width: "100%",
+          zIndex: 100,
+          background: "#fff",
+          padding: "0 16px",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          height: 56,
+        }}
+      >
+        {/* Mobile: hamburger + avatar */}
+        {isMobile ? (
+          <>
+            <Button
+              type="text"
+              icon={<MenuOutlined style={{ fontSize: 20 }} />}
+              onClick={() => setDrawerOpen(true)}
+            />
+            {UserAvatar}
+          </>
+        ) : (
+          <>
+            {/* Desktop: nav centrado + avatar */}
+            <div style={{ flex: 1 }} />
+            <Menu
+              mode="horizontal"
+              selectedKeys={[active]}
+              style={{
+                border: "none",
+                background: "transparent",
+                flex: "0 0 auto",
+              }}
+              items={visibleItems.map((item) => ({
+                key: item.key,
+                icon: item.icon,
+                label: item.label,
+                onClick: () => handleClick(item),
+              }))}
+            />
+            <Flex style={{ flex: 1 }} justify="flex-end">
+              {UserAvatar}
+            </Flex>
+          </>
+        )}
+      </Header>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        title={
+          <Flex vertical>
+            <Text strong>{username}</Text>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              {email}
+            </Text>
+          </Flex>
+        }
+        placement="left"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        size={240}
+        styles={{ body: { padding: 0 } }}
+      >
+        <Menu
+          mode="inline"
+          selectedKeys={[active]}
+          style={{ border: "none", paddingTop: 8 }}
+          items={visibleItems.map((item) => ({
+            key: item.key,
+            icon: item.icon,
+            label: item.label,
+            onClick: () => handleClick(item),
+          }))}
+        />
+        <div style={{ padding: "16px 16px 0" }}>
+          <Button
+            block
+            danger
+            icon={<LogoutOutlined />}
+            onClick={() => keycloak.logout()}
+          >
+            Cerrar sesión
+          </Button>
+        </div>
+      </Drawer>
+    </>
   );
 }
