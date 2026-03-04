@@ -1,19 +1,21 @@
 import {
-  Card,
-  Space,
-  Typography,
-  Tag,
   Button,
-  Tooltip,
-  Row,
+  Card,
   Col,
+  DatePicker,
+  Divider,
+  Flex,
+  Form,
+  Input,
   InputNumber,
   message,
   Popconfirm,
-  Form,
-  Input,
-  DatePicker,
+  Row,
   Select,
+  Tag,
+  theme,
+  Tooltip,
+  Typography,
 } from "antd";
 import CheckCircleOutlined from "@ant-design/icons/CheckCircleOutlined";
 import CloseCircleOutlined from "@ant-design/icons/CloseCircleOutlined";
@@ -26,7 +28,6 @@ import type { Service, ServiceToUpdate } from "../../models/Service";
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { deleteServiceApi } from "../../apis/ServiceApi";
-import { ColorEnum } from "../../enums/ColorEnum";
 import dayjs from "dayjs";
 import { useGroups } from "../../apis/hooks/useGroups";
 
@@ -34,10 +35,9 @@ const { Text, Title } = Typography;
 
 interface ServiceCardProps extends React.HTMLAttributes<HTMLElement> {
   service: Service;
-
   handlePayServiceMutation: (service: Service) => Promise<void> | void;
   handleUpdateServiceMutation: (
-    serviceToUpdate: ServiceToUpdate
+    serviceToUpdate: ServiceToUpdate,
   ) => Promise<void> | void;
 }
 
@@ -47,37 +47,25 @@ interface ServiceFormUpdate {
   group: string;
   description: string;
 }
+
 export const ServiceCard = React.memo(function ServiceCard({
   service,
   handlePayServiceMutation,
   handleUpdateServiceMutation,
 }: ServiceCardProps) {
-  const status = service.isPaid ? "Pagado" : "Pendiente";
-
-  const color = service.isPaid ? "#52c41a" : "#ff4d4f";
-  const bgColor = service.isPaid ? "#f6ffed" : "#fff1f0";
   const [isEditing, setIsEditing] = useState(false);
-
   const [form] = Form.useForm<ServiceFormUpdate>();
   const { data: userGroups = [] } = useGroups();
+  const { token } = theme.useToken();
 
-  const icon = service.isPaid ? (
-    <CheckCircleOutlined />
-  ) : (
-    <CloseCircleOutlined />
-  );
+  const isPaid = service.isPaid;
+  const statusColor = isPaid ? token.colorSuccess : token.colorError;
+  const statusBg = isPaid ? token.colorSuccessBg : token.colorErrorBg;
+  const statusBorder = isPaid
+    ? token.colorSuccessBorder
+    : token.colorErrorBorder;
+
   const handleSaveAmount = () => {
-    /*if (newAmount <= 0) {
-      message.warning("El monto debe ser mayor que 0");
-      return;
-    }
-    const serviceToUpdate: ServiceToUpdate = {
-      id: service.id,
-      changes: {
-        amount: newAmount,
-      },
-    };
-    handleUpdateServiceMutation(serviceToUpdate);*/
     form
       .validateFields()
       .then((values) => {
@@ -85,8 +73,7 @@ export const ServiceCard = React.memo(function ServiceCard({
           message.warning("El monto debe ser mayor que 0");
           return;
         }
-
-        const serviceToUpdate: ServiceToUpdate = {
+        handleUpdateServiceMutation({
           id: service.id,
           changes: {
             amount: values.amount,
@@ -94,14 +81,11 @@ export const ServiceCard = React.memo(function ServiceCard({
             lastPayment: values.lastPayment,
             group: values.group,
           },
-        };
-        handleUpdateServiceMutation(serviceToUpdate);
+        });
         setIsEditing(false);
         message.success("Servicio actualizado");
       })
       .catch(() => {});
-    setIsEditing(false);
-    message.success("Monto actualizado");
   };
 
   const handlePay = () => {
@@ -116,30 +100,19 @@ export const ServiceCard = React.memo(function ServiceCard({
 
   const deleteServiceMutation = useMutation({
     mutationFn: () => deleteServiceApi(service),
-    onError: (err) => {
-      console.error("Error eliminando el servicio:", err);
-    },
-    onSuccess: () => {
-      console.debug("✅ Has eliminado el servicio correctamente");
-    },
+    onError: (err) => console.error("Error eliminando el servicio:", err),
+    onSuccess: () => console.debug("✅ Servicio eliminado correctamente"),
   });
+
   return (
     <Card
-      variant="outlined"
       style={{
+        borderRadius: token.borderRadiusLG,
+        borderColor: statusBorder,
         borderWidth: 2,
-        borderRadius: 16,
-        borderColor: service.isPaid
-          ? ColorEnum.VERDE_PAGADO_BORDE
-          : ColorEnum.ROJO_FALTA_PAGO_BORDE,
-        background: service.isPaid
-          ? ColorEnum.VERDE_PAGADO
-          : ColorEnum.ROJO_FALTA_PAGO,
-        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+        background: statusBg,
       }}
-      styles={{
-        body: { padding: 20 },
-      }}
+      styles={{ body: { padding: 16 } }}
     >
       <Form
         form={form}
@@ -153,29 +126,29 @@ export const ServiceCard = React.memo(function ServiceCard({
             : dayjs(),
         }}
       >
-        <Space
-          orientation="horizontal"
-          style={{ width: "100%", justifyContent: "space-between" }}
-        >
-          <Space align="center">
+        {/* Header */}
+        <Flex align="center" justify="space-between" gap={8}>
+          <Flex align="center" gap={10} style={{ minWidth: 0, flex: 1 }}>
             <div
               style={{
-                backgroundColor: bgColor,
-                color,
-                borderRadius: "50%",
-                width: 36,
-                height: 36,
+                width: 38,
+                height: 38,
+                borderRadius: token.borderRadius,
+                background: isPaid
+                  ? token.colorSuccessBgHover
+                  : token.colorErrorBgHover,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                flexShrink: 0,
               }}
             >
-              <ApartmentOutlined />
+              <ApartmentOutlined style={{ color: statusColor, fontSize: 18 }} />
             </div>
             {isEditing ? (
               <Form.Item
                 name="description"
-                style={{ margin: 0 }}
+                style={{ margin: 0, flex: 1 }}
                 rules={[
                   { required: true, message: "La descripción es obligatoria" },
                 ]}
@@ -183,210 +156,180 @@ export const ServiceCard = React.memo(function ServiceCard({
                 <Input />
               </Form.Item>
             ) : (
-              <Title level={5} style={{ margin: 0 }}>
+              <Title
+                level={5}
+                style={{
+                  margin: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
                 {service.description}
               </Title>
             )}
-          </Space>
-
+          </Flex>
           <Tag
-            icon={icon}
-            color={service.isPaid ? "success" : "error"}
-            style={{
-              borderRadius: 16,
-              fontWeight: 500,
-            }}
+            icon={isPaid ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
+            color={isPaid ? "success" : "error"}
+            style={{ borderRadius: 16, fontWeight: 600, flexShrink: 0 }}
           >
-            {status}
+            {isPaid ? "Pagado" : "Pendiente"}
           </Tag>
-        </Space>
+        </Flex>
 
-        <Col style={{ marginTop: 16 }}>
-          <Text type="secondary" style={{ fontSize: 13 }}>
-            Monto
-          </Text>
-          <Row>
-            <Col flex="auto">
-              {isEditing ? (
-                <Form.Item
-                  name="amount"
-                  style={{ margin: 0 }}
-                  rules={[
-                    {
-                      required: true,
-                      message: "El monto es obligatorio",
-                    },
-                  ]}
-                >
-                  <InputNumber
-                    min={0}
-                    precision={2}
-                    controls={false}
-                    style={{ width: "100%" }}
-                  />
-                </Form.Item>
-              ) : (
-                <Title level={3} style={{ margin: 0 }}>
-                  {service.amount.toLocaleString("es-AR", {
-                    minimumFractionDigits: 2,
-                  })}{" "}
+        <Divider style={{ margin: "12px 0" }} />
+
+        {/* Monto */}
+        <Flex align="center" justify="space-between" gap={8}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
+              Monto
+            </Text>
+            {isEditing ? (
+              <Form.Item
+                name="amount"
+                style={{ margin: 0 }}
+                rules={[{ required: true, message: "El monto es obligatorio" }]}
+              >
+                <InputNumber
+                  min={0}
+                  precision={2}
+                  controls={false}
+                  style={{ width: "100%" }}
+                />
+              </Form.Item>
+            ) : (
+              <Title level={3} style={{ margin: 0, color: statusColor }}>
+                {service.amount.toLocaleString("es-AR", {
+                  minimumFractionDigits: 2,
+                })}{" "}
+                <Text style={{ fontSize: 14, color: token.colorTextSecondary }}>
                   {service.currency?.symbol}
-                </Title>
-              )}
-            </Col>
-            {!isEditing && (
-              <Col>
-                <Popconfirm
-                  title="¿Estás seguro de que quieres eliminar el servicio?"
-                  onConfirm={() => deleteServiceMutation.mutate()}
-                  okText="Sí"
-                  cancelText="No"
-                  placement="topRight"
-                >
+                </Text>
+              </Title>
+            )}
+          </div>
+
+          {/* Action buttons */}
+          {!isEditing && (
+            <Flex gap={4}>
+              {!isPaid && (
+                <Tooltip title="Editar">
                   <Button
                     type="text"
-                    icon={
-                      <DeleteOutlined
-                        style={{ fontSize: 22, cursor: "pointer" }}
-                      />
-                    }
-                    style={{
-                      color: "gray",
-                      borderRadius: 8,
-                      padding: "4px 8px",
-                      fontSize: 18,
-                    }}
-                    title="Eliminar el servicio"
+                    icon={<EditOutlined style={{ fontSize: 18 }} />}
+                    onClick={() => setIsEditing(true)}
                   />
-                </Popconfirm>
-              </Col>
-            )}
-            {!service.isPaid && (
-              <Col>
-                {!isEditing && (
-                  <Tooltip title="Editar monto">
-                    <Button
-                      type="text"
-                      size="middle"
-                      icon={<EditOutlined style={{ fontSize: 20 }} />}
-                      style={{
-                        color: "gray",
-                        borderRadius: 8,
-                        padding: "0 8px",
-                      }}
-                      onClick={() => setIsEditing(true)}
-                    />
-                  </Tooltip>
-                )}
-              </Col>
-            )}
-          </Row>
-        </Col>
-        <Col style={{ marginTop: 4 }}>
-          {isEditing ? (
-            <>
-              <Text type="secondary" style={{ fontSize: 13 }}>
-                Grupo
-              </Text>
-              <Form.Item
-                name="group"
-                rules={[{ required: true, message: "Seleccione un grupo" }]}
+                </Tooltip>
+              )}
+              <Popconfirm
+                title="¿Eliminar el servicio?"
+                description="Esta acción no se puede deshacer."
+                onConfirm={() => deleteServiceMutation.mutate()}
+                okText="Sí"
+                cancelText="No"
+                placement="topRight"
               >
-                <Select placeholder="Seleccionar grupo">
-                  {userGroups.map((group) => (
-                    <Select.Option key={group.id} value={group.name}>
-                      {group.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </>
-          ) : (
-            <Row gutter={[4, 4]}>
-              <Col>
-                <Tag
-                  style={{ marginTop: 10 }}
-                  variant="solid"
-                  color={service.isPaid ? "green" : "red"}
-                >
-                  {service.group}
-                </Tag>
-              </Col>
-              <Col>
-                <Tag
-                  style={{ marginTop: 10 }}
-                  variant="solid"
-                  color={service.isPaid ? "green" : "red"}
-                >
-                  {service.user}
-                </Tag>
-              </Col>
-            </Row>
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined style={{ fontSize: 18 }} />}
+                />
+              </Popconfirm>
+            </Flex>
           )}
-        </Col>
-        <Col style={{ marginTop: 16 }} span={24}>
+        </Flex>
+
+        {/* Grupo + usuario / edit grupo */}
+        <div style={{ marginTop: 8 }}>
           {isEditing ? (
-            <>
-              <Text type="secondary" style={{ fontSize: 13 }}>
-                Último pago
-              </Text>
-              <Form.Item name="lastPayment" style={{ margin: 0 }}>
-                <DatePicker style={{ width: "100%" }} />
-              </Form.Item>
-            </>
+            <Form.Item
+              name="group"
+              label="Grupo"
+              rules={[{ required: true, message: "Seleccione un grupo" }]}
+              style={{ marginBottom: 8 }}
+            >
+              <Select placeholder="Seleccionar grupo">
+                {userGroups.map((group) => (
+                  <Select.Option key={group.id} value={group.name}>
+                    {group.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
           ) : (
-            <Text>
-              <Text strong>Último pago:</Text>
-              {service.lastPayment?.toString()}
+            <Flex gap={6} wrap="wrap" style={{ marginTop: 4 }}>
+              <Tag color={isPaid ? "green" : "red"} variant="solid">
+                {service.group}
+              </Tag>
+              <Tag color={isPaid ? "green" : "red"} variant="solid">
+                {service.user}
+              </Tag>
+            </Flex>
+          )}
+        </div>
+
+        {/* Último pago */}
+        <div style={{ marginTop: 8 }}>
+          {isEditing ? (
+            <Form.Item
+              name="lastPayment"
+              label="Último pago"
+              style={{ marginBottom: 8 }}
+            >
+              <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
+            </Form.Item>
+          ) : (
+            <Text style={{ fontSize: 13 }}>
+              <Text strong>Último pago: </Text>
+              <Text type="secondary">
+                {service.lastPayment?.toString() ?? "—"}
+              </Text>
             </Text>
           )}
-        </Col>
+        </div>
 
-        {!service.isPaid &&
-          (isEditing ? (
-            <Col>
+        {/* Footer buttons */}
+        {!isPaid && (
+          <>
+            <Divider style={{ margin: "12px 0" }} />
+            {isEditing ? (
+              <Row gutter={[8, 8]}>
+                <Col xs={24} sm={12}>
+                  <Button
+                    block
+                    icon={<CheckOutlined />}
+                    color="success"
+                    variant="outlined"
+                    onClick={handleSaveAmount}
+                  >
+                    Guardar
+                  </Button>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Button
+                    block
+                    icon={<CloseOutlined />}
+                    onClick={handleCancelEdit}
+                  >
+                    Cancelar
+                  </Button>
+                </Col>
+              </Row>
+            ) : (
               <Button
                 block
-                icon={<CheckOutlined />}
-                style={{
-                  marginTop: 16,
-                  borderRadius: 8,
-                  borderColor: color,
-                  color,
-                }}
-                onClick={handleSaveAmount}
+                variant="outlined"
+                icon={<CheckCircleOutlined />}
+                style={{ borderColor: statusColor, color: statusColor }}
+                onClick={handlePay}
               >
-                Guardar
+                Marcar como pagado
               </Button>
-              <Button
-                block
-                style={{
-                  marginTop: 16,
-                  borderRadius: 8,
-                  borderColor: color,
-                  color,
-                }}
-                icon={<CloseOutlined />}
-                onClick={handleCancelEdit}
-              >
-                {" "}
-                Cancelar
-              </Button>
-            </Col>
-          ) : (
-            <Button
-              block
-              style={{
-                marginTop: 16,
-                borderRadius: 8,
-                borderColor: color,
-                color,
-              }}
-              onClick={handlePay}
-            >
-              {service.isPaid ? "Marcar como pendiente" : "Marcar como pagado"}
-            </Button>
-          ))}
+            )}
+          </>
+        )}
       </Form>
     </Card>
   );
