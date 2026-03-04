@@ -1,53 +1,87 @@
-import { Button, Card, Col, Popconfirm, Row } from "antd";
+import {
+  Button,
+  Card,
+  Divider,
+  Flex,
+  Popconfirm,
+  theme,
+  Typography,
+} from "antd";
 import { deleteAllMovements } from "../../apis/movement/ExpenseApi";
 import { useMutation } from "@tanstack/react-query";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, SettingOutlined } from "@ant-design/icons";
+
+const { Text } = Typography;
 
 export default function SettingAccount() {
+  const { token } = theme.useToken();
+
   const deleteAllMovementsMutation = useMutation({
-    mutationFn: () => {
-      return deleteAllMovements();
-    },
-    onSuccess: () => {
-      console.debug("✅ Movimientos eliminados correctamente");
-    },
-    onError: (err) => {
-      console.error("❌ Error eliminado todos los movimientos", err);
-    },
+    mutationFn: () => deleteAllMovements(),
+    onSuccess: () => console.debug("✅ Movimientos eliminados correctamente"),
+    onError: (err) =>
+      console.error("❌ Error eliminado todos los movimientos", err),
   });
 
   return (
-    <Card title="Configuración de la cuenta" style={{ marginTop: 16 }}>
-      <Row style={{ marginBottom: 12 }}>
-        <Col span={24}>
-          <Popconfirm
-            title="¿Estás seguro de que quieres eliminar todos los movimientos?"
-            onConfirm={() => deleteAllMovementsMutation.mutate()}
-            okText="Sí"
-            cancelText="No"
-            placement="top"
-          >
-            <Button
-              icon={
-                <DeleteOutlined style={{ fontSize: 22, cursor: "pointer" }} />
-              }
-              block
-              color="danger"
-              variant="outlined"
-            >
-              Eliminar Todos los Movimientos
-            </Button>
-          </Popconfirm>
-        </Col>
-      </Row>
+    <Card style={{ borderRadius: token.borderRadiusLG }}>
+      {/* Header */}
+      <Flex align="center" gap={12} style={{ marginBottom: 4 }}>
+        <div
+          style={{
+            width: 38,
+            height: 38,
+            borderRadius: token.borderRadius,
+            background: token.colorError,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <SettingOutlined style={{ color: "#fff", fontSize: 18 }} />
+        </div>
+        <div>
+          <Typography.Title level={5} style={{ margin: 0 }}>
+            Configuración de la cuenta
+          </Typography.Title>
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            Acciones irreversibles sobre tu cuenta y datos.
+          </Text>
+        </div>
+      </Flex>
 
-      <Row style={{ marginBottom: 12 }}>
-        <Col span={24}>
-          <Button block color="danger" variant="outlined">
-            Eliminar La cuenta
+      <Divider style={{ margin: "14px 0" }} />
+
+      <Flex vertical gap={12}>
+        <Popconfirm
+          title="¿Estás seguro?"
+          description="Se eliminarán todos los movimientos permanentemente."
+          onConfirm={() => deleteAllMovementsMutation.mutate()}
+          okText="Sí, eliminar"
+          cancelText="Cancelar"
+          placement="top"
+        >
+          <Button
+            icon={<DeleteOutlined />}
+            block
+            color="danger"
+            variant="outlined"
+            loading={deleteAllMovementsMutation.isPending}
+          >
+            Eliminar todos los movimientos
           </Button>
-        </Col>
-      </Row>
+        </Popconfirm>
+
+        <Button
+          block
+          color="danger"
+          variant="outlined"
+          icon={<DeleteOutlined />}
+        >
+          Eliminar la cuenta
+        </Button>
+      </Flex>
     </Card>
   );
 }
