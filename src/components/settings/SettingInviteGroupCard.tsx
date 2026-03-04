@@ -1,6 +1,6 @@
 import Card from "antd/es/card/Card";
 import type { ConfirmInvitations, Invitations } from "../../models/UserGroup";
-import { Button, Space, Typography } from "antd";
+import { Button, Col, Row, Space, Tag, Typography } from "antd";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
@@ -11,98 +11,169 @@ const { Text } = Typography;
 interface SettingInviteGroupCardProps {
   invite: Invitations;
 }
+
+const css = `
+  .invite-card {
+    border-radius: 14px !important;
+    border: 1.5px solid #e0eaff !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f5f9ff 100%) !important;
+    transition: all 0.2s ease !important;
+  }
+  .invite-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(13, 89, 164, 0.1) !important;
+  }
+  .accept-btn {
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+    background: linear-gradient(90deg, #22c55e, #16a34a) !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3) !important;
+    transition: all 0.2s ease !important;
+  }
+  .accept-btn:hover {
+    opacity: 0.88 !important;
+    transform: scale(1.04) !important;
+  }
+  .reject-btn {
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+    border: 1.5px solid #fca5a5 !important;
+    color: #ef4444 !important;
+    background: #fff5f5 !important;
+    transition: all 0.2s ease !important;
+  }
+  .reject-btn:hover {
+    background: #fee2e2 !important;
+    border-color: #ef4444 !important;
+    transform: scale(1.04) !important;
+  }
+`;
+
 export default function SettingInviteGroupCard({
   invite,
 }: SettingInviteGroupCardProps) {
-  const handleAccept = () => {
-    const confirm: ConfirmInvitations = { id: invite.id, status: true };
-    addGroupMutation.mutate(confirm);
-  };
-
-  const handleReject = () => {
-    const confirm: ConfirmInvitations = { id: invite.id, status: false };
-    addGroupMutation.mutate(confirm);
-  };
-
   const addGroupMutation = useMutation({
     mutationFn: (confirmInvitation: ConfirmInvitations) =>
       acceptRejectGroupInvitationApi(confirmInvitation),
-    onError: (err) => {
-      console.error("Error subiendo archivo:", err);
-    },
+    onError: (err) => console.error("Error respondiendo invitacion:", err),
   });
+
+  const handleAccept = () =>
+    addGroupMutation.mutate({ id: invite.id, status: true });
+  const handleReject = () =>
+    addGroupMutation.mutate({ id: invite.id, status: false });
+
   return (
     <>
+      <style>{css}</style>
       <Card
-        key={invite.id}
         hoverable
-        styles={{
-          body: {
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "12px 16px",
-            cursor: "default",
-            transition: "all 0.2s ease",
-          },
-        }}
-        style={{
-          borderRadius: 12,
-          backgroundColor: "white",
-          padding: 0,
-        }}
+        className="invite-card"
+        styles={{ body: { padding: "14px 18px" } }}
       >
-        <Space
-          align="center"
-          style={{
-            justifyContent: "space-between",
-            width: "100%",
-            marginBottom: 8,
-          }}
-        >
-          <Space>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {/* Top: avatar + info */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              minWidth: 0,
+            }}
+          >
             <div
               style={{
-                background: "#0D59A4",
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
+                width: 44,
+                height: 44,
+                borderRadius: 13,
+                flexShrink: 0,
+                background: "linear-gradient(135deg, #1a6fd4 0%, #4f9cf7 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                boxShadow: "0 4px 12px rgba(26, 111, 212, 0.25)",
               }}
             >
-              <TeamOutlined style={{ color: "#fff", fontSize: 18 }} />
+              <TeamOutlined style={{ color: "#fff", fontSize: 20 }} />
             </div>
-            <Space>
-              <Text strong>{invite.nameAccount}</Text>
-            </Space>
-          </Space>
-          <Space>
-            <Button
-              type="primary"
-              icon={<CheckOutlined />}
+            <div
               style={{
-                backgroundColor: "#28a745",
-                borderColor: "#28a745",
-                borderRadius: 8,
+                display: "flex",
+                flexDirection: "column",
+                gap: 4,
+                minWidth: 0,
+                flex: 1,
               }}
-              onClick={handleAccept}
             >
-              Aceptar
-            </Button>
+              <Text
+                strong
+                style={{
+                  fontSize: 15,
+                  color: "#1a3a6b",
+                  letterSpacing: "-0.2px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  display: "block",
+                }}
+              >
+                {invite.nameAccount}
+              </Text>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  minWidth: 0,
+                }}
+              >
+                <Text style={{ fontSize: 12, color: "#9ca3af", flexShrink: 0 }}>
+                  Invitado por
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: "#1d4ed8",
+                    fontWeight: 600,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {invite.invitedBy}
+                </Text>
+              </div>
+            </div>
+          </div>
 
-            <Button
-              danger
-              icon={<CloseOutlined />}
-              style={{
-                borderRadius: 8,
-              }}
-              onClick={handleReject}
-            >
-              Rechazar
-            </Button>
-          </Space>
-        </Space>
+          {/* Bottom: buttons full width */}
+          <Row gutter={[8, 8]}>
+            <Col xs={24} sm={12}>
+              <Button
+                className="accept-btn"
+                icon={<CheckOutlined />}
+                loading={addGroupMutation.isPending}
+                onClick={handleAccept}
+                block
+              >
+                Aceptar
+              </Button>
+            </Col>
+
+            <Col xs={24} sm={12}>
+              <Button
+                className="reject-btn"
+                icon={<CloseOutlined />}
+                disabled={addGroupMutation.isPending}
+                onClick={handleReject}
+                block
+              >
+                Rechazar
+              </Button>
+            </Col>
+          </Row>
+        </div>
       </Card>
     </>
   );
