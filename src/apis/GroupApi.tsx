@@ -5,6 +5,7 @@ import type {
   CreateGroupForm,
   CreateInvitationForm,
   Invitations,
+  Membership,
 } from "../models/UserGroup";
 import { api } from "./axios";
 
@@ -85,7 +86,7 @@ export async function getAllGroupsWithUsers() {
 
 export async function getAllUserGroups() {
   return api
-    .get<AccountWithMembers[]>(baseUrl)
+    .get<Membership[]>(baseUrl + "/membership")
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error fetching all groups:", error);

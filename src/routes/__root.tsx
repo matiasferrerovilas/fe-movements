@@ -9,6 +9,7 @@ import type { AuthContextState } from "../apis/auth/AuthContext";
 import { ColorEnum } from "../enums/ColorEnum";
 import type Keycloak from "keycloak-js";
 const { useBreakpoint } = Grid;
+import module from "../../package.json";
 
 export interface RootRouteContext {
   queryClient: QueryClient;
@@ -53,7 +54,7 @@ export const Route = createRootRouteWithContext<RootRouteContext>()({
             backgroundColor: ColorEnum.FONDO_GENERAL,
           }}
         >
-          M-1 ©{new Date().getFullYear()} Created by Mati FV
+          M-1 ©{new Date().getFullYear()} Created by Mati FV v{module.version}
         </Footer>
       </Layout>
     </Layout>

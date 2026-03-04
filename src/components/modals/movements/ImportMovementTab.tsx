@@ -26,7 +26,7 @@ interface ImportMovementTabProps {
 
 const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
   ({ onSuccess }, ref) => {
-    const { data: accounts = [] } = useGroups();
+    const { data: memberships = [] } = useGroups();
     const [form] = Form.useForm<UploadForm>();
 
     const uploadMutation = useMutation({
@@ -69,7 +69,11 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
       <Form
         form={form}
         layout="vertical"
-        initialValues={accounts && { groupId: accounts[0]?.id }}
+        initialValues={
+          memberships && {
+            groupId: memberships.find((m) => m.isDefault)?.groupId,
+          }
+        }
       >
         <div style={{ marginBottom: 10 }}>
           <Text type="secondary">
@@ -107,13 +111,13 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
           label="Grupo"
           rules={[{ required: true, message: "Seleccione un grupo" }]}
         >
-          <Select placeholder="Seleccionar grupo">
-            {accounts.map((account) => (
-              <Select.Option key={account.id} value={account.id}>
-                {account.name}
-              </Select.Option>
-            ))}
-          </Select>
+          <Select
+            placeholder="Seleccionar grupo"
+            options={memberships.map((membership) => ({
+              label: membership.groupDescription,
+              value: membership.groupId,
+            }))}
+          />
         </Form.Item>
 
         <Form.Item

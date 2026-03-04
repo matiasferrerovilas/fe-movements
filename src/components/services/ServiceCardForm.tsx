@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -43,7 +43,7 @@ interface ServiceCardFormProps extends React.HTMLAttributes<HTMLElement> {
 export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const [form] = Form.useForm<CreateServiceForm>();
   const [isPaid, setIsPaid] = useState(false);
-  const { data: accounts = [] } = useGroups();
+  const { data: memberships = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
   const { token } = theme.useToken();
 
@@ -67,6 +67,17 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
     form.resetFields();
     setIsPaid(false);
   };
+  useEffect(() => {
+    if (!memberships.length) return;
+
+    const defaultGroup = memberships.find((m) => m.isDefault)?.groupId;
+
+    form.setFieldsValue({
+      groupId: defaultGroup,
+      currency: CurrencyEnum.ARS,
+      isPaid: false,
+    });
+  }, [memberships]);
 
   return (
     <Card
@@ -126,8 +137,8 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
         layout="vertical"
         onFinish={onFinish}
         initialValues={
-          accounts && {
-            groupId: accounts[0]?.id,
+          memberships && {
+            groupId: memberships.find((m) => m.isDefault)?.groupId,
             isPaid: false,
             currency: CurrencyEnum.ARS,
           }
@@ -149,13 +160,14 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
               label="Grupo"
               rules={[{ required: true, message: "Seleccione un grupo" }]}
             >
-              <Select placeholder="Seleccionar grupo">
-                {accounts.map((account) => (
-                  <Select.Option key={account.id} value={account.id}>
-                    {account.name}
-                  </Select.Option>
-                ))}
-              </Select>
+              <Select
+                placeholder="Seleccionar grupo"
+                options={memberships.map((membership) => ({
+                  label: membership.groupDescription,
+                  value: membership.groupId,
+                  key: membership.groupId,
+                }))}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>

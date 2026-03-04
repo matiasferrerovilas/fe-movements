@@ -1,18 +1,20 @@
 import ArrowDownOutlined from "@ant-design/icons/ArrowDownOutlined";
 import ArrowUpOutlined from "@ant-design/icons/ArrowUpOutlined";
 import CalendarOutlined from "@ant-design/icons/CalendarOutlined";
-
 import dayjs from "dayjs";
+import { Row } from "antd";
 import { useBalance } from "../../apis/hooks/useBalance";
 import BalanceCard from "./BalanceCard";
-import { Row } from "antd";
 import type { BalanceFilters } from "../../routes/balance";
+import { theme } from "antd";
 
 interface ResumenMensualProps {
   filters: BalanceFilters;
 }
 
 export default function ResumenMensual({ filters }: ResumenMensualProps) {
+  const { token } = theme.useToken();
+
   filters.year = dayjs().year();
   filters.month = dayjs().month() + 1;
   const { data: rawData, isFetching } = useBalance(filters);
@@ -22,43 +24,36 @@ export default function ResumenMensual({ filters }: ResumenMensualProps) {
   const balanceTotal = ingreso - gasto;
 
   return (
-    <>
-      <Row
-        gutter={[16, 16]}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: 30,
-        }}
-      >
-        <BalanceCard
-          isFetching={isFetching}
-          title="Ingresos Totales"
-          amount={ingreso ?? 0}
-          subtitle={`Moneda ${filters.currency ?? ""}`}
-          icon={<ArrowUpOutlined style={{ color: "#3f8600" }} />}
-        />
-        <BalanceCard
-          isFetching={isFetching}
-          title="Gastos Totales"
-          amount={gasto ?? 0}
-          subtitle={`Moneda ${filters.currency ?? ""}`}
-          icon={<CalendarOutlined style={{ color: "#cf1322" }} />}
-        />
-        <BalanceCard
-          isFetching={isFetching}
-          title="Balance Total"
-          amount={balanceTotal ?? 0}
-          subtitle={`Moneda ${filters.currency ?? ""}`}
-          icon={
-            balanceTotal > 0 ? (
-              <ArrowUpOutlined style={{ color: "#3f8600" }} />
-            ) : (
-              <ArrowDownOutlined style={{ color: "#cf1322" }} />
-            )
-          }
-        />
-      </Row>
-    </>
+    <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <BalanceCard
+        isFetching={isFetching}
+        title="Ingresos Totales"
+        amount={ingreso}
+        subtitle={`Moneda ${filters.currency ?? ""}`}
+        icon={<ArrowUpOutlined style={{ color: token.colorSuccess }} />}
+        iconBg={token.colorSuccessBg}
+      />
+      <BalanceCard
+        isFetching={isFetching}
+        title="Gastos Totales"
+        amount={-gasto}
+        subtitle={`Moneda ${filters.currency ?? ""}`}
+        icon={<CalendarOutlined style={{ color: token.colorError }} />}
+        iconBg={token.colorErrorBg}
+      />
+      <BalanceCard
+        isFetching={isFetching}
+        title="Balance Total"
+        amount={balanceTotal}
+        subtitle={`Moneda ${filters.currency ?? ""}`}
+        icon={
+          balanceTotal >= 0 ? (
+            <ArrowUpOutlined style={{ color: token.colorSuccess }} />
+          ) : (
+            <ArrowDownOutlined style={{ color: token.colorError }} />
+          )
+        }
+      />
+    </Row>
   );
 }

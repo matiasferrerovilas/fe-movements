@@ -31,6 +31,7 @@ import {
 import type { Income, IncomeAddForm } from "../../models/Income";
 import { BankEnum } from "../../enums/BankEnum";
 import { useCurrency } from "../../apis/hooks/useCurrency";
+import { CurrencyEnum } from "../../enums/CurrencyEnum";
 
 const { Title, Text } = Typography;
 
@@ -38,7 +39,7 @@ export function SettingIngreso() {
   const [form] = Form.useForm<IncomeAddForm>();
   const { data: ingresos, isLoading } = useIncome();
   const { token } = theme.useToken();
-  const { data: accountWithMembers = [] } = useGroups();
+  const { data: memberships = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
   const queryClient = useQueryClient();
 
@@ -113,7 +114,17 @@ export function SettingIngreso() {
         <Text strong style={{ display: "block", marginBottom: token.marginSM }}>
           Agregar Ingreso
         </Text>
-        <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          initialValues={
+            memberships && {
+              group: memberships.find((m) => m.isDefault)?.groupDescription,
+              currency: CurrencyEnum.ARS,
+            }
+          }
+        >
           <Row gutter={[12, 0]}>
             <Col xs={24} sm={12}>
               <Form.Item
@@ -136,13 +147,14 @@ export function SettingIngreso() {
                 label="Grupo"
                 rules={[{ required: true, message: "Seleccione un grupo" }]}
               >
-                <Select placeholder="Seleccionar grupo">
-                  {accountWithMembers.map((group) => (
-                    <Select.Option key={group.id} value={group.name}>
-                      {group.name}
-                    </Select.Option>
-                  ))}
-                </Select>
+                <Select
+                  placeholder="Seleccionar grupo"
+                  options={memberships.map((membership) => ({
+                    label: membership.groupDescription,
+                    value: membership.groupDescription,
+                    key: membership.groupId,
+                  }))}
+                />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>

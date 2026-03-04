@@ -28,15 +28,13 @@ const AddMovementExpenseTab = forwardRef<
   { handleConfirm: () => void },
   AddMovementExpenseTabProps
 >(({ onSuccess, movementToEdit }, ref) => {
-  const { data: accounts = [] } = useGroups();
+  const { data: memberships = [] } = useGroups();
   const [form] = Form.useForm<CreateMovementForm>();
   const { data: categories = [] } = useCategory();
   const { data: currencies = [] } = useCurrency();
 
   useEffect(() => {
-    if (!movementToEdit) {
-      return;
-    }
+    if (!movementToEdit) return;
     form.setFieldsValue({
       bank: movementToEdit.bank,
       description: movementToEdit.description,
@@ -52,18 +50,15 @@ const AddMovementExpenseTab = forwardRef<
   }, [movementToEdit, form]);
 
   const uploadMutation = useMutation({
-    mutationFn: (values: CreateMovementForm) => {
-      return movementToEdit
+    mutationFn: (values: CreateMovementForm) =>
+      movementToEdit
         ? updateExpense(movementToEdit.id, values)
-        : uploadExpense(values);
-    },
+        : uploadExpense(values),
     onSuccess: () => {
       console.debug("✅ Movimiento cargado correctamente");
       onSuccess?.();
     },
-    onError: (err) => {
-      console.error("❌ Error cargando el movimiento", err);
-    },
+    onError: (err) => console.error("❌ Error cargando el movimiento", err),
   });
 
   useImperativeHandle(ref, () => ({
@@ -76,31 +71,30 @@ const AddMovementExpenseTab = forwardRef<
           .second(0)
           .millisecond(0)
           .toDate();
-        const payload = {
-          ...values,
-          date: date,
-        };
-        uploadMutation.mutate(payload as CreateMovementForm);
+        uploadMutation.mutate({ ...values, date } as CreateMovementForm);
       } catch (err) {
         console.warn("❌ Validación fallida:", err);
       }
     },
   }));
 
+  const isCreditType = Form.useWatch("type", form) === TypeEnum.CREDITO;
+
   return (
     <Form
       form={form}
       layout="vertical"
       initialValues={
-        accounts && {
+        memberships && {
           date: dayjs(),
-          groupId: accounts[0]?.id,
+          groupId: memberships.find((m) => m.isDefault)?.groupId,
           currency: CurrencyEnum.ARS,
         }
       }
     >
-      <Row gutter={16}>
-        <Col span={12}>
+      <Row gutter={[12, 0]}>
+        {/* Banco + Tipo */}
+        <Col xs={24} sm={12}>
           <Form.Item
             name="bank"
             label="Banco"
@@ -115,17 +109,13 @@ const AddMovementExpenseTab = forwardRef<
             </Select>
           </Form.Item>
         </Col>
-
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="type"
             label="Tipo"
             rules={[{ required: true, message: "Seleccione un tipo" }]}
           >
-            <Select
-              placeholder="Seleccionar un tipo movimiento"
-              style={{ width: "100%" }}
-            >
+            <Select placeholder="Seleccionar tipo">
               {Object.values(TypeEnum).map((type) => (
                 <Select.Option key={type} value={type}>
                   {type}
@@ -134,105 +124,112 @@ const AddMovementExpenseTab = forwardRef<
             </Select>
           </Form.Item>
         </Col>
-      </Row>
-      {Form.useWatch("type", form) === TypeEnum.CREDITO && (
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              label="Cuota Actual"
-              name="cuotaActual"
-              rules={[
-                { required: true, message: "Ingresar cuota actual" },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    const total = getFieldValue("cuotasTotales");
-                    if (!value || !total || value <= total) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(
-                        "La cuota actual no puede ser mayor que el total",
-                      ),
-                    );
-                  },
-                }),
-              ]}
-            >
-              <InputNumber style={{ width: "100%" }} controls={false} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label="Cuotas Totales"
-              name="cuotasTotales"
-              rules={[
-                { required: true, message: "Ingresar cantidad de cuotas" },
-              ]}
-            >
-              <InputNumber style={{ width: "100%" }} controls={false} />
-            </Form.Item>
-          </Col>
-        </Row>
-      )}
-      <Form.Item
-        name="groupId"
-        label="Grupo"
-        rules={[{ required: true, message: "Seleccione un grupo" }]}
-      >
-        <Select placeholder="Seleccionar grupo">
-          {accounts.map((account) => (
-            <Select.Option key={account.id} value={account.id}>
-              {account.name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
-      <Row gutter={16}>
-        <Col span={12}>
+
+        {/* Cuotas (solo si es CREDITO) */}
+        {isCreditType && (
+          <>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="Cuota Actual"
+                name="cuotaActual"
+                rules={[
+                  { required: true, message: "Ingresar cuota actual" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const total = getFieldValue("cuotasTotales");
+                      if (!value || !total || value <= total)
+                        return Promise.resolve();
+                      return Promise.reject(
+                        new Error(
+                          "La cuota actual no puede ser mayor que el total",
+                        ),
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <InputNumber style={{ width: "100%" }} controls={false} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="Cuotas Totales"
+                name="cuotasTotales"
+                rules={[
+                  { required: true, message: "Ingresar cantidad de cuotas" },
+                ]}
+              >
+                <InputNumber style={{ width: "100%" }} controls={false} />
+              </Form.Item>
+            </Col>
+          </>
+        )}
+
+        {/* Grupo */}
+        <Col xs={24}>
           <Form.Item
-            label="Descripcion"
-            name="description"
-            rules={[{ required: true }]}
-            style={{ width: "100%" }}
-          >
-            <Input />
-          </Form.Item>{" "}
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            name="category"
-            label="Categoria"
-            rules={[{ required: true, message: "Seleccione una categoria" }]}
+            name="groupId"
+            label="Grupo"
+            rules={[{ required: true, message: "Seleccione un grupo" }]}
           >
             <Select
-              placeholder="Seleccionar categoria"
-              showSearch
-              style={{ width: "100%" }}
-            >
-              {Object.values(categories).map((type) => (
-                <Select.Option key={type.id} value={type.description}>
-                  {type.description}
-                </Select.Option>
-              ))}
-            </Select>
+              placeholder="Seleccionar grupo"
+              options={memberships.map((membership) => ({
+                label: membership.groupDescription,
+                value: membership.groupId,
+                key: membership.groupId,
+              }))}
+            />
           </Form.Item>
         </Col>
-      </Row>
-      <Form.Item
-        label="Fecha"
-        name="date"
-        rules={[{ required: true, message: "Seleccione una fecha" }]}
-      >
-        <DatePicker style={{ width: "100%" }} format={dateFormat} />
-      </Form.Item>
-      <Row gutter={16}>
-        <Col span={12}>
+
+        {/* Descripción + Categoría */}
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Descripción"
+            name="description"
+            rules={[{ required: true, message: "Ingrese una descripción" }]}
+          >
+            <Input placeholder="Ej: Supermercado, Nafta..." />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="category"
+            label="Categoría"
+            rules={[{ required: true, message: "Seleccione una categoría" }]}
+          >
+            <Select
+              placeholder="Seleccionar categoría"
+              showSearch
+              options={categories.map((type) => ({
+                label: type.description,
+                value: type.description,
+                key: type.id,
+              }))}
+            />
+          </Form.Item>
+        </Col>
+
+        {/* Fecha */}
+        <Col xs={24}>
+          <Form.Item
+            label="Fecha"
+            name="date"
+            rules={[{ required: true, message: "Seleccione una fecha" }]}
+          >
+            <DatePicker style={{ width: "100%" }} format={dateFormat} />
+          </Form.Item>
+        </Col>
+
+        {/* Moneda + Monto */}
+        <Col xs={24} sm={12}>
           <Form.Item
             name="currency"
             label="Moneda"
             rules={[{ required: true, message: "Ingrese Moneda" }]}
           >
-            <Select placeholder="Ingrese Moneda" style={{ width: "100%" }}>
+            <Select placeholder="Seleccionar moneda">
               {currencies.map((currency) => (
                 <Select.Option key={currency.id} value={currency.symbol}>
                   {currency.symbol}
@@ -241,8 +238,7 @@ const AddMovementExpenseTab = forwardRef<
             </Select>
           </Form.Item>
         </Col>
-
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             label="Monto"
             name="amount"
@@ -252,6 +248,7 @@ const AddMovementExpenseTab = forwardRef<
               style={{ width: "100%" }}
               controls={false}
               precision={2}
+              placeholder="0.00"
             />
           </Form.Item>
         </Col>

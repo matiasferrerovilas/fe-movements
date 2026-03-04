@@ -10,6 +10,15 @@ export interface AccountWithMembers {
   owner: User;
   members: AccountMember[];
 }
+
+export interface Membership {
+  groupId: number;
+  membershipId: number;
+  groupDescription: string;
+  role: string;
+  isDefault: boolean;
+}
+
 export interface AccountMember {
   id: number;
   user: User;

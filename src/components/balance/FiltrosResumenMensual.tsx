@@ -19,7 +19,7 @@ export default function FiltrosResumenMensual({
   initialFilters,
   onFiltersChange,
 }: Props) {
-  const { data: accounts = [] } = useGroups();
+  const { data: memberships = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
   const [filters, setFilters] = useState<BalanceFilters>(initialFilters);
   const { RangePicker } = DatePicker;
@@ -114,13 +114,12 @@ export default function FiltrosResumenMensual({
             style={{ minWidth: 200 }}
             allowClear
             placeholder="Seleccionar grupo"
-          >
-            {accounts.map((account) => (
-              <Select.Option key={account.id} value={account.id}>
-                {capitalize(account.name)}
-              </Select.Option>
-            ))}
-          </Select>
+            options={memberships.map((membership) => ({
+              label: membership.groupDescription,
+              value: membership.groupId,
+              key: membership.groupId,
+            }))}
+          />
         </Col>
       </Row>
     </div>
