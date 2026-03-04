@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SettingIngreso } from "../components/settings/SettingIngreso";
-import { Col, Row, Tabs } from "antd";
+import { Col, Flex, Grid, Row, Tabs } from "antd";
 import { SettingGroups } from "../components/settings/SettingGroups";
 import { SettingInviteGroups } from "../components/settings/SettingInviteGroups";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
 import SettingAccount from "../components/settings/SettingAccount";
 import { UserOutlined, TeamOutlined } from "@ant-design/icons";
+
+const { useBreakpoint } = Grid;
 
 export const Route = createFileRoute("/settings")({
   beforeLoad: protectedRouteGuard({
@@ -21,12 +23,10 @@ const TABS = [
     label: "Cuenta",
     icon: <UserOutlined />,
     children: (
-      <>
+      <Flex vertical gap={16}>
         <SettingIngreso />
-        <div style={{ marginTop: 16 }}>
-          <SettingAccount />
-        </div>
-      </>
+        <SettingAccount />
+      </Flex>
     ),
   },
   {
@@ -34,33 +34,35 @@ const TABS = [
     label: "Grupos",
     icon: <TeamOutlined />,
     children: (
-      <>
+      <Flex vertical gap={16}>
         <SettingInviteGroups />
-        <div style={{ marginTop: 16 }}>
-          <SettingGroups />
-        </div>
-      </>
+        <SettingGroups />
+      </Flex>
     ),
   },
 ];
 
 function RouteComponent() {
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
+
   return (
     <Row justify="center" style={{ paddingTop: 30 }}>
       <Col xs={24} md={20} lg={16}>
         <Tabs
-          tabPlacement="start"
           defaultActiveKey="cuenta"
           size="middle"
+          tabPlacement={isMobile ? "top" : "start"}
           items={TABS.map(({ key, label, icon, children }) => ({
             key,
             label: (
               <span>
-                {icon}
-                {label}
+                {icon} {label}
               </span>
             ),
-            children: <div style={{ paddingTop: 16 }}>{children}</div>,
+            children: (
+              <div style={{ paddingTop: isMobile ? 12 : 0 }}>{children}</div>
+            ),
           }))}
         />
       </Col>
