@@ -1,15 +1,48 @@
 import { createFileRoute } from "@tanstack/react-router";
-import ResumenMensual from "../components/balance/ResumenMensual";
-import BalanceGrafico from "../components/balance/BalanceGrafico";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
-import { Col, Row, Space, Typography } from "antd";
+import {
+  Card,
+  Col,
+  Divider,
+  Flex,
+  Row,
+  Select,
+  Spin,
+  theme,
+  Typography,
+} from "antd";
 import { CurrencyEnum } from "../enums/CurrencyEnum";
-import { useCallback, useRef, useState } from "react";
-import FiltrosResumenMensual from "../components/balance/FiltrosResumenMensual";
-import BalanceGrupoGastado from "../components/balance/BalanceGrupoGastado";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { RoleEnum } from "../enums/RoleEnum";
 import dayjs from "dayjs";
+import type { Dayjs } from "dayjs";
+import { DatePicker } from "antd";
+import { DollarOutlined, EuroOutlined } from "@ant-design/icons";
+import { useGroups } from "../apis/hooks/useGroups";
+import { useCurrency } from "../apis/hooks/useCurrency";
+import {
+  useBalanceSeparateByCategory,
+  useBalanceSeparateByGroup,
+} from "../apis/hooks/useBalance";
+import ResumenMensual from "../components/balance/ResumenMensual";
+import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  Rectangle,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
 const { Title, Text } = Typography;
+const { RangePicker } = DatePicker;
 
 export const Route = createFileRoute("/balance")({
   beforeLoad: protectedRouteGuard({
@@ -17,6 +50,7 @@ export const Route = createFileRoute("/balance")({
   }),
   component: RouteComponent,
 });
+
 export type BalanceFilters = {
   account: number[] | null;
   currency: CurrencyEnum;
@@ -25,49 +59,253 @@ export type BalanceFilters = {
   dates: [Date, Date];
 };
 
+const CHART_COLORS = [
+  "#6366f1",
+  "#22c55e",
+  "#f59e0b",
+  "#ef4444",
+  "#3b82f6",
+  "#ec4899",
+  "#14b8a6",
+  "#f97316",
+];
+
+const capitalize = (str: string) =>
+  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+const currencyIcon = (currency?: CurrencyEnum) =>
+  currency === CurrencyEnum.EUR ? <EuroOutlined /> : <DollarOutlined />;
+
 function RouteComponent() {
+  const { token } = theme.useToken();
   const [filters, setFilters] = useState<BalanceFilters>({
     currency: CurrencyEnum.ARS,
     account: [1],
     dates: [dayjs().startOf("month").toDate(), dayjs().endOf("month").toDate()],
   });
   const filtersRef = useRef(filters);
-
   const handleFiltersChange = useCallback((newFilters: BalanceFilters) => {
     filtersRef.current = newFilters;
     setFilters(newFilters);
   }, []);
+  const handleChange = useCallback(
+    (key: keyof BalanceFilters, value: any) =>
+      handleFiltersChange({ ...filters, [key]: value }),
+    [filters, handleFiltersChange],
+  );
+
+  const { data: memberships = [] } = useGroups();
+  const { data: currencies = [] } = useCurrency();
+
+  // Datos graficos
+  const categoryFilters = { ...filters, year: dayjs().year() };
+  const { data: categoryData = [], isFetching: fetchingCategory } =
+    useBalanceSeparateByCategory(categoryFilters);
+  const { data: groupData = [], isFetching: fetchingGroup } =
+    useBalanceSeparateByGroup(dayjs().year(), dayjs().month() + 1);
+
+  const categoryChart = useMemo(
+    () =>
+      categoryData.map((item) => ({ name: item.category, value: item.total })),
+    [categoryData],
+  );
+
+  const groupCurrencies = [...new Set(groupData.map((b) => b.currencySymbol))];
+  const groupChart = useMemo(
+    () =>
+      Object.values(
+        groupData.reduce(
+          (acc, item) => {
+            const group = item.groupDescription;
+            if (!acc[group]) acc[group] = { group };
+            acc[group][item.currencySymbol] = Number(item.total);
+            return acc;
+          },
+          {} as Record<string, any>,
+        ),
+      ),
+    [groupData],
+  );
 
   return (
-    <div style={{ paddingTop: 30 }}>
-      <Row align="middle" style={{ marginBottom: 30 }}>
-        <Col flex="auto">
-          <Space orientation="vertical" size={1}>
-            <Title level={2} style={{ margin: 0 }}>
-              Balance Financiero
-            </Title>
-            <Text type="secondary" style={{ fontSize: 16 }}>
-              Vista detallada de ingresos y gastos del mes actual
-            </Text>
-          </Space>
-        </Col>
+    <div style={{ paddingTop: 24, paddingBottom: 40 }}>
+      {/* ── Page header ── */}
+      <Flex
+        align="center"
+        justify="space-between"
+        wrap="wrap"
+        gap={12}
+        style={{ marginBottom: 24 }}
+      >
+        <div>
+          <Title level={3} style={{ margin: 0 }}>
+            Balance Financiero
+          </Title>
+          <Text type="secondary">Vista detallada de ingresos y gastos</Text>
+        </div>
 
-        <Col>
-          <FiltrosResumenMensual
-            initialFilters={filters}
-            onFiltersChange={handleFiltersChange}
+        {/* Filtros inline */}
+        <Flex gap={10} wrap="wrap" align="center">
+          <Select
+            value={filters.currency}
+            onChange={(val: CurrencyEnum) => handleChange("currency", val)}
+            style={{ width: 130 }}
+            suffixIcon={currencyIcon(filters.currency)}
+            options={currencies.map((c) => ({
+              value: c.symbol,
+              label: (
+                <Flex gap={6} align="center">
+                  {currencyIcon(c.symbol as CurrencyEnum)}
+                  {capitalize(c.symbol)}
+                </Flex>
+              ),
+            }))}
           />
-        </Col>
-      </Row>
+          <RangePicker
+            size="middle"
+            value={
+              filters.dates
+                ? [dayjs(filters.dates[0]), dayjs(filters.dates[1])]
+                : null
+            }
+            onChange={(dates: [Dayjs | null, Dayjs | null] | null) => {
+              if (!dates?.[0] || !dates?.[1]) return;
+              handleChange("dates", [
+                dayjs(dates[0])
+                  .hour(12)
+                  .minute(0)
+                  .second(0)
+                  .millisecond(0)
+                  .toDate(),
+                dayjs(dates[1])
+                  .hour(12)
+                  .minute(0)
+                  .second(0)
+                  .millisecond(0)
+                  .toDate(),
+              ]);
+            }}
+          />
+          <Select
+            mode="multiple"
+            value={filters.account}
+            onChange={(val: number[]) => handleChange("account", val)}
+            style={{ minWidth: 180 }}
+            allowClear
+            placeholder="Grupos"
+            options={memberships.map((m) => ({
+              label: m.groupDescription,
+              value: m.groupId,
+              key: m.groupId,
+            }))}
+          />
+        </Flex>
+      </Flex>
 
+      {/* ── Summary cards ── */}
       <ResumenMensual filters={filters} />
 
-      <Row gutter={16} justify="center">
-        <BalanceGrafico
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-        />
-        <BalanceGrupoGastado />
+      <Divider style={{ margin: "8px 0 24px" }} />
+
+      {/* ── Charts ── */}
+      <Row gutter={[20, 20]}>
+        {/* Donut — Gastos por categoría */}
+        <Col xs={24} lg={12}>
+          <Card
+            title="Gastos por Categoría"
+            style={{
+              borderRadius: token.borderRadiusLG,
+              borderColor: token.colorBorder,
+              height: "100%",
+            }}
+          >
+            {fetchingCategory ? (
+              <Flex justify="center" style={{ padding: 40 }}>
+                <Spin indicator={<LoadingOutlined spin />} size="large" />
+              </Flex>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={categoryChart}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={70}
+                    outerRadius={110}
+                    paddingAngle={3}
+                  >
+                    {categoryChart.map((_, idx) => (
+                      <Cell
+                        key={idx}
+                        fill={CHART_COLORS[idx % CHART_COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(val: number) =>
+                      `$${val.toLocaleString("es-AR")}`
+                    }
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+        </Col>
+
+        {/* Barras — Gastos por grupo y moneda */}
+        <Col xs={24} lg={12}>
+          <Card
+            title="Gastos por Grupo"
+            style={{
+              borderRadius: token.borderRadiusLG,
+              borderColor: token.colorBorder,
+              height: "100%",
+            }}
+          >
+            {fetchingGroup ? (
+              <Flex justify="center" style={{ padding: 40 }}>
+                <Spin indicator={<LoadingOutlined spin />} size="large" />
+              </Flex>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={groupChart}
+                  margin={{ top: 4, right: 8, left: 0, bottom: 4 }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={token.colorBorderSecondary}
+                  />
+                  <XAxis dataKey="group" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} width={60} />
+                  <Tooltip
+                    formatter={(val: number) =>
+                      `$${val.toLocaleString("es-AR")}`
+                    }
+                  />
+                  <Legend />
+                  {groupCurrencies.map((currency, idx) => (
+                    <Bar
+                      key={currency}
+                      dataKey={currency}
+                      name={currency}
+                      fill={CHART_COLORS[idx % CHART_COLORS.length]}
+                      radius={[4, 4, 0, 0]}
+                      activeBar={
+                        <Rectangle
+                          fill={CHART_COLORS[(idx + 2) % CHART_COLORS.length]}
+                        />
+                      }
+                    />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+        </Col>
       </Row>
     </div>
   );
