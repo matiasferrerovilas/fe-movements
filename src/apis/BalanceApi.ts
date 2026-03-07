@@ -36,9 +36,10 @@ export async function getBalance(filters: BalanceFilters) {
 
 export async function getBalanceWithCategoryByYear(filters: BalanceFilters) {
   const params = new URLSearchParams();
-
-  if (filters.year) params.append("year", String(filters.year));
-  if (filters.month) params.append("month", String(filters.month));
+  if (filters.dates) {
+    params.set("startDate", formatDate(filters.dates[0]));
+    params.set("endDate", formatDate(filters.dates[1]));
+  }
 
   // currencies: string[]
   if (filters.currency?.length)
