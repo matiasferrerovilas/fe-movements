@@ -30,6 +30,7 @@ import { useMutation } from "@tanstack/react-query";
 import { deleteServiceApi } from "../../apis/ServiceApi";
 import dayjs from "dayjs";
 import { useGroups } from "../../apis/hooks/useGroups";
+import type { Membership } from "../../models/UserGroup";
 
 const { Text, Title } = Typography;
 
@@ -250,13 +251,14 @@ export const ServiceCard = React.memo(function ServiceCard({
               rules={[{ required: true, message: "Seleccione un grupo" }]}
               style={{ marginBottom: 8 }}
             >
-              <Select placeholder="Seleccionar grupo">
-                {userGroups.map((group) => (
-                  <Select.Option key={group.id} value={group.name}>
-                    {group.name}
-                  </Select.Option>
-                ))}
-              </Select>
+              <Select
+                placeholder="Seleccionar grupo"
+                options={userGroups.map((group: Membership) => ({
+                  label: group.groupDescription,
+                  value: group.groupId,
+                  key: group.groupId,
+                }))}
+              />
             </Form.Item>
           ) : (
             <Flex gap={6} wrap="wrap" style={{ marginTop: 4 }}>

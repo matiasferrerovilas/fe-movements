@@ -1,6 +1,5 @@
 import type {
   GroupsWithMembers,
-  AccountWithMembers,
   ConfirmInvitations,
   CreateGroupForm,
   CreateInvitationForm,

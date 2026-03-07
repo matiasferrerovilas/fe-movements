@@ -244,8 +244,8 @@ function RouteComponent() {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(val: number) =>
-                      `$${val.toLocaleString("es-AR")}`
+                    formatter={(val) =>
+                      `$${(val ?? 0).toLocaleString("es-AR")}`
                     }
                   />
                   <Legend />
@@ -282,8 +282,8 @@ function RouteComponent() {
                   <XAxis dataKey="group" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} width={60} />
                   <Tooltip
-                    formatter={(val: number) =>
-                      `$${val.toLocaleString("es-AR")}`
+                    formatter={(val) =>
+                      `$${(val ?? 0).toLocaleString("es-AR")}`
                     }
                   />
                   <Legend />
