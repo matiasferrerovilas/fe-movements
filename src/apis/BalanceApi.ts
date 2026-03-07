@@ -1,11 +1,15 @@
 import dayjs from "dayjs";
-import type { BalanceResponse } from "../models/Balance";
+import type {
+  BalanceResponse,
+  MonthlyEvolutionRecord,
+} from "../models/Balance";
 import type {
   BalanceByCategory,
   BalanceByGroup,
 } from "../models/BalanceByCategory";
 import type { BalanceFilters } from "../routes/balance";
 import { api } from "./axios";
+import axios from "axios";
 
 const formatDate = (date: Date) => dayjs(date).format("YYYY-MM-DD");
 
@@ -76,3 +80,15 @@ export async function getBalanceWithGroupByYearAndMonth({
       throw error;
     });
 }
+
+export const getMonthlyEvolution = (
+  year: number,
+  accountIds?: number[],
+): Promise<MonthlyEvolutionRecord[]> => {
+  return api
+    .get("/balance/monthly-evolution", {
+      params: { year, accountIds },
+      paramsSerializer: { indexes: null },
+    })
+    .then((res) => res.data);
+};

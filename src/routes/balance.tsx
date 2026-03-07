@@ -40,6 +40,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import EvolucionAnual from "../components/balance/EvolucionAnual";
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -334,6 +335,12 @@ function RouteComponent() {
           </Card>
         </Col>
       </Row>
+      <div style={{ marginTop: 20 }}>
+        <EvolucionAnual
+          year={dayjs(filters.dates[0]).year()}
+          groupIds={filters.account}
+        />{" "}
+      </div>
     </div>
   );
 }

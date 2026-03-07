@@ -3,6 +3,7 @@ import {
   getBalance,
   getBalanceWithCategoryByYear,
   getBalanceWithGroupByYearAndMonth,
+  getMonthlyEvolution,
 } from "../BalanceApi";
 import type { BalanceFilters } from "../../routes/balance";
 
@@ -29,4 +30,14 @@ export const useBalanceSeparateByGroup = (year: number, month: number) =>
     queryFn: () =>
       getBalanceWithGroupByYearAndMonth({ year: year, month: month }),
     staleTime: 5 * 60 * 1000,
+  });
+
+export const useBalanceMonthlyEvolution = (
+  year: number,
+  groupIds?: number[] | null,
+) =>
+  useQuery({
+    queryKey: ["balance", "monthly-evolution", year, groupIds],
+    queryFn: () => getMonthlyEvolution(year, groupIds ?? undefined),
+    enabled: !!year,
   });
