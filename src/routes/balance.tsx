@@ -12,12 +12,13 @@ import {
   Typography,
 } from "antd";
 import { CurrencyEnum } from "../enums/CurrencyEnum";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RoleEnum } from "../enums/RoleEnum";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import { DatePicker } from "antd";
 import { DollarOutlined, EuroOutlined } from "@ant-design/icons";
+import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
 import { useGroups } from "../apis/hooks/useGroups";
 import { useCurrency } from "../apis/hooks/useCurrency";
 import {
@@ -25,7 +26,6 @@ import {
   useBalanceSeparateByGroup,
 } from "../apis/hooks/useBalance";
 import ResumenMensual from "../components/balance/ResumenMensual";
-import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
 import {
   Bar,
   BarChart,
@@ -76,31 +76,53 @@ const capitalize = (str: string) =>
 const currencyIcon = (currency?: CurrencyEnum) =>
   currency === CurrencyEnum.EUR ? <EuroOutlined /> : <DollarOutlined />;
 
+const DEFAULT_DATES: [Date, Date] = [
+  dayjs().startOf("month").toDate(),
+  dayjs().endOf("month").toDate(),
+];
+
 function RouteComponent() {
   const { token } = theme.useToken();
+
   const [filters, setFilters] = useState<BalanceFilters>({
     currency: CurrencyEnum.ARS,
-    account: [1],
-    dates: [dayjs().startOf("month").toDate(), dayjs().endOf("month").toDate()],
+    account: null,
+    dates: DEFAULT_DATES,
   });
+
   const filtersRef = useRef(filters);
-  const handleFiltersChange = useCallback((newFilters: BalanceFilters) => {
-    filtersRef.current = newFilters;
-    setFilters(newFilters);
+
+  const handleFiltersChange = useCallback((next: BalanceFilters) => {
+    filtersRef.current = next;
+    setFilters(next);
   }, []);
+
   const handleChange = useCallback(
-    (key: keyof BalanceFilters, value: any) =>
-      handleFiltersChange({ ...filters, [key]: value }),
-    [filters, handleFiltersChange],
+    <K extends keyof BalanceFilters>(key: K, value: BalanceFilters[K]) =>
+      handleFiltersChange({ ...filtersRef.current, [key]: value }),
+    [handleFiltersChange],
   );
 
   const { data: memberships = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
 
-  // Datos graficos
-  const categoryFilters = { ...filters, year: dayjs().year() };
+  useEffect(() => {
+    if (memberships.length > 0 && filtersRef.current.account === null) {
+      handleChange(
+        "account",
+        memberships.map((m) => m.groupId),
+      );
+    }
+  }, [memberships, handleChange]);
+
+  const categoryFilters = useMemo(
+    () => ({ ...filters, year: dayjs().year() }),
+    [filters],
+  );
+
   const { data: categoryData = [], isFetching: fetchingCategory } =
     useBalanceSeparateByCategory(categoryFilters);
+
   const { data: groupData = [], isFetching: fetchingGroup } =
     useBalanceSeparateByGroup(dayjs().year(), dayjs().month() + 1);
 
@@ -110,7 +132,11 @@ function RouteComponent() {
     [categoryData],
   );
 
-  const groupCurrencies = [...new Set(groupData.map((b) => b.currencySymbol))];
+  const groupCurrencies = useMemo(
+    () => [...new Set(groupData.map((b) => b.currencySymbol))],
+    [groupData],
+  );
+
   const groupChart = useMemo(
     () =>
       Object.values(
@@ -121,10 +147,29 @@ function RouteComponent() {
             acc[group][item.currencySymbol] = Number(item.total);
             return acc;
           },
-          {} as Record<string, any>,
+          {} as Record<string, Record<string, unknown>>,
         ),
       ),
     [groupData],
+  );
+
+  const rangePickerValue = useMemo(
+    () =>
+      filters.dates
+        ? ([dayjs(filters.dates[0]), dayjs(filters.dates[1])] as [Dayjs, Dayjs])
+        : null,
+    [filters.dates],
+  );
+
+  const handleRangeChange = useCallback(
+    (dates: [Dayjs | null, Dayjs | null] | null) => {
+      if (!dates?.[0] || !dates?.[1]) return;
+      handleChange("dates", [
+        dates[0].hour(12).minute(0).second(0).millisecond(0).toDate(),
+        dates[1].hour(12).minute(0).second(0).millisecond(0).toDate(),
+      ]);
+    },
+    [handleChange],
   );
 
   return (
@@ -161,34 +206,16 @@ function RouteComponent() {
               ),
             }))}
           />
+
           <RangePicker
             size="middle"
-            value={
-              filters.dates
-                ? [dayjs(filters.dates[0]), dayjs(filters.dates[1])]
-                : null
-            }
-            onChange={(dates: [Dayjs | null, Dayjs | null] | null) => {
-              if (!dates?.[0] || !dates?.[1]) return;
-              handleChange("dates", [
-                dayjs(dates[0])
-                  .hour(12)
-                  .minute(0)
-                  .second(0)
-                  .millisecond(0)
-                  .toDate(),
-                dayjs(dates[1])
-                  .hour(12)
-                  .minute(0)
-                  .second(0)
-                  .millisecond(0)
-                  .toDate(),
-              ]);
-            }}
+            value={rangePickerValue}
+            onChange={handleRangeChange}
           />
+
           <Select
             mode="multiple"
-            value={filters.account}
+            value={filters.account ?? []}
             onChange={(val: number[]) => handleChange("account", val)}
             style={{ minWidth: 180 }}
             allowClear
