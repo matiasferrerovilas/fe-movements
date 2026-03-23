@@ -27,7 +27,7 @@ import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import type { Service, ServiceToUpdate } from "../../models/Service";
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { deleteServiceApi } from "../../apis/ServiceApi";
+import { deleteSubscriptionApi } from "../../apis/SubscriptionApi";
 import dayjs from "dayjs";
 import { useGroups } from "../../apis/hooks/useGroups";
 import type { Membership } from "../../models/UserGroup";
@@ -100,7 +100,7 @@ export const ServiceCard = React.memo(function ServiceCard({
   };
 
   const deleteServiceMutation = useMutation({
-    mutationFn: () => deleteServiceApi(service),
+    mutationFn: () => deleteSubscriptionApi(service),
     onError: (err) => console.error("Error eliminando el servicio:", err),
     onSuccess: () => console.debug("✅ Servicio eliminado correctamente"),
   });

@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { getServicesApi } from "../ServiceApi";
+import { getSubscriptionsApi } from "../SubscriptionApi";
 
 const SERVICE_KEY = ["service-history"] as const;
 
-export const useService = () =>
+export const useSubscription = () =>
   useQuery({
     queryKey: SERVICE_KEY,
-    queryFn: () => getServicesApi(),
+    queryFn: () => getSubscriptionsApi(),
     staleTime: 5 * 60 * 1000,
     select: (data) => data,
   });

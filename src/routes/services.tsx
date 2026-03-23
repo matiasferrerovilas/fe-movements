@@ -2,15 +2,15 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Col, Row } from "antd";
 import {
-  addServiceApi,
-  payServiceApi,
-  updateServiceApi,
+  addSubscriptionApi,
+  paySubscriptionApi,
+  updateSubscriptionApi,
   type ServiceToAdd,
-} from "../apis/ServiceApi";
+} from "../apis/SubscriptionApi";
 import { ServiceCard } from "../components/services/ServiceCard";
 import type { Service, ServiceToUpdate } from "../models/Service";
 import { ServiceCardForm } from "../components/services/ServiceCardForm";
-import { useService } from "../apis/hooks/useService";
+import { useSubscription } from "../apis/hooks/useService";
 import { useServiceSubscription } from "../apis/websocket/useServiceSubscription";
 import { ServiceSummary } from "../components/services/ServiceSummary";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
@@ -24,26 +24,26 @@ export const Route = createFileRoute("/services")({
 });
 
 function RouteComponent() {
-  const { data: services = [], isFetching } = useService();
+  const { data: services = [], isFetching } = useSubscription();
 
   useServiceSubscription();
 
   const payMutation = useMutation({
-    mutationFn: ({ service }: { service: Service }) => payServiceApi(service),
+    mutationFn: ({ service }: { service: Service }) => paySubscriptionApi(service),
     onError: (err) => {
       console.error("Error subiendo archivo:", err);
     },
   });
   const updateServiceMutation = useMutation({
     mutationFn: ({ service }: { service: ServiceToUpdate }) =>
-      updateServiceApi(service),
+      updateSubscriptionApi(service),
     onError: (err) => {
       console.error("Error subiendo archivo:", err);
     },
   });
   const addServiceMutation = useMutation({
     mutationFn: ({ service }: { service: ServiceToAdd }) =>
-      addServiceApi(service),
+      addSubscriptionApi(service),
     onError: (err) => {
       console.error("Error subiendo archivo:", err);
     },

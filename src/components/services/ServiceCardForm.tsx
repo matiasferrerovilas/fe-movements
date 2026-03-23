@@ -21,7 +21,7 @@ import CloseCircleOutlined from "@ant-design/icons/CloseCircleOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import dayjs from "dayjs";
 import { CurrencyEnum } from "../../enums/CurrencyEnum";
-import type { ServiceToAdd } from "../../apis/ServiceApi";
+import type { ServiceToAdd } from "../../apis/SubscriptionApi";
 import { useGroups } from "../../apis/hooks/useGroups";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 
