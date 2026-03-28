@@ -19,7 +19,6 @@ import { TypeEnum } from "../../../enums/TypeExpense";
 import { useMovementSubscription } from "../../../apis/websocket/useMovementSubscription";
 import { useMutation } from "@tanstack/react-query";
 import { deleteExpenseApi } from "../../../apis/movement/ExpenseApi";
-import { BankEnumHelper } from "../../../enums/BankEnum";
 import { DeleteOutlined } from "@ant-design/icons";
 import CategoryCircleTable from "./CategoryCircleTable";
 import { capitalizeFirst } from "../../utils/stringFunctions";
@@ -165,7 +164,7 @@ export default function MovementTable({ filters }: MovementTableProps) {
                     />
                   </Col>
                   <Col span={2}>
-                    {capitalizeFirst(BankEnumHelper.fromString(record.bank))}
+                    {capitalizeFirst(record.bank)}
                   </Col>
                   <Col span={2}>{capitalizeFirst(record.account.name)}</Col>
                   <Col span={2}>{capitalizeFirst(record.owner.email)}</Col>
@@ -228,7 +227,7 @@ export default function MovementTable({ filters }: MovementTableProps) {
                 </Col>
                 <Col>
                   <Tag>
-                    {capitalizeFirst(BankEnumHelper.fromString(record.bank))}
+                    {capitalizeFirst(record.bank)}
                   </Tag>
                 </Col>
                 <Col>

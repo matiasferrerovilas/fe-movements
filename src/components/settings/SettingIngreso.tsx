@@ -29,9 +29,9 @@ import {
   reloadIncome,
 } from "../../apis/income/IncomeAPI";
 import type { Income, IncomeAddForm } from "../../models/Income";
-import { BankEnum } from "../../enums/BankEnum";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { CurrencyEnum } from "../../enums/CurrencyEnum";
+import { useBanks } from "../../apis/hooks/useBank";
 
 const { Title, Text } = Typography;
 
@@ -41,6 +41,7 @@ export function SettingIngreso() {
   const { token } = theme.useToken();
   const { data: memberships = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
+  const { data: banks = [] } = useBanks();
   const queryClient = useQueryClient();
 
   const createIngresoMutation = useMutation({
@@ -133,9 +134,9 @@ export function SettingIngreso() {
                 rules={[{ required: true, message: "Seleccione un banco" }]}
               >
                 <Select placeholder="Seleccionar banco">
-                  {Object.values(BankEnum).map((bank) => (
-                    <Select.Option key={bank} value={bank}>
-                      {bank}
+                  {banks.map((bank) => (
+                    <Select.Option key={bank.id} value={bank.description}>
+                      {bank.description}
                     </Select.Option>
                   ))}
                 </Select>

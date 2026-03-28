@@ -3,7 +3,7 @@ import { Button, Form, Select, Typography, Upload } from "antd";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import { useGroups } from "../../../apis/hooks/useGroups";
 import { useMutation } from "@tanstack/react-query";
-import { BankEnum } from "../../../enums/BankEnum";
+import { useBanks } from "../../../apis/hooks/useBank";
 import type { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { uploadExpenseApi } from "../../../apis/movement/ExpenseApi";
 const { Text } = Typography;
@@ -27,6 +27,7 @@ interface ImportMovementTabProps {
 const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
   ({ onSuccess }, ref) => {
     const { data: memberships = [] } = useGroups();
+    const { data: banks = [] } = useBanks();
     const [form] = Form.useForm<UploadForm>();
 
     const uploadMutation = useMutation({
@@ -94,15 +95,11 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
           rules={[{ required: true, message: "Seleccione un banco" }]}
         >
           <Select placeholder="Seleccionar banco">
-            {Object.values(BankEnum)
-              .filter(
-                (bank) => bank == BankEnum.GALICIA || bank == BankEnum.BBVA,
-              )
-              .map((bank) => (
-                <Select.Option key={bank} value={bank}>
-                  {bank}
-                </Select.Option>
-              ))}
+            {banks.map((bank) => (
+              <Select.Option key={bank.id} value={bank.description}>
+                {bank.description}
+              </Select.Option>
+            ))}
           </Select>
         </Form.Item>
 

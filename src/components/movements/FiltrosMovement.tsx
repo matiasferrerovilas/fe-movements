@@ -1,13 +1,13 @@
 import { Card, Col, Input, Row, Segmented, Select } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { MovementFilters } from "../../routes/movement";
-import { BankEnum } from "../../enums/BankEnum";
 import { TypeEnum } from "../../enums/TypeExpense";
 import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import { useCategory } from "../../apis/hooks/useCategory";
 import HistoryOutlined from "@ant-design/icons/HistoryOutlined";
 import RiseOutlined from "@ant-design/icons/RiseOutlined";
 import { useCurrency } from "../../apis/hooks/useCurrency";
+import { useBanks } from "../../apis/hooks/useBank";
 
 const { Option } = Select;
 
@@ -28,11 +28,12 @@ export default function FiltrosMovement({
   const { data: categories = [] } = useCategory();
   const [filters, setFilters] = useState<MovementFilters>(initialFilters);
   const { data: currencies = [] } = useCurrency();
+  const { data: banks = [] } = useBanks();
 
   const handleChange = useCallback(
     (
       key: keyof MovementFilters,
-      value: string | boolean | null | BankEnum[] | TypeEnum[] | string[],
+      value: string | boolean | null | string[] | TypeEnum[],
     ) => setFilters((prev) => ({ ...prev, [key]: value })),
     [],
   );
@@ -122,14 +123,14 @@ export default function FiltrosMovement({
             <Select
               mode="multiple"
               value={filters.bank}
-              onChange={(val) => handleChange("bank", val as BankEnum[])}
+              onChange={(val) => handleChange("bank", val as string[])}
               style={{ width: 200 }}
               placeholder="Todos los Bancos"
               allowClear
             >
-              {Object.entries(BankEnum).map(([key, label]) => (
-                <Option key={key} value={key}>
-                  {capitalize(label)}
+              {banks.map((bank) => (
+                <Option key={bank.id} value={bank.description}>
+                  {capitalize(bank.description)}
                 </Option>
               ))}
             </Select>

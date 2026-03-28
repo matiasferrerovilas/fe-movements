@@ -2,7 +2,6 @@ import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { Col, DatePicker, Form, Input, InputNumber, Row, Select } from "antd";
 import { useGroups } from "../../../apis/hooks/useGroups";
 import { useMutation } from "@tanstack/react-query";
-import { BankEnum } from "../../../enums/BankEnum";
 import { TypeEnum } from "../../../enums/TypeExpense";
 import type { CreateMovementForm, Movement } from "../../../models/Movement";
 import { useCategory } from "../../../apis/hooks/useCategory";
@@ -13,6 +12,7 @@ import {
   uploadExpense,
 } from "../../../apis/movement/ExpenseApi";
 import { useCurrency } from "../../../apis/hooks/useCurrency";
+import { useBanks } from "../../../apis/hooks/useBank";
 import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
@@ -32,6 +32,7 @@ const AddMovementExpenseTab = forwardRef<
   const [form] = Form.useForm<CreateMovementForm>();
   const { data: categories = [] } = useCategory();
   const { data: currencies = [] } = useCurrency();
+  const { data: banks = [] } = useBanks();
 
   useEffect(() => {
     if (!movementToEdit) return;
@@ -101,9 +102,9 @@ const AddMovementExpenseTab = forwardRef<
             rules={[{ required: true, message: "Seleccione un banco" }]}
           >
             <Select placeholder="Seleccionar banco">
-              {Object.entries(BankEnum).map(([key, label]) => (
-                <Select.Option key={key} value={key}>
-                  {label}
+              {banks.map((bank) => (
+                <Select.Option key={bank.id} value={bank.description}>
+                  {bank.description}
                 </Select.Option>
               ))}
             </Select>

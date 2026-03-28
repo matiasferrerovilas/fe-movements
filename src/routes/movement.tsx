@@ -3,7 +3,6 @@ import { Card } from "antd";
 import { useCallback, useRef, useState } from "react";
 import MovementTable from "../components/movements/tables/MovementTable";
 import FiltrosMovement from "../components/movements/FiltrosMovement";
-import { BankEnum } from "../enums/BankEnum";
 import { TypeEnum } from "../enums/TypeExpense";
 import AddMovementModal from "../components/modals/movements/AddMovementModal";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
@@ -19,7 +18,7 @@ export const Route = createFileRoute("/movement")({
 export type MovementFilters = {
   description: string | null;
   type: TypeEnum[];
-  bank: BankEnum[];
+  bank: string[];
   categories: string[];
   isLive: boolean;
   currency: string[];
