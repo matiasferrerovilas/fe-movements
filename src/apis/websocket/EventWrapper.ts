@@ -12,5 +12,6 @@ export const EventType = {
   INVITATION_CONFIRMED_REJECTED: "INVITATION_CONFIRMED_REJECTED",
   INVITATION_ADDED: "INVITATION_ADDED",
   MEMBERSHIP_UPDATED: "MEMBERSHIP_UPDATED",
+  ACCOUNT_LEFT: "ACCOUNT_LEFT",
 } as const;
 export type EventType = (typeof EventType)[keyof typeof EventType];

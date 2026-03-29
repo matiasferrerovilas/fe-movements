@@ -12,7 +12,7 @@ export interface AccountWithMembers {
 }
 
 export interface Membership {
-  groupId: number;
+  accountId: number;
   membershipId: number;
   groupDescription: string;
   role: string;

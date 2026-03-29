@@ -21,15 +21,6 @@ export interface OnboardingIngresoForm {
   userType: string;
 }
 
-export async function getIsFirstLogin() {
-  return api
-    .get<boolean>("/onboarding/is-first")
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error fetching services:", error);
-      throw error;
-    });
-}
 export async function finishOnboarding(form: OnboardingForm) {
   return api
     .post("/onboarding", form)

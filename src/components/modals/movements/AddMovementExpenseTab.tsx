@@ -196,8 +196,8 @@ const AddMovementExpenseTab = forwardRef<
               placeholder="Seleccionar grupo"
               options={memberships.map((membership) => ({
                 label: membership.groupDescription,
-                value: membership.groupId,
-                key: membership.groupId,
+                value: membership.accountId,
+                key: membership.accountId,
               }))}
             />
           </Form.Item>

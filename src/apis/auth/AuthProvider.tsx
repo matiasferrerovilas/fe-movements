@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useKeycloak } from "@react-keycloak/web";
 import { AuthContext } from "./AuthContext";
 import type { AuthContextState } from "./AuthContext";
-import { getIsFirstLogin } from "../onboarding/OnBoarding";
+import { api } from "../axios";
+import type { CurrentUser } from "../../models/CurrentUser";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { keycloak } = useKeycloak();
@@ -37,10 +38,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const loadUserState = async () => {
       setState((s) => ({ ...s, loading: true }));
       try {
-        const firstLogin = await getIsFirstLogin();
+        const currentUser = await api
+          .get<CurrentUser>("/users/me")
+          .then((r) => r.data);
         setState({
           authenticated: true,
-          firstLogin,
+          firstLogin: currentUser.isFirstLogin,
           loading: false,
         });
       } catch {

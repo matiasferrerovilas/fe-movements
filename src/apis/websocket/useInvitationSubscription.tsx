@@ -1,10 +1,11 @@
-// useMovementSubscription.ts
+// useInvitationSubscription.ts
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
 import { EventType, type EventWrapper } from "./EventWrapper";
 import type { Invitations } from "../../models/UserGroup";
 import { useKeycloak } from "@react-keycloak/web";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 const INVITATIONS_ACCOUNT_QUERY_KEY = "invitations-groups" as const;
 
@@ -12,6 +13,8 @@ export const useInvitationSubscription = () => {
   const queryClient = useQueryClient();
   const ws = useWebSocket();
   const { keycloak } = useKeycloak();
+  const { data: currentUser } = useCurrentUser();
+  const userId = currentUser?.id;
 
   const callbackRef =
     useRef<(event: EventWrapper<Invitations>) => void | null>(null);
@@ -48,6 +51,9 @@ export const useInvitationSubscription = () => {
             case EventType.INVITATION_CONFIRMED_REJECTED: {
               const payload = event.message;
 
+              queryClient.invalidateQueries({ queryKey: ["user-groups"] });
+              queryClient.invalidateQueries({ queryKey: ["user-groups-count"] });
+
               return old.filter((i) => i.id !== payload.id);
             }
             default:
@@ -61,19 +67,22 @@ export const useInvitationSubscription = () => {
   }
 
   useEffect(() => {
-    if (!ws.isConnected) return;
+    if (!ws.isConnected || !userId) return;
 
     const callback = callbackRef.current!;
-    const topics = ["/topic/invitation/update", "/topic/invitation/new"];
+    const topics = [
+      `/topic/invitation/${userId}/new`,
+      `/topic/invitation/${userId}/update`,
+    ];
 
-    // ✅ Suscribimos una vez por montaje
+    // Suscribimos una vez por montaje
     topics.forEach((topic) => ws.subscribe(topic, callback));
 
-    // 🔄 Cleanup: desuscribimos solo cuando el hook se desmonta o el socket cambia
+    // Cleanup: desuscribimos solo cuando el hook se desmonta o el socket cambia
     return () => {
       topics.forEach((topic) => ws.unsubscribe(topic, callback));
     };
-  }, [ws, ws.isConnected]); // se re-suscribe si el socket cambia
+  }, [ws, ws.isConnected, userId]); // se re-suscribe si el socket o el userId cambia
 
   return null;
 };

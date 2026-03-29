@@ -111,7 +111,7 @@ function RouteComponent() {
     if (memberships.length > 0 && filtersRef.current.account === null) {
       handleChange(
         "account",
-        memberships.map((m) => m.groupId),
+        memberships.map((m) => m.accountId),
       );
     }
   }, [memberships, handleChange]);
@@ -223,8 +223,8 @@ function RouteComponent() {
             placeholder="Grupos"
             options={memberships.map((m) => ({
               label: m.groupDescription,
-              value: m.groupId,
-              key: m.groupId,
+              value: m.accountId,
+              key: m.accountId,
             }))}
           />
         </Flex>

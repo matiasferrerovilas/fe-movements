@@ -16,9 +16,9 @@ export const useServiceSubscription = () => {
   const topics = useMemo(
     () =>
       memberships.flatMap((m) => [
-        `/topic/servicios/${m.groupId}/update`,
-        `/topic/servicios/${m.groupId}/new`,
-        `/topic/servicios/${m.groupId}/remove`,
+        `/topic/servicios/${m.accountId}/update`,
+        `/topic/servicios/${m.accountId}/new`,
+        `/topic/servicios/${m.accountId}/remove`,
       ]),
     [memberships]
   );

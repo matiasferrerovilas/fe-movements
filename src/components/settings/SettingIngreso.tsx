@@ -78,7 +78,7 @@ export function SettingIngreso() {
       (c) => c.id === defaultCurrency?.value
     )?.symbol;
     const groupDescription = memberships.find(
-      (m) => m.groupId === defaultAccount?.value
+      (m) => m.accountId === defaultAccount?.value
     )?.groupDescription;
     form.setFieldsValue({
       bank: bankDescription,
@@ -142,8 +142,8 @@ export function SettingIngreso() {
           initialValues={
             memberships && {
               group: memberships.find(
-                (m) => m.groupId === defaultAccount?.value
-              )?.groupDescription,
+              (m) => m.accountId === defaultAccount?.value
+            )?.groupDescription,
               bank: banks.find((b) => b.id === defaultBank?.value)?.description,
               currency: (() => {
                 const sym = currencies.find(
@@ -181,7 +181,7 @@ export function SettingIngreso() {
                   options={memberships.map((membership) => ({
                     label: membership.groupDescription,
                     value: membership.groupDescription,
-                    key: membership.groupId,
+                    key: membership.accountId,
                   }))}
                 />
               </Form.Item>

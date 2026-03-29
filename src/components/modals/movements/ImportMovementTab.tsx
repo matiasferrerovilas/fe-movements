@@ -123,7 +123,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
             placeholder="Seleccionar grupo"
             options={memberships.map((membership) => ({
               label: membership.groupDescription,
-              value: membership.groupId,
+              value: membership.accountId,
             }))}
           />
         </Form.Item>

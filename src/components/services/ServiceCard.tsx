@@ -255,8 +255,8 @@ export const ServiceCard = React.memo(function ServiceCard({
                 placeholder="Seleccionar grupo"
                 options={userGroups.map((group: Membership) => ({
                   label: group.groupDescription,
-                  value: group.groupId,
-                  key: group.groupId,
+                  value: group.accountId,
+                  key: group.accountId,
                 }))}
               />
             </Form.Item>

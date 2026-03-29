@@ -18,8 +18,8 @@ export const useMovementSubscription = () => {
   const topics = useMemo(
     () =>
       memberships.flatMap((m) => [
-        `/topic/movimientos/${m.groupId}/new`,
-        `/topic/movimientos/${m.groupId}/delete`,
+        `/topic/movimientos/${m.accountId}/new`,
+        `/topic/movimientos/${m.accountId}/delete`,
       ]),
     [memberships]
   );

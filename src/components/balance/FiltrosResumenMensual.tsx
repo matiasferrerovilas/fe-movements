@@ -116,8 +116,8 @@ export default function FiltrosResumenMensual({
             placeholder="Seleccionar grupo"
             options={memberships.map((membership) => ({
               label: membership.groupDescription,
-              value: membership.groupId,
-              key: membership.groupId,
+              value: membership.accountId,
+              key: membership.accountId,
             }))}
           />
         </Col>
