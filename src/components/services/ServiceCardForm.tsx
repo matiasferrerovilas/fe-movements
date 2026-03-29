@@ -20,7 +20,6 @@ import CheckCircleOutlined from "@ant-design/icons/CheckCircleOutlined";
 import CloseCircleOutlined from "@ant-design/icons/CloseCircleOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import dayjs from "dayjs";
-import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import type { ServiceToAdd } from "../../apis/SubscriptionApi";
 import { useGroups } from "../../apis/hooks/useGroups";
 import { useCurrency } from "../../apis/hooks/useCurrency";
@@ -47,6 +46,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const { data: memberships = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
   const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
+  const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const { token } = theme.useToken();
 
   const onFinish = (values: CreateServiceForm) => {
@@ -72,12 +72,16 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   useEffect(() => {
     if (!memberships.length) return;
 
+    const currencySymbol = currencies.find(
+      (c) => c.id === defaultCurrency?.value
+    )?.symbol;
+
     form.setFieldsValue({
       groupId: defaultAccount?.value ?? undefined,
-      currency: CurrencyEnum.ARS,
+      currency: currencySymbol,
       isPaid: false,
     });
-  }, [memberships, defaultAccount]);
+  }, [memberships, defaultAccount, defaultCurrency, currencies]);
 
   return (
     <Card
@@ -140,7 +144,8 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
           memberships && {
             groupId: defaultAccount?.value ?? undefined,
             isPaid: false,
-            currency: CurrencyEnum.ARS,
+            currency: currencies.find((c) => c.id === defaultCurrency?.value)
+              ?.symbol,
           }
         }
       >

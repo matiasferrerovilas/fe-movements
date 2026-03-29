@@ -15,6 +15,7 @@ import {
   Typography,
 } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useGroups } from "../../apis/hooks/useGroups";
 import { useIncome } from "../../apis/hooks/useIncome";
 import { useUserDefault } from "../../apis/hooks/useSettings";
@@ -31,7 +32,6 @@ import {
 } from "../../apis/income/IncomeAPI";
 import type { Income, IncomeAddForm } from "../../models/Income";
 import { useCurrency } from "../../apis/hooks/useCurrency";
-import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import { useBanks } from "../../apis/hooks/useBank";
 
 const { Title, Text } = Typography;
@@ -44,6 +44,8 @@ export function SettingIngreso() {
   const { data: currencies = [] } = useCurrency();
   const { data: banks = [] } = useBanks();
   const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
+  const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
+  const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const queryClient = useQueryClient();
 
   const createIngresoMutation = useMutation({
@@ -68,8 +70,24 @@ export function SettingIngreso() {
     },
   });
 
-  const onFinish = (values: IncomeAddForm) => {
-    createIngresoMutation.mutate({ income: values });
+  useEffect(() => {
+    const bankDescription = banks.find(
+      (b) => b.id === defaultBank?.value
+    )?.description;
+    const currencySymbol = currencies.find(
+      (c) => c.id === defaultCurrency?.value
+    )?.symbol;
+    const groupDescription = memberships.find(
+      (m) => m.groupId === defaultAccount?.value
+    )?.groupDescription;
+    form.setFieldsValue({
+      bank: bankDescription,
+      currency: currencySymbol,
+      group: groupDescription,
+    });
+  }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies, memberships]);
+
+  const onFinish = (values: IncomeAddForm) => {    createIngresoMutation.mutate({ income: values });
     form.resetFields();
   };
 
@@ -126,7 +144,9 @@ export function SettingIngreso() {
               group: memberships.find(
                 (m) => m.groupId === defaultAccount?.value
               )?.groupDescription,
-              currency: CurrencyEnum.ARS,
+              bank: banks.find((b) => b.id === defaultBank?.value)?.description,
+              currency: currencies.find((c) => c.id === defaultCurrency?.value)
+                ?.symbol,
             }
           }
         >

@@ -6,7 +6,6 @@ import { TypeEnum } from "../../../enums/TypeExpense";
 import type { CreateMovementForm, Movement } from "../../../models/Movement";
 import { useCategory } from "../../../apis/hooks/useCategory";
 import dayjs from "dayjs";
-import { CurrencyEnum } from "../../../enums/CurrencyEnum";
 import {
   updateExpense,
   uploadExpense,
@@ -35,6 +34,8 @@ const AddMovementExpenseTab = forwardRef<
   const { data: currencies = [] } = useCurrency();
   const { data: banks = [] } = useBanks();
   const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
+  const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
+  const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
 
   useEffect(() => {
     if (!movementToEdit) return;
@@ -54,12 +55,19 @@ const AddMovementExpenseTab = forwardRef<
 
   useEffect(() => {
     if (movementToEdit) return;
+    const bankDescription = banks.find(
+      (b) => b.id === defaultBank?.value
+    )?.description;
+    const currencySymbol = currencies.find(
+      (c) => c.id === defaultCurrency?.value
+    )?.symbol;
     form.setFieldsValue({
       groupId: defaultAccount?.value ?? undefined,
-      currency: CurrencyEnum.ARS,
+      bank: bankDescription,
+      currency: currencySymbol,
       date: dayjs(),
     });
-  }, [defaultAccount]);
+  }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies]);
 
   const uploadMutation = useMutation({
     mutationFn: (values: CreateMovementForm) =>
@@ -99,7 +107,9 @@ const AddMovementExpenseTab = forwardRef<
       initialValues={{
         date: dayjs(),
         groupId: defaultAccount?.value ?? undefined,
-        currency: CurrencyEnum.ARS,
+        bank: banks.find((b) => b.id === defaultBank?.value)?.description,
+        currency:
+          currencies.find((c) => c.id === defaultCurrency?.value)?.symbol,
       }}
     >
       <Row gutter={[12, 0]}>

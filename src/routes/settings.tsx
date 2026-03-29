@@ -6,7 +6,9 @@ import { SettingInviteGroups } from "../components/settings/SettingInviteGroups"
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
 import SettingAccount from "../components/settings/SettingAccount";
-import { UserOutlined, TeamOutlined } from "@ant-design/icons";
+import { SettingBank } from "../components/settings/SettingBank";
+import { SettingCurrency } from "../components/settings/SettingCurrency";
+import { UserOutlined, TeamOutlined, SettingOutlined } from "@ant-design/icons";
 
 const { useBreakpoint } = Grid;
 
@@ -37,6 +39,17 @@ const TABS = [
       <Flex vertical gap={16}>
         <SettingInviteGroups />
         <SettingGroups />
+      </Flex>
+    ),
+  },
+  {
+    key: "preferencias",
+    label: "Preferencias",
+    icon: <SettingOutlined />,
+    children: (
+      <Flex vertical gap={16}>
+        <SettingBank />
+        <SettingCurrency />
       </Flex>
     ),
   },

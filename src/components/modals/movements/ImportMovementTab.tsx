@@ -30,6 +30,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
     const { data: memberships = [] } = useGroups();
     const { data: banks = [] } = useBanks();
     const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
+    const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
     const [form] = Form.useForm<UploadForm>();
 
     const uploadMutation = useMutation({
@@ -44,10 +45,14 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
     });
 
     useEffect(() => {
+      const bankDescription = banks.find(
+        (b) => b.id === defaultBank?.value
+      )?.description;
       form.setFieldsValue({
         groupId: defaultAccount?.value ?? undefined,
+        bank: bankDescription,
       });
-    }, [defaultAccount]);
+    }, [defaultAccount, defaultBank, banks]);
 
     useImperativeHandle(ref, () => ({      handleConfirm: () => {
         const values = form.getFieldsValue();
@@ -79,6 +84,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         layout="vertical"
         initialValues={{
           groupId: defaultAccount?.value ?? undefined,
+          bank: banks.find((b) => b.id === defaultBank?.value)?.description,
         }}
       >
         <div style={{ marginBottom: 10 }}>
