@@ -82,7 +82,7 @@ export function SettingIngreso() {
     )?.groupDescription;
     form.setFieldsValue({
       bank: bankDescription,
-      currency: currencySymbol,
+      currency: currencySymbol ? { symbol: currencySymbol } : undefined,
       group: groupDescription,
     });
   }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies, memberships]);
@@ -145,8 +145,12 @@ export function SettingIngreso() {
                 (m) => m.groupId === defaultAccount?.value
               )?.groupDescription,
               bank: banks.find((b) => b.id === defaultBank?.value)?.description,
-              currency: currencies.find((c) => c.id === defaultCurrency?.value)
-                ?.symbol,
+              currency: (() => {
+                const sym = currencies.find(
+                  (c) => c.id === defaultCurrency?.value
+                )?.symbol;
+                return sym ? { symbol: sym } : undefined;
+              })(),
             }
           }
         >
