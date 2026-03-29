@@ -17,6 +17,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGroups } from "../../apis/hooks/useGroups";
 import { useIncome } from "../../apis/hooks/useIncome";
+import { useUserDefault } from "../../apis/hooks/useSettings";
 import {
   DeleteOutlined,
   DollarOutlined,
@@ -42,6 +43,7 @@ export function SettingIngreso() {
   const { data: memberships = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
   const { data: banks = [] } = useBanks();
+  const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
   const queryClient = useQueryClient();
 
   const createIngresoMutation = useMutation({
@@ -121,7 +123,9 @@ export function SettingIngreso() {
           onFinish={onFinish}
           initialValues={
             memberships && {
-              group: memberships.find((m) => m.isDefault)?.groupDescription,
+              group: memberships.find(
+                (m) => m.groupId === defaultAccount?.value
+              )?.groupDescription,
               currency: CurrencyEnum.ARS,
             }
           }

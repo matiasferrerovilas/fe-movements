@@ -9,6 +9,7 @@ const { Text } = Typography;
 
 interface SettingGroupCardProps {
   group: GroupsWithMembers;
+  defaultGroupId?: number | null;
   onSetDefault: (groupId: number) => void;
   isSettingDefault?: boolean;
 }
@@ -49,15 +50,17 @@ const css = `
 
 export default function SettingGroupCard({
   group,
+  defaultGroupId,
   onSetDefault,
   isSettingDefault,
 }: SettingGroupCardProps) {
+  const isDefault = group.id === defaultGroupId;
   return (
     <>
       <style>{css}</style>
       <Card
         hoverable
-        className={`group-card ${group.isDefault ? "group-card-default" : "group-card-normal"}`}
+        className={`group-card ${isDefault ? "group-card-default" : "group-card-normal"}`}
         styles={{ body: { padding: "14px 18px", cursor: "default" } }}
       >
         <div
@@ -73,13 +76,13 @@ export default function SettingGroupCard({
                 width: 44,
                 height: 44,
                 borderRadius: 13,
-                background: group.isDefault
+                background: isDefault
                   ? "linear-gradient(135deg, #1a6fd4 0%, #4f9cf7 100%)"
                   : "linear-gradient(135deg, #b0bec5 0%, #90a4ae 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: group.isDefault
+                boxShadow: isDefault
                   ? "0 4px 14px rgba(26, 111, 212, 0.32)"
                   : "0 2px 6px rgba(0,0,0,0.08)",
                 flexShrink: 0,
@@ -94,14 +97,14 @@ export default function SettingGroupCard({
                   strong
                   style={{
                     fontSize: 15,
-                    color: group.isDefault ? "#1a3a6b" : "#1f2937",
+                    color: isDefault ? "#1a3a6b" : "#1f2937",
                     letterSpacing: "-0.2px",
                     lineHeight: 1,
                   }}
                 >
                   {group.name}
                 </Text>
-                {group.isDefault && (
+                {isDefault && (
                   <span
                     style={{
                       background: "linear-gradient(90deg, #1a6fd4, #4f9cf7)",
@@ -127,7 +130,7 @@ export default function SettingGroupCard({
           <Space size={4}>
             <Tooltip
               title={
-                group.isDefault
+                isDefault
                   ? "Ya es el grupo por defecto"
                   : "Establecer como grupo por defecto"
               }
@@ -135,10 +138,10 @@ export default function SettingGroupCard({
               <Button
                 type="text"
                 className="star-btn"
-                disabled={group.isDefault || isSettingDefault}
+                disabled={isDefault || isSettingDefault}
                 onClick={() => onSetDefault(group.id)}
                 icon={
-                  group.isDefault ? (
+                  isDefault ? (
                     <StarFilled style={{ color: "#f5a623", fontSize: 18 }} />
                   ) : (
                     <StarOutlined style={{ color: "#c4c9d4", fontSize: 18 }} />

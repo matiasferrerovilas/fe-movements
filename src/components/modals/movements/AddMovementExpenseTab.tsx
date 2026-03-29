@@ -13,6 +13,7 @@ import {
 } from "../../../apis/movement/ExpenseApi";
 import { useCurrency } from "../../../apis/hooks/useCurrency";
 import { useBanks } from "../../../apis/hooks/useBank";
+import { useUserDefault } from "../../../apis/hooks/useSettings";
 import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
@@ -33,6 +34,7 @@ const AddMovementExpenseTab = forwardRef<
   const { data: categories = [] } = useCategory();
   const { data: currencies = [] } = useCurrency();
   const { data: banks = [] } = useBanks();
+  const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
 
   useEffect(() => {
     if (!movementToEdit) return;
@@ -49,6 +51,15 @@ const AddMovementExpenseTab = forwardRef<
       date: dayjs(movementToEdit.date),
     });
   }, [movementToEdit, form]);
+
+  useEffect(() => {
+    if (movementToEdit) return;
+    form.setFieldsValue({
+      groupId: defaultAccount?.value ?? undefined,
+      currency: CurrencyEnum.ARS,
+      date: dayjs(),
+    });
+  }, [defaultAccount]);
 
   const uploadMutation = useMutation({
     mutationFn: (values: CreateMovementForm) =>
@@ -85,13 +96,11 @@ const AddMovementExpenseTab = forwardRef<
     <Form
       form={form}
       layout="vertical"
-      initialValues={
-        memberships && {
-          date: dayjs(),
-          groupId: memberships.find((m) => m.isDefault)?.groupId,
-          currency: CurrencyEnum.ARS,
-        }
-      }
+      initialValues={{
+        date: dayjs(),
+        groupId: defaultAccount?.value ?? undefined,
+        currency: CurrencyEnum.ARS,
+      }}
     >
       <Row gutter={[12, 0]}>
         {/* Banco + Tipo */}

@@ -24,6 +24,7 @@ import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import type { ServiceToAdd } from "../../apis/SubscriptionApi";
 import { useGroups } from "../../apis/hooks/useGroups";
 import { useCurrency } from "../../apis/hooks/useCurrency";
+import { useUserDefault } from "../../apis/hooks/useSettings";
 
 const { Text } = Typography;
 
@@ -45,6 +46,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const [isPaid, setIsPaid] = useState(false);
   const { data: memberships = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
+  const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
   const { token } = theme.useToken();
 
   const onFinish = (values: CreateServiceForm) => {
@@ -70,14 +72,12 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   useEffect(() => {
     if (!memberships.length) return;
 
-    const defaultGroup = memberships.find((m) => m.isDefault)?.groupId;
-
     form.setFieldsValue({
-      groupId: defaultGroup,
+      groupId: defaultAccount?.value ?? undefined,
       currency: CurrencyEnum.ARS,
       isPaid: false,
     });
-  }, [memberships]);
+  }, [memberships, defaultAccount]);
 
   return (
     <Card
@@ -138,7 +138,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
         onFinish={onFinish}
         initialValues={
           memberships && {
-            groupId: memberships.find((m) => m.isDefault)?.groupId,
+            groupId: defaultAccount?.value ?? undefined,
             isPaid: false,
             currency: CurrencyEnum.ARS,
           }

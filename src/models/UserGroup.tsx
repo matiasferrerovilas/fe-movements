@@ -16,7 +16,6 @@ export interface Membership {
   membershipId: number;
   groupDescription: string;
   role: string;
-  isDefault: boolean;
 }
 
 export interface AccountMember {
@@ -29,7 +28,6 @@ export interface GroupsWithMembers {
   id: number;
   name: string;
   membersCount: number;
-  isDefault: boolean;
 }
 
 export interface CreateGroupForm {

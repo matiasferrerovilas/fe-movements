@@ -10,6 +10,7 @@ import type {
 import { useMutation } from "@tanstack/react-query";
 import { useGroupsSubscription } from "../../apis/websocket/useGroupsSubscription";
 import { addGroupApi, setDefaultGroupApi } from "../../apis/GroupApi";
+import { useUserDefault } from "../../apis/hooks/useSettings";
 
 const { Title, Text } = Typography;
 
@@ -49,6 +50,7 @@ const css = `
 
 export function SettingGroups() {
   const { data: groups = [], isLoading } = useAllGroupsWithUsers();
+  const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
   const [form] = Form.useForm<CreateGroupForm>();
 
   useGroupsSubscription();
@@ -155,6 +157,7 @@ export function SettingGroups() {
             <SettingGroupCard
               key={group.id}
               group={group}
+              defaultGroupId={defaultAccount?.value}
               onSetDefault={setDefaultMutation.mutate}
               isSettingDefault={setDefaultMutation.isPending}
             />

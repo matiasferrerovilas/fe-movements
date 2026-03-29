@@ -1,9 +1,10 @@
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { Button, Form, Select, Typography, Upload } from "antd";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import { useGroups } from "../../../apis/hooks/useGroups";
 import { useMutation } from "@tanstack/react-query";
 import { useBanks } from "../../../apis/hooks/useBank";
+import { useUserDefault } from "../../../apis/hooks/useSettings";
 import type { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { uploadExpenseApi } from "../../../apis/movement/ExpenseApi";
 const { Text } = Typography;
@@ -28,6 +29,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
   ({ onSuccess }, ref) => {
     const { data: memberships = [] } = useGroups();
     const { data: banks = [] } = useBanks();
+    const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
     const [form] = Form.useForm<UploadForm>();
 
     const uploadMutation = useMutation({
@@ -41,8 +43,13 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
       },
     });
 
-    useImperativeHandle(ref, () => ({
-      handleConfirm: () => {
+    useEffect(() => {
+      form.setFieldsValue({
+        groupId: defaultAccount?.value ?? undefined,
+      });
+    }, [defaultAccount]);
+
+    useImperativeHandle(ref, () => ({      handleConfirm: () => {
         const values = form.getFieldsValue();
 
         const file = values.fileList?.[0]?.originFileObj ?? null;
@@ -70,11 +77,9 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
       <Form
         form={form}
         layout="vertical"
-        initialValues={
-          memberships && {
-            groupId: memberships.find((m) => m.isDefault)?.groupId,
-          }
-        }
+        initialValues={{
+          groupId: defaultAccount?.value ?? undefined,
+        }}
       >
         <div style={{ marginBottom: 10 }}>
           <Text type="secondary">
