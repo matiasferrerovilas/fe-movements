@@ -12,11 +12,13 @@ import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useBanks } from "../../apis/hooks/useBank";
 
+import type { OnboardingForm, OnboardingIngresoForm } from "../../apis/onboarding/OnBoarding";
+
 const { Text } = Typography;
 
 interface Props {
-  initialValues: any; // { bank, currency, accountsToAdd: string[] }
-  onNext: (values: any) => void;
+  initialValues: Partial<OnboardingForm>; // { bank, currency, accountsToAdd: string[] }
+  onNext: (values: OnboardingIngresoForm) => void;
   onPrev: () => void;
 }
 

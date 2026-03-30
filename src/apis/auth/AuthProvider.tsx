@@ -27,11 +27,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (!keycloak.authenticated) {
       fetchedRef.current = false;
-      setState({
-        authenticated: false,
-        firstLogin: false,
-        loading: false,
-      });
+      const resetState = async () => {
+        setState({
+          authenticated: false,
+          firstLogin: false,
+          loading: false,
+        });
+      };
+      resetState();
       return;
     }
 

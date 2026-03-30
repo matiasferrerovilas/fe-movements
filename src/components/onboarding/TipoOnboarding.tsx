@@ -2,11 +2,12 @@ import ShopOutlined from "@ant-design/icons/ShopOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import { Button, Card, Col, Form, Row, Space, Typography } from "antd";
 import { useState } from "react";
+import type { OnboardingForm } from "../../apis/onboarding/OnBoarding";
 const { Text } = Typography;
 
 interface Props {
-  initialValues: any;
-  onNext: (values: any) => void;
+  initialValues: Partial<OnboardingForm>;
+  onNext: (values: Pick<OnboardingForm, "userType">) => void;
   onPrev: () => void;
 }
 

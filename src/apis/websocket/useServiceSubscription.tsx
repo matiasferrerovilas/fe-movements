@@ -1,5 +1,5 @@
-// useMovementSubscription.ts
-import { useEffect, useMemo, useRef } from "react";
+// useServiceSubscription.ts
+import { useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
 import { useGroups } from "../hooks/useGroups";
@@ -23,11 +23,10 @@ export const useServiceSubscription = () => {
     [memberships]
   );
 
-  const callbackRef =
-    useRef<(event: EventWrapper<Service>) => void | null>(null);
+  useEffect(() => {
+    if (!ws.isConnected || topics.length === 0) return;
 
-  if (!callbackRef.current) {
-    callbackRef.current = (event: EventWrapper<Service>) => {
+    const callback = (event: EventWrapper<Service>) => {
       const { eventType, message: payload } = event;
 
       queryClient.setQueryData([SERVICE_KEY], (old?: Service[]) => {
@@ -48,12 +47,6 @@ export const useServiceSubscription = () => {
         }
       });
     };
-  }
-
-  useEffect(() => {
-    if (!ws.isConnected || topics.length === 0) return;
-
-    const callback = callbackRef.current!;
 
     // ✅ Suscribimos una vez por montaje
     topics.forEach((topic) => ws.subscribe(topic, callback));
@@ -62,7 +55,7 @@ export const useServiceSubscription = () => {
     return () => {
       topics.forEach((topic) => ws.unsubscribe(topic, callback));
     };
-  }, [ws, ws.isConnected, topics]);
+  }, [ws, ws.isConnected, topics, queryClient]);
 
   return null;
 };

@@ -15,9 +15,12 @@ interface ResumenMensualProps {
 export default function ResumenMensual({ filters }: ResumenMensualProps) {
   const { token } = theme.useToken();
 
-  filters.year = dayjs().year();
-  filters.month = dayjs().month() + 1;
-  const { data: rawData, isFetching } = useBalance(filters);
+  const currentMonthFilters = {
+    ...filters,
+    year: dayjs().year(),
+    month: dayjs().month() + 1,
+  };
+  const { data: rawData, isFetching } = useBalance(currentMonthFilters);
 
   const ingreso = rawData?.INGRESO ?? 0;
   const gasto = rawData?.GASTO ?? 0;

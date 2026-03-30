@@ -30,7 +30,7 @@ export default function BalanceGrupoGastado() {
       acc[group][currency] = Number(item.total);
 
       return acc;
-    }, {} as Record<string, any>)
+    }, {} as Record<string, Record<string, string | number>>)
   );
 
   return (

@@ -1,6 +1,12 @@
-import { BankOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
-import { Button, Card, Space, Tooltip, Typography } from "antd";
-import { useBanks } from "../../apis/hooks/useBank";
+import {
+  BankOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  StarFilled,
+  StarOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Col, Form, Input, Popconfirm, Row, Space, Tooltip, Typography } from "antd";
+import { useAddBank, useBanks, useDeleteBank } from "../../apis/hooks/useBank";
 import { useUserDefault, useSetUserDefault } from "../../apis/hooks/useSettings";
 import type { BankRecord } from "../../models/Bank";
 
@@ -38,13 +44,64 @@ const css = `
     background: #fff8e1 !important;
     transform: scale(1.18);
   }
+  .bank-delete-btn {
+    border-radius: 50% !important;
+    width: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    transition: all 0.2s ease !important;
+  }
+  .bank-delete-btn:not(:disabled):hover {
+    background: #fff1f0 !important;
+    transform: scale(1.18);
+  }
+  .create-bank-card {
+    border-radius: 14px !important;
+    border: 1.5px dashed #b6c8e8 !important;
+    background: linear-gradient(135deg, #f8faff 0%, #eef3fb 100%) !important;
+    margin-bottom: 20px;
+  }
+  .create-bank-input {
+    background: #fff !important;
+    border: 1.5px solid #e0eaff !important;
+    border-radius: 10px !important;
+    height: 40px !important;
+    font-size: 14px !important;
+    transition: border-color 0.2s !important;
+  }
+  .create-bank-input:focus, .create-bank-input:hover {
+    border-color: #4f9cf7 !important;
+  }
+  .create-bank-btn {
+    height: 40px !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    background: linear-gradient(90deg, #1a6fd4, #4f9cf7) !important;
+    border: none !important;
+    color: #fff !important;
+    box-shadow: 0 2px 10px rgba(26, 111, 212, 0.25) !important;
+    transition: all 0.2s ease !important;
+  }
+  .create-bank-btn:hover {
+    opacity: 0.88 !important;
+    transform: translateY(-1px) !important;
+  }
 `;
+
+interface AddBankForm {
+  description: string;
+}
 
 interface BankCardProps {
   bank: BankRecord;
   defaultBankId?: number | null;
   onSetDefault: (id: number) => void;
   isSettingDefault?: boolean;
+  onDelete: (id: number) => void;
+  isDeleting?: boolean;
 }
 
 function BankCard({
@@ -52,6 +109,8 @@ function BankCard({
   defaultBankId,
   onSetDefault,
   isSettingDefault,
+  onDelete,
+  isDeleting,
 }: BankCardProps) {
   const isDefault = bank.id === defaultBankId;
 
@@ -144,6 +203,31 @@ function BankCard({
               }
             />
           </Tooltip>
+          <Tooltip
+            title={
+              isDefault
+                ? "No se puede eliminar el banco por defecto"
+                : "Eliminar banco"
+            }
+          >
+            <Popconfirm
+              title="¿Eliminar este banco?"
+              description="Se quitará de tu lista personal."
+              onConfirm={() => onDelete(bank.id)}
+              okText="Eliminar"
+              cancelText="Cancelar"
+              okButtonProps={{ danger: true }}
+              disabled={isDefault}
+            >
+              <Button
+                type="text"
+                danger
+                className="bank-delete-btn"
+                disabled={isDefault || isDeleting}
+                icon={<DeleteOutlined style={{ fontSize: 16 }} />}
+              />
+            </Popconfirm>
+          </Tooltip>
         </Space>
       </div>
     </Card>
@@ -154,6 +238,15 @@ export function SettingBank() {
   const { data: banks = [], isLoading } = useBanks();
   const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
   const setDefaultMutation = useSetUserDefault();
+  const addBankMutation = useAddBank();
+  const deleteBankMutation = useDeleteBank();
+  const [form] = Form.useForm<AddBankForm>();
+
+  const onFinish = (values: AddBankForm) => {
+    addBankMutation.mutate(values.description, {
+      onSuccess: () => form.resetFields(),
+    });
+  };
 
   return (
     <>
@@ -184,15 +277,62 @@ export function SettingBank() {
           </div>
           <div>
             <Title level={5} style={{ margin: 0, color: "#1a3a6b" }}>
-              Banco por defecto
+              Mis Bancos
             </Title>
             <Text style={{ fontSize: 12, color: "#9ca3af" }}>
-              Seleccioná el banco que se pre-completa en los formularios.
+              Agregá y gestioná los bancos en tu lista personal.
             </Text>
           </div>
         </div>
 
         <div style={{ height: 1, background: "#f0f4ff", margin: "14px 0" }} />
+
+        {/* Agregar banco */}
+        <Card
+          className="create-bank-card"
+          styles={{ body: { padding: "14px 16px" } }}
+        >
+          <Text
+            strong
+            style={{
+              fontSize: 13,
+              color: "#374151",
+              display: "block",
+              marginBottom: 10,
+            }}
+          >
+            Nuevo Banco
+          </Text>
+          <Form form={form} layout="vertical" onFinish={onFinish}>
+            <Row gutter={[12, 0]} align="middle">
+              <Col xs={24} sm={16} md={18}>
+                <Form.Item
+                  name="description"
+                  style={{ margin: 0 }}
+                  rules={[
+                    { required: true, message: "Ingresá el nombre del banco" },
+                  ]}
+                >
+                  <Input
+                    className="create-bank-input"
+                    placeholder="Nombre del banco..."
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={8} md={6}>
+                <Button
+                  icon={<PlusOutlined />}
+                  block
+                  htmlType="submit"
+                  className="create-bank-btn"
+                  loading={addBankMutation.isPending}
+                >
+                  Agregar
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
 
         {/* Lista de bancos */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -205,6 +345,8 @@ export function SettingBank() {
                 setDefaultMutation.mutate({ key: "DEFAULT_BANK", value: id })
               }
               isSettingDefault={setDefaultMutation.isPending}
+              onDelete={(id) => deleteBankMutation.mutate(id)}
+              isDeleting={deleteBankMutation.isPending}
             />
           ))}
         </div>

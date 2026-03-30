@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Button,
@@ -85,7 +85,12 @@ export default function NavHeader() {
   const getActiveKey = () =>
     visibleItems.find((i) => i.path === currentPath)?.key || "balance";
   const [active, setActive] = useState(getActiveKey());
-  useEffect(() => setActive(getActiveKey()), [currentPath]);
+
+  // Sync active key when route changes without calling setState in an effect
+  const activeKey = getActiveKey();
+  if (active !== activeKey) {
+    setActive(activeKey);
+  }
 
   const handleClick = (item: SideBarItem) => {
     setActive(item.key);

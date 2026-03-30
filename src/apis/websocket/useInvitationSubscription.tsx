@@ -1,5 +1,5 @@
 // useInvitationSubscription.ts
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
 import { EventType, type EventWrapper } from "./EventWrapper";
@@ -16,11 +16,10 @@ export const useInvitationSubscription = () => {
   const { data: currentUser } = useCurrentUser();
   const userId = currentUser?.id;
 
-  const callbackRef =
-    useRef<(event: EventWrapper<Invitations>) => void | null>(null);
+  useEffect(() => {
+    if (!ws.isConnected || !userId) return;
 
-  if (!callbackRef.current) {
-    callbackRef.current = (event: EventWrapper<Invitations>) => {
+    const callback = (event: EventWrapper<Invitations>) => {
       const payload = event.message;
 
       if (payload.invitedBy == keycloak.tokenParsed?.preferred_username) {
@@ -62,14 +61,8 @@ export const useInvitationSubscription = () => {
           }
         });
       });
-      //queryClient.setQueryData([INVITATIONS_GROUPS_QUERY_KEY], payload);
     };
-  }
 
-  useEffect(() => {
-    if (!ws.isConnected || !userId) return;
-
-    const callback = callbackRef.current!;
     const topics = [
       `/topic/invitation/${userId}/new`,
       `/topic/invitation/${userId}/update`,
@@ -82,7 +75,7 @@ export const useInvitationSubscription = () => {
     return () => {
       topics.forEach((topic) => ws.unsubscribe(topic, callback));
     };
-  }, [ws, ws.isConnected, userId]); // se re-suscribe si el socket o el userId cambia
+  }, [ws, ws.isConnected, userId, queryClient, keycloak]); // se re-suscribe si el socket o el userId cambia
 
   return null;
 };

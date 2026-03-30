@@ -1,9 +1,10 @@
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import { Button, Col, Form, Input, Row, Space, Typography } from "antd";
+import type { OnboardingForm } from "../../apis/onboarding/OnBoarding";
 const { Text } = Typography;
 interface Props {
-  initialValues: any;
-  onNext: (values: any) => void;
+  initialValues: Partial<OnboardingForm>;
+  onNext: (values: Pick<OnboardingForm, "accountsToAdd">) => void;
 }
 
 export default function GrupoOnboarding({ initialValues, onNext }: Props) {

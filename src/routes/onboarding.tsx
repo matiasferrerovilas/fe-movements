@@ -47,7 +47,7 @@ function RouteComponent() {
       } catch (e) {
         console.error("❌ Error actualizando token", e);
       }
-      router.invalidate;
+      router.invalidate();
       completeOnboarding();
       router.navigate({
         to: "/",

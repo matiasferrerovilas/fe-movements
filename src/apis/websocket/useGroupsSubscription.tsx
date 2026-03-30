@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
 import { EventType, type EventWrapper } from "./EventWrapper";
@@ -15,12 +15,15 @@ export const useGroupsSubscription = () => {
   const keycloakUserId = keycloak.subject;
   const { data: memberships = [] } = useGroups();
 
-  const callbackRef = useRef<((event: EventWrapper<unknown>) => void) | null>(
-    null,
+  const leaveTopics = useMemo(
+    () => memberships.map((m) => `/topic/account/${m.accountId}/leave`),
+    [memberships],
   );
 
-  if (!callbackRef.current) {
-    callbackRef.current = (event: EventWrapper<unknown>) => {
+  useEffect(() => {
+    if (!ws?.isConnected || !keycloakUserId) return;
+
+    const callback = (event: EventWrapper<unknown>) => {
       console.debug("📨 Grupo evento recibido:", event);
 
       switch (event.eventType) {
@@ -53,17 +56,7 @@ export const useGroupsSubscription = () => {
           console.warn("⚠️ Evento desconocido:", event.eventType);
       }
     };
-  }
 
-  const leaveTopics = useMemo(
-    () => memberships.map((m) => `/topic/account/${m.accountId}/leave`),
-    [memberships],
-  );
-
-  useEffect(() => {
-    if (!ws?.isConnected || !keycloakUserId) return;
-
-    const callback = callbackRef.current!;
     const staticTopics = [
       "/topic/account/new",
       `/topic/account/default/${keycloakUserId}`,
@@ -72,7 +65,7 @@ export const useGroupsSubscription = () => {
 
     topics.forEach((t) => ws.subscribe(t, callback));
     return () => topics.forEach((t) => ws.unsubscribe(t, callback));
-  }, [ws?.isConnected, ws, keycloakUserId, leaveTopics]);
+  }, [ws?.isConnected, ws, keycloakUserId, leaveTopics, queryClient]);
 
   return null;
 };

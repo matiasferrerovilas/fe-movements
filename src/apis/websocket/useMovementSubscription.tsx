@@ -1,5 +1,5 @@
 // useMovementSubscription.ts
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
 import { useGroups } from "../hooks/useGroups";
@@ -24,11 +24,10 @@ export const useMovementSubscription = () => {
     [memberships]
   );
 
-  const callbackRef =
-    useRef<(event: EventWrapper<Movement | number>) => void | null>(null);
+  useEffect(() => {
+    if (!ws.isConnected || topics.length === 0) return;
 
-  if (!callbackRef.current) {
-    callbackRef.current = (event: EventWrapper<Movement | number>) => {
+    const callback = (event: EventWrapper<Movement | number>) => {
       console.debug("📨 Nuevo movimiento recibido:", event);
 
       const queries = queryClient.getQueriesData<PageResponse<Movement>>({
@@ -97,12 +96,6 @@ export const useMovementSubscription = () => {
         });
       });
     };
-  }
-
-  useEffect(() => {
-    if (!ws.isConnected || topics.length === 0) return;
-
-    const callback = callbackRef.current!;
 
     // ✅ Suscribimos una vez por montaje
     topics.forEach((topic) => ws.subscribe(topic, callback));
@@ -111,5 +104,5 @@ export const useMovementSubscription = () => {
     return () => {
       topics.forEach((topic) => ws.unsubscribe(topic, callback));
     };
-  }, [ws, ws.isConnected, topics]);
+  }, [ws, ws.isConnected, topics, queryClient]);
 };
