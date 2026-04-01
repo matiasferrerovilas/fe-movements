@@ -85,7 +85,7 @@ export function SettingIngreso() {
       currency: currencySymbol ? { symbol: currencySymbol } : undefined,
       group: groupDescription,
     });
-  }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies, memberships]);
+  }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies, memberships, form]);
 
   const onFinish = (values: IncomeAddForm) => {    createIngresoMutation.mutate({ income: values });
     form.resetFields();

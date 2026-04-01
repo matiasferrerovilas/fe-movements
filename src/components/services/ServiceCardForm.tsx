@@ -53,14 +53,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
     const service: ServiceToAdd = {
       description: values.description,
       amount: values.amount,
-      lastPayment: values.lastPayment
-        ? dayjs(values.lastPayment)
-            .hour(12)
-            .minute(0)
-            .second(0)
-            .millisecond(0)
-            .toDate()
-        : null,
+      lastPayment: values.lastPayment ? values.lastPayment.toDate() : null,
       isPaid: values.isPaid,
       currency: { symbol: values.currency },
       groupId: values.groupId,
@@ -81,7 +74,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
       currency: currencySymbol,
       isPaid: false,
     });
-  }, [memberships, defaultAccount, defaultCurrency, currencies]);
+  }, [memberships, defaultAccount, defaultCurrency, currencies, form]);
 
   return (
     <Card

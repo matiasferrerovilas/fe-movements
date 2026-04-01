@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addBank, deleteBank, getAllBanks } from "../banks/BankApi";
-
-export const BANKS_QUERY_KEY = ["banks"] as const;
+import { BANKS_QUERY_KEY } from "./bankQueryKeys";
 
 export const useBanks = () =>
   useQuery({

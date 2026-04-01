@@ -87,13 +87,15 @@ export const WebSocketProvider = ({
     client.activate();
     clientRef.current = client;
 
+    const activeSubscriptionsSnapshot = activeSubscriptionsRef.current;
+
     return () => {
       console.debug("🧹 Limpiando WebSocket...");
       if (client.active) {
         client.deactivate();
       }
       clientRef.current = null;
-      activeSubscriptionsRef.current.clear();
+      activeSubscriptionsSnapshot.clear();
       setIsConnected(false);
     };
   }, [keycloak.token, keycloak.authenticated, initialized]);

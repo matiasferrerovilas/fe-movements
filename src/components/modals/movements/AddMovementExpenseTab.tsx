@@ -13,16 +13,13 @@ import {
 import { useCurrency } from "../../../apis/hooks/useCurrency";
 import { useBanks } from "../../../apis/hooks/useBank";
 import { useUserDefault } from "../../../apis/hooks/useSettings";
-import utc from "dayjs/plugin/utc";
-
-dayjs.extend(utc);
 
 interface AddMovementExpenseTabProps {
   onSuccess?: () => void;
   movementToEdit?: Movement;
 }
 
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 
 const AddMovementExpenseTab = forwardRef<
   { handleConfirm: () => void },
@@ -67,7 +64,7 @@ const AddMovementExpenseTab = forwardRef<
       currency: currencySymbol,
       date: dayjs(),
     });
-  }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies]);
+  }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies, form, movementToEdit]);
 
   const uploadMutation = useMutation({
     mutationFn: (values: CreateMovementForm) =>
@@ -85,13 +82,7 @@ const AddMovementExpenseTab = forwardRef<
     handleConfirm: async () => {
       try {
         const values = await form.validateFields();
-        const date = dayjs(values.date)
-          .hour(12)
-          .minute(0)
-          .second(0)
-          .millisecond(0)
-          .toDate();
-        uploadMutation.mutate({ ...values, date } as CreateMovementForm);
+        uploadMutation.mutate(values as CreateMovementForm);
       } catch (err) {
         console.warn("❌ Validación fallida:", err);
       }

@@ -9,8 +9,8 @@ import {
   useBanks,
   useAddBank,
   useDeleteBank,
-  BANKS_QUERY_KEY,
 } from "../../../src/apis/hooks/useBank";
+import { BANKS_QUERY_KEY } from "../../../src/apis/hooks/bankQueryKeys";
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 

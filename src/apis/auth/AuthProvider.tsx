@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       fetchedRef.current = true;
       loadUserState();
     }
-  }, [keycloak?.authenticated]);
+  }, [keycloak?.authenticated, keycloak]);
 
   return (
     <AuthContext.Provider value={{ ...state, completeOnboarding }}>

@@ -52,7 +52,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         groupId: defaultAccount?.value ?? undefined,
         bank: bankDescription,
       });
-    }, [defaultAccount, defaultBank, banks]);
+    }, [defaultAccount, defaultBank, banks, form]);
 
     useImperativeHandle(ref, () => ({      handleConfirm: () => {
         const values = form.getFieldsValue();

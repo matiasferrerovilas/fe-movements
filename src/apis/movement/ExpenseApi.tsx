@@ -73,9 +73,8 @@ export async function updateExpense(id: number, movement: CreateMovementForm) {
     category: movement.category
       ? { description: movement.category }
       : undefined,
-    date: movement.date.toISOString().split("T")[0],
+    date: dayjs(movement.date).format("YYYY-MM-DD"),
   };
-  console.log("Updating movement with payload:", payload);
   return api
     .patch(`/expenses/${id}`, payload)
     .then((response) => response.data)
@@ -86,8 +85,12 @@ export async function updateExpense(id: number, movement: CreateMovementForm) {
 }
 
 export async function uploadExpense(movement: CreateMovementForm) {
+  const payload = {
+    ...movement,
+    date: dayjs(movement.date).format("YYYY-MM-DD"),
+  };
   return api
-    .post("/expenses", movement)
+    .post("/expenses", payload)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error adding movement:", error);

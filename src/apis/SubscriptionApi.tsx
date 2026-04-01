@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import type { CurrencyRecord } from "../models/Currency";
 import type { Service, ServiceToUpdate } from "../models/Service";
 import { api } from "./axios";
@@ -32,8 +33,14 @@ export async function paySubscriptionApi(service: Service) {
     });
 }
 export async function updateSubscriptionApi(serviceToUpdate: ServiceToUpdate) {
+  const payload = {
+    ...serviceToUpdate.changes,
+    lastPayment: serviceToUpdate.changes.lastPayment
+      ? dayjs(serviceToUpdate.changes.lastPayment).format("YYYY-MM-DD")
+      : null,
+  };
   return api
-    .patch(`${BASE_PATH}/` + serviceToUpdate.id, serviceToUpdate.changes)
+    .patch(`${BASE_PATH}/` + serviceToUpdate.id, payload)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error updating subscriptions:", error);
@@ -41,8 +48,14 @@ export async function updateSubscriptionApi(serviceToUpdate: ServiceToUpdate) {
     });
 }
 export async function addSubscriptionApi(service: ServiceToAdd) {
+  const payload = {
+    ...service,
+    lastPayment: service.lastPayment
+      ? dayjs(service.lastPayment).format("YYYY-MM-DD")
+      : null,
+  };
   return api
-    .post(BASE_PATH, service)
+    .post(BASE_PATH, payload)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error updating subscriptions:", error);

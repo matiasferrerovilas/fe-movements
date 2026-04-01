@@ -44,7 +44,7 @@ interface ServiceCardProps extends React.HTMLAttributes<HTMLElement> {
 
 interface ServiceFormUpdate {
   amount: number;
-  lastPayment: Date | null;
+  lastPayment: dayjs.Dayjs | null;
   group: string;
   description: string;
 }
@@ -79,7 +79,9 @@ export const ServiceCard = React.memo(function ServiceCard({
           changes: {
             amount: values.amount,
             description: values.description,
-            lastPayment: values.lastPayment,
+            lastPayment: values.lastPayment
+              ? dayjs(values.lastPayment).toDate()
+              : null,
             group: values.group,
           },
         });

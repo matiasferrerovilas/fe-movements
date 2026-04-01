@@ -157,7 +157,7 @@ export default function MovementTable({ filters }: MovementTableProps) {
                 styles={{ body: { padding: COL_PADDING } }}
               >
                 <Row justify="center" align="middle">
-                  <Col span={2}>{dayjs(record.date).format("DD/MM/YYYY")}</Col>
+                  <Col span={2}>{record.formattedDate}</Col>
                   <Col span={2}>
                     <CategoryCircleTable
                       category={record.category?.description}
