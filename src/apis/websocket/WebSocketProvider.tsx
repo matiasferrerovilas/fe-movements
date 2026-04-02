@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-refresh/only-export-components */
 
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useKeycloak } from "@react-keycloak/web";
@@ -100,7 +100,7 @@ export const WebSocketProvider = ({
     };
   }, [keycloak.token, keycloak.authenticated, initialized]);
 
-  const subscribe = <T,>(topic: string, callback: EventCallback<T>) => {
+  const subscribe = useCallback(<T,>(topic: string, callback: EventCallback<T>) => {
     // Guarda el callback en el mapa de suscripciones
     if (!subscriptionsRef.current.has(topic)) {
       subscriptionsRef.current.set(topic, new Set());
@@ -129,9 +129,9 @@ export const WebSocketProvider = ({
     } else {
       console.debug(`⏳ Suscripción a ${topic} pendiente (esperando conexión)`);
     }
-  };
+  }, []);
 
-  const unsubscribe = (topic: string, callback: EventCallback) => {
+  const unsubscribe = useCallback((topic: string, callback: EventCallback) => {
     const callbacks = subscriptionsRef.current.get(topic);
     if (callbacks) {
       callbacks.delete(callback);
@@ -152,7 +152,7 @@ export const WebSocketProvider = ({
         }
       }
     }
-  };
+  }, []);
 
   return (
     <WebSocketContext.Provider value={{ subscribe, unsubscribe, isConnected }}>

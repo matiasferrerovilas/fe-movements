@@ -8,5 +8,4 @@ export const useCurrency = () =>
     queryKey: [CURRENCY_QUERY_KEY],
     queryFn: () => getAllCurrencies(),
     staleTime: 10000,
-    select: (data) => data,
   });

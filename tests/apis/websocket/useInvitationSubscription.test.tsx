@@ -146,6 +146,17 @@ describe("useInvitationSubscription", () => {
     expect(wsMock.unsubscribe).toHaveBeenCalledTimes(2);
   });
 
+  it("does not re-subscribe on re-render (callbackRef pattern: stable subscription)", () => {
+    const { rerender } = renderHook(() => useInvitationSubscription(), {
+      wrapper: makeWrapper(queryClient),
+    });
+
+    // Re-render without changing deps — subscribe must not be called again
+    rerender();
+
+    expect(wsMock.subscribe).toHaveBeenCalledTimes(2); // only from initial mount
+  });
+
   it("adds a new invitation to the cache on INVITATION_ADDED", () => {
     queryClient.setQueryData(["invitations-groups"], []);
 

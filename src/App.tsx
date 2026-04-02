@@ -6,7 +6,7 @@ import { routeTree } from "./routeTree.gen";
 import { ConfigProvider } from "antd";
 import { WebSocketProvider } from "./apis/websocket/WebSocketProvider";
 import type { RootRouteContext } from "./routes/__root";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { AuthContext } from "./apis/auth/AuthContext";
 import { useKeycloak } from "@react-keycloak/web";
 import esES from "antd/locale/es_ES";
@@ -32,19 +32,24 @@ function RouterWithAuth() {
   const auth = useContext(AuthContext);
   const { keycloak } = useKeycloak();
 
-  const router = createRouter({
-    routeTree,
-    context: {
-      queryClient,
-      auth: {
-        ...auth,
-        keycloak,
-      },
-      skipAuth: false,
-    },
-    defaultPreload: "intent",
-    defaultPreloadStaleTime: 0,
-  });
+  const router = useMemo(
+    () =>
+      createRouter({
+        routeTree,
+        context: {
+          queryClient,
+          auth: {
+            ...auth,
+            keycloak,
+          },
+          skipAuth: false,
+        },
+        defaultPreload: "intent",
+        defaultPreloadStaleTime: 0,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return <RouterProvider router={router} />;
 }
