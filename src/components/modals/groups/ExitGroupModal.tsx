@@ -1,11 +1,11 @@
 import { Button, Popconfirm } from "antd";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { GroupsWithMembers } from "../../../models/UserGroup";
+import type { GroupDetail } from "../../../models/UserGroup";
 import { exitGroupApi } from "../../../apis/GroupApi";
 
 interface ExitGroupModalProps {
-  group: GroupsWithMembers;
+  group: GroupDetail;
 }
 export default function ExitGroupModal({ group }: ExitGroupModalProps) {
   const queryClient = useQueryClient();

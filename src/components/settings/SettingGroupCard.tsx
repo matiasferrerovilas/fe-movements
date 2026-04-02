@@ -1,15 +1,14 @@
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import { StarFilled, StarOutlined } from "@ant-design/icons";
 import { Button, Card, Space, Tooltip, Typography } from "antd";
-import type { GroupsWithMembers } from "../../models/UserGroup";
+import type { GroupDetail } from "../../models/UserGroup";
 import InviteUserToGroup from "../modals/groups/InviteUserToGroup";
 import ExitGroupModal from "../modals/groups/ExitGroupModal";
 
 const { Text } = Typography;
 
 interface SettingGroupCardProps {
-  group: GroupsWithMembers;
-  defaultGroupId?: number | null;
+  group: GroupDetail;
   onSetDefault: (groupId: number) => void;
   isSettingDefault?: boolean;
 }
@@ -50,11 +49,10 @@ const css = `
 
 export default function SettingGroupCard({
   group,
-  defaultGroupId,
   onSetDefault,
   isSettingDefault,
 }: SettingGroupCardProps) {
-  const isDefault = group.id === defaultGroupId;
+  const isDefault = group.isDefault;
   return (
     <>
       <style>{css}</style>

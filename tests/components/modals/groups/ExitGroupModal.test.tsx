@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { GroupsWithMembers } from "../../../../src/models/UserGroup";
+import type { GroupDetail } from "../../../../src/models/UserGroup";
 import ExitGroupModal from "../../../../src/components/modals/groups/ExitGroupModal";
 
 // ── MSW server ─────────────────────────────────────────────────────────────
@@ -28,7 +28,7 @@ function makeWrapper(queryClient: QueryClient) {
   );
 }
 
-const group: GroupsWithMembers = { id: 5, name: "Familia", membersCount: 3 };
+const group: GroupDetail = { id: 5, name: "Familia", membersCount: 3, isDefault: false };
 
 // ── Tests ──────────────────────────────────────────────────────────────────
 

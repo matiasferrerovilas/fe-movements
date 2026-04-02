@@ -188,6 +188,8 @@ describe("useInvitationSubscription", () => {
     const inv2: Invitations = { id: 2, nameAccount: "Trabajo", invitedBy: "boss@test.com" };
     queryClient.setQueryData(["invitations-groups"], [invitation, inv2]);
 
+    const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
+
     renderHook(() => useInvitationSubscription(), {
       wrapper: makeWrapper(queryClient),
     });
@@ -203,6 +205,8 @@ describe("useInvitationSubscription", () => {
 
     const remaining = queryClient.getQueryData<Invitations[]>(["invitations-groups"]);
     expect(remaining).toEqual([inv2]);
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-groups"] });
+    expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["user-groups-count"] });
   });
 
   it("ignores invitation sent by the current user", () => {

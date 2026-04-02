@@ -51,7 +51,6 @@ export const useInvitationSubscription = () => {
               const payload = event.message;
 
               queryClient.invalidateQueries({ queryKey: ["user-groups"] });
-              queryClient.invalidateQueries({ queryKey: ["user-groups-count"] });
 
               return old.filter((i) => i.id !== payload.id);
             }

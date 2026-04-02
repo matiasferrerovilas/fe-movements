@@ -24,10 +24,11 @@ export interface AccountMember {
   role: string;
 }
 
-export interface GroupsWithMembers {
+export interface GroupDetail {
   id: number;
   name: string;
   membersCount: number;
+  isDefault: boolean;
 }
 
 export interface CreateGroupForm {

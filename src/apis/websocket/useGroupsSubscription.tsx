@@ -1,8 +1,8 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
 import { EventType, type EventWrapper } from "./EventWrapper";
-import type { GroupsWithMembers } from "../../models/UserGroup";
+import type { GroupDetail } from "../../models/UserGroup";
 import { useKeycloak } from "@react-keycloak/web";
 import { useGroups } from "../hooks/useGroups";
 
@@ -20,12 +20,14 @@ export const useGroupsSubscription = () => {
     [memberships],
   );
 
-  useEffect(() => {
-    if (!ws?.isConnected || !keycloakUserId) return;
+  const membersUpdateTopics = useMemo(
+    () => memberships.map((m) => `/topic/account/${m.accountId}/members/update`),
+    [memberships],
+  );
 
-    const callback = (event: EventWrapper<unknown>) => {
-      console.debug("📨 Grupo evento recibido:", event);
-
+  const callbackRef = useRef<((event: EventWrapper<unknown>) => void) | null>(null);
+  if (!callbackRef.current) {
+    callbackRef.current = (event: EventWrapper<unknown>) => {
       switch (event.eventType) {
         case EventType.ACCOUNT_LEFT: {
           queryClient.invalidateQueries({ queryKey: ["user-groups"] });
@@ -33,39 +35,40 @@ export const useGroupsSubscription = () => {
           break;
         }
         case EventType.MEMBERSHIP_UPDATED: {
-          const queries = queryClient.getQueriesData<GroupsWithMembers[]>({
-            queryKey: USER_GROUPS_QUERY_KEY,
-            exact: false,
-          });
-
-          queries.forEach(([queryKey, oldData]) => {
-            if (!oldData) return;
-
-            queryClient.setQueryData(queryKey, (old?: GroupsWithMembers[]) => {
-              if (!old) return old;
-              const updated = event.message as GroupsWithMembers;
-              return old.map((g) => ({
-                ...g,
-                isDefault: g.id === updated.id,
-              }));
-            });
-          });
+          const updated = event.message as GroupDetail;
+          queryClient.setQueryData(
+            USER_GROUPS_QUERY_KEY,
+            (old?: GroupDetail[]) => {
+              if (!old) return [updated];
+              const base = old.map((g) => ({ ...g, isDefault: false }));
+              const exists = base.some((g) => g.id === updated.id);
+              return exists
+                ? base.map((g) => (g.id === updated.id ? updated : g))
+                : [...base, updated];
+            },
+          );
           break;
         }
         default:
           console.warn("⚠️ Evento desconocido:", event.eventType);
       }
     };
+  }
 
-    const staticTopics = [
-      "/topic/account/new",
+  useEffect(() => {
+    if (!ws?.isConnected || !keycloakUserId) return;
+
+    const callback = callbackRef.current!;
+
+    const topics = [
       `/topic/account/default/${keycloakUserId}`,
+      ...leaveTopics,
+      ...membersUpdateTopics,
     ];
-    const topics = [...staticTopics, ...leaveTopics];
 
     topics.forEach((t) => ws.subscribe(t, callback));
     return () => topics.forEach((t) => ws.unsubscribe(t, callback));
-  }, [ws?.isConnected, ws, keycloakUserId, leaveTopics, queryClient]);
+  }, [ws, ws?.isConnected, keycloakUserId, leaveTopics, membersUpdateTopics]);
 
   return null;
 };

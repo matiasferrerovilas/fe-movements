@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import type { GroupsWithMembers, Membership } from "../../../src/models/UserGroup";
+import type { GroupDetail, Membership } from "../../../src/models/UserGroup";
 import type { EventWrapper } from "../../../src/apis/websocket/EventWrapper";
 import { EventType } from "../../../src/apis/websocket/EventWrapper";
 import { useGroupsSubscription } from "../../../src/apis/websocket/useGroupsSubscription";
@@ -60,9 +60,9 @@ const memberships: Membership[] = [
   { accountId: 20, membershipId: 2, groupDescription: "Trabajo", role: "FAMILY" },
 ];
 
-const groupsWithMembers: GroupsWithMembers[] = [
-  { id: 10, name: "Familia", membersCount: 2 },
-  { id: 20, name: "Trabajo", membersCount: 3 },
+const groups: GroupDetail[] = [
+  { id: 10, name: "Familia", membersCount: 2, isDefault: true },
+  { id: 20, name: "Trabajo", membersCount: 3, isDefault: false },
 ];
 
 // ── Tests ──────────────────────────────────────────────────────────────────
@@ -98,13 +98,12 @@ describe("useGroupsSubscription", () => {
     vi.clearAllMocks();
   });
 
-  it("subscribes to static topics and per-membership leave topics on mount", () => {
+  it("subscribes to default topic, per-membership leave and members/update topics on mount", () => {
     renderHook(() => useGroupsSubscription(), {
       wrapper: makeWrapper(queryClient),
     });
 
-    // Static topics
-    expect(wsMock.subscribe).toHaveBeenCalledWith("/topic/account/new", expect.any(Function));
+    // Static default topic
     expect(wsMock.subscribe).toHaveBeenCalledWith(
       `/topic/account/default/${keycloakSubject}`,
       expect.any(Function),
@@ -118,8 +117,17 @@ describe("useGroupsSubscription", () => {
       `/topic/account/${memberships[1].accountId}/leave`,
       expect.any(Function),
     );
-    // 2 static + 2 leave = 4 total
-    expect(wsMock.subscribe).toHaveBeenCalledTimes(4);
+    // Per-membership members/update topics
+    expect(wsMock.subscribe).toHaveBeenCalledWith(
+      `/topic/account/${memberships[0].accountId}/members/update`,
+      expect.any(Function),
+    );
+    expect(wsMock.subscribe).toHaveBeenCalledWith(
+      `/topic/account/${memberships[1].accountId}/members/update`,
+      expect.any(Function),
+    );
+    // 1 static + 2 leave + 2 members/update = 5 total
+    expect(wsMock.subscribe).toHaveBeenCalledTimes(5);
   });
 
   it("does not subscribe when websocket is not connected", () => {
@@ -155,8 +163,7 @@ describe("useGroupsSubscription", () => {
 
     unmount();
 
-    expect(wsMock.unsubscribe).toHaveBeenCalledTimes(4);
-    expect(wsMock.unsubscribe).toHaveBeenCalledWith("/topic/account/new", expect.any(Function));
+    expect(wsMock.unsubscribe).toHaveBeenCalledTimes(5);
     expect(wsMock.unsubscribe).toHaveBeenCalledWith(
       `/topic/account/default/${keycloakSubject}`,
       expect.any(Function),
@@ -167,6 +174,14 @@ describe("useGroupsSubscription", () => {
     );
     expect(wsMock.unsubscribe).toHaveBeenCalledWith(
       `/topic/account/${memberships[1].accountId}/leave`,
+      expect.any(Function),
+    );
+    expect(wsMock.unsubscribe).toHaveBeenCalledWith(
+      `/topic/account/${memberships[0].accountId}/members/update`,
+      expect.any(Function),
+    );
+    expect(wsMock.unsubscribe).toHaveBeenCalledWith(
+      `/topic/account/${memberships[1].accountId}/members/update`,
       expect.any(Function),
     );
   });
@@ -191,15 +206,20 @@ describe("useGroupsSubscription", () => {
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-groups-count"] });
   });
 
-  it("updates the default group in cache on MEMBERSHIP_UPDATED", () => {
-    queryClient.setQueryData(["user-groups-count"], groupsWithMembers);
+  it("updates an existing group in cache on MEMBERSHIP_UPDATED", () => {
+    queryClient.setQueryData(["user-groups-count"], groups);
 
     renderHook(() => useGroupsSubscription(), {
       wrapper: makeWrapper(queryClient),
     });
 
-    const updatedGroup: GroupsWithMembers = { id: 20, name: "Trabajo", membersCount: 3 };
-    const event: EventWrapper<GroupsWithMembers> = {
+    const updatedGroup: GroupDetail = {
+      id: 20,
+      name: "Trabajo",
+      membersCount: 4,
+      isDefault: true,
+    };
+    const event: EventWrapper<GroupDetail> = {
       eventType: EventType.MEMBERSHIP_UPDATED,
       message: updatedGroup,
     };
@@ -208,13 +228,99 @@ describe("useGroupsSubscription", () => {
       wsMock.trigger(`/topic/account/default/${keycloakSubject}`, event);
     });
 
-    const cached = queryClient.getQueryData<GroupsWithMembers[]>(["user-groups-count"]);
-    // id===20 becomes isDefault:true; id===10 becomes isDefault:false
-    expect(cached?.find((g) => g.id === 20)).toMatchObject({ isDefault: true });
-    expect(cached?.find((g) => g.id === 10)).toMatchObject({ isDefault: false });
+    const cached = queryClient.getQueryData<GroupDetail[]>(["user-groups-count"]);
+    expect(cached?.find((g) => g.id === 20)).toMatchObject({
+      membersCount: 4,
+      isDefault: true,
+    });
+    // el grupo anterior deja de ser default
+    expect(cached?.find((g) => g.id === 10)).toMatchObject({
+      membersCount: 2,
+      isDefault: false,
+    });
   });
 
-  it("subscribes only to static topics when memberships list is empty", () => {
+  it("adds a new group to cache on MEMBERSHIP_UPDATED when it does not exist", () => {
+    queryClient.setQueryData(["user-groups-count"], groups);
+
+    renderHook(() => useGroupsSubscription(), {
+      wrapper: makeWrapper(queryClient),
+    });
+
+    const newGroup: GroupDetail = {
+      id: 30,
+      name: "Amigos",
+      membersCount: 1,
+      isDefault: false,
+    };
+    const event: EventWrapper<GroupDetail> = {
+      eventType: EventType.MEMBERSHIP_UPDATED,
+      message: newGroup,
+    };
+
+    act(() => {
+      wsMock.trigger(`/topic/account/default/${keycloakSubject}`, event);
+    });
+
+    const cached = queryClient.getQueryData<GroupDetail[]>(["user-groups-count"]);
+    expect(cached).toHaveLength(3);
+    expect(cached?.find((g) => g.id === 30)).toMatchObject(newGroup);
+  });
+
+  it("initializes cache with new group when cache is empty on MEMBERSHIP_UPDATED", () => {
+    renderHook(() => useGroupsSubscription(), {
+      wrapper: makeWrapper(queryClient),
+    });
+
+    const newGroup: GroupDetail = {
+      id: 10,
+      name: "Familia",
+      membersCount: 1,
+      isDefault: true,
+    };
+    const event: EventWrapper<GroupDetail> = {
+      eventType: EventType.MEMBERSHIP_UPDATED,
+      message: newGroup,
+    };
+
+    act(() => {
+      wsMock.trigger(`/topic/account/default/${keycloakSubject}`, event);
+    });
+
+    const cached = queryClient.getQueryData<GroupDetail[]>(["user-groups-count"]);
+    expect(cached).toEqual([newGroup]);
+  });
+
+  it("handles MEMBERSHIP_UPDATED via members/update topic", () => {
+    queryClient.setQueryData(["user-groups-count"], groups);
+
+    renderHook(() => useGroupsSubscription(), {
+      wrapper: makeWrapper(queryClient),
+    });
+
+    const updatedGroup: GroupDetail = {
+      id: 10,
+      name: "Familia",
+      membersCount: 5,
+      isDefault: true,
+    };
+    const event: EventWrapper<GroupDetail> = {
+      eventType: EventType.MEMBERSHIP_UPDATED,
+      message: updatedGroup,
+    };
+
+    act(() => {
+      wsMock.trigger(
+        `/topic/account/${memberships[0].accountId}/members/update`,
+        event,
+      );
+    });
+
+    const cached = queryClient.getQueryData<GroupDetail[]>(["user-groups-count"]);
+    expect(cached?.find((g) => g.id === 10)).toMatchObject({ membersCount: 5 });
+  });
+
+  it("subscribes only to default topic when memberships list is empty", () => {
     vi.mocked(useGroups).mockReturnValue({
       data: [],
       isSuccess: true,
@@ -224,9 +330,8 @@ describe("useGroupsSubscription", () => {
       wrapper: makeWrapper(queryClient),
     });
 
-    // Only 2 static topics, no leave topics
-    expect(wsMock.subscribe).toHaveBeenCalledTimes(2);
-    expect(wsMock.subscribe).toHaveBeenCalledWith("/topic/account/new", expect.any(Function));
+    // Only 1 static topic, no leave nor members/update topics
+    expect(wsMock.subscribe).toHaveBeenCalledTimes(1);
     expect(wsMock.subscribe).toHaveBeenCalledWith(
       `/topic/account/default/${keycloakSubject}`,
       expect.any(Function),

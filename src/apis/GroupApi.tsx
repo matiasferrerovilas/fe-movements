@@ -1,5 +1,5 @@
 import type {
-  GroupsWithMembers,
+  GroupDetail,
   ConfirmInvitations,
   CreateGroupForm,
   CreateInvitationForm,
@@ -75,7 +75,7 @@ export async function acceptRejectGroupInvitationApi(
 
 export async function getAllGroupsWithUsers() {
   return api
-    .get<GroupsWithMembers[]>(baseUrl + "/count")
+    .get<GroupDetail[]>(baseUrl + "/count")
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error fetching groups count:", error);
