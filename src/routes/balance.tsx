@@ -49,6 +49,10 @@ export const Route = createFileRoute("/balance")({
   beforeLoad: protectedRouteGuard({
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   }),
+  loader: ({ context: { queryClient } }) => {
+    queryClient.invalidateQueries({ queryKey: ["balance"] });
+    queryClient.invalidateQueries({ queryKey: ["balance-category"] });
+  },
   component: RouteComponent,
 });
 

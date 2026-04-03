@@ -20,6 +20,9 @@ export const Route = createFileRoute("/services")({
   beforeLoad: protectedRouteGuard({
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   }),
+  loader: ({ context: { queryClient } }) => {
+    queryClient.invalidateQueries({ queryKey: ["service-history"] });
+  },
   component: RouteComponent,
 });
 
