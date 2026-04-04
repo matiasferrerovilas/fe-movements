@@ -217,15 +217,13 @@ export const ServiceCard = React.memo(function ServiceCard({
           {/* Action buttons */}
           {!isEditing && (
             <Flex gap={4}>
-              {!isPaid && (
-                <Tooltip title="Editar">
-                  <Button
-                    type="text"
-                    icon={<EditOutlined style={{ fontSize: 18 }} />}
-                    onClick={() => setIsEditing(true)}
-                  />
-                </Tooltip>
-              )}
+              <Tooltip title="Editar">
+                <Button
+                  type="text"
+                  icon={<EditOutlined style={{ fontSize: 18 }} />}
+                  onClick={() => setIsEditing(true)}
+                />
+              </Tooltip>
               <Popconfirm
                 title="¿Eliminar el servicio?"
                 description="Esta acción no se puede deshacer."
@@ -257,7 +255,7 @@ export const ServiceCard = React.memo(function ServiceCard({
                 placeholder="Seleccionar grupo"
                 options={userGroups.map((group: Membership) => ({
                   label: group.groupDescription,
-                  value: group.accountId,
+                  value: group.groupDescription,
                   key: group.accountId,
                 }))}
               />
@@ -295,43 +293,45 @@ export const ServiceCard = React.memo(function ServiceCard({
         </div>
 
         {/* Footer buttons */}
-        {!isPaid && (
+        {isEditing && (
           <>
             <Divider style={{ margin: "12px 0" }} />
-            {isEditing ? (
-              <Row gutter={[8, 8]}>
-                <Col xs={24} sm={12}>
-                  <Button
-                    block
-                    icon={<CheckOutlined />}
-                    color="blue"
-                    variant="outlined"
-                    onClick={handleSaveAmount}
-                  >
-                    Guardar
-                  </Button>
-                </Col>
-                <Col xs={24} sm={12}>
-                  <Button
-                    block
-                    icon={<CloseOutlined />}
-                    onClick={handleCancelEdit}
-                  >
-                    Cancelar
-                  </Button>
-                </Col>
-              </Row>
-            ) : (
-              <Button
-                block
-                variant="outlined"
-                icon={<CheckCircleOutlined />}
-                style={{ borderColor: statusColor, color: statusColor }}
-                onClick={handlePay}
-              >
-                Marcar como pagado
-              </Button>
-            )}
+            <Row gutter={[8, 8]}>
+              <Col xs={24} sm={12}>
+                <Button
+                  block
+                  icon={<CheckOutlined />}
+                  color="blue"
+                  variant="outlined"
+                  onClick={handleSaveAmount}
+                >
+                  Guardar
+                </Button>
+              </Col>
+              <Col xs={24} sm={12}>
+                <Button
+                  block
+                  icon={<CloseOutlined />}
+                  onClick={handleCancelEdit}
+                >
+                  Cancelar
+                </Button>
+              </Col>
+            </Row>
+          </>
+        )}
+        {!isPaid && !isEditing && (
+          <>
+            <Divider style={{ margin: "12px 0" }} />
+            <Button
+              block
+              variant="outlined"
+              icon={<CheckCircleOutlined />}
+              style={{ borderColor: statusColor, color: statusColor }}
+              onClick={handlePay}
+            >
+              Marcar como pagado
+            </Button>
           </>
         )}
       </Form>
