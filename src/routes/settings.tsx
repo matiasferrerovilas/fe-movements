@@ -8,7 +8,8 @@ import { RoleEnum } from "../enums/RoleEnum";
 import SettingAccount from "../components/settings/SettingAccount";
 import { SettingBank } from "../components/settings/SettingBank";
 import { SettingCurrency } from "../components/settings/SettingCurrency";
-import { UserOutlined, TeamOutlined, SettingOutlined } from "@ant-design/icons";
+import { UserOutlined, TeamOutlined, SettingOutlined, TagOutlined } from "@ant-design/icons";
+import { SettingCategory } from "../components/settings/SettingCategory";
 
 const { useBreakpoint } = Grid;
 
@@ -52,6 +53,12 @@ const TABS = [
         <SettingCurrency />
       </Flex>
     ),
+  },
+  {
+    key: "categorias",
+    label: "Categorías",
+    icon: <TagOutlined />,
+    children: <SettingCategory />,
   },
 ];
 
