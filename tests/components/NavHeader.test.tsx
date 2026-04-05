@@ -79,43 +79,41 @@ afterEach(() => {
 
 describe("NavHeader", () => {
   describe("render inicial", () => {
-    it("muestra el ícono de luna (modo oscuro) cuando está en modo light", () => {
+    it("muestra el toggle de tema en modo light", () => {
       renderNavHeader(false);
-      // MoonOutlined tiene role="img" o es un span con aria
-      const moonBtn = screen.getByRole("button", {
-        name: /cambiar a modo oscuro/i,
-      });
-      expect(moonBtn).toBeInTheDocument();
+      // Segmented renderiza los dos íconos; el activo es el sol
+      expect(document.querySelector(".ant-segmented")).toBeInTheDocument();
     });
 
-    it("muestra el ícono de sol (modo claro) cuando está en modo dark", () => {
+    it("muestra el toggle de tema en modo dark", () => {
       renderNavHeader(true);
-      const sunBtn = screen.getByRole("button", {
-        name: /cambiar a modo claro/i,
-      });
-      expect(sunBtn).toBeInTheDocument();
+      expect(document.querySelector(".ant-segmented")).toBeInTheDocument();
     });
   });
 
   describe("toggle de tema", () => {
-    it("llama a toggleTheme al hacer click en el botón del header", async () => {
+    it("llama a toggleTheme al hacer click en la opción inactiva (light → dark)", async () => {
       const toggleTheme = vi.fn();
       const user = userEvent.setup();
       renderNavHeader(false, toggleTheme);
 
-      const btn = screen.getByRole("button", { name: /cambiar a modo oscuro/i });
-      await user.click(btn);
+      // En modo light el activo es "light"; click en "dark" (MoonOutlined) dispara el toggle
+      const options = document.querySelectorAll(".ant-segmented-item");
+      // options[1] = dark (luna)
+      await user.click(options[1] as HTMLElement);
 
       expect(toggleTheme).toHaveBeenCalledTimes(1);
     });
 
-    it("llama a toggleTheme al hacer click cuando está en dark mode", async () => {
+    it("llama a toggleTheme al hacer click en la opción inactiva (dark → light)", async () => {
       const toggleTheme = vi.fn();
       const user = userEvent.setup();
       renderNavHeader(true, toggleTheme);
 
-      const btn = screen.getByRole("button", { name: /cambiar a modo claro/i });
-      await user.click(btn);
+      // En modo dark el activo es "dark"; click en "light" (SunOutlined) dispara el toggle
+      const options = document.querySelectorAll(".ant-segmented-item");
+      // options[0] = light (sol)
+      await user.click(options[0] as HTMLElement);
 
       expect(toggleTheme).toHaveBeenCalledTimes(1);
     });

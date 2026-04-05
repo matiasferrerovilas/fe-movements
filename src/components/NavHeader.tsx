@@ -8,8 +8,8 @@ import {
   Grid,
   Menu,
   type MenuProps,
+  Segmented,
   theme,
-  Tooltip,
   Typography,
 } from "antd";
 import BookOutlined from "@ant-design/icons/BookOutlined";
@@ -116,20 +116,17 @@ export default function NavHeader() {
   ];
 
   const ThemeToggle = (
-    <Tooltip title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}>
-      <Button
-        type="text"
-        aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-        icon={
-          isDark ? (
-            <SunOutlined style={{ fontSize: 18 }} />
-          ) : (
-            <MoonOutlined style={{ fontSize: 18 }} />
-          )
-        }
-        onClick={toggleTheme}
-      />
-    </Tooltip>
+    <Segmented
+      value={isDark ? "dark" : "light"}
+      onChange={(v) => {
+        if (v !== (isDark ? "dark" : "light")) toggleTheme();
+      }}
+      shape="round"
+      options={[
+        { label: <SunOutlined />, value: "light" },
+        { label: <MoonOutlined />, value: "dark" },
+      ]}
+    />
   );
 
   const UserAvatar = (
