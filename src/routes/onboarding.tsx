@@ -27,16 +27,21 @@ export const Route = createFileRoute("/onboarding")({
 function RouteComponent() {
   const { keycloak } = useKeycloak();
   const [currentStep, setCurrentStep] = useState(0);
+  const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [formData, setFormData] = useState<Partial<OnboardingForm>>({});
   const router = useRouter();
   const { completeOnboarding } = useContext(AuthContext);
 
   const handleNext = (values: Partial<OnboardingForm>) => {
+    setDirection("forward");
     setFormData((prev) => ({ ...prev, ...values }));
     setCurrentStep((prev) => prev + 1);
   };
 
-  const handlePrev = () => setCurrentStep((prev) => prev - 1);
+  const handlePrev = () => {
+    setDirection("back");
+    setCurrentStep((prev) => prev - 1);
+  };
 
   const finishMutation = useMutation({
     mutationFn: (onboardingForm: OnboardingForm) => finishOnboarding(onboardingForm),
@@ -153,7 +158,12 @@ function RouteComponent() {
             size="small"
           />
 
-          {steps[currentStep].content}
+          <div
+            key={currentStep}
+            className={direction === "forward" ? "step-enter-right" : "step-enter-left"}
+          >
+            {steps[currentStep].content}
+          </div>
         </Card>
       </Col>
     </Row>

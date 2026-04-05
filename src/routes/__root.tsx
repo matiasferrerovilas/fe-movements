@@ -38,25 +38,34 @@ const ContentWrapper: React.FC = () => {
   );
 };
 
-export const Route = createRootRouteWithContext<RootRouteContext>()({
-  component: () => (
+function RootComponent() {
+  const { auth } = Route.useRouteContext();
+  const showChrome = !auth.firstLogin;
+
+  return (
     <Layout style={{ minHeight: "100vh" }}>
-      <MemoizedNavHeader />
+      {showChrome && <MemoizedNavHeader />}
       <Layout>
         <Content>
           <QueryLoadingBoundary>
             <ContentWrapper />
           </QueryLoadingBoundary>
         </Content>
-        <Footer
-          style={{
-            textAlign: "center",
-            backgroundColor: ColorEnum.FONDO_GENERAL,
-          }}
-        >
-          M-1 ©{new Date().getFullYear()} Created by Mati FV v{module.version}
-        </Footer>
+        {showChrome && (
+          <Footer
+            style={{
+              textAlign: "center",
+              backgroundColor: ColorEnum.FONDO_GENERAL,
+            }}
+          >
+            M-1 ©{new Date().getFullYear()} Created by Mati FV v{module.version}
+          </Footer>
+        )}
       </Layout>
     </Layout>
-  ),
+  );
+}
+
+export const Route = createRootRouteWithContext<RootRouteContext>()({
+  component: RootComponent,
 });
