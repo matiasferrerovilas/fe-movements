@@ -17,6 +17,7 @@ import {
   useDeleteCategory,
 } from "../../apis/hooks/useCategory";
 import type { Category } from "../../models/Category";
+import { SettingCategoryMigrate } from "./SettingCategoryMigrate";
 
 const { Title, Text } = Typography;
 
@@ -81,9 +82,6 @@ const css = `
   }
 `;
 
-const capitalize = (str: string) =>
-  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-
 interface AddCategoryForm {
   description: string;
 }
@@ -134,7 +132,7 @@ function CategoryCard({ category, onDelete, isDeleting }: CategoryCardProps) {
               lineHeight: 1,
             }}
           >
-            {capitalize(category.description)}
+            {category.description}
           </Text>
         </div>
         <Space size={4}>
@@ -282,6 +280,8 @@ export function SettingCategory() {
           ))}
         </div>
       </Card>
+
+      <SettingCategoryMigrate />
     </>
   );
 }

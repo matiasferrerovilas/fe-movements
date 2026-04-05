@@ -30,7 +30,7 @@ import {
   deleteIncome,
   reloadIncome,
 } from "../../apis/income/IncomeAPI";
-import type { Income, IncomeAddForm } from "../../models/Income";
+import type { Income, IncomeAddForm, IncomeAddPayload } from "../../models/Income";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useBanks } from "../../apis/hooks/useBank";
 
@@ -49,7 +49,7 @@ export function SettingIngreso() {
   const queryClient = useQueryClient();
 
   const createIngresoMutation = useMutation({
-    mutationFn: ({ income }: { income: IncomeAddForm }) => addIncome(income),
+    mutationFn: ({ income }: { income: IncomeAddPayload }) => addIncome(income),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["income-all"] });
       form.resetFields();
@@ -82,12 +82,15 @@ export function SettingIngreso() {
     )?.groupDescription;
     form.setFieldsValue({
       bank: bankDescription,
-      currency: currencySymbol ? { symbol: currencySymbol } : undefined,
+      currency: currencySymbol,
       group: groupDescription,
     });
   }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies, memberships, form]);
 
-  const onFinish = (values: IncomeAddForm) => {    createIngresoMutation.mutate({ income: values });
+  const onFinish = (values: IncomeAddForm) => {
+    createIngresoMutation.mutate({
+      income: { ...values, currency: { symbol: values.currency } },
+    });
     form.resetFields();
   };
 
@@ -145,12 +148,9 @@ export function SettingIngreso() {
               (m) => m.accountId === defaultAccount?.value
             )?.groupDescription,
               bank: banks.find((b) => b.id === defaultBank?.value)?.description,
-              currency: (() => {
-                const sym = currencies.find(
-                  (c) => c.id === defaultCurrency?.value
-                )?.symbol;
-                return sym ? { symbol: sym } : undefined;
-              })(),
+              currency: currencies.find(
+                (c) => c.id === defaultCurrency?.value
+              )?.symbol,
             }
           }
         >

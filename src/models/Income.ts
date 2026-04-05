@@ -12,5 +12,12 @@ export interface IncomeAddForm {
   amount: number;
   bank: string;
   group: string;
+  currency: string;
+}
+
+export interface IncomeAddPayload {
+  amount: number;
+  bank: string;
+  group: string;
   currency: CurrencyRecord;
 }

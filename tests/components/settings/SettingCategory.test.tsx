@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
+import { describe, it, expect, vi, beforeAll, afterEach, afterAll } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -7,6 +7,15 @@ import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
 import type { Category } from "../../../src/models/Category";
 import { SettingCategory } from "../../../src/components/settings/SettingCategory";
+
+// ── Mocks ──────────────────────────────────────────────────────────────────
+
+vi.mock("@react-keycloak/web", () => ({
+  useKeycloak: vi.fn(() => ({
+    keycloak: { tokenParsed: { realm_access: { roles: [] } } },
+    initialized: true,
+  })),
+}));
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 

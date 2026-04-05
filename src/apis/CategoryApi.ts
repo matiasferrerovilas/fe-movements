@@ -30,3 +30,18 @@ export async function deleteCategoryApi(id: number) {
       throw error;
     });
 }
+
+export interface MigrateCategoryPayload {
+  fromCategoryId: number;
+  toCategoryId: number;
+}
+
+export async function migrateCategoryApi(payload: MigrateCategoryPayload) {
+  return api
+    .patch<void>("/categories/migrate", payload)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error migrating category:", error);
+      throw error;
+    });
+}

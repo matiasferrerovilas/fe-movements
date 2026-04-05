@@ -3,6 +3,8 @@ import {
   addCategoryApi,
   deleteCategoryApi,
   getCategoriesApi,
+  migrateCategoryApi,
+  type MigrateCategoryPayload,
 } from "../CategoryApi";
 
 const CATEGORIES_QUERY_KEY = "categories" as const;
@@ -12,6 +14,13 @@ export const useCategory = () =>
     queryKey: [CATEGORIES_QUERY_KEY],
     queryFn: () => getCategoriesApi(),
     staleTime: 5 * 60 * 1000,
+    select: (data) =>
+      data.map((cat) => ({
+        ...cat,
+        description:
+          cat.description.charAt(0).toUpperCase() +
+          cat.description.slice(1).toLowerCase(),
+      })),
   });
 
 export const useAddCategory = () => {
@@ -30,6 +39,18 @@ export const useDeleteCategory = () => {
     mutationFn: (id: number) => deleteCategoryApi(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
+    },
+  });
+};
+
+export const useMigrateCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: MigrateCategoryPayload) =>
+      migrateCategoryApi(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: ["movements"] });
     },
   });
 };

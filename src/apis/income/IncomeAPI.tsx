@@ -1,4 +1,4 @@
-import type { Income, IncomeAddForm } from "../../models/Income";
+import type { Income, IncomeAddPayload } from "../../models/Income";
 import { api } from "../axios";
 
 export async function getAllIncomes() {
@@ -21,7 +21,7 @@ export async function deleteIncome(id: number) {
     });
 }
 
-export async function addIncome(incomeToAdd: IncomeAddForm) {
+export async function addIncome(incomeToAdd: IncomeAddPayload) {
   return api
     .post("/income", incomeToAdd)
     .then((response) => response.data)
