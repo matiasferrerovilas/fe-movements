@@ -226,13 +226,18 @@ export function SettingCategory() {
 
         {/* Lista de categorías */}
         <Flex vertical gap={10}>
-          {categories.map((category: Category) => (
-            <CategoryCard
+          {categories.map((category: Category, index: number) => (
+            <div
               key={category.id}
-              category={category}
-              onDelete={(id) => deleteCategoryMutation.mutate(id)}
-              isDeleting={deleteCategoryMutation.isPending}
-            />
+              className="step-enter-right"
+              style={{ animationDelay: `${Math.min(index, 7) * 55}ms` }}
+            >
+              <CategoryCard
+                category={category}
+                onDelete={(id) => deleteCategoryMutation.mutate(id)}
+                isDeleting={deleteCategoryMutation.isPending}
+              />
+            </div>
           ))}
         </Flex>
       </Card>

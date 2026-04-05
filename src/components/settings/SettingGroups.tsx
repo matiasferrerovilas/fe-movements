@@ -120,13 +120,18 @@ export function SettingGroups() {
 
       {/* Lista de grupos */}
       <Flex vertical gap={10}>
-        {groups.map((group: GroupDetail) => (
-          <SettingGroupCard
+        {groups.map((group: GroupDetail, index: number) => (
+          <div
             key={group.id}
-            group={group}
-            onSetDefault={(id) => setDefaultMutation.mutate(id)}
-            isSettingDefault={setDefaultMutation.isPending}
-          />
+            className="step-enter-right"
+            style={{ animationDelay: `${Math.min(index, 7) * 55}ms` }}
+          >
+            <SettingGroupCard
+              group={group}
+              onSetDefault={(id) => setDefaultMutation.mutate(id)}
+              isSettingDefault={setDefaultMutation.isPending}
+            />
+          </div>
         ))}
       </Flex>
     </Card>

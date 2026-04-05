@@ -288,18 +288,23 @@ export function SettingBank() {
 
       {/* Lista de bancos */}
       <Flex vertical gap={10}>
-        {banks.map((bank: BankRecord) => (
-          <BankCard
+        {banks.map((bank: BankRecord, index: number) => (
+          <div
             key={bank.id}
-            bank={bank}
-            defaultBankId={defaultBank?.value}
-            onSetDefault={(id) =>
-              setDefaultMutation.mutate({ key: "DEFAULT_BANK", value: id })
-            }
-            isSettingDefault={setDefaultMutation.isPending}
-            onDelete={(id) => deleteBankMutation.mutate(id)}
-            isDeleting={deleteBankMutation.isPending}
-          />
+            className="step-enter-right"
+            style={{ animationDelay: `${Math.min(index, 7) * 55}ms` }}
+          >
+            <BankCard
+              bank={bank}
+              defaultBankId={defaultBank?.value}
+              onSetDefault={(id) =>
+                setDefaultMutation.mutate({ key: "DEFAULT_BANK", value: id })
+              }
+              isSettingDefault={setDefaultMutation.isPending}
+              onDelete={(id) => deleteBankMutation.mutate(id)}
+              isDeleting={deleteBankMutation.isPending}
+            />
+          </div>
         ))}
       </Flex>
     </Card>

@@ -149,11 +149,12 @@ export default function MovementTable({ filters }: MovementTableProps) {
           </Card>
 
           <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
-            {formattedMovements.map((record) => (
+            {formattedMovements.map((record, index) => (
               <Card
                 key={record.id}
                 hoverable
-                style={getCardStyle(record)}
+                className="step-enter-right"
+                style={{ ...getCardStyle(record), animationDelay: `${Math.min(index, 9) * 40}ms` }}
                 styles={{ body: { padding: COL_PADDING } }}
               >
                 <Row justify="center" align="middle">
@@ -187,11 +188,12 @@ export default function MovementTable({ filters }: MovementTableProps) {
 
       {isMobile && (
         <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
-          {formattedMovements.map((record) => (
+          {formattedMovements.map((record, index) => (
             <Card
               key={record.id}
               hoverable
-              style={getCardStyle(record)}
+              className="step-enter-right"
+              style={{ ...getCardStyle(record), animationDelay: `${Math.min(index, 9) * 40}ms` }}
               styles={{ body: { padding: "10px 12px" } }}
             >
               <Row

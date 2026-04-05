@@ -129,6 +129,7 @@ export const ServiceCard = React.memo(function ServiceCard({
             : dayjs(),
         }}
       >
+        <div key={isEditing ? "edit" : "view"} className="fade-in">
         {/* Header */}
         <Flex align="center" justify="space-between" gap={8}>
           <Flex align="center" gap={10} style={{ minWidth: 0, flex: 1 }}>
@@ -334,6 +335,7 @@ export const ServiceCard = React.memo(function ServiceCard({
             </Button>
           </>
         )}
+        </div>
       </Form>
     </Card>
   );

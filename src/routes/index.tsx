@@ -33,7 +33,8 @@ function RouteComponent() {
     >
       <Title
         level={isMobile ? 2 : 1}
-        style={{ margin: 0, fontWeight: 700, textAlign: "center" }}
+        className="fade-in-up"
+        style={{ margin: 0, fontWeight: 700, textAlign: "center", animationDelay: "0ms" }}
       >
         Bienvenido{username ? `, ${username}` : ""} 👋
       </Title>
@@ -41,11 +42,13 @@ function RouteComponent() {
       <img
         src="/robot.png"
         alt="Robot"
+        className="fade-in-up"
         style={{
           width: isMobile ? "70%" : "50vh",
           height: "auto",
           objectFit: "contain",
           userSelect: "none",
+          animationDelay: "120ms",
         }}
       />
     </div>

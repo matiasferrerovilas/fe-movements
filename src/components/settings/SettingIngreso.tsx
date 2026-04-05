@@ -233,13 +233,15 @@ export function SettingIngreso() {
         <Empty description="Todavía no configuraste ingresos" />
       ) : (
         <Flex vertical gap={10}>
-          {ingresos.map((ingreso: Income) => (
+          {ingresos.map((ingreso: Income, index: number) => (
             <Card
               key={ingreso.id}
               size="small"
+              className="step-enter-right"
               style={{
                 borderRadius: token.borderRadiusLG,
                 borderColor: token.colorBorderSecondary,
+                animationDelay: `${Math.min(index, 7) * 55}ms`,
               }}
             >
               <Flex justify="space-between" align="center">

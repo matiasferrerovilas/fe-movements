@@ -18,8 +18,9 @@ export function SettingInviteGroups() {
   }
 
   return (
-    <Card
-      loading={isFetching}
+    <div className="fade-in-down">
+      <Card
+        loading={isFetching}
       title={
         <Space align="center">
           <MailOutlined
@@ -59,6 +60,7 @@ export function SettingInviteGroups() {
           <SettingInviteGroupCard key={invite.id} invite={invite} />
         ))}
       </Space>
-    </Card>
+      </Card>
+    </div>
   );
 }
