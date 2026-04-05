@@ -10,8 +10,7 @@ import {
 } from "antd";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import { useCurrency } from "../../apis/hooks/useCurrency";
-import { useBanks } from "../../apis/hooks/useBank";
-import type { OnboardingForm, OnboardingIngresoForm } from "../../apis/onboarding/OnBoarding";
+import type { OnboardingBankEntry, OnboardingForm, OnboardingIngresoForm } from "../../apis/onboarding/OnBoarding";
 
 const { Text } = Typography;
 
@@ -30,11 +29,15 @@ export default function IngresoOnBoarding({
 }: Props) {
   const [form] = Form.useForm<OnboardingIngresoForm>();
   const { data: currencies = [] } = useCurrency();
-  const { data: banks = [] } = useBanks();
 
+  // Usamos los bancos ingresados en el paso anterior (si los hay)
+  const banksToAdd: OnboardingBankEntry[] = initialValues.banksToAdd ?? [];
   const accountsToAddOptions: string[] = (initialValues.accountsToAdd || []).filter(
     (g: string) => g && g.trim(),
   );
+
+  // Default bank pre-seleccionado si hay uno marcado como default
+  const defaultBank = banksToAdd.find((b) => b.isDefault)?.description;
 
   // Finalizar: envía los valores actuales sin requerir ningún campo
   const handleSubmit = () => {
@@ -51,16 +54,22 @@ export default function IngresoOnBoarding({
         </Text>
       </div>
 
-      <Form form={form} layout="vertical" initialValues={initialValues}>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{ ...initialValues, bank: defaultBank }}
+      >
         <Row gutter={[0, 0]}>
           <Col xs={24}>
             <Form.Item name="bank" label={<Text strong>Banco</Text>}>
               <Select placeholder="Banco en el cual recibís el ingreso">
-                {banks.map((bank) => (
-                  <Select.Option key={bank.id} value={bank.description}>
-                    {bank.description}
-                  </Select.Option>
-                ))}
+                {banksToAdd.length > 0
+                  ? banksToAdd.map((bank) => (
+                      <Select.Option key={bank.description} value={bank.description}>
+                        {bank.description.charAt(0) + bank.description.slice(1).toLowerCase()}
+                      </Select.Option>
+                    ))
+                  : null}
               </Select>
             </Form.Item>
           </Col>

@@ -1,9 +1,16 @@
 import { api } from "../axios";
 
+export interface OnboardingBankEntry {
+  description: string;
+  isDefault: boolean;
+}
+
 export interface OnboardingForm {
   accountsToAdd: string[];
   userType: string;
   onBoardingAmount: OnBoardingIngreso;
+  categoriesToAdd: string[];
+  banksToAdd: OnboardingBankEntry[];
 }
 
 export interface OnBoardingIngreso {
@@ -26,7 +33,6 @@ export async function finishOnboarding(form: OnboardingForm) {
     .post("/onboarding", form)
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error finishing onboarding:", error);
       throw error;
     });
 }

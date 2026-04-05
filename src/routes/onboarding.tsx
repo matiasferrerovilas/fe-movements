@@ -3,6 +3,8 @@ import { useContext, useState } from "react";
 import { Card, Col, Row, Steps, Typography } from "antd";
 import IngresoOnBoarding from "../components/onboarding/IngresoOnBoarding";
 import GrupoOnboarding from "../components/onboarding/GrupoOnboarding";
+import CategoriaOnboarding from "../components/onboarding/CategoriaOnboarding";
+import BancoOnboarding from "../components/onboarding/BancoOnboarding";
 import {
   finishOnboarding,
   type OnboardingForm,
@@ -57,6 +59,28 @@ function RouteComponent() {
       content: <GrupoOnboarding initialValues={formData} onNext={handleNext} />,
     },
     {
+      title: "Categorías",
+      description: "Clasificá tus gastos",
+      content: (
+        <CategoriaOnboarding
+          initialValues={formData}
+          onPrev={handlePrev}
+          onNext={handleNext}
+        />
+      ),
+    },
+    {
+      title: "Bancos",
+      description: "Tus entidades bancarias",
+      content: (
+        <BancoOnboarding
+          initialValues={formData}
+          onPrev={handlePrev}
+          onNext={handleNext}
+        />
+      ),
+    },
+    {
       title: "Perfil",
       description: "Tipo de uso",
       content: (
@@ -86,6 +110,8 @@ function RouteComponent() {
             const finalData: OnboardingForm = {
               accountsToAdd: newGroups,
               userType: formData.userType ?? "CONSUMER",
+              categoriesToAdd: formData.categoriesToAdd ?? [],
+              banksToAdd: formData.banksToAdd ?? [],
               onBoardingAmount: {
                 amount: values.amount,
                 bank: values.bank,
@@ -104,12 +130,13 @@ function RouteComponent() {
 
   return (
     <Row justify="center">
-      <Col xs={24} sm={18} md={14} lg={12}>
+      <Col xs={24} sm={20} md={16} lg={12}>
         <Card
           style={{
             margin: 20,
             paddingInline: 20,
             maxWidth: 900,
+            animation: "onboarding-card-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
           <div style={{ textAlign: "center", marginBottom: 30 }}>
@@ -123,6 +150,7 @@ function RouteComponent() {
             current={currentStep}
             items={steps.map((s) => ({ title: s.title, description: s.description }))}
             style={{ marginBottom: 40 }}
+            size="small"
           />
 
           {steps[currentStep].content}

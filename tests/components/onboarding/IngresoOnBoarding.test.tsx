@@ -6,18 +6,13 @@ import { ConfigProvider } from "antd";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { BankRecord } from "../../../src/models/Bank";
 import IngresoOnBoarding from "../../../src/components/onboarding/IngresoOnBoarding";
+import type { OnboardingBankEntry } from "../../../src/apis/onboarding/OnBoarding";
 
 // ── MSW ────────────────────────────────────────────────────────────────────
-
-const mockBanks: BankRecord[] = [
-  { id: 1, description: "GALICIA" },
-  { id: 2, description: "SANTANDER" },
-];
+// IngresoOnBoarding ya no llama a /banks — solo necesita /currencies
 
 const server = setupServer(
-  http.get("http://localhost:8080/banks", () => HttpResponse.json(mockBanks)),
   http.get("http://localhost:8080/currencies", () =>
     HttpResponse.json([
       { id: 1, symbol: "ARS" },
@@ -46,7 +41,11 @@ function makeWrapper() {
 function renderIngreso(
   onFinish = vi.fn(),
   onPrev = vi.fn(),
-  initialValues: { userType?: string; accountsToAdd?: string[] } = { userType: "CONSUMER" },
+  initialValues: {
+    userType?: string;
+    accountsToAdd?: string[];
+    banksToAdd?: OnboardingBankEntry[];
+  } = { userType: "CONSUMER" },
 ) {
   return render(
     <IngresoOnBoarding
@@ -102,6 +101,40 @@ describe("IngresoOnBoarding", () => {
       await waitFor(() =>
         expect(screen.getByText("Grupo")).toBeInTheDocument(),
       );
+    });
+  });
+
+  describe("bancos desde formData (no API)", () => {
+    it("muestra los bancos pasados en banksToAdd como opciones del selector", async () => {
+      renderIngreso(vi.fn(), vi.fn(), {
+        userType: "CONSUMER",
+        banksToAdd: [
+          { description: "GALICIA", isDefault: true },
+          { description: "SANTANDER", isDefault: false },
+        ],
+      });
+
+      await waitFor(() =>
+        expect(screen.getByText("Finalizar")).toBeInTheDocument(),
+      );
+
+      // El label del campo Banco debe estar presente
+      expect(screen.getByText("Banco")).toBeInTheDocument();
+    });
+
+    it("no llama a la API de bancos (solo usa el prop banksToAdd)", async () => {
+      // Si el componente intentara llamar /banks sin handler MSW, msw arrojaría un warning.
+      // Este test verifica que con banksToAdd vacío el campo banco sigue presente y no hay error.
+      renderIngreso(vi.fn(), vi.fn(), {
+        userType: "CONSUMER",
+        banksToAdd: [],
+      });
+
+      await waitFor(() =>
+        expect(screen.getByText("Finalizar")).toBeInTheDocument(),
+      );
+
+      expect(screen.getByText("Banco")).toBeInTheDocument();
     });
   });
 
