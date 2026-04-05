@@ -7,7 +7,6 @@ export const onBoardingGuard = async ({
   context: RootRouteContext;
 }) => {
   const { auth } = context;
-  console.debug(auth);
   if (auth.loading) return;
 
   if (!auth.firstLogin) {

@@ -11,122 +11,121 @@ import {
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useBanks } from "../../apis/hooks/useBank";
-
 import type { OnboardingForm, OnboardingIngresoForm } from "../../apis/onboarding/OnBoarding";
 
 const { Text } = Typography;
 
 interface Props {
-  initialValues: Partial<OnboardingForm>; // { bank, currency, accountsToAdd: string[] }
-  onNext: (values: OnboardingIngresoForm) => void;
+  initialValues: Partial<OnboardingForm>;
+  onFinish: (values: OnboardingIngresoForm) => void;
   onPrev: () => void;
+  isLoading?: boolean;
 }
 
 export default function IngresoOnBoarding({
   initialValues,
-  onNext,
+  onFinish,
   onPrev,
+  isLoading,
 }: Props) {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<OnboardingIngresoForm>();
   const { data: currencies = [] } = useCurrency();
   const { data: banks = [] } = useBanks();
 
+  const accountsToAddOptions: string[] = (initialValues.accountsToAdd || []).filter(
+    (g: string) => g && g.trim(),
+  );
+
+  // Finalizar: envía los valores actuales sin requerir ningún campo
   const handleSubmit = () => {
-    form.validateFields().then((values) => onNext(values));
+    onFinish(form.getFieldsValue());
   };
 
-  const accountsToAddOptions: string[] = (
-    initialValues.accountsToAdd || []
-  ).filter((g: string) => g && g.trim());
-
   return (
-    <Space orientation="vertical" style={{ width: "100%" }}>
+    <Space direction="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
-          {initialValues.userType == "CONSUMER"
-            ? "Ingrese su Ingreso Mensual"
-            : "Ingrese si tiene Ingreso Diario"}
+          {initialValues.userType === "CONSUMER"
+            ? "Ingresá tu ingreso mensual"
+            : "Ingresá tu ingreso diario si tenés"}
         </Text>
       </div>
 
       <Form form={form} layout="vertical" initialValues={initialValues}>
-        <Col xs={24} md={18} lg={24} style={{ marginBottom: 16 }}>
-          <Text strong>Banco</Text>
-          <Form.Item name="bank">
-            <Select placeholder="Banco en el cual recibe el ingreso">
-              {banks.map((bank) => (
-                <Select.Option key={bank.id} value={bank.description}>
-                  {bank.description}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
+        <Row gutter={[0, 0]}>
+          <Col xs={24}>
+            <Form.Item name="bank" label={<Text strong>Banco</Text>}>
+              <Select placeholder="Banco en el cual recibís el ingreso">
+                {banks.map((bank) => (
+                  <Select.Option key={bank.id} value={bank.description}>
+                    {bank.description}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
 
-        <Col xs={24} md={18} lg={24} style={{ marginBottom: 16 }}>
-          <Text strong>Moneda</Text>
-          <Form.Item name="currency">
-            <Select placeholder="En qué moneda recibe su ingreso">
-              {currencies.map((currency) => (
-                <Select.Option key={currency.id} value={currency.symbol}>
-                  {currency.symbol}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
+          <Col xs={24}>
+            <Form.Item name="currency" label={<Text strong>Moneda</Text>}>
+              <Select placeholder="En qué moneda recibís tu ingreso">
+                {currencies.map((currency) => (
+                  <Select.Option key={currency.id} value={currency.symbol}>
+                    {currency.symbol}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
 
-        <Col xs={24} md={18} lg={24} style={{ marginBottom: 16 }}>
-          <Text strong>¿Cuál es su sueldo mensual?</Text>
-          <Form.Item name="amount">
-            <InputNumber
-              precision={2}
-              placeholder="50000"
-              prefix={<DollarOutlined />}
-              style={{ width: "100%" }}
-              controls={false}
-            />
-          </Form.Item>
-        </Col>
-
-        {accountsToAddOptions.length > 0 && (
-          <Col xs={24} md={18} lg={24} style={{ marginBottom: 16 }}>
-            <Text strong>Grupo</Text>
-
+          <Col xs={24}>
             <Form.Item
-              name="accountToAdd"
-              rules={[{ required: true, message: "Selecciona un grupo" }]}
+              name="amount"
+              label={<Text strong>¿Cuál es tu sueldo mensual?</Text>}
             >
-              <Select
-                placeholder="Selecciona un grupo"
-                options={accountsToAddOptions.map((g) => ({
-                  label: g,
-                  value: g,
-                }))}
+              <InputNumber
+                precision={2}
+                placeholder="50000"
+                prefix={<DollarOutlined />}
+                style={{ width: "100%" }}
+                controls={false}
               />
             </Form.Item>
           </Col>
-        )}
 
-        <Row gutter={16} justify="space-between">
-          <Col xs={12} md={9} lg={12}>
+          {accountsToAddOptions.length > 0 && (
+            <Col xs={24}>
+              <Form.Item
+                name="accountToAdd"
+                label={<Text strong>Grupo</Text>}
+              >
+                <Select
+                  placeholder="Seleccioná un grupo"
+                  options={accountsToAddOptions.map((g) => ({ label: g, value: g }))}
+                />
+              </Form.Item>
+            </Col>
+          )}
+        </Row>
+
+        <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 12, textAlign: "center" }}>
+          Podés completar esto más tarde desde Configuración.
+        </Text>
+
+        <Row gutter={[16, 10]}>
+          <Col xs={12}>
             <Button block type="default" onClick={onPrev}>
               Volver
             </Button>
           </Col>
-          <Col xs={12} md={9} lg={12}>
+          <Col xs={12}>
             <Button
               block
               color="geekblue"
               variant="filled"
               onClick={handleSubmit}
+              loading={isLoading}
             >
               Finalizar
-            </Button>
-          </Col>
-          <Col xs={24} md={18} lg={24} style={{ paddingTop: 10 }}>
-            <Button type="dashed" block onClick={handleSubmit}>
-              Omitir Por Ahora
             </Button>
           </Col>
         </Row>

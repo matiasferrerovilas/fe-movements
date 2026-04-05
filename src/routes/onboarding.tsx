@@ -37,35 +37,28 @@ function RouteComponent() {
   const handlePrev = () => setCurrentStep((prev) => prev - 1);
 
   const finishMutation = useMutation({
-    mutationFn: (onboardinForm: OnboardingForm) => {
-      return finishOnboarding(onboardinForm);
-    },
+    mutationFn: (onboardingForm: OnboardingForm) => finishOnboarding(onboardingForm),
     onSuccess: async () => {
-      console.debug("✅ Configiguracion Inicial cargada correctamente");
       try {
         await keycloak.updateToken(0);
-      } catch (e) {
-        console.error("❌ Error actualizando token", e);
+      } catch {
+        // token refresh no crítico, continuar igual
       }
-      router.invalidate();
       completeOnboarding();
-      router.navigate({
-        to: "/",
-        replace: true,
-      });
-    },
-    onError: (err) => {
-      console.error("❌ Error cargando el movimiento", err);
+      router.invalidate();
+      router.navigate({ to: "/", replace: true });
     },
   });
 
   const steps = [
     {
       title: "Grupos",
+      description: "Organizá tus cuentas",
       content: <GrupoOnboarding initialValues={formData} onNext={handleNext} />,
     },
     {
-      title: "Tipo",
+      title: "Perfil",
+      description: "Tipo de uso",
       content: (
         <TipoOnboarding
           initialValues={formData}
@@ -76,18 +69,15 @@ function RouteComponent() {
     },
     {
       title: "Ingresos",
+      description: "Saldo inicial",
       content: (
         <IngresoOnBoarding
           initialValues={formData}
           onPrev={handlePrev}
-          onNext={(values: OnboardingIngresoForm) => {
+          onFinish={(values: OnboardingIngresoForm) => {
             const newGroups = (formData.accountsToAdd || []).filter(
               (g: string) => g && g.trim(),
             );
-            if (!formData.userType) {
-              console.error("UserType no definido");
-              return;
-            }
             if (newGroups.length === 0) {
               newGroups.push(GroupEnum.DEFAULT);
             }
@@ -95,7 +85,7 @@ function RouteComponent() {
 
             const finalData: OnboardingForm = {
               accountsToAdd: newGroups,
-              userType: formData.userType,
+              userType: formData.userType ?? "CONSUMER",
               onBoardingAmount: {
                 amount: values.amount,
                 bank: values.bank,
@@ -106,6 +96,7 @@ function RouteComponent() {
             setFormData(finalData);
             finishMutation.mutate(finalData);
           }}
+          isLoading={finishMutation.isPending}
         />
       ),
     },
@@ -119,11 +110,10 @@ function RouteComponent() {
             margin: 20,
             paddingInline: 20,
             maxWidth: 900,
-            maxHeight: "90vh",
           }}
         >
           <div style={{ textAlign: "center", marginBottom: 30 }}>
-            <Title level={1}>Bienvenido!</Title>
+            <Title level={2} style={{ margin: 0 }}>Bienvenido</Title>
             <Text type="secondary">
               Antes de comenzar configuremos tu cuenta
             </Text>
@@ -131,7 +121,7 @@ function RouteComponent() {
 
           <Steps
             current={currentStep}
-            items={steps.map((s) => ({ title: s.title }))}
+            items={steps.map((s) => ({ title: s.title, description: s.description }))}
             style={{ marginBottom: 40 }}
           />
 

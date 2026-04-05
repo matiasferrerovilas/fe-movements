@@ -6,7 +6,7 @@ import { routeTree } from "./routeTree.gen";
 import { ConfigProvider, theme } from "antd";
 import { WebSocketProvider } from "./apis/websocket/WebSocketProvider";
 import type { RootRouteContext } from "./routes/__root";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { AuthContext } from "./apis/auth/AuthContext";
 import { useKeycloak } from "@react-keycloak/web";
 import esES from "antd/locale/es_ES";
@@ -30,28 +30,45 @@ const queryClient = new QueryClient({
   },
 });
 
+// El router se crea una sola vez como singleton fuera de cualquier componente.
+// El contexto se actualiza via router.update() + router.invalidate() cuando
+// el estado de auth cambia, evitando que los guards queden con el contexto frozen.
+const router = createRouter({
+  routeTree,
+  context: {
+    queryClient,
+    auth: {
+      authenticated: false,
+      firstLogin: false,
+      loading: true,
+      completeOnboarding: () => {},
+      keycloak: undefined as never,
+    },
+    skipAuth: false,
+  },
+  defaultPreload: "intent",
+  defaultPreloadStaleTime: 0,
+});
+
 function RouterWithAuth() {
   const auth = useContext(AuthContext);
   const { keycloak } = useKeycloak();
 
-  const router = useMemo(
-    () =>
-      createRouter({
-        routeTree,
-        context: {
-          queryClient,
-          auth: {
-            ...auth,
-            keycloak,
-          },
-          skipAuth: false,
-        },
-        defaultPreload: "intent",
-        defaultPreloadStaleTime: 0,
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  // Cada vez que el estado de auth cambia (loading, firstLogin, authenticated)
+  // actualizamos el contexto del router y lo invalidamos para que los beforeLoad
+  // guards se re-ejecuten con los valores correctos.
+  useEffect(() => {
+    router.update({
+      context: {
+        queryClient,
+        auth: { ...auth, keycloak },
+        skipAuth: false,
+      },
+    });
+    if (!auth.loading) {
+      router.invalidate();
+    }
+  }, [auth.loading, auth.firstLogin, auth.authenticated, auth, keycloak]);
 
   return <RouterProvider router={router} />;
 }
@@ -59,17 +76,19 @@ function RouterWithAuth() {
 function ThemedApp() {
   const { isDark } = useTheme();
 
+  const themeConfig = useMemo(
+    () => ({
+      algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
+      token: {
+        fontFamily: "Inter",
+        borderRadius: 10,
+      },
+    }),
+    [isDark],
+  );
+
   return (
-    <ConfigProvider
-      locale={esES}
-      theme={{
-        algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        token: {
-          fontFamily: "Inter",
-          borderRadius: 10,
-        },
-      }}
-    >
+    <ConfigProvider locale={esES} theme={themeConfig}>
       <AxiosInterceptorProvider>
         <QueryClientProvider client={queryClient}>
           <WebSocketProvider>

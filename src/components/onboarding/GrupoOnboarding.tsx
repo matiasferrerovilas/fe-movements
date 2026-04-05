@@ -1,7 +1,10 @@
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import { Button, Col, Form, Input, Row, Space, Typography } from "antd";
 import type { OnboardingForm } from "../../apis/onboarding/OnBoarding";
+
 const { Text } = Typography;
+
 interface Props {
   initialValues: Partial<OnboardingForm>;
   onNext: (values: Pick<OnboardingForm, "accountsToAdd">) => void;
@@ -11,20 +14,28 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
   const [form] = Form.useForm<{ accountsToAdd: string[] }>();
 
   const handleSubmit = () => {
-    form.validateFields().then((values) => onNext(values));
+    form.validateFields().then((values) => {
+      // Filtramos entradas vacías — si no hay ninguna, enviamos [] (sin grupo custom)
+      const filled = (values.accountsToAdd || []).filter(
+        (g: string) => g && g.trim(),
+      );
+      onNext({ accountsToAdd: filled });
+    }).catch(() => {
+      // validación fallida — Ant Design muestra los errores en el form
+    });
   };
 
   return (
-    <Space orientation="vertical" style={{ width: "100%" }}>
+    <Space direction="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
-          ¿Quiere crear algunos grupos?
+          ¿Querés crear algunos grupos?
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
           Un grupo sirve para agrupar movimientos.
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
-          Por Default se crea uno para los movimientos propios
+          Por defecto se crea uno para tus movimientos propios.
         </Text>
       </div>
 
@@ -38,7 +49,7 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
           {(fields, { add, remove }) => (
             <>
               {fields.map(({ key, name, ...restField }) => (
-                <Row gutter={8} key={key}>
+                <Row gutter={8} key={key} align="top">
                   <Col flex="auto">
                     <Form.Item
                       {...restField}
@@ -46,11 +57,10 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
                       rules={[
                         {
                           validator: (_, value) => {
-                            if (!value || !value.trim())
-                              return Promise.resolve();
+                            if (!value || !value.trim()) return Promise.resolve();
                             if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(value)) {
                               return Promise.reject(
-                                new Error("Solo se permiten letras y espacios")
+                                new Error("Solo se permiten letras y espacios"),
                               );
                             }
                             return Promise.resolve();
@@ -59,16 +69,20 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
                       ]}
                     >
                       <Input
-                        placeholder="Nombre del Grupo"
+                        placeholder="Nombre del grupo"
                         style={{ borderRadius: 8 }}
                       />
                     </Form.Item>
                   </Col>
                   <Col>
                     {fields.length > 1 && (
-                      <Button type="text" danger onClick={() => remove(name)}>
-                        ❌
-                      </Button>
+                      <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => remove(name)}
+                        aria-label="Eliminar grupo"
+                      />
                     )}
                   </Col>
                 </Row>
@@ -80,28 +94,24 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
                   block
                   icon={<PlusOutlined />}
                 >
-                  Agregar Grupo
+                  Agregar grupo
                 </Button>
               </Form.Item>
             </>
           )}
         </Form.List>
 
-        <Col xs={24} md={18} lg={24}>
-          <Button
-            color="geekblue"
-            block
-            onClick={handleSubmit}
-            variant="filled"
-          >
-            Siguiente
-          </Button>
-        </Col>
-        <Col xs={24} md={18} lg={24} style={{ paddingTop: 10 }}>
-          <Button type="dashed" block onClick={handleSubmit}>
-            Omitir Por Ahora
-          </Button>
-        </Col>
+        <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 12, textAlign: "center" }}>
+          Si no querés crear grupos ahora, dejá el campo vacío y hacé click en Siguiente.
+        </Text>
+
+        <Row gutter={[16, 10]}>
+          <Col xs={24}>
+            <Button color="geekblue" block onClick={handleSubmit} variant="filled">
+              Siguiente
+            </Button>
+          </Col>
+        </Row>
       </Form>
     </Space>
   );
