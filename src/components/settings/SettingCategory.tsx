@@ -3,11 +3,14 @@ import {
   Button,
   Card,
   Col,
+  Divider,
+  Flex,
   Form,
   Input,
   Popconfirm,
   Row,
   Space,
+  theme,
   Tooltip,
   Typography,
 } from "antd";
@@ -21,67 +24,6 @@ import { SettingCategoryMigrate } from "./SettingCategoryMigrate";
 
 const { Title, Text } = Typography;
 
-const css = `
-  .category-card {
-    border-radius: 16px !important;
-    transition: all 0.25s ease !important;
-    overflow: hidden;
-  }
-  .category-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(0,0,0,0.09) !important;
-  }
-  .category-card-item {
-    background: #f7f8fa !important;
-    border: 1.5px solid #e8eaed !important;
-  }
-  .category-delete-btn {
-    border-radius: 50% !important;
-    width: 34px !important;
-    height: 34px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 0 !important;
-    transition: all 0.2s ease !important;
-  }
-  .category-delete-btn:not(:disabled):hover {
-    background: #fff1f0 !important;
-    transform: scale(1.18);
-  }
-  .create-category-card {
-    border-radius: 14px !important;
-    border: 1.5px dashed #c4b5fd !important;
-    background: linear-gradient(135deg, #faf8ff 0%, #f3eeff 100%) !important;
-    margin-bottom: 20px;
-  }
-  .create-category-input {
-    background: #fff !important;
-    border: 1.5px solid #ede9fe !important;
-    border-radius: 10px !important;
-    height: 40px !important;
-    font-size: 14px !important;
-    transition: border-color 0.2s !important;
-  }
-  .create-category-input:focus, .create-category-input:hover {
-    border-color: #7c3aed !important;
-  }
-  .create-category-btn {
-    height: 40px !important;
-    border-radius: 10px !important;
-    font-weight: 600 !important;
-    background: linear-gradient(90deg, #7c3aed, #a78bfa) !important;
-    border: none !important;
-    color: #fff !important;
-    box-shadow: 0 2px 10px rgba(124, 58, 237, 0.25) !important;
-    transition: all 0.2s ease !important;
-  }
-  .create-category-btn:hover {
-    opacity: 0.88 !important;
-    transform: translateY(-1px) !important;
-  }
-`;
-
 interface AddCategoryForm {
   description: string;
 }
@@ -93,30 +35,32 @@ interface CategoryCardProps {
 }
 
 function CategoryCard({ category, onDelete, isDeleting }: CategoryCardProps) {
+  const { token } = theme.useToken();
+
   return (
     <Card
       hoverable
-      className="category-card category-card-item"
       styles={{ body: { padding: "14px 18px", cursor: "default" } }}
+      style={{
+        borderRadius: 16,
+        border: `1.5px solid ${token.colorBorderSecondary}`,
+        background: token.colorFillAlter,
+        transition: "all 0.25s ease",
+        overflow: "hidden",
+      }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+      <Flex align="center" justify="space-between">
+        <Flex align="center" gap={14}>
           <div
             style={{
               width: 44,
               height: 44,
               borderRadius: 13,
-              background: "linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)",
+              background: `linear-gradient(135deg, ${token.colorPrimary} 0%, ${token.colorPrimaryHover} 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 4px 14px rgba(124, 58, 237, 0.28)",
+              boxShadow: `0 4px 14px ${token.colorPrimaryBorder}`,
               flexShrink: 0,
               transition: "all 0.25s ease",
             }}
@@ -127,14 +71,14 @@ function CategoryCard({ category, onDelete, isDeleting }: CategoryCardProps) {
             strong
             style={{
               fontSize: 15,
-              color: "#1f2937",
+              color: token.colorText,
               letterSpacing: "-0.2px",
               lineHeight: 1,
             }}
           >
             {category.description}
           </Text>
-        </div>
+        </Flex>
         <Space size={4}>
           <Tooltip
             title={
@@ -155,14 +99,23 @@ function CategoryCard({ category, onDelete, isDeleting }: CategoryCardProps) {
               <Button
                 type="text"
                 danger
-                className="category-delete-btn"
+                aria-label={`Eliminar categoría ${category.description}`}
+                style={{
+                  borderRadius: "50%",
+                  width: 34,
+                  height: 34,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 0,
+                }}
                 disabled={!category.isDeletable || isDeleting}
                 icon={<DeleteOutlined style={{ fontSize: 16 }} />}
               />
             </Popconfirm>
           </Tooltip>
         </Space>
-      </div>
+      </Flex>
     </Card>
   );
 }
@@ -172,6 +125,7 @@ export function SettingCategory() {
   const addCategoryMutation = useAddCategory();
   const deleteCategoryMutation = useDeleteCategory();
   const [form] = Form.useForm<AddCategoryForm>();
+  const { token } = theme.useToken();
 
   const onFinish = (values: AddCategoryForm) => {
     addCategoryMutation.mutate(values.description, {
@@ -181,53 +135,50 @@ export function SettingCategory() {
 
   return (
     <>
-      <style>{css}</style>
       <Card loading={isLoading} style={{ borderRadius: 16 }}>
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            marginBottom: 4,
-          }}
-        >
+        <Flex align="center" gap={10} style={{ marginBottom: 4 }}>
           <div
             style={{
               width: 36,
               height: 36,
               borderRadius: 10,
-              background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
+              background: `linear-gradient(135deg, ${token.colorPrimary}, ${token.colorPrimaryHover})`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 3px 10px rgba(124, 58, 237, 0.25)",
+              boxShadow: `0 3px 10px ${token.colorPrimaryBorder}`,
             }}
           >
             <TagOutlined style={{ color: "#fff", fontSize: 18 }} />
           </div>
           <div>
-            <Title level={5} style={{ margin: 0, color: "#3b0764" }}>
+            <Title level={5} style={{ margin: 0 }}>
               Mis Categorías
             </Title>
-            <Text style={{ fontSize: 12, color: "#9ca3af" }}>
+            <Text type="secondary" style={{ fontSize: 12 }}>
               Agregá y gestioná tus categorías personales.
             </Text>
           </div>
-        </div>
+        </Flex>
 
-        <div style={{ height: 1, background: "#f3eeff", margin: "14px 0" }} />
+        <Divider style={{ margin: "14px 0" }} />
 
         {/* Agregar categoría */}
         <Card
-          className="create-category-card"
           styles={{ body: { padding: "14px 16px" } }}
+          style={{
+            borderRadius: 14,
+            border: `1.5px dashed ${token.colorPrimaryBorder}`,
+            background: token.colorPrimaryBg,
+            marginBottom: 20,
+          }}
         >
           <Text
             strong
             style={{
               fontSize: 13,
-              color: "#374151",
+              color: token.colorText,
               display: "block",
               marginBottom: 10,
             }}
@@ -248,7 +199,11 @@ export function SettingCategory() {
                   ]}
                 >
                   <Input
-                    className="create-category-input"
+                    style={{
+                      borderRadius: 10,
+                      height: 40,
+                      fontSize: 14,
+                    }}
                     placeholder="Nombre de la categoría..."
                   />
                 </Form.Item>
@@ -256,9 +211,10 @@ export function SettingCategory() {
               <Col xs={24} sm={8} md={6}>
                 <Button
                   icon={<PlusOutlined />}
+                  type="primary"
                   block
                   htmlType="submit"
-                  className="create-category-btn"
+                  style={{ height: 40, borderRadius: 10, fontWeight: 600 }}
                   loading={addCategoryMutation.isPending}
                 >
                   Agregar
@@ -269,7 +225,7 @@ export function SettingCategory() {
         </Card>
 
         {/* Lista de categorías */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <Flex vertical gap={10}>
           {categories.map((category: Category) => (
             <CategoryCard
               key={category.id}
@@ -278,7 +234,7 @@ export function SettingCategory() {
               isDeleting={deleteCategoryMutation.isPending}
             />
           ))}
-        </div>
+        </Flex>
       </Card>
 
       <SettingCategoryMigrate />

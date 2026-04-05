@@ -2,15 +2,7 @@
 body {
   font-family: 'Inter', sans-serif;
   margin: 0px;
-  background-color: #E8EEF3;
 }
 .ant-table-row-completed {
   background-color: var(--completed-row-bg) !important;
-}
-
-main {
-   background-color: #ffffff;
-}
-.ant-card {
-  border: 1px solid #4d3333 ; 
 }

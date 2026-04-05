@@ -8,20 +8,25 @@ import {
   Grid,
   Menu,
   type MenuProps,
+  theme,
+  Tooltip,
   Typography,
 } from "antd";
 import BookOutlined from "@ant-design/icons/BookOutlined";
 import LineChartOutlined from "@ant-design/icons/LineChartOutlined";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
+import MoonOutlined from "@ant-design/icons/MoonOutlined";
 import PieChartOutlined from "@ant-design/icons/PieChartOutlined";
 import SettingOutlined from "@ant-design/icons/SettingOutlined";
+import SunOutlined from "@ant-design/icons/SunOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import { useKeycloak } from "@react-keycloak/web";
 import { useRouter } from "@tanstack/react-router";
 import { Header } from "antd/es/layout/layout";
 import { useUserRoles } from "../apis/hooks/useUserRole";
 import { RoleEnum } from "../enums/RoleEnum";
+import { useTheme } from "../apis/theme/ThemeContext";
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -72,6 +77,8 @@ export default function NavHeader() {
   const user = keycloak?.tokenParsed;
   const username = user?.preferred_username;
   const email = user?.email;
+  const { token } = theme.useToken();
+  const { isDark, toggleTheme } = useTheme();
 
   const router = useRouter();
   const currentPath = router.state.location.pathname;
@@ -108,6 +115,23 @@ export default function NavHeader() {
     },
   ];
 
+  const ThemeToggle = (
+    <Tooltip title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}>
+      <Button
+        type="text"
+        aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+        icon={
+          isDark ? (
+            <SunOutlined style={{ fontSize: 18 }} />
+          ) : (
+            <MoonOutlined style={{ fontSize: 18 }} />
+          )
+        }
+        onClick={toggleTheme}
+      />
+    </Tooltip>
+  );
+
   const UserAvatar = (
     <Dropdown
       menu={{ items: dropdownItems }}
@@ -129,7 +153,7 @@ export default function NavHeader() {
         <Avatar
           size={36}
           icon={<UserOutlined />}
-          style={{ backgroundColor: "#4f9cf7", flexShrink: 0 }}
+          style={{ backgroundColor: token.colorPrimary, flexShrink: 0 }}
         />
       </Flex>
     </Dropdown>
@@ -143,7 +167,7 @@ export default function NavHeader() {
           top: 0,
           width: "100%",
           zIndex: 100,
-          background: "#fff",
+          background: token.colorBgContainer,
           padding: "0 16px",
           boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
           display: "flex",
@@ -152,7 +176,7 @@ export default function NavHeader() {
           height: 56,
         }}
       >
-        {/* Mobile: hamburger + avatar */}
+        {/* Mobile: hamburger + theme toggle + avatar */}
         {isMobile ? (
           <>
             <Button
@@ -160,11 +184,14 @@ export default function NavHeader() {
               icon={<MenuOutlined style={{ fontSize: 20 }} />}
               onClick={() => setDrawerOpen(true)}
             />
-            {UserAvatar}
+            <Flex align="center" gap={4}>
+              {ThemeToggle}
+              {UserAvatar}
+            </Flex>
           </>
         ) : (
           <>
-            {/* Desktop: nav centrado + avatar */}
+            {/* Desktop: nav centrado + theme toggle + avatar */}
             <div style={{ flex: 1 }} />
             <Menu
               mode="horizontal"
@@ -181,7 +208,8 @@ export default function NavHeader() {
                 onClick: () => handleClick(item),
               }))}
             />
-            <Flex style={{ flex: 1 }} justify="flex-end">
+            <Flex style={{ flex: 1 }} justify="flex-end" align="center" gap={8}>
+              {ThemeToggle}
               {UserAvatar}
             </Flex>
           </>
@@ -216,6 +244,12 @@ export default function NavHeader() {
           }))}
         />
         <div style={{ padding: "16px 16px 0" }}>
+          <Flex gap={8} style={{ marginBottom: 8 }}>
+            {ThemeToggle}
+            <Text type="secondary" style={{ lineHeight: "32px", fontSize: 13 }}>
+              {isDark ? "Modo oscuro" : "Modo claro"}
+            </Text>
+          </Flex>
           <Button
             block
             danger

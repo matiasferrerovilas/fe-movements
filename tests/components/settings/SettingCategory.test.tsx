@@ -189,9 +189,14 @@ describe("SettingCategory", () => {
         expect(screen.getByText("Servicios")).toBeInTheDocument(),
       );
 
-      const allDeleteBtns = document.querySelectorAll(".category-delete-btn");
-      expect(allDeleteBtns[0]).toBeDisabled(); // SERVICIOS — isDeletable: false
-      expect(allDeleteBtns[1]).not.toBeDisabled(); // HOGAR — isDeletable: true
+      const deleteServiciosBtn = screen.getByRole("button", {
+        name: /Eliminar categoría SERVICIOS/i,
+      });
+      const deleteHogarBtn = screen.getByRole("button", {
+        name: /Eliminar categoría HOGAR/i,
+      });
+      expect(deleteServiciosBtn).toBeDisabled(); // SERVICIOS — isDeletable: false
+      expect(deleteHogarBtn).not.toBeDisabled(); // HOGAR — isDeletable: true
     });
 
     it("el botón de eliminar está habilitado para categorías con isDeletable: true", async () => {
@@ -200,8 +205,10 @@ describe("SettingCategory", () => {
         expect(screen.getByText("Hogar")).toBeInTheDocument(),
       );
 
-      const allDeleteBtns = document.querySelectorAll(".category-delete-btn");
-      expect(allDeleteBtns[1]).not.toBeDisabled();
+      const deleteHogarBtn = screen.getByRole("button", {
+        name: /Eliminar categoría HOGAR/i,
+      });
+      expect(deleteHogarBtn).not.toBeDisabled();
     });
 
     it("llama DELETE /categories/{id} al confirmar el popconfirm", async () => {
@@ -223,8 +230,10 @@ describe("SettingCategory", () => {
       );
 
       // Click el botón delete de HOGAR (isDeletable: true, no está disabled)
-      const allDeleteBtns = document.querySelectorAll(".category-delete-btn");
-      await user.click(allDeleteBtns[1] as HTMLElement);
+      const deleteHogarBtn = screen.getByRole("button", {
+        name: /Eliminar categoría HOGAR/i,
+      });
+      await user.click(deleteHogarBtn);
 
       // Confirmar en el Popconfirm
       const confirmBtn = await screen.findByText("Eliminar");

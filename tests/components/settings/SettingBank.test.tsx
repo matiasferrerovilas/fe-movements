@@ -168,17 +168,24 @@ describe("SettingBank", () => {
       await waitFor(() => expect(screen.getByText("GALICIA")).toBeInTheDocument());
 
       // GALICIA (id=1) es el default → su botón de eliminar debe estar disabled
-      const allDeleteBtns = document.querySelectorAll(".bank-delete-btn");
-      expect(allDeleteBtns[0]).toBeDisabled(); // GALICIA = default
-      expect(allDeleteBtns[1]).not.toBeDisabled(); // SANTANDER = no default
+      const deleteGaliciaBtn = screen.getByRole("button", {
+        name: /Eliminar banco GALICIA/i,
+      });
+      const deleteSantanderBtn = screen.getByRole("button", {
+        name: /Eliminar banco SANTANDER/i,
+      });
+      expect(deleteGaliciaBtn).toBeDisabled(); // GALICIA = default
+      expect(deleteSantanderBtn).not.toBeDisabled(); // SANTANDER = no default
     });
 
     it("el botón de eliminar no está deshabilitado para bancos no default", async () => {
       renderSettingBank();
       await waitFor(() => expect(screen.getByText("SANTANDER")).toBeInTheDocument());
 
-      const allDeleteBtns = document.querySelectorAll(".bank-delete-btn");
-      expect(allDeleteBtns[1]).not.toBeDisabled(); // SANTANDER
+      const deleteSantanderBtn = screen.getByRole("button", {
+        name: /Eliminar banco SANTANDER/i,
+      });
+      expect(deleteSantanderBtn).not.toBeDisabled(); // SANTANDER
     });
 
     it("llama DELETE /banks/{id} al confirmar el popconfirm", async () => {
@@ -195,8 +202,10 @@ describe("SettingBank", () => {
       await waitFor(() => expect(screen.getByText("SANTANDER")).toBeInTheDocument());
 
       // Click el botón delete de SANTANDER (no es default, no está disabled)
-      const allDeleteBtns = document.querySelectorAll(".bank-delete-btn");
-      await user.click(allDeleteBtns[1] as HTMLElement);
+      const deleteSantanderBtn = screen.getByRole("button", {
+        name: /Eliminar banco SANTANDER/i,
+      });
+      await user.click(deleteSantanderBtn);
 
       // Confirmar en el Popconfirm
       const confirmBtn = await screen.findByText("Eliminar");
@@ -211,9 +220,14 @@ describe("SettingBank", () => {
       renderSettingBank();
       await waitFor(() => expect(screen.getByText("GALICIA")).toBeInTheDocument());
 
-      const starButtons = document.querySelectorAll(".bank-star-btn");
-      expect(starButtons[0]).toBeDisabled(); // GALICIA = default
-      expect(starButtons[1]).not.toBeDisabled(); // SANTANDER
+      const starGaliciaBtn = screen.getByRole("button", {
+        name: /Estrella banco GALICIA/i,
+      });
+      const starSantanderBtn = screen.getByRole("button", {
+        name: /Estrella banco SANTANDER/i,
+      });
+      expect(starGaliciaBtn).toBeDisabled(); // GALICIA = default
+      expect(starSantanderBtn).not.toBeDisabled(); // SANTANDER
     });
   });
 });

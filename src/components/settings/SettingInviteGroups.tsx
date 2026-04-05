@@ -1,14 +1,15 @@
 import MailOutlined from "@ant-design/icons/MailOutlined";
-import { Badge, Card, Space, Typography } from "antd";
+import { Badge, Card, Space, theme, Typography } from "antd";
 import { useInvitations } from "../../apis/hooks/useGroups";
 import type { Invitations } from "../../models/UserGroup";
 import SettingInviteGroupCard from "./SettingInviteGroupCard";
 import { useInvitationSubscription } from "../../apis/websocket/useInvitationSubscription";
-import { ColorEnum } from "../../enums/ColorEnum";
+
 const { Text } = Typography;
 
 export function SettingInviteGroups() {
   const { data: invitations, isFetching } = useInvitations();
+  const { token } = theme.useToken();
 
   useInvitationSubscription();
 
@@ -22,20 +23,20 @@ export function SettingInviteGroups() {
       title={
         <Space align="center">
           <MailOutlined
-            style={{ color: ColorEnum.TEXTO_ACTIVO_AZUL, fontSize: 18 }}
+            style={{ color: token.colorPrimary, fontSize: 18 }}
           />
           <Text strong>Invitaciones Pendientes</Text>
           <Badge
             count={invitations?.length}
             style={{
-              backgroundColor: ColorEnum.TEXTO_ACTIVO_AZUL,
+              backgroundColor: token.colorPrimary,
               fontWeight: "bold",
             }}
           />
         </Space>
       }
       style={{
-        backgroundColor: "#f5f9ff",
+        backgroundColor: token.colorPrimaryBg,
         borderRadius: 12,
         boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
       }}

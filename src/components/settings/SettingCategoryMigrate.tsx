@@ -3,10 +3,13 @@ import {
   Button,
   Card,
   Col,
+  Divider,
+  Flex,
   Form,
   Popconfirm,
   Row,
   Select,
+  theme,
   Typography,
   App,
 } from "antd";
@@ -31,6 +34,7 @@ export function SettingCategoryMigrate() {
   const migrateMutation = useMigrateCategory();
   const [form] = Form.useForm<MigrateCategoryForm>();
   const { message } = App.useApp();
+  const { token } = theme.useToken();
 
   const fromCategoryId = Form.useWatch("fromCategoryId", form);
   const toCategoryId = Form.useWatch("toCategoryId", form);
@@ -71,50 +75,41 @@ export function SettingCategoryMigrate() {
     <Card
       style={{
         borderRadius: 16,
-        border: "1.5px dashed #f59e0b",
-        background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
+        border: `1.5px dashed ${token.colorWarningBorder}`,
+        background: token.colorWarningBg,
         marginTop: 20,
       }}
       styles={{ body: { padding: "18px 20px" } }}
     >
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          marginBottom: 4,
-        }}
-      >
+      <Flex align="center" gap={10} style={{ marginBottom: 4 }}>
         <div
           style={{
             width: 36,
             height: 36,
             borderRadius: 10,
-            background: "linear-gradient(135deg, #d97706, #f59e0b)",
+            background: `linear-gradient(135deg, ${token.colorWarningActive}, ${token.colorWarning})`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 3px 10px rgba(217, 119, 6, 0.3)",
+            boxShadow: `0 3px 10px ${token.colorWarningBorder}`,
             flexShrink: 0,
           }}
         >
           <RetweetOutlined style={{ color: "#fff", fontSize: 18 }} />
         </div>
         <div>
-          <Title level={5} style={{ margin: 0, color: "#78350f" }}>
+          <Title level={5} style={{ margin: 0, color: token.colorWarningText }}>
             Migrar Categoría
           </Title>
-          <Text style={{ fontSize: 12, color: "#92400e" }}>
+          <Text style={{ fontSize: 12, color: token.colorWarningText }}>
             Solo administradores. Reasigna todos tus movimientos de una
             categoría a otra.
           </Text>
         </div>
-      </div>
+      </Flex>
 
-      <div
-        style={{ height: 1, background: "#fde68a", margin: "14px 0" }}
-      />
+      <Divider style={{ margin: "14px 0", borderColor: token.colorWarningBorder }} />
 
       <Form form={form} layout="vertical">
         <Row gutter={[12, 0]} align="middle">
@@ -122,7 +117,7 @@ export function SettingCategoryMigrate() {
             <Form.Item
               name="fromCategoryId"
               label={
-                <Text style={{ fontSize: 13, color: "#78350f", fontWeight: 600 }}>
+                <Text style={{ fontSize: 13, color: token.colorWarningText, fontWeight: 600 }}>
                   Categoría origen
                 </Text>
               }
@@ -152,7 +147,7 @@ export function SettingCategoryMigrate() {
             }}
           >
             <SwapRightOutlined
-              style={{ fontSize: 22, color: "#d97706" }}
+              style={{ fontSize: 22, color: token.colorWarning }}
             />
           </Col>
 
@@ -160,7 +155,7 @@ export function SettingCategoryMigrate() {
             <Form.Item
               name="toCategoryId"
               label={
-                <Text style={{ fontSize: 13, color: "#78350f", fontWeight: 600 }}>
+                <Text style={{ fontSize: 13, color: token.colorWarningText, fontWeight: 600 }}>
                   Categoría destino
                 </Text>
               }
@@ -180,7 +175,7 @@ export function SettingCategoryMigrate() {
           </Col>
         </Row>
 
-        <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
+        <Flex justify="flex-end" style={{ marginTop: 16 }}>
           <Popconfirm
             title={confirmTitle}
             description={confirmDescription}
@@ -188,23 +183,16 @@ export function SettingCategoryMigrate() {
             okText="Migrar"
             cancelText="Cancelar"
             okButtonProps={{
-              style: {
-                background: "linear-gradient(90deg, #d97706, #f59e0b)",
-                border: "none",
-              },
               loading: migrateMutation.isPending,
             }}
             disabled={!fromCategoryId || !toCategoryId}
           >
             <Button
+              type="primary"
               style={{
                 height: 40,
                 borderRadius: 10,
                 fontWeight: 600,
-                background: "linear-gradient(90deg, #d97706, #f59e0b)",
-                border: "none",
-                color: "#fff",
-                boxShadow: "0 2px 10px rgba(217, 119, 6, 0.3)",
               }}
               loading={migrateMutation.isPending}
               disabled={!fromCategoryId || !toCategoryId}
@@ -212,7 +200,7 @@ export function SettingCategoryMigrate() {
               Migrar
             </Button>
           </Popconfirm>
-        </div>
+        </Flex>
       </Form>
     </Card>
   );

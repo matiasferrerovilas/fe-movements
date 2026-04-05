@@ -1,44 +1,10 @@
 import { DollarOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
-import { Button, Card, Space, Tooltip, Typography } from "antd";
+import { Button, Card, Divider, Flex, Space, theme, Tooltip, Typography } from "antd";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useUserDefault, useSetUserDefault } from "../../apis/hooks/useSettings";
 import type { Currency } from "../../apis/currencies/CurrencyApi";
 
 const { Title, Text } = Typography;
-
-const css = `
-  .currency-card {
-    border-radius: 16px !important;
-    transition: all 0.25s ease !important;
-    overflow: hidden;
-  }
-  .currency-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(0,0,0,0.09) !important;
-  }
-  .currency-card-default {
-    background: linear-gradient(135deg, #f0f5ff 0%, #e6f0ff 100%) !important;
-    border: 1.5px solid #91b4f5 !important;
-  }
-  .currency-card-normal {
-    background: #f7f8fa !important;
-    border: 1.5px solid #e8eaed !important;
-  }
-  .currency-star-btn {
-    border-radius: 50% !important;
-    width: 34px !important;
-    height: 34px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 0 !important;
-    transition: all 0.2s ease !important;
-  }
-  .currency-star-btn:not(:disabled):hover {
-    background: #fff8e1 !important;
-    transform: scale(1.18);
-  }
-`;
 
 interface CurrencyCardProps {
   currency: Currency;
@@ -53,35 +19,36 @@ function CurrencyCard({
   onSetDefault,
   isSettingDefault,
 }: CurrencyCardProps) {
+  const { token } = theme.useToken();
   const isDefault = currency.id === defaultCurrencyId;
 
   return (
     <Card
       hoverable
-      className={`currency-card ${isDefault ? "currency-card-default" : "currency-card-normal"}`}
       styles={{ body: { padding: "14px 18px", cursor: "default" } }}
+      style={{
+        borderRadius: 16,
+        border: `1.5px solid ${isDefault ? token.colorPrimaryBorder : token.colorBorderSecondary}`,
+        background: isDefault ? token.colorPrimaryBg : token.colorFillAlter,
+        transition: "all 0.25s ease",
+        overflow: "hidden",
+      }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+      <Flex align="center" justify="space-between">
+        <Flex align="center" gap={14}>
           <div
             style={{
               width: 44,
               height: 44,
               borderRadius: 13,
               background: isDefault
-                ? "linear-gradient(135deg, #1a6fd4 0%, #4f9cf7 100%)"
-                : "linear-gradient(135deg, #b0bec5 0%, #90a4ae 100%)",
+                ? `linear-gradient(135deg, ${token.colorPrimary} 0%, ${token.colorPrimaryHover} 100%)`
+                : `linear-gradient(135deg, ${token.colorFill} 0%, ${token.colorFillSecondary} 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               boxShadow: isDefault
-                ? "0 4px 14px rgba(26, 111, 212, 0.32)"
+                ? `0 4px 14px ${token.colorPrimaryBorder}`
                 : "0 2px 6px rgba(0,0,0,0.08)",
               flexShrink: 0,
               transition: "all 0.25s ease",
@@ -99,13 +66,13 @@ function CurrencyCard({
               {currency.symbol}
             </Text>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Flex vertical gap={3}>
+            <Flex align="center" gap={8}>
               <Text
                 strong
                 style={{
                   fontSize: 15,
-                  color: isDefault ? "#1a3a6b" : "#1f2937",
+                  color: token.colorText,
                   letterSpacing: "-0.2px",
                   lineHeight: 1,
                 }}
@@ -115,7 +82,7 @@ function CurrencyCard({
               {isDefault && (
                 <span
                   style={{
-                    background: "linear-gradient(90deg, #1a6fd4, #4f9cf7)",
+                    background: `linear-gradient(90deg, ${token.colorPrimary}, ${token.colorPrimaryHover})`,
                     borderRadius: 20,
                     color: "#fff",
                     fontSize: 10,
@@ -129,12 +96,12 @@ function CurrencyCard({
                   ★ Default
                 </span>
               )}
-            </div>
-            <Text style={{ fontSize: 12, color: "#9ca3af" }}>
+            </Flex>
+            <Text type="secondary" style={{ fontSize: 12 }}>
               {currency.symbol}
             </Text>
-          </div>
-        </div>
+          </Flex>
+        </Flex>
         <Space size={4}>
           <Tooltip
             title={
@@ -145,20 +112,28 @@ function CurrencyCard({
           >
             <Button
               type="text"
-              className="currency-star-btn"
+              style={{
+                borderRadius: "50%",
+                width: 34,
+                height: 34,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 0,
+              }}
               disabled={isDefault || isSettingDefault}
               onClick={() => onSetDefault(currency.id)}
               icon={
                 isDefault ? (
-                  <StarFilled style={{ color: "#f5a623", fontSize: 18 }} />
+                  <StarFilled style={{ color: token.colorWarning, fontSize: 18 }} />
                 ) : (
-                  <StarOutlined style={{ color: "#c4c9d4", fontSize: 18 }} />
+                  <StarOutlined style={{ color: token.colorTextQuaternary, fontSize: 18 }} />
                 )
               }
             />
           </Tooltip>
         </Space>
-      </div>
+      </Flex>
     </Card>
   );
 }
@@ -167,61 +142,52 @@ export function SettingCurrency() {
   const { data: currencies = [], isLoading } = useCurrency();
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const setDefaultMutation = useSetUserDefault();
+  const { token } = theme.useToken();
 
   return (
-    <>
-      <style>{css}</style>
-      <Card loading={isLoading} style={{ borderRadius: 16 }}>
-        {/* Header */}
+    <Card loading={isLoading} style={{ borderRadius: 16 }}>
+      {/* Header */}
+      <Flex align="center" gap={10} style={{ marginBottom: 4 }}>
         <div
           style={{
+            width: 36,
+            height: 36,
+            borderRadius: 10,
+            background: `linear-gradient(135deg, ${token.colorPrimary}, ${token.colorPrimaryHover})`,
             display: "flex",
             alignItems: "center",
-            gap: 10,
-            marginBottom: 4,
+            justifyContent: "center",
+            boxShadow: `0 3px 10px ${token.colorPrimaryBorder}`,
           }}
         >
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              background: "linear-gradient(135deg, #1a6fd4, #4f9cf7)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 3px 10px rgba(26,111,212,0.25)",
-            }}
-          >
-            <DollarOutlined style={{ color: "#fff", fontSize: 18 }} />
-          </div>
-          <div>
-            <Title level={5} style={{ margin: 0, color: "#1a3a6b" }}>
-              Moneda por defecto
-            </Title>
-            <Text style={{ fontSize: 12, color: "#9ca3af" }}>
-              Seleccioná la moneda que se pre-completa en los formularios.
-            </Text>
-          </div>
+          <DollarOutlined style={{ color: "#fff", fontSize: 18 }} />
         </div>
-
-        <div style={{ height: 1, background: "#f0f4ff", margin: "14px 0" }} />
-
-        {/* Lista de monedas */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {currencies.map((currency: Currency) => (
-            <CurrencyCard
-              key={currency.id}
-              currency={currency}
-              defaultCurrencyId={defaultCurrency?.value}
-              onSetDefault={(id) =>
-                setDefaultMutation.mutate({ key: "DEFAULT_CURRENCY", value: id })
-              }
-              isSettingDefault={setDefaultMutation.isPending}
-            />
-          ))}
+        <div>
+          <Title level={5} style={{ margin: 0 }}>
+            Moneda por defecto
+          </Title>
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            Seleccioná la moneda que se pre-completa en los formularios.
+          </Text>
         </div>
-      </Card>
-    </>
+      </Flex>
+
+      <Divider style={{ margin: "14px 0" }} />
+
+      {/* Lista de monedas */}
+      <Flex vertical gap={10}>
+        {currencies.map((currency: Currency) => (
+          <CurrencyCard
+            key={currency.id}
+            currency={currency}
+            defaultCurrencyId={defaultCurrency?.value}
+            onSetDefault={(id) =>
+              setDefaultMutation.mutate({ key: "DEFAULT_CURRENCY", value: id })
+            }
+            isSettingDefault={setDefaultMutation.isPending}
+          />
+        ))}
+      </Flex>
+    </Card>
   );
 }
