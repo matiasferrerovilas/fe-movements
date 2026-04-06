@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Avatar,
   Button,
@@ -69,6 +69,100 @@ const NAV_ITEMS: SideBarItem[] = [
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
 ];
+
+// ── NavSlider ──────────────────────────────────────────────────────────────
+
+interface NavSliderProps {
+  items: SideBarItem[];
+  activeKey: string;
+  onSelect: (item: SideBarItem) => void;
+  token: ReturnType<typeof theme.useToken>["token"];
+}
+
+function NavSlider({ items, activeKey, onSelect, token }: NavSliderProps) {
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [barStyle, setBarStyle] = useState({ left: 0, width: 0 });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const idx = items.findIndex((i) => i.key === activeKey);
+    const el = itemRefs.current[idx];
+    if (!el) return;
+    setBarStyle({ left: el.offsetLeft, width: el.offsetWidth });
+    if (!mounted) setMounted(true);
+  }, [activeKey, items, mounted]);
+
+  return (
+    <nav
+      style={{
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+        gap: 0,
+        flex: "0 0 auto",
+      }}
+    >
+      {items.map((item, idx) => {
+        const isActive = item.key === activeKey;
+        return (
+          <button
+            key={item.key}
+            ref={(el) => { itemRefs.current[idx] = el; }}
+            onClick={() => onSelect(item)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "0 16px",
+              height: 56,
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+              color: isActive ? token.colorPrimary : token.colorTextSecondary,
+              fontSize: token.fontSize,
+              fontFamily: "inherit",
+              fontWeight: isActive ? 600 : 400,
+              transition: `color 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+                           font-weight 0.25s cubic-bezier(0.25, 1, 0.5, 1)`,
+              whiteSpace: "nowrap",
+              outline: "none",
+            }}
+            onMouseEnter={(e) => {
+              if (!isActive) (e.currentTarget as HTMLButtonElement).style.color = token.colorText;
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive) (e.currentTarget as HTMLButtonElement).style.color = token.colorTextSecondary;
+            }}
+          >
+            <span style={{ fontSize: 15, lineHeight: 1, display: "flex" }}>
+              {item.icon}
+            </span>
+            {item.label}
+          </button>
+        );
+      })}
+
+      {/* Sliding indicator bar */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          height: 2,
+          backgroundColor: token.colorPrimary,
+          borderRadius: "1px 1px 0 0",
+          left: barStyle.left,
+          width: barStyle.width,
+          transition: mounted
+            ? "left 0.35s cubic-bezier(0.25, 1, 0.5, 1), width 0.35s cubic-bezier(0.25, 1, 0.5, 1)"
+            : "none",
+          pointerEvents: "none",
+        }}
+      />
+    </nav>
+  );
+}
+
+// ── NavHeader ──────────────────────────────────────────────────────────────
 
 export default function NavHeader() {
   const screens = useBreakpoint();
@@ -190,22 +284,11 @@ export default function NavHeader() {
           <>
             {/* Desktop: nav centrado + theme toggle + avatar */}
             <div style={{ flex: 1 }} />
-            <Menu
-              mode="horizontal"
-              selectedKeys={[active]}
-              disabledOverflow
-              style={{
-                border: "none",
-                background: "transparent",
-                flex: "0 0 auto",
-                minWidth: "max-content",
-              }}
-              items={visibleItems.map((item) => ({
-                key: item.key,
-                icon: item.icon,
-                label: item.label,
-                onClick: () => handleClick(item),
-              }))}
+            <NavSlider
+              items={visibleItems}
+              activeKey={active}
+              onSelect={handleClick}
+              token={token}
             />
             <Flex style={{ flex: 1 }} justify="flex-end" align="center" gap={8}>
               {ThemeToggle}
