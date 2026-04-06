@@ -8,7 +8,7 @@ import { RoleEnum } from "../enums/RoleEnum";
 import SettingAccount from "../components/settings/SettingAccount";
 import { SettingBank } from "../components/settings/SettingBank";
 import { SettingCurrency } from "../components/settings/SettingCurrency";
-import { UserOutlined, TeamOutlined, SettingOutlined, TagOutlined } from "@ant-design/icons";
+import { UserOutlined, TeamOutlined, WalletOutlined, TagOutlined } from "@ant-design/icons";
 import { SettingCategory } from "../components/settings/SettingCategory";
 
 const { useBreakpoint } = Grid;
@@ -25,12 +25,7 @@ const TABS = [
     key: "cuenta",
     label: "Cuenta",
     icon: <UserOutlined />,
-    children: (
-      <Flex vertical gap={16}>
-        <SettingIngreso />
-        <SettingAccount />
-      </Flex>
-    ),
+    children: <SettingAccount />,
   },
   {
     key: "grupos",
@@ -44,13 +39,14 @@ const TABS = [
     ),
   },
   {
-    key: "preferencias",
-    label: "Preferencias",
-    icon: <SettingOutlined />,
+    key: "finanzas",
+    label: "Mis finanzas",
+    icon: <WalletOutlined />,
     children: (
       <Flex vertical gap={16}>
         <SettingBank />
         <SettingCurrency />
+        <SettingIngreso />
       </Flex>
     ),
   },
