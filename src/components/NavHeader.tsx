@@ -64,7 +64,7 @@ const NAV_ITEMS: SideBarItem[] = [
   {
     key: "settings",
     icon: <SettingOutlined />,
-    label: "Settings",
+    label: "Ajustes",
     path: "/settings",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
@@ -193,10 +193,12 @@ export default function NavHeader() {
             <Menu
               mode="horizontal"
               selectedKeys={[active]}
+              disabledOverflow
               style={{
                 border: "none",
                 background: "transparent",
                 flex: "0 0 auto",
+                minWidth: "max-content",
               }}
               items={visibleItems.map((item) => ({
                 key: item.key,

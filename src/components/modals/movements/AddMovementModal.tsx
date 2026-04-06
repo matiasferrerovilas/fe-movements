@@ -2,30 +2,39 @@ import { Button, Tabs } from "antd";
 import ModalComponent from "../Modal";
 import { useRef, useState } from "react";
 import PlusCircleOutlined from "@ant-design/icons/PlusCircleOutlined";
-import TabPane from "antd/es/tabs/TabPane";
+import UploadOutlined from "@ant-design/icons/UploadOutlined";
+import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import ImportMovementTab from "./ImportMovementTab";
 import AddMovementExpenseTab from "./AddMovementExpenseTab";
+
+const TAB_ARCHIVO = "1";
+const TAB_INDIVIDUAL = "2";
 
 export default function AddMovementModal() {
   const [modalOpen, setModalOpen] = useState(false);
   const handleCloseModal = () => {
     setModalOpen(false);
   };
-  const [activeTab, setActiveTab] = useState<string>("1");
+  const [activeTab, setActiveTab] = useState<string>(TAB_ARCHIVO);
 
   const uploadRef = useRef<{ handleConfirm: () => void } | null>(null);
   const expenseRef = useRef<{ handleConfirm: () => void } | null>(null);
 
   const handleConfirm = () => {
     switch (activeTab) {
-      case "1":
+      case TAB_ARCHIVO:
         uploadRef.current?.handleConfirm();
         break;
-      case "2":
+      case TAB_INDIVIDUAL:
         expenseRef.current?.handleConfirm();
         break;
     }
   };
+
+  const confirmLabel = activeTab === TAB_ARCHIVO ? "Importar" : "Agregar";
+  const confirmIcon =
+    activeTab === TAB_ARCHIVO ? <UploadOutlined /> : <PlusOutlined />;
+
   return (
     <>
       <Button
@@ -41,22 +50,34 @@ export default function AddMovementModal() {
         onClose={handleCloseModal}
         title="Agregar Movimiento"
         footer={
-          <Button type="primary" onClick={handleConfirm}>
-            Agregar
+          <Button type="primary" icon={confirmIcon} onClick={handleConfirm}>
+            {confirmLabel}
           </Button>
         }
       >
-        <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          <TabPane tab="Archivo" key="1">
-            <ImportMovementTab ref={uploadRef} onSuccess={handleCloseModal} />
-          </TabPane>
-          <TabPane tab="Individual" key="2">
-            <AddMovementExpenseTab
-              ref={expenseRef}
-              onSuccess={handleCloseModal}
-            />
-          </TabPane>
-        </Tabs>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={[
+            {
+              key: TAB_ARCHIVO,
+              label: "Archivo",
+              children: (
+                <ImportMovementTab ref={uploadRef} onSuccess={handleCloseModal} />
+              ),
+            },
+            {
+              key: TAB_INDIVIDUAL,
+              label: "Individual",
+              children: (
+                <AddMovementExpenseTab
+                  ref={expenseRef}
+                  onSuccess={handleCloseModal}
+                />
+              ),
+            },
+          ]}
+        />
       </ModalComponent>
     </>
   );

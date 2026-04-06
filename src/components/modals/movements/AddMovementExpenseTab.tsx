@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { Col, DatePicker, Form, Input, InputNumber, Row, Select } from "antd";
 import { useGroups } from "../../../apis/hooks/useGroups";
 import { useMutation } from "@tanstack/react-query";
-import { TypeEnum } from "../../../enums/TypeExpense";
+import { TypeEnum, TypeEnumLabel } from "../../../enums/TypeExpense";
 import type { CreateMovementForm, Movement } from "../../../models/Movement";
 import { useCategory } from "../../../apis/hooks/useCategory";
 import dayjs from "dayjs";
@@ -129,7 +129,7 @@ const AddMovementExpenseTab = forwardRef<
             <Select placeholder="Seleccionar tipo">
               {Object.values(TypeEnum).map((type) => (
                 <Select.Option key={type} value={type}>
-                  {type}
+                  {TypeEnumLabel[type]}
                 </Select.Option>
               ))}
             </Select>

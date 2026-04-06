@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Col, Row } from "antd";
+import { Col, Row, message } from "antd";
 import {
   addSubscriptionApi,
   paySubscriptionApi,
@@ -34,21 +34,27 @@ function RouteComponent() {
   const payMutation = useMutation({
     mutationFn: ({ service }: { service: Service }) => paySubscriptionApi(service),
     onError: (err) => {
-      console.error("Error subiendo archivo:", err);
+      console.error("Error pagando el servicio:", err);
     },
   });
   const updateServiceMutation = useMutation({
     mutationFn: ({ service }: { service: ServiceToUpdate }) =>
       updateSubscriptionApi(service),
+    onSuccess: () => {
+      void message.success("Servicio actualizado");
+    },
     onError: (err) => {
-      console.error("Error subiendo archivo:", err);
+      console.error("Error actualizando el servicio:", err);
     },
   });
   const addServiceMutation = useMutation({
     mutationFn: ({ service }: { service: ServiceToAdd }) =>
       addSubscriptionApi(service),
+    onSuccess: () => {
+      void message.success("Servicio agregado");
+    },
     onError: (err) => {
-      console.error("Error subiendo archivo:", err);
+      console.error("Error agregando el servicio:", err);
     },
   });
 
@@ -64,6 +70,7 @@ function RouteComponent() {
   return (
     <div style={{ paddingTop: 30 }}>
       <ServiceSummary services={services} isFetching={isFetching} />
+
       <Row gutter={16} style={{ marginBottom: 16, padding: 0 }}>
         <Col xs={24} sm={12} lg={8} style={{ marginBottom: 16 }}>
           <ServiceCardForm handleAddService={handleAddService} />

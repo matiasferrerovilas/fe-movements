@@ -71,7 +71,7 @@ export const ServiceCard = React.memo(function ServiceCard({
       .validateFields()
       .then((values) => {
         if (values.amount <= 0) {
-          message.warning("El monto debe ser mayor que 0");
+          void message.warning("El monto debe ser mayor que 0");
           return;
         }
         handleUpdateServiceMutation({
@@ -86,7 +86,6 @@ export const ServiceCard = React.memo(function ServiceCard({
           },
         });
         setIsEditing(false);
-        message.success("Servicio actualizado");
       })
       .catch(() => {});
   };

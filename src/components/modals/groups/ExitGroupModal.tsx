@@ -1,5 +1,5 @@
 import { Button, Popconfirm } from "antd";
-import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { GroupDetail } from "../../../models/UserGroup";
 import { exitGroupApi } from "../../../apis/GroupApi";
@@ -31,7 +31,7 @@ export default function ExitGroupModal({ group }: ExitGroupModalProps) {
     >
       <Button
         type="text"
-        icon={<DeleteOutlined style={{ fontSize: 22, cursor: "pointer" }} />}
+        icon={<LogoutOutlined style={{ fontSize: 22, cursor: "pointer" }} />}
         style={{
           color: "#ff4d4f",
           borderRadius: 8,

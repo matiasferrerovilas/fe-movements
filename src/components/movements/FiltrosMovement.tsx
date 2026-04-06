@@ -1,23 +1,40 @@
-import { Card, Col, Input, Row, Segmented, Select } from "antd";
+import { Card, Col, Flex, Input, Row, Segmented, Select, Typography } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { MovementFilters } from "../../routes/movement";
-import { TypeEnum } from "../../enums/TypeExpense";
+import { TypeEnum, TypeEnumLabel } from "../../enums/TypeExpense";
 import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import { useCategory } from "../../apis/hooks/useCategory";
 import HistoryOutlined from "@ant-design/icons/HistoryOutlined";
 import RiseOutlined from "@ant-design/icons/RiseOutlined";
+import SearchOutlined from "@ant-design/icons/SearchOutlined";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useBanks } from "../../apis/hooks/useBank";
+import { capitalizeFirst } from "../utils/stringFunctions";
 
 const { Option } = Select;
-
-const capitalize = (str: string) =>
-  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+const { Text } = Typography;
 
 interface Props {
   onFiltersChange: (filters: MovementFilters) => void;
   initialFilters: MovementFilters;
   AddEditMovementModal: React.ComponentType;
+}
+
+function FilterField({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Flex vertical gap={4}>
+      <Text type="secondary" style={{ fontSize: 12 }}>
+        {label}
+      </Text>
+      {children}
+    </Flex>
+  );
 }
 
 export default function FiltrosMovement({
@@ -92,84 +109,95 @@ export default function FiltrosMovement({
       </div>
 
       <Card title="Filtros" style={{ marginBottom: 16 }}>
-        <Row gutter={16} align="middle" justify="center">
-          <Col>
-            <Input
-              placeholder="Buscar..."
-              value={filters.description ?? ""}
-              onChange={(e) => handleChange("description", e.target.value)}
-              style={{ width: 200 }}
-            />
+        <Row gutter={[16, 16]} align="bottom">
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <FilterField label="Descripción">
+              <Input
+                placeholder="Buscar..."
+                prefix={<SearchOutlined style={{ color: "rgba(0,0,0,0.25)" }} />}
+                value={filters.description ?? ""}
+                onChange={(e) => handleChange("description", e.target.value)}
+                allowClear
+              />
+            </FilterField>
           </Col>
 
-          <Col>
-            <Select
-              mode="multiple"
-              value={filters.type}
-              onChange={(val) => handleChange("type", val as TypeEnum[])}
-              style={{ width: 200 }}
-              placeholder="Todos los Tipos"
-              allowClear
-            >
-              {Object.values(TypeEnum).map((type) => (
-                <Option key={type} value={type}>
-                  {capitalize(type)}
-                </Option>
-              ))}
-            </Select>
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <FilterField label="Tipo">
+              <Select
+                mode="multiple"
+                value={filters.type}
+                onChange={(val) => handleChange("type", val as TypeEnum[])}
+                placeholder="Todos"
+                allowClear
+                style={{ width: "100%" }}
+              >
+                {Object.values(TypeEnum).map((type) => (
+                  <Option key={type} value={type}>
+                    {TypeEnumLabel[type]}
+                  </Option>
+                ))}
+              </Select>
+            </FilterField>
           </Col>
 
-          <Col>
-            <Select
-              mode="multiple"
-              value={filters.bank}
-              onChange={(val) => handleChange("bank", val as string[])}
-              style={{ width: 200 }}
-              placeholder="Todos los Bancos"
-              allowClear
-            >
-              {banks.map((bank) => (
-                <Option key={bank.id} value={bank.description}>
-                  {capitalize(bank.description)}
-                </Option>
-              ))}
-            </Select>
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <FilterField label="Banco">
+              <Select
+                mode="multiple"
+                value={filters.bank}
+                onChange={(val) => handleChange("bank", val as string[])}
+                placeholder="Todos"
+                allowClear
+                style={{ width: "100%" }}
+              >
+                {banks.map((bank) => (
+                  <Option key={bank.id} value={bank.description}>
+                    {capitalizeFirst(bank.description)}
+                  </Option>
+                ))}
+              </Select>
+            </FilterField>
           </Col>
 
-          <Col>
-            <Select
-              mode="multiple"
-              value={filters.currency}
-              onChange={(val) =>
-                handleChange("currency", val as CurrencyEnum[])
-              }
-              style={{ width: 200 }}
-              placeholder="Todas las Monedas"
-              allowClear
-            >
-              {currencies.map((currency) => (
-                <Option key={currency.id} value={currency.symbol}>
-                  {capitalize(currency.symbol)}
-                </Option>
-              ))}
-            </Select>
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <FilterField label="Moneda">
+              <Select
+                mode="multiple"
+                value={filters.currency}
+                onChange={(val) =>
+                  handleChange("currency", val as CurrencyEnum[])
+                }
+                placeholder="Todas"
+                allowClear
+                style={{ width: "100%" }}
+              >
+                {currencies.map((currency) => (
+                  <Option key={currency.id} value={currency.symbol}>
+                    {currency.symbol}
+                  </Option>
+                ))}
+              </Select>
+            </FilterField>
           </Col>
 
-          <Col>
-            <Select
-              mode="multiple"
-              value={filters.categories}
-              onChange={(val) => handleChange("categories", val as string[])}
-              style={{ width: 200 }}
-              placeholder="Todas las Categorías"
-              allowClear
-            >
-              {categories.map((cat) => (
-                <Option key={cat.id} value={cat.description}>
-                  {cat.description}
-                </Option>
-              ))}
-            </Select>
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <FilterField label="Categoría">
+              <Select
+                mode="multiple"
+                value={filters.categories}
+                onChange={(val) => handleChange("categories", val as string[])}
+                placeholder="Todas"
+                allowClear
+                style={{ width: "100%" }}
+              >
+                {categories.map((cat) => (
+                  <Option key={cat.id} value={cat.description}>
+                    {cat.description}
+                  </Option>
+                ))}
+              </Select>
+            </FilterField>
           </Col>
         </Row>
       </Card>

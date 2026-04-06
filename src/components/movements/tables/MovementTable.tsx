@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   Col,
+  Empty,
   Grid,
   Pagination,
   Popconfirm,
@@ -15,7 +16,7 @@ import type { MovementFilters } from "../../../routes/movement";
 import { useMovement } from "../../../apis/hooks/useMovement";
 import { usePagination } from "../../../apis/hooks/usePagination";
 import dayjs from "dayjs";
-import { TypeEnum } from "../../../enums/TypeExpense";
+import { TypeEnum, TypeEnumLabel } from "../../../enums/TypeExpense";
 import { useMovementSubscription } from "../../../apis/websocket/useMovementSubscription";
 import { useMutation } from "@tanstack/react-query";
 import { deleteExpenseApi } from "../../../apis/movement/ExpenseApi";
@@ -149,110 +150,118 @@ export default function MovementTable({ filters }: MovementTableProps) {
           </Card>
 
           <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
-            {formattedMovements.map((record, index) => (
-              <Card
-                key={record.id}
-                hoverable
-                className="step-enter-right"
-                style={{ ...getCardStyle(record), animationDelay: `${Math.min(index, 9) * 40}ms` }}
-                styles={{ body: { padding: COL_PADDING } }}
-              >
-                <Row justify="center" align="middle">
-                  <Col span={2}>{record.formattedDate}</Col>
-                  <Col span={2}>
-                    <CategoryCircleTable
-                      category={record.category?.description}
-                    />
-                  </Col>
-                  <Col span={2}>
-                    {capitalizeFirst(record.bank)}
-                  </Col>
-                  <Col span={2}>{capitalizeFirst(record.account.name)}</Col>
-                  <Col span={2}>{capitalizeFirst(record.owner.email)}</Col>
-                  <Col span={2}>{capitalizeFirst(record.type)}</Col>
-                  <Col span={4}>{record.description}</Col>
-                  <Col span={1}>{record.installments}</Col>
-                  <Col span={2}>
-                    <Text>{`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}</Text>
-                  </Col>
-                  <Col span={1}>{record.currency?.symbol ?? "-"}</Col>
-                  <Col span={3} style={{ textAlign: "right" }}>
-                    <ActionButtons record={record} />
-                  </Col>
-                </Row>
-              </Card>
-            ))}
+            {formattedMovements.length === 0 ? (
+              <Empty description="Sin movimientos" style={{ padding: "40px 0" }} />
+            ) : (
+              formattedMovements.map((record, index) => (
+                <Card
+                  key={record.id}
+                  hoverable
+                  className="step-enter-right"
+                  style={{ ...getCardStyle(record), animationDelay: `${Math.min(index, 9) * 40}ms` }}
+                  styles={{ body: { padding: COL_PADDING } }}
+                >
+                  <Row justify="center" align="middle">
+                    <Col span={2}>{record.formattedDate}</Col>
+                    <Col span={2}>
+                      <CategoryCircleTable
+                        category={record.category?.description}
+                      />
+                    </Col>
+                    <Col span={2}>
+                      {capitalizeFirst(record.bank)}
+                    </Col>
+                    <Col span={2}>{capitalizeFirst(record.account.name)}</Col>
+                    <Col span={2}>{capitalizeFirst(record.owner.email)}</Col>
+                    <Col span={2}>{TypeEnumLabel[record.type as TypeEnum] ?? record.type}</Col>
+                    <Col span={4}>{record.description}</Col>
+                    <Col span={1}>{record.installments}</Col>
+                    <Col span={2}>
+                      <Text>{`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}</Text>
+                    </Col>
+                    <Col span={1}>{record.currency?.symbol ?? "-"}</Col>
+                    <Col span={3} style={{ textAlign: "right" }}>
+                      <ActionButtons record={record} />
+                    </Col>
+                  </Row>
+                </Card>
+              ))
+            )}
           </div>
         </>
       )}
 
       {isMobile && (
         <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
-          {formattedMovements.map((record, index) => (
-            <Card
-              key={record.id}
-              hoverable
-              className="step-enter-right"
-              style={{ ...getCardStyle(record), animationDelay: `${Math.min(index, 9) * 40}ms` }}
-              styles={{ body: { padding: "10px 12px" } }}
-            >
-              <Row
-                justify="space-between"
-                align="middle"
-                style={{ marginBottom: 6 }}
+          {formattedMovements.length === 0 ? (
+            <Empty description="Sin movimientos" style={{ padding: "40px 0" }} />
+          ) : (
+            formattedMovements.map((record, index) => (
+              <Card
+                key={record.id}
+                hoverable
+                className="step-enter-right"
+                style={{ ...getCardStyle(record), animationDelay: `${Math.min(index, 9) * 40}ms` }}
+                styles={{ body: { padding: "10px 12px" } }}
               >
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  {record.formattedDate}
-                </Text>
-                <Text
-                  strong
-                  style={{ color: record.amountColor, fontSize: 16 }}
+                <Row
+                  justify="space-between"
+                  align="middle"
+                  style={{ marginBottom: 6 }}
                 >
-                  {`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}
-                  <Tag color="blue" style={{ marginLeft: 6, fontSize: 11 }}>
-                    {record.currency?.symbol ?? "-"}
-                  </Tag>
-                </Text>
-              </Row>
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {record.formattedDate}
+                  </Text>
+                  <Text
+                    strong
+                    style={{ color: record.amountColor, fontSize: 16 }}
+                  >
+                    {`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}
+                    <Tag color="blue" style={{ marginLeft: 6, fontSize: 11 }}>
+                      {record.currency?.symbol ?? "-"}
+                    </Tag>
+                  </Text>
+                </Row>
 
-              {record.description && (
-                <Text style={{ display: "block", marginBottom: 4 }}>
-                  {record.description}
-                </Text>
-              )}
-
-              <Row gutter={[8, 4]} style={{ marginBottom: 4 }}>
-                <Col>
-                  <CategoryCircleTable
-                    category={record.category?.description}
-                  />
-                </Col>
-                <Col>
-                  <Tag>
-                    {capitalizeFirst(record.bank)}
-                  </Tag>
-                </Col>
-                <Col>
-                  <Tag>{capitalizeFirst(record.type)}</Tag>
-                </Col>
-                {record.cuotasTotales != null && record.cuotasTotales > 0 && (
-                  <Col>
-                    <Tag color="orange">{record.installments} cuotas</Tag>
-                  </Col>
+                {record.description && (
+                  <Text style={{ display: "block", marginBottom: 4 }}>
+                    {record.description}
+                  </Text>
                 )}
-              </Row>
 
-              <Row justify="space-between" align="middle">
-                <Text type="secondary" style={{ fontSize: 11 }}>
-                  {capitalizeFirst(record.account.name)} ·{" "}
-                  {capitalizeFirst(record.owner.email)}
-                </Text>
-                <div>
-                  <ActionButtons record={record} />
-                </div>
-              </Row>
-            </Card>
-          ))}
+                <Row gutter={[8, 4]} style={{ marginBottom: 4 }}>
+                  <Col>
+                    <CategoryCircleTable
+                      category={record.category?.description}
+                    />
+                  </Col>
+                  <Col>
+                    <Tag>
+                      {capitalizeFirst(record.bank)}
+                    </Tag>
+                  </Col>
+                  <Col>
+                    <Tag>{TypeEnumLabel[record.type as TypeEnum] ?? record.type}</Tag>
+                  </Col>
+                  {record.cuotasTotales != null && record.cuotasTotales > 0 && (
+                    <Col>
+                      <Tag color="orange">{record.installments} cuotas</Tag>
+                    </Col>
+                  )}
+                </Row>
+
+                <Row justify="space-between" align="middle">
+                  <Text type="secondary" style={{ fontSize: 11 }}>
+                    {capitalizeFirst(record.account.name)} ·{" "}
+                    {capitalizeFirst(record.owner.email)}
+                  </Text>
+                  <div>
+                    <ActionButtons record={record} />
+                  </div>
+                </Row>
+              </Card>
+            ))
+          )}
         </div>
       )}
 

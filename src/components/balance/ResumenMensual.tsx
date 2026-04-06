@@ -1,6 +1,5 @@
 import ArrowDownOutlined from "@ant-design/icons/ArrowDownOutlined";
 import ArrowUpOutlined from "@ant-design/icons/ArrowUpOutlined";
-import CalendarOutlined from "@ant-design/icons/CalendarOutlined";
 import dayjs from "dayjs";
 import { Row } from "antd";
 import { useBalance } from "../../apis/hooks/useBalance";
@@ -41,7 +40,7 @@ export default function ResumenMensual({ filters }: ResumenMensualProps) {
         title="Gastos Totales"
         amount={-gasto}
         subtitle={`Moneda ${filters.currency ?? ""}`}
-        icon={<CalendarOutlined style={{ color: token.colorError }} />}
+        icon={<ArrowDownOutlined style={{ color: token.colorError }} />}
         iconBg={token.colorErrorBg}
       />
       <BalanceCard
