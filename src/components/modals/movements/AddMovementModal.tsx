@@ -10,7 +10,7 @@ import AddMovementExpenseTab from "./AddMovementExpenseTab";
 const TAB_ARCHIVO = "1";
 const TAB_INDIVIDUAL = "2";
 
-export default function AddMovementModal() {
+export default function AddMovementModal({ block }: { block?: boolean }) {
   const [modalOpen, setModalOpen] = useState(false);
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -38,11 +38,13 @@ export default function AddMovementModal() {
   return (
     <>
       <Button
-        color="primary"
-        variant="outlined"
+        type="primary"
+        size="large"
+        shape="round"
+        block={block}
+        icon={<PlusCircleOutlined />}
         onClick={() => setModalOpen(true)}
       >
-        <PlusCircleOutlined />
         Movimiento
       </Button>
       <ModalComponent

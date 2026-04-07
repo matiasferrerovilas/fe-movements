@@ -1,4 +1,4 @@
-import { Card, Col, Flex, Input, Row, Segmented, Select, Typography } from "antd";
+import { Card, Col, Flex, Grid, Input, Row, Segmented, Select, Typography } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { MovementFilters } from "../../routes/movement";
 import { TypeEnum, TypeEnumLabel } from "../../enums/TypeExpense";
@@ -17,7 +17,7 @@ const { Text } = Typography;
 interface Props {
   onFiltersChange: (filters: MovementFilters) => void;
   initialFilters: MovementFilters;
-  AddEditMovementModal: React.ComponentType;
+  AddEditMovementModal: React.ComponentType<{ block?: boolean }>;
 }
 
 function FilterField({
@@ -85,17 +85,20 @@ export default function FiltrosMovement({
     ],
     [],
   );
-  const Modal = useMemo(() => <AddEditMovementModal />, [AddEditMovementModal]);
+  const screens = Grid.useBreakpoint();
+  const isMobile = !screens.md;
+  const Modal = useMemo(() => <AddEditMovementModal block={isMobile} />, [AddEditMovementModal, isMobile]);
 
   return (
     <>
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          flexDirection: isMobile ? "column" : "row",
+          justifyContent: isMobile ? "stretch" : "space-between",
+          alignItems: isMobile ? "stretch" : "center",
           marginBottom: 30,
-          gap: 16,
+          gap: 12,
         }}
       >
         <Segmented
@@ -104,6 +107,7 @@ export default function FiltrosMovement({
           onChange={handleLiveChange}
           size="large"
           shape="round"
+          block={isMobile}
         />
         {Modal}
       </div>
