@@ -267,7 +267,7 @@ export default function NavHeader() {
           height: 56,
         }}
       >
-        {/* Mobile: hamburger + theme toggle + avatar */}
+        {/* Mobile: hamburger + logo + theme toggle + avatar */}
         {isMobile ? (
           <>
             <Button
@@ -275,6 +275,22 @@ export default function NavHeader() {
               icon={<MenuOutlined style={{ fontSize: 20 }} />}
               onClick={() => setDrawerOpen(true)}
             />
+            <button
+              onClick={() => router.navigate({ to: "/" })}
+              style={{
+                position: "absolute",
+                left: "50%",
+                transform: "translateX(-50%)",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <img src="/favicon.png" alt="Movements" style={{ height: 40, width: 40 }} />
+            </button>
             <Flex align="center" gap={4}>
               {ThemeToggle}
               {UserAvatar}
@@ -282,8 +298,22 @@ export default function NavHeader() {
           </>
         ) : (
           <>
-            {/* Desktop: nav centrado + theme toggle + avatar */}
-            <div style={{ flex: 1 }} />
+            {/* Desktop: logo izquierda + nav centrado + theme toggle + avatar */}
+            <Flex style={{ flex: 1 }} align="center">
+              <button
+                onClick={() => router.navigate({ to: "/" })}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <img src="/favicon.png" alt="Movements" style={{ height: 40, width: 40 }} />
+              </button>
+            </Flex>
             <NavSlider
               items={visibleItems}
               activeKey={active}
