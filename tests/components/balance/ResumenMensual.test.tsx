@@ -44,26 +44,25 @@ const baseFilters: BalanceFilters = {
 // ── Tests ──────────────────────────────────────────────────────────────────────
 
 describe("ResumenMensual", () => {
-  it("renders three KPI cards: Ingresos, Gastos, Balance", async () => {
+  it("renders three KPI cards after data loads", async () => {
     render(<ResumenMensual filters={baseFilters} />, { wrapper: makeWrapper() });
 
-    expect(screen.getByText("Ingresos Totales")).toBeInTheDocument();
-    expect(screen.getByText("Gastos Totales")).toBeInTheDocument();
-    expect(screen.getByText("Balance Total")).toBeInTheDocument();
+    // Cards start in loading state — wait for content to appear
+    expect(await screen.findByText("Ingresos Totales")).toBeInTheDocument();
+    expect(await screen.findByText("Gastos Totales")).toBeInTheDocument();
+    expect(await screen.findByText("Balance Total")).toBeInTheDocument();
   });
 
-  it("shows the period and currency in the subtitle", async () => {
+  it("shows currency in the subtitle", async () => {
     render(<ResumenMensual filters={baseFilters} />, { wrapper: makeWrapper() });
 
-    // Jan 2026 range — same month so label is "ene. 2026 · ARS" (dayjs locale-dependent)
-    // We assert that ARS and the year appear in subtitles
     await waitFor(() => {
       const subtitles = screen.getAllByText(/ARS/);
       expect(subtitles.length).toBeGreaterThanOrEqual(3);
     });
   });
 
-  it("shows a different subtitle when range spans multiple months", () => {
+  it("shows a range separator when dates span multiple months", async () => {
     const multiMonthFilters: BalanceFilters = {
       ...baseFilters,
       dates: [dayjs("2026-01-01").toDate(), dayjs("2026-03-31").toDate()],
@@ -72,18 +71,20 @@ describe("ResumenMensual", () => {
       wrapper: makeWrapper(),
     });
 
-    // Both months should appear in subtitles
-    const subtitles = screen.getAllByText(/–/);
-    expect(subtitles.length).toBeGreaterThanOrEqual(1);
+    // Wait for content and then check that the dash separator is present
+    await waitFor(() => {
+      const subtitles = screen.getAllByText(/–/);
+      expect(subtitles.length).toBeGreaterThanOrEqual(1);
+    });
   });
 
-  it("displays loaded balance values after fetch", async () => {
+  it("displays the ingreso integer part after fetch", async () => {
     render(<ResumenMensual filters={baseFilters} />, { wrapper: makeWrapper() });
 
+    // Ant Design Statistic splits int and decimal into separate spans
+    // We check for the integer part "5,000"
     await waitFor(() => {
-      // INGRESO=5000, GASTO=2000, BALANCE=3000
-      // Statistic renders numbers with separators — look for the raw values
-      expect(screen.getByText("5,000.00")).toBeInTheDocument();
+      expect(screen.getByText("5,000")).toBeInTheDocument();
     });
   });
 });
