@@ -4,6 +4,7 @@ import {
   Card,
   Col,
   Divider,
+  Empty,
   Flex,
   Row,
   Select,
@@ -177,62 +178,76 @@ function RouteComponent() {
     [handleChange],
   );
 
+  const categoryTotal = useMemo(
+    () => categoryChart.reduce((sum, item) => sum + item.value, 0),
+    [categoryChart],
+  );
+
   return (
     <div style={{ paddingTop: 24, paddingBottom: 40 }}>
       {/* ── Page header ── */}
-      <Flex
-        align="center"
-        justify="space-between"
-        wrap="wrap"
-        gap={12}
-        style={{ marginBottom: 24 }}
-      >
-        <div>
-          <Title level={3} style={{ margin: 0 }}>
-            Balance Financiero
-          </Title>
-          <Text type="secondary">Vista detallada de ingresos y gastos</Text>
-        </div>
+      <div style={{ marginBottom: 20 }}>
+        <Title level={3} style={{ margin: 0 }}>
+          Balance Financiero
+        </Title>
+        <Text type="secondary">Vista detallada de ingresos y gastos</Text>
+      </div>
 
-        {/* Filtros inline */}
-        <Flex gap={10} wrap="wrap" align="center">
-          <Select
-            value={filters.currency}
-            onChange={(val: CurrencyEnum) => handleChange("currency", val)}
-            style={{ width: 130 }}
-            suffixIcon={currencyIcon(filters.currency)}
-            options={currencies.map((c) => ({
-              value: c.symbol,
-              label: (
-                <Flex gap={6} align="center">
-                  {currencyIcon(c.symbol as CurrencyEnum)}
-                  {capitalize(c.symbol)}
-                </Flex>
-              ),
-            }))}
-          />
+      {/* ── Filtros en card separada ── */}
+      <Card style={{ marginBottom: 24 }}>
+        <Row gutter={[16, 16]} align="bottom">
+          <Col xs={24} sm={12} md={6}>
+            <Flex vertical gap={4}>
+              <Text type="secondary" style={{ fontSize: 12 }}>Moneda</Text>
+              <Select
+                value={filters.currency}
+                onChange={(val: CurrencyEnum) => handleChange("currency", val)}
+                style={{ width: "100%" }}
+                suffixIcon={currencyIcon(filters.currency)}
+                options={currencies.map((c) => ({
+                  value: c.symbol,
+                  label: (
+                    <Flex gap={6} align="center">
+                      {currencyIcon(c.symbol as CurrencyEnum)}
+                      {capitalize(c.symbol)}
+                    </Flex>
+                  ),
+                }))}
+              />
+            </Flex>
+          </Col>
 
-          <RangePicker
-            size="middle"
-            value={rangePickerValue}
-            onChange={handleRangeChange}
-          />
+          <Col xs={24} sm={12} md={10}>
+            <Flex vertical gap={4}>
+              <Text type="secondary" style={{ fontSize: 12 }}>Período</Text>
+              <RangePicker
+                style={{ width: "100%" }}
+                value={rangePickerValue}
+                onChange={handleRangeChange}
+              />
+            </Flex>
+          </Col>
 
-          <Select
-            mode="multiple"
-            value={filters.account ?? []}
-            onChange={(val: number[]) => handleChange("account", val)}
-            style={{ minWidth: 180 }}
-            allowClear
-            placeholder="Grupos"
-            options={memberships.map((m) => ({
-              label: m.groupDescription,
-              value: m.accountId,
-              key: m.accountId,
-            }))}
-          />
-        </Flex>
-      </Flex>
+          <Col xs={24} sm={12} md={8}>
+            <Flex vertical gap={4}>
+              <Text type="secondary" style={{ fontSize: 12 }}>Grupos</Text>
+              <Select
+                mode="multiple"
+                value={filters.account ?? []}
+                onChange={(val: number[]) => handleChange("account", val)}
+                style={{ width: "100%" }}
+                allowClear
+                placeholder="Todos los grupos"
+                options={memberships.map((m) => ({
+                  label: m.groupDescription,
+                  value: m.accountId,
+                  key: m.accountId,
+                }))}
+              />
+            </Flex>
+          </Col>
+        </Row>
+      </Card>
 
       {/* ── Summary cards ── */}
       <ResumenMensual filters={filters} />
@@ -255,6 +270,10 @@ function RouteComponent() {
               <Flex justify="center" style={{ padding: 40 }}>
                 <Spin indicator={<LoadingOutlined spin />} size="large" />
               </Flex>
+            ) : categoryChart.length === 0 ? (
+              <Flex justify="center" style={{ padding: 40 }}>
+                <Empty description="Sin datos para el período" />
+              </Flex>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -267,6 +286,7 @@ function RouteComponent() {
                     innerRadius={70}
                     outerRadius={110}
                     paddingAngle={3}
+                    label={false}
                   >
                     {categoryChart.map((_, idx) => (
                       <Cell
@@ -275,10 +295,41 @@ function RouteComponent() {
                       />
                     ))}
                   </Pie>
+                  {/* Total central */}
+                  <text
+                    x="50%"
+                    y="46%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    style={{
+                      fontSize: 13,
+                      fill: token.colorTextSecondary,
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    Total
+                  </text>
+                  <text
+                    x="50%"
+                    y="56%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 700,
+                      fill: token.colorText,
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    ${categoryTotal.toLocaleString("es-AR", { maximumFractionDigits: 0 })}
+                  </text>
                   <Tooltip
-                    formatter={(val) =>
-                      `$${(val ?? 0).toLocaleString("es-AR")}`
-                    }
+                    formatter={(val, name) => {
+                      const pct = categoryTotal > 0
+                        ? ((Number(val) / categoryTotal) * 100).toFixed(1)
+                        : "0.0";
+                      return [`$${Number(val).toLocaleString("es-AR")} (${pct}%)`, name];
+                    }}
                   />
                   <Legend />
                 </PieChart>
@@ -300,6 +351,10 @@ function RouteComponent() {
             {fetchingGroup ? (
               <Flex justify="center" style={{ padding: 40 }}>
                 <Spin indicator={<LoadingOutlined spin />} size="large" />
+              </Flex>
+            ) : groupChart.length === 0 ? (
+              <Flex justify="center" style={{ padding: 40 }}>
+                <Empty description="Sin datos para el período" />
               </Flex>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
@@ -339,11 +394,12 @@ function RouteComponent() {
           </Card>
         </Col>
       </Row>
+
       <div style={{ marginTop: 20 }}>
         <EvolucionAnual
           year={dayjs(filters.dates[0]).year()}
           groupIds={filters.account}
-        />{" "}
+        />
       </div>
     </div>
   );

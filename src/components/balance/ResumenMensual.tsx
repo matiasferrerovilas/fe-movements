@@ -25,13 +25,19 @@ export default function ResumenMensual({ filters }: ResumenMensualProps) {
   const gasto = rawData?.GASTO ?? 0;
   const balanceTotal = ingreso - gasto;
 
+  const [dateFrom, dateTo] = filters.dates;
+  const from = dayjs(dateFrom).format("MMM YYYY");
+  const to = dayjs(dateTo).format("MMM YYYY");
+  const periodLabel = from === to ? from : `${from} – ${to}`;
+  const subtitle = `${periodLabel} · ${filters.currency ?? ""}`;
+
   return (
     <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
       <BalanceCard
         isFetching={isFetching}
         title="Ingresos Totales"
         amount={ingreso}
-        subtitle={`Moneda ${filters.currency ?? ""}`}
+        subtitle={subtitle}
         icon={<ArrowUpOutlined style={{ color: token.colorSuccess }} />}
         iconBg={token.colorSuccessBg}
       />
@@ -39,7 +45,7 @@ export default function ResumenMensual({ filters }: ResumenMensualProps) {
         isFetching={isFetching}
         title="Gastos Totales"
         amount={-gasto}
-        subtitle={`Moneda ${filters.currency ?? ""}`}
+        subtitle={subtitle}
         icon={<ArrowDownOutlined style={{ color: token.colorError }} />}
         iconBg={token.colorErrorBg}
       />
@@ -47,7 +53,7 @@ export default function ResumenMensual({ filters }: ResumenMensualProps) {
         isFetching={isFetching}
         title="Balance Total"
         amount={balanceTotal}
-        subtitle={`Moneda ${filters.currency ?? ""}`}
+        subtitle={subtitle}
         icon={
           balanceTotal >= 0 ? (
             <ArrowUpOutlined style={{ color: token.colorSuccess }} />

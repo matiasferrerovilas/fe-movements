@@ -1,5 +1,5 @@
 // components/balance/EvolucionAnual.tsx
-import { Card, Flex, Spin, theme } from "antd";
+import { Card, Empty, Flex, Spin, theme } from "antd";
 import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
 import { useMemo } from "react";
 import {
@@ -80,8 +80,12 @@ export default function EvolucionAnual({ year, groupIds }: Props) {
         <Flex justify="center" style={{ padding: 40 }}>
           <Spin indicator={<LoadingOutlined spin />} size="large" />
         </Flex>
+      ) : data.length === 0 ? (
+        <Flex justify="center" style={{ padding: 40 }}>
+          <Empty description="Sin datos para el año seleccionado" />
+        </Flex>
       ) : (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={340}>
           <LineChart
             data={chartData}
             margin={{ top: 4, right: 8, left: 0, bottom: 4 }}
