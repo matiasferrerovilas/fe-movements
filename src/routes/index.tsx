@@ -3,6 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Grid, Typography } from "antd";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
+import MonthlySummary from "../components/home/MonthlySummary";
+
 const { Title } = Typography;
 const { useBreakpoint } = Grid;
 
@@ -12,6 +14,7 @@ export const Route = createFileRoute("/")({
   }),
   component: RouteComponent,
 });
+
 function RouteComponent() {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
@@ -22,35 +25,24 @@ function RouteComponent() {
     <div
       style={{
         width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        paddingTop: isMobile ? 40 : 60,
-        paddingBottom: 0,
-        gap: isMobile ? 16 : 24,
+        paddingTop: isMobile ? 24 : 32,
+        paddingBottom: 32,
       }}
     >
       <Title
-        level={isMobile ? 2 : 1}
-        className="fade-in-up"
-        style={{ margin: 0, fontWeight: 700, textAlign: "center", animationDelay: "0ms" }}
-      >
-        Bienvenido{username ? `, ${username}` : ""} 👋
-      </Title>
-
-      <img
-        src="/robot.png"
-        alt="Robot"
+        level={isMobile ? 3 : 2}
         className="fade-in-up"
         style={{
-          width: isMobile ? "70%" : "50vh",
-          height: "auto",
-          objectFit: "contain",
-          userSelect: "none",
-          animationDelay: "120ms",
+          margin: 0,
+          fontWeight: 700,
+          marginBottom: isMobile ? 20 : 28,
+          animationDelay: "0ms",
         }}
-      />
+      >
+        Bienvenido{username ? `, ${username}` : ""}
+      </Title>
+
+      <MonthlySummary />
     </div>
   );
 }
