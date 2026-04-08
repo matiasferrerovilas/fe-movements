@@ -22,6 +22,7 @@ import { DollarOutlined, EuroOutlined } from "@ant-design/icons";
 import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
 import { useGroups } from "../apis/hooks/useGroups";
 import { useCurrency } from "../apis/hooks/useCurrency";
+import { useUserDefault } from "../apis/hooks/useSettings";
 import {
   useBalanceSeparateByCategory,
   useBalanceSeparateByGroup,
@@ -111,6 +112,7 @@ function RouteComponent() {
 
   const { data: memberships = [] } = useGroups();
   const { data: currencies = [] } = useCurrency();
+  const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
 
   useEffect(() => {
     if (memberships.length > 0 && filtersRef.current.account === null) {
@@ -120,6 +122,15 @@ function RouteComponent() {
       );
     }
   }, [memberships, handleChange]);
+
+  useEffect(() => {
+    const symbol = currencies.find(
+      (c) => c.id === defaultCurrency?.value,
+    )?.symbol;
+    if (symbol) {
+      handleChange("currency", symbol as CurrencyEnum);
+    }
+  }, [currencies, defaultCurrency, handleChange]);
 
   const categoryFilters = useMemo(
     () => ({ ...filters, year: dayjs().year() }),
