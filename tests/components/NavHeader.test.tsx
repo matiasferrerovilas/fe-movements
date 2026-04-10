@@ -13,6 +13,7 @@ vi.mock("@react-keycloak/web", () => ({
 
 vi.mock("@tanstack/react-router", () => ({
   useRouter: vi.fn(),
+  useRouterState: vi.fn(),
 }));
 
 vi.mock("../../src/apis/hooks/useUserRole", () => ({
@@ -20,7 +21,7 @@ vi.mock("../../src/apis/hooks/useUserRole", () => ({
 }));
 
 import { useKeycloak } from "@react-keycloak/web";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, useRouterState } from "@tanstack/react-router";
 import { useUserRoles } from "../../src/apis/hooks/useUserRole";
 
 // ── Setup helpers ──────────────────────────────────────────────────────────
@@ -41,6 +42,8 @@ function mockDefaults() {
     state: { location: { pathname: "/balance" } },
     navigate: vi.fn(),
   } as unknown as ReturnType<typeof useRouter>);
+
+  vi.mocked(useRouterState).mockReturnValue("/balance" as unknown as ReturnType<typeof useRouterState>);
 
   vi.mocked(useUserRoles).mockReturnValue({
     hasAnyRole: () => true,

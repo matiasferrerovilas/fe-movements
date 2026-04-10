@@ -22,7 +22,7 @@ import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import SunOutlined from "@ant-design/icons/SunOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import { useKeycloak } from "@react-keycloak/web";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, useRouterState } from "@tanstack/react-router";
 import { Header } from "antd/es/layout/layout";
 import { useUserRoles } from "../apis/hooks/useUserRole";
 import { RoleEnum } from "../enums/RoleEnum";
@@ -87,7 +87,10 @@ function NavSlider({ items, activeKey, onSelect, token }: NavSliderProps) {
   useEffect(() => {
     const idx = items.findIndex((i) => i.key === activeKey);
     const el = itemRefs.current[idx];
-    if (!el) return;
+    if (!el) {
+      setBarStyle({ left: 0, width: 0 });
+      return;
+    }
     setBarStyle({ left: el.offsetLeft, width: el.offsetWidth });
     if (!mounted) setMounted(true);
   }, [activeKey, items, mounted]);
@@ -175,7 +178,7 @@ export default function NavHeader() {
   const { isDark, toggleTheme } = useTheme();
 
   const router = useRouter();
-  const currentPath = router.state.location.pathname;
+  const currentPath = useRouterState({ select: (s) => s.location.pathname });
   const { hasAnyRole } = useUserRoles();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -183,18 +186,10 @@ export default function NavHeader() {
     (item) => !item.roles?.length || hasAnyRole(...(item.roles ?? [])),
   );
 
-  const getActiveKey = () =>
-    visibleItems.find((i) => i.path === currentPath)?.key || "balance";
-  const [active, setActive] = useState(getActiveKey());
-
-  // Sync active key when route changes without calling setState in an effect
-  const activeKey = getActiveKey();
-  if (active !== activeKey) {
-    setActive(activeKey);
-  }
+  const isHome = currentPath === "/";
+  const activeKey = visibleItems.find((i) => i.path === currentPath)?.key ?? "";
 
   const handleClick = (item: SideBarItem) => {
-    setActive(item.key);
     setDrawerOpen(false);
     router.navigate({ to: item.path });
   };
@@ -284,9 +279,13 @@ export default function NavHeader() {
                 background: "transparent",
                 border: "none",
                 cursor: "pointer",
-                padding: 0,
+                padding: 4,
                 display: "flex",
                 alignItems: "center",
+                borderRadius: token.borderRadiusSM,
+                outline: isHome ? `2px solid ${token.colorPrimary}` : "none",
+                outlineOffset: 2,
+                transition: "outline 0.2s",
               }}
             >
               <img src="/favicon.png" alt="Movements" style={{ height: 40, width: 40 }} />
@@ -306,9 +305,13 @@ export default function NavHeader() {
                   background: "transparent",
                   border: "none",
                   cursor: "pointer",
-                  padding: 0,
+                  padding: 4,
                   display: "flex",
                   alignItems: "center",
+                  borderRadius: token.borderRadiusSM,
+                  outline: isHome ? `2px solid ${token.colorPrimary}` : "none",
+                  outlineOffset: 2,
+                  transition: "outline 0.2s",
                 }}
               >
                 <img src="/favicon.png" alt="Movements" style={{ height: 40, width: 40 }} />
@@ -316,7 +319,7 @@ export default function NavHeader() {
             </Flex>
             <NavSlider
               items={visibleItems}
-              activeKey={active}
+              activeKey={activeKey}
               onSelect={handleClick}
               token={token}
             />
@@ -346,7 +349,7 @@ export default function NavHeader() {
       >
         <Menu
           mode="inline"
-          selectedKeys={[active]}
+          selectedKeys={[activeKey]}
           style={{ border: "none", paddingTop: 8 }}
           items={visibleItems.map((item) => ({
             key: item.key,

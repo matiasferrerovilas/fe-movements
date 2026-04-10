@@ -40,6 +40,7 @@ export default function ResumenMensual({ filters }: ResumenMensualProps) {
         subtitle={subtitle}
         icon={<ArrowUpOutlined style={{ color: token.colorSuccess }} />}
         iconBg={token.colorSuccessBg}
+        animationDelay="120ms"
       />
       <BalanceCard
         isFetching={isFetching}
@@ -48,6 +49,7 @@ export default function ResumenMensual({ filters }: ResumenMensualProps) {
         subtitle={subtitle}
         icon={<ArrowDownOutlined style={{ color: token.colorError }} />}
         iconBg={token.colorErrorBg}
+        animationDelay="180ms"
       />
       <BalanceCard
         isFetching={isFetching}
@@ -61,6 +63,7 @@ export default function ResumenMensual({ filters }: ResumenMensualProps) {
             <ArrowDownOutlined style={{ color: token.colorError }} />
           )
         }
+        animationDelay="240ms"
       />
     </Row>
   );

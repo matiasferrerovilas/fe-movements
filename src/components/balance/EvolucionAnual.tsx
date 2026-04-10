@@ -71,9 +71,11 @@ export default function EvolucionAnual({ year, groupIds }: Props) {
   return (
     <Card
       title="Evolución Anual de Gastos"
+      className="fade-in-up"
       style={{
         borderRadius: token.borderRadiusLG,
         borderColor: token.colorBorder,
+        animationDelay: "420ms",
       }}
     >
       {isFetching ? (

@@ -13,15 +13,38 @@ import {
 const mockSummary: WorkspaceSummary = {
   year: 2026,
   month: 4,
-  totalIngresado: 150000,
-  totalGastado: 87500,
-  diferencia: 62500,
-  categoriaConMayorGasto: "HOGAR",
-  comparacionVsMesAnterior: {
-    totalIngresadoMesAnterior: 140000,
-    totalGastadoMesAnterior: 95000,
-    diferenciaGasto: -7500,
-    diferenciaIngreso: 10000,
+  porMoneda: [
+    {
+      currency: "ARS",
+      ingresado: 500000,
+      gastado: 320000,
+      diferencia: 180000,
+      categoriaConMayorGasto: "HOGAR",
+      comparacion: {
+        ingresadoMesAnterior: 450000,
+        gastadoMesAnterior: 300000,
+        diferenciaIngresado: 50000,
+        diferenciaGastado: 20000,
+      },
+    },
+    {
+      currency: "USD",
+      ingresado: 1000,
+      gastado: 750,
+      diferencia: 250,
+      categoriaConMayorGasto: "TRANSPORTE",
+      comparacion: {
+        ingresadoMesAnterior: 1000,
+        gastadoMesAnterior: 800,
+        diferenciaIngresado: 0,
+        diferenciaGastado: -50,
+      },
+    },
+  ],
+  totalUnificadoUSD: {
+    ingresado: 1383.08,
+    gastado: 995.4,
+    diferencia: 387.68,
   },
 };
 
@@ -56,7 +79,7 @@ describe("useWorkspaceSummary", () => {
     expect(result.current.data).toEqual(mockSummary);
   });
 
-  it("returns the full summary shape including comparacion", async () => {
+  it("returns the full summary shape including porMoneda and totalUnificadoUSD", async () => {
     const { result } = renderHook(() => useWorkspaceSummary(2026, 4), {
       wrapper: makeWrapper(),
     });
@@ -64,25 +87,29 @@ describe("useWorkspaceSummary", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     const data = result.current.data!;
-    expect(data.totalIngresado).toBe(150000);
-    expect(data.totalGastado).toBe(87500);
-    expect(data.diferencia).toBe(62500);
-    expect(data.categoriaConMayorGasto).toBe("HOGAR");
-    expect(data.comparacionVsMesAnterior.diferenciaIngreso).toBe(10000);
-    expect(data.comparacionVsMesAnterior.diferenciaGasto).toBe(-7500);
+    expect(data.porMoneda).toHaveLength(2);
+    expect(data.porMoneda[0].currency).toBe("ARS");
+    expect(data.porMoneda[0].ingresado).toBe(500000);
+    expect(data.porMoneda[0].gastado).toBe(320000);
+    expect(data.porMoneda[0].diferencia).toBe(180000);
+    expect(data.porMoneda[0].categoriaConMayorGasto).toBe("HOGAR");
+    expect(data.porMoneda[0].comparacion.diferenciaIngresado).toBe(50000);
+    expect(data.porMoneda[0].comparacion.diferenciaGastado).toBe(20000);
+    expect(data.totalUnificadoUSD.ingresado).toBe(1383.08);
+    expect(data.totalUnificadoUSD.gastado).toBe(995.4);
+    expect(data.totalUnificadoUSD.diferencia).toBe(387.68);
   });
 
   it("uses the correct query key", () => {
     expect(WORKSPACE_SUMMARY_QUERY_KEY).toBe("workspace-monthly-summary");
   });
 
-  it("includes year and month in the query key", async () => {
+  it("does not mark data as stale immediately (staleTime: 1min)", async () => {
     const { result } = renderHook(() => useWorkspaceSummary(2026, 4), {
       wrapper: makeWrapper(),
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    // staleTime: 1min → data should not be stale immediately
     expect(result.current.isStale).toBe(false);
   });
 

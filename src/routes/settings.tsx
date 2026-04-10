@@ -64,7 +64,7 @@ function RouteComponent() {
 
   return (
     <Row justify="center" style={{ paddingTop: 30 }}>
-      <Col xs={24} md={20} lg={16}>
+      <Col xs={24} md={20} lg={16} className="fade-in-up" style={{ animationDelay: "0ms" }}>
         <Tabs
           defaultActiveKey="cuenta"
           size="middle"

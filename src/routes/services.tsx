@@ -69,19 +69,28 @@ function RouteComponent() {
   };
   return (
     <div style={{ paddingTop: 30 }}>
-      <ServiceSummary services={services} isFetching={isFetching} />
+      <div className="fade-in-up" style={{ animationDelay: "0ms" }}>
+        <ServiceSummary services={services} isFetching={isFetching} />
+      </div>
 
       <Row gutter={16} style={{ marginBottom: 16, padding: 0 }}>
-        <Col xs={24} sm={12} lg={8} style={{ marginBottom: 16 }}>
+        <Col
+          xs={24}
+          sm={12}
+          lg={8}
+          style={{ marginBottom: 16, animationDelay: "80ms" }}
+          className="fade-in-up"
+        >
           <ServiceCardForm handleAddService={handleAddService} />
         </Col>
-        {services?.map((service) => (
+        {services?.map((service, index) => (
           <Col
             xs={24}
             sm={12}
             lg={8}
             key={service.id}
-            style={{ marginBottom: 16 }}
+            style={{ marginBottom: 16, animationDelay: `${(index + 2) * 80}ms` }}
+            className="fade-in-up"
           >
             <ServiceCard
               service={service}

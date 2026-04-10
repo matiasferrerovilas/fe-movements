@@ -9,6 +9,7 @@ interface BalanceCardProps {
   subtitle: string;
   isFetching: boolean;
   iconBg?: string;
+  animationDelay?: string;
 }
 
 export default function BalanceCard({
@@ -18,6 +19,7 @@ export default function BalanceCard({
   subtitle,
   isFetching,
   iconBg,
+  animationDelay = "0ms",
 }: BalanceCardProps) {
   const { token } = theme.useToken();
   const isPositive = amount >= 0;
@@ -27,10 +29,12 @@ export default function BalanceCard({
     <Col xs={24} sm={12} lg={8}>
       <Card
         loading={isFetching}
+        className="fade-in-up"
         style={{
           borderRadius: token.borderRadiusLG,
           borderColor: token.colorBorder,
           height: "100%",
+          animationDelay,
         }}
         styles={{ body: { padding: "16px 20px" } }}
       >

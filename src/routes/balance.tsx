@@ -197,7 +197,7 @@ function RouteComponent() {
   return (
     <div style={{ paddingTop: 24, paddingBottom: 40 }}>
       {/* ── Page header ── */}
-      <div style={{ marginBottom: 20 }}>
+      <div className="fade-in-up" style={{ marginBottom: 20, animationDelay: "0ms" }}>
         <Title level={3} style={{ margin: 0 }}>
           Balance Financiero
         </Title>
@@ -205,7 +205,7 @@ function RouteComponent() {
       </div>
 
       {/* ── Filtros en card separada ── */}
-      <Card style={{ marginBottom: 24 }}>
+      <Card className="fade-in-up" style={{ marginBottom: 24, animationDelay: "60ms" }}>
         <Row gutter={[16, 16]} align="bottom">
           <Col xs={24} sm={12} md={6}>
             <Flex vertical gap={4}>
@@ -271,10 +271,12 @@ function RouteComponent() {
         <Col xs={24} lg={12}>
           <Card
             title="Gastos por Categoría"
+            className="fade-in-up"
             style={{
               borderRadius: token.borderRadiusLG,
               borderColor: token.colorBorder,
               height: "100%",
+              animationDelay: "300ms",
             }}
           >
             {fetchingCategory ? (
@@ -353,10 +355,12 @@ function RouteComponent() {
         <Col xs={24} lg={12}>
           <Card
             title="Gastos por Grupo"
+            className="fade-in-up"
             style={{
               borderRadius: token.borderRadiusLG,
               borderColor: token.colorBorder,
               height: "100%",
+              animationDelay: "360ms",
             }}
           >
             {fetchingGroup ? (

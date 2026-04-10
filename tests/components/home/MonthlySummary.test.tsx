@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeAll, afterEach, afterAll } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -8,7 +9,6 @@ import type { WorkspaceSummary } from "../../../src/models/WorkspaceSummary";
 import MonthlySummary from "../../../src/components/home/MonthlySummary";
 import dayjs from "dayjs";
 
-// dayjs locale needed by the component
 import "dayjs/locale/es";
 dayjs.locale("es");
 
@@ -21,22 +21,52 @@ vi.mock("@react-keycloak/web", () => ({
   })),
 }));
 
-// ── MSW server ────────────────────────────────────────────────────────────────
+// ── Fixtures ──────────────────────────────────────────────────────────────────
 
 const mockSummary: WorkspaceSummary = {
   year: dayjs().year(),
   month: dayjs().month() + 1,
-  totalIngresado: 150000,
-  totalGastado: 87500,
-  diferencia: 62500,
-  categoriaConMayorGasto: "HOGAR",
-  comparacionVsMesAnterior: {
-    totalIngresadoMesAnterior: 140000,
-    totalGastadoMesAnterior: 95000,
-    diferenciaGasto: -7500,
-    diferenciaIngreso: 10000,
+  porMoneda: [
+    {
+      currency: "ARS",
+      ingresado: 500000,
+      gastado: 320000,
+      diferencia: 180000,
+      categoriaConMayorGasto: "HOGAR",
+      comparacion: {
+        ingresadoMesAnterior: 450000,
+        gastadoMesAnterior: 300000,
+        diferenciaIngresado: 50000,
+        diferenciaGastado: 20000,
+      },
+    },
+    {
+      currency: "USD",
+      ingresado: 1000,
+      gastado: 750,
+      diferencia: 250,
+      categoriaConMayorGasto: "TRANSPORTE",
+      comparacion: {
+        ingresadoMesAnterior: 1000,
+        gastadoMesAnterior: 800,
+        diferenciaIngresado: 0,
+        diferenciaGastado: -50,
+      },
+    },
+  ],
+  totalUnificadoUSD: {
+    ingresado: 1383.08,
+    gastado: 995.4,
+    diferencia: 387.68,
   },
 };
+
+const mockSummaryOneMoneda: WorkspaceSummary = {
+  ...mockSummary,
+  porMoneda: [mockSummary.porMoneda[0]],
+};
+
+// ── MSW server ────────────────────────────────────────────────────────────────
 
 const server = setupServer(
   http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
@@ -59,66 +89,159 @@ function makeWrapper() {
   );
 }
 
-// ── Tests ──────────────────────────────────────────────────────────────────────
+// ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe("MonthlySummary", () => {
-  it("renders three KPI card titles after data loads", async () => {
-    render(<MonthlySummary />, { wrapper: makeWrapper() });
+  describe("header", () => {
+    it("displays the correct month label in the section header", async () => {
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByText("Ingresado")).toBeInTheDocument();
-    expect(await screen.findByText("Gastado")).toBeInTheDocument();
-    expect(await screen.findByText("Diferencia")).toBeInTheDocument();
-  });
-
-  it("displays the correct month label in the section header", async () => {
-    render(<MonthlySummary />, { wrapper: makeWrapper() });
-
-    const expectedMonth = dayjs().locale("es").format("MMMM YYYY");
-    expect(await screen.findByText(expectedMonth, { exact: false })).toBeInTheDocument();
-  });
-
-  it("shows the top spending category", async () => {
-    render(<MonthlySummary />, { wrapper: makeWrapper() });
-
-    expect(await screen.findByText("HOGAR")).toBeInTheDocument();
-    expect(await screen.findByText("Mayor gasto del mes:")).toBeInTheDocument();
-  });
-
-  it("displays the ingresado integer part", async () => {
-    render(<MonthlySummary />, { wrapper: makeWrapper() });
-
-    // Ant Design Statistic splits integer and decimal in separate spans
-    await waitFor(() => {
-      expect(screen.getByText("150,000")).toBeInTheDocument();
+      const expectedMonth = dayjs().locale("es").format("MMMM YYYY");
+      expect(await screen.findByText(expectedMonth, { exact: false })).toBeInTheDocument();
     });
   });
 
-  it("shows an error message when the request fails", async () => {
-    server.use(
-      http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
-        HttpResponse.json({ message: "Error" }, { status: 500 }),
-      ),
-    );
+  describe("tabs — multiple currencies", () => {
+    it("renders a tab for each currency", async () => {
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
 
-    render(<MonthlySummary />, { wrapper: makeWrapper() });
+      expect(await screen.findByRole("tab", { name: "ARS" })).toBeInTheDocument();
+      expect(await screen.findByRole("tab", { name: "USD" })).toBeInTheDocument();
+    });
 
-    expect(
-      await screen.findByText("No se pudo cargar el resumen mensual."),
-    ).toBeInTheDocument();
+    it("shows KPI cards for the default (first) currency tab", async () => {
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      // Wait for tabs to appear (data loaded)
+      await screen.findByRole("tab", { name: "ARS" });
+      // KPI titles appear in the active tab panel
+      expect(screen.getAllByText("Ingresado").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("Gastado").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("Diferencia").length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("shows ARS top category on the first tab", async () => {
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      expect(await screen.findByText("HOGAR")).toBeInTheDocument();
+      expect(await screen.findByText("Mayor gasto del mes:")).toBeInTheDocument();
+    });
+
+    it("switches to USD tab and shows USD data", async () => {
+      const user = userEvent.setup();
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      const usdTab = await screen.findByRole("tab", { name: "USD" });
+      await user.click(usdTab);
+
+      expect(await screen.findByText("TRANSPORTE")).toBeInTheDocument();
+    });
   });
 
-  it("does not show category strip when categoriaConMayorGasto is null", async () => {
-    server.use(
-      http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
-        HttpResponse.json({ ...mockSummary, categoriaConMayorGasto: null }),
-      ),
-    );
+  describe("single currency — no tabs", () => {
+    it("does not render tabs when only one currency", async () => {
+      server.use(
+        http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+          HttpResponse.json(mockSummaryOneMoneda),
+        ),
+      );
 
-    render(<MonthlySummary />, { wrapper: makeWrapper() });
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
 
-    // Wait for data to load
-    await screen.findByText("Ingresado");
+      // Wait for data to load — the category strip is unique when single currency
+      await screen.findByText("HOGAR");
+      expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    });
 
-    expect(screen.queryByText("Mayor gasto del mes:")).not.toBeInTheDocument();
+    it("shows KPI cards directly without tabs", async () => {
+      server.use(
+        http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+          HttpResponse.json(mockSummaryOneMoneda),
+        ),
+      );
+
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      await screen.findByText("HOGAR");
+      expect(screen.getAllByText("Ingresado").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("Gastado").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("Diferencia").length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe("category strip", () => {
+    it("shows top spending category", async () => {
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      expect(await screen.findByText("HOGAR")).toBeInTheDocument();
+      expect(await screen.findByText("Mayor gasto del mes:")).toBeInTheDocument();
+    });
+
+    it("does not show category strip when categoriaConMayorGasto is null", async () => {
+      const noCategory: WorkspaceSummary = {
+        ...mockSummaryOneMoneda,
+        porMoneda: [{ ...mockSummaryOneMoneda.porMoneda[0], categoriaConMayorGasto: null }],
+      };
+      server.use(
+        http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+          HttpResponse.json(noCategory),
+        ),
+      );
+
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      // Wait for data — use the Total USD section as anchor (always present)
+      await screen.findByText(/total en usd/i);
+      expect(screen.queryByText("Mayor gasto del mes:")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("total en USD", () => {
+    it("renders the Total en USD section", async () => {
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      expect(await screen.findByText(/total en usd/i)).toBeInTheDocument();
+    });
+
+    it("displays the ingresado USD value", async () => {
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      // 1383.08 formatted as es-AR
+      await waitFor(() => {
+        expect(screen.getByText("$1.383,08")).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("empty state", () => {
+    it("shows empty message when porMoneda is empty", async () => {
+      server.use(
+        http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+          HttpResponse.json({ ...mockSummary, porMoneda: [] }),
+        ),
+      );
+
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      expect(
+        await screen.findByText("Sin movimientos registrados este mes."),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("error state", () => {
+    it("shows an error message when the request fails", async () => {
+      server.use(
+        http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+          HttpResponse.json({ message: "Error" }, { status: 500 }),
+        ),
+      );
+
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      expect(
+        await screen.findByText("No se pudo cargar el resumen mensual."),
+      ).toBeInTheDocument();
+    });
   });
 });
