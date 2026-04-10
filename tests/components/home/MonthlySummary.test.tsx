@@ -39,7 +39,7 @@ const mockSummary: WorkspaceSummary = {
 };
 
 const server = setupServer(
-  http.get("http://localhost:8080/v1/workspaces/0/summary/monthly", () =>
+  http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
     HttpResponse.json(mockSummary),
   ),
 );
@@ -95,7 +95,7 @@ describe("MonthlySummary", () => {
 
   it("shows an error message when the request fails", async () => {
     server.use(
-      http.get("http://localhost:8080/v1/workspaces/0/summary/monthly", () =>
+      http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
         HttpResponse.json({ message: "Error" }, { status: 500 }),
       ),
     );
@@ -109,7 +109,7 @@ describe("MonthlySummary", () => {
 
   it("does not show category strip when categoriaConMayorGasto is null", async () => {
     server.use(
-      http.get("http://localhost:8080/v1/workspaces/0/summary/monthly", () =>
+      http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
         HttpResponse.json({ ...mockSummary, categoriaConMayorGasto: null }),
       ),
     );

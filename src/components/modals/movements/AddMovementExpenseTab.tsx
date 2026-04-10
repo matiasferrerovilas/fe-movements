@@ -1,5 +1,23 @@
 import { forwardRef, useEffect, useImperativeHandle } from "react";
-import { Col, DatePicker, Form, Input, InputNumber, Row, Select } from "antd";
+import {
+  Alert,
+  Col,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  InputNumber,
+  Row,
+  Select,
+  theme,
+  Typography,
+} from "antd";
+import BankOutlined from "@ant-design/icons/BankOutlined";
+import CalendarOutlined from "@ant-design/icons/CalendarOutlined";
+import CreditCardOutlined from "@ant-design/icons/CreditCardOutlined";
+import DollarOutlined from "@ant-design/icons/DollarOutlined";
+import TagOutlined from "@ant-design/icons/TagOutlined";
+import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import { useGroups } from "../../../apis/hooks/useGroups";
 import { useMutation } from "@tanstack/react-query";
 import { TypeEnum, TypeEnumLabel } from "../../../enums/TypeExpense";
@@ -14,6 +32,8 @@ import { useCurrency } from "../../../apis/hooks/useCurrency";
 import { useBanks } from "../../../apis/hooks/useBank";
 import { useUserDefault } from "../../../apis/hooks/useSettings";
 
+const { Text } = Typography;
+
 interface AddMovementExpenseTabProps {
   onSuccess?: () => void;
   movementToEdit?: Movement;
@@ -25,6 +45,7 @@ const AddMovementExpenseTab = forwardRef<
   { handleConfirm: () => void },
   AddMovementExpenseTabProps
 >(({ onSuccess, movementToEdit }, ref) => {
+  const { token } = theme.useToken();
   const { data: memberships = [] } = useGroups();
   const [form] = Form.useForm<CreateMovementForm>();
   const { data: categories = [] } = useCategory();
@@ -53,10 +74,10 @@ const AddMovementExpenseTab = forwardRef<
   useEffect(() => {
     if (movementToEdit) return;
     const bankDescription = banks.find(
-      (b) => b.id === defaultBank?.value
+      (b) => b.id === defaultBank?.value,
     )?.description;
     const currencySymbol = currencies.find(
-      (c) => c.id === defaultCurrency?.value
+      (c) => c.id === defaultCurrency?.value,
     )?.symbol;
     form.setFieldsValue({
       groupId: defaultAccount?.value ?? undefined,
@@ -64,7 +85,15 @@ const AddMovementExpenseTab = forwardRef<
       currency: currencySymbol,
       date: dayjs(),
     });
-  }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies, form, movementToEdit]);
+  }, [
+    defaultAccount,
+    defaultBank,
+    defaultCurrency,
+    banks,
+    currencies,
+    form,
+    movementToEdit,
+  ]);
 
   const uploadMutation = useMutation({
     mutationFn: (values: CreateMovementForm) =>
@@ -99,11 +128,52 @@ const AddMovementExpenseTab = forwardRef<
         date: dayjs(),
         groupId: defaultAccount?.value ?? undefined,
         bank: banks.find((b) => b.id === defaultBank?.value)?.description,
-        currency:
-          currencies.find((c) => c.id === defaultCurrency?.value)?.symbol,
+        currency: currencies.find((c) => c.id === defaultCurrency?.value)?.symbol,
       }}
     >
-      <Row gutter={[12, 0]}>
+      {/* ── Sección 1: Pago ───────────────────────────────────────────── */}
+      <Divider
+        titlePlacement="left"
+        style={{ marginTop: 4, marginBottom: 16, borderColor: token.colorBorderSecondary }}
+      >
+        <Text type="secondary" style={{ fontSize: 12, fontWeight: 500 }}>
+          Pago
+        </Text>
+      </Divider>
+
+      <Row gutter={[12, 4]}>
+        {/* Monto + Moneda */}
+        <Col xs={24} sm={14}>
+          <Form.Item
+            label="Monto"
+            name="amount"
+            rules={[{ required: true, message: "Ingresar Monto" }]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              controls={false}
+              precision={2}
+              placeholder="0.00"
+              prefix={<DollarOutlined style={{ color: token.colorTextTertiary }} />}
+            />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={10}>
+          <Form.Item
+            name="currency"
+            label="Moneda"
+            rules={[{ required: true, message: "Ingrese Moneda" }]}
+          >
+            <Select placeholder="Moneda">
+              {currencies.map((currency) => (
+                <Select.Option key={currency.id} value={currency.symbol}>
+                  {currency.symbol}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
         {/* Banco + Tipo */}
         <Col xs={24} sm={12}>
           <Form.Item
@@ -111,7 +181,10 @@ const AddMovementExpenseTab = forwardRef<
             label="Banco"
             rules={[{ required: true, message: "Seleccione un banco" }]}
           >
-            <Select placeholder="Seleccionar banco">
+            <Select
+              placeholder="Seleccionar banco"
+              suffixIcon={<BankOutlined style={{ color: token.colorTextTertiary }} />}
+            >
               {banks.map((bank) => (
                 <Select.Option key={bank.id} value={bank.description}>
                   {bank.description}
@@ -126,7 +199,10 @@ const AddMovementExpenseTab = forwardRef<
             label="Tipo"
             rules={[{ required: true, message: "Seleccione un tipo" }]}
           >
-            <Select placeholder="Seleccionar tipo">
+            <Select
+              placeholder="Seleccionar tipo"
+              suffixIcon={<CreditCardOutlined style={{ color: token.colorTextTertiary }} />}
+            >
               {Object.values(TypeEnum).map((type) => (
                 <Select.Option key={type} value={type}>
                   {TypeEnumLabel[type]}
@@ -136,46 +212,100 @@ const AddMovementExpenseTab = forwardRef<
           </Form.Item>
         </Col>
 
-        {/* Cuotas (solo si es CREDITO) */}
+        {/* Cuotas — solo si es CREDITO */}
         {isCreditType && (
-          <>
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Cuota Actual"
-                name="cuotaActual"
-                rules={[
-                  { required: true, message: "Ingresar cuota actual" },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      const total = getFieldValue("cuotasTotales");
-                      if (!value || !total || value <= total)
-                        return Promise.resolve();
-                      return Promise.reject(
-                        new Error(
-                          "La cuota actual no puede ser mayor que el total",
-                        ),
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <InputNumber style={{ width: "100%" }} controls={false} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Cuotas Totales"
-                name="cuotasTotales"
-                rules={[
-                  { required: true, message: "Ingresar cantidad de cuotas" },
-                ]}
-              >
-                <InputNumber style={{ width: "100%" }} controls={false} />
-              </Form.Item>
-            </Col>
-          </>
+          <Col xs={24}>
+            <Alert
+              type="info"
+              showIcon
+              message={
+                <Row gutter={[12, 0]} style={{ marginTop: 8 }}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Cuota Actual"
+                      name="cuotaActual"
+                      style={{ marginBottom: 0 }}
+                      rules={[
+                        { required: true, message: "Ingresar cuota actual" },
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            const total = getFieldValue("cuotasTotales");
+                            if (!value || !total || value <= total)
+                              return Promise.resolve();
+                            return Promise.reject(
+                              new Error(
+                                "La cuota actual no puede ser mayor que el total",
+                              ),
+                            );
+                          },
+                        }),
+                      ]}
+                    >
+                      <InputNumber
+                        style={{ width: "100%" }}
+                        controls={false}
+                        placeholder="Ej: 3"
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Cuotas Totales"
+                      name="cuotasTotales"
+                      style={{ marginBottom: 0 }}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Ingresar cantidad de cuotas",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        style={{ width: "100%" }}
+                        controls={false}
+                        placeholder="Ej: 12"
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              }
+              description=""
+              style={{
+                marginBottom: 12,
+                paddingBottom: 12,
+                borderColor: token.colorInfoBorder,
+              }}
+            />
+          </Col>
         )}
 
+        {/* Fecha */}
+        <Col xs={24}>
+          <Form.Item
+            label="Fecha"
+            name="date"
+            rules={[{ required: true, message: "Seleccione una fecha" }]}
+          >
+            <DatePicker
+              style={{ width: "100%" }}
+              format={dateFormat}
+              suffixIcon={<CalendarOutlined style={{ color: token.colorTextTertiary }} />}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      {/* ── Sección 2: Clasificación ──────────────────────────────────── */}
+      <Divider
+        titlePlacement="left"
+        style={{ marginTop: 4, marginBottom: 16, borderColor: token.colorBorderSecondary }}
+      >
+        <Text type="secondary" style={{ fontSize: 12, fontWeight: 500 }}>
+          Clasificación
+        </Text>
+      </Divider>
+
+      <Row gutter={[12, 4]}>
         {/* Grupo */}
         <Col xs={24}>
           <Form.Item
@@ -185,6 +315,7 @@ const AddMovementExpenseTab = forwardRef<
           >
             <Select
               placeholder="Seleccionar grupo"
+              suffixIcon={<TeamOutlined style={{ color: token.colorTextTertiary }} />}
               options={memberships.map((membership) => ({
                 label: membership.groupDescription,
                 value: membership.accountId,
@@ -201,7 +332,10 @@ const AddMovementExpenseTab = forwardRef<
             name="description"
             rules={[{ required: true, message: "Ingrese una descripción" }]}
           >
-            <Input placeholder="Ej: Supermercado, Nafta..." />
+            <Input
+              placeholder="Ej: Supermercado, Nafta..."
+              prefix={<TagOutlined style={{ color: token.colorTextTertiary }} />}
+            />
           </Form.Item>
         </Col>
         <Col xs={24} sm={12}>
@@ -218,48 +352,6 @@ const AddMovementExpenseTab = forwardRef<
                 value: type.description,
                 key: type.id,
               }))}
-            />
-          </Form.Item>
-        </Col>
-
-        {/* Fecha */}
-        <Col xs={24}>
-          <Form.Item
-            label="Fecha"
-            name="date"
-            rules={[{ required: true, message: "Seleccione una fecha" }]}
-          >
-            <DatePicker style={{ width: "100%" }} format={dateFormat} />
-          </Form.Item>
-        </Col>
-
-        {/* Moneda + Monto */}
-        <Col xs={24} sm={12}>
-          <Form.Item
-            name="currency"
-            label="Moneda"
-            rules={[{ required: true, message: "Ingrese Moneda" }]}
-          >
-            <Select placeholder="Seleccionar moneda">
-              {currencies.map((currency) => (
-                <Select.Option key={currency.id} value={currency.symbol}>
-                  {currency.symbol}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col xs={24} sm={12}>
-          <Form.Item
-            label="Monto"
-            name="amount"
-            rules={[{ required: true, message: "Ingresar Monto" }]}
-          >
-            <InputNumber
-              style={{ width: "100%" }}
-              controls={false}
-              precision={2}
-              placeholder="0.00"
             />
           </Form.Item>
         </Col>

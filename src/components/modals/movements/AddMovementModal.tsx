@@ -7,15 +7,15 @@ import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import ImportMovementTab from "./ImportMovementTab";
 import AddMovementExpenseTab from "./AddMovementExpenseTab";
 
-const TAB_ARCHIVO = "1";
-const TAB_INDIVIDUAL = "2";
+const TAB_INDIVIDUAL = "1";
+const TAB_ARCHIVO = "2";
 
 export default function AddMovementModal({ block }: { block?: boolean }) {
   const [modalOpen, setModalOpen] = useState(false);
   const handleCloseModal = () => {
     setModalOpen(false);
   };
-  const [activeTab, setActiveTab] = useState<string>(TAB_ARCHIVO);
+  const [activeTab, setActiveTab] = useState<string>(TAB_INDIVIDUAL);
 
   const uploadRef = useRef<{ handleConfirm: () => void } | null>(null);
   const expenseRef = useRef<{ handleConfirm: () => void } | null>(null);
@@ -62,20 +62,20 @@ export default function AddMovementModal({ block }: { block?: boolean }) {
           onChange={setActiveTab}
           items={[
             {
-              key: TAB_ARCHIVO,
-              label: "Archivo",
-              children: (
-                <ImportMovementTab ref={uploadRef} onSuccess={handleCloseModal} />
-              ),
-            },
-            {
               key: TAB_INDIVIDUAL,
-              label: "Individual",
+              label: "Manual",
               children: (
                 <AddMovementExpenseTab
                   ref={expenseRef}
                   onSuccess={handleCloseModal}
                 />
+              ),
+            },
+            {
+              key: TAB_ARCHIVO,
+              label: "Importar PDF",
+              children: (
+                <ImportMovementTab ref={uploadRef} onSuccess={handleCloseModal} />
               ),
             },
           ]}

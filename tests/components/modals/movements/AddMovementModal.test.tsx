@@ -95,41 +95,18 @@ describe("AddMovementModal", () => {
     );
   });
 
-  it("shows 'Importar' button when the 'Archivo' tab is active (default)", async () => {
+  it("shows 'Agregar' button when the 'Manual' tab is active (default)", async () => {
     render(<AddMovementModal />, { wrapper: makeWrapper() });
     await openModal();
     await waitFor(() => {
       const buttons = screen.getAllByRole("button");
-      expect(buttons.find((b) => b.textContent?.trim() === "Importar")).toBeDefined();
+      expect(buttons.find((b) => b.textContent?.trim() === "Agregar")).toBeDefined();
     });
-    const allButtons = screen.getAllByRole("button");
-    expect(allButtons.find((b) => b.textContent?.trim() === "Agregar")).toBeUndefined();
-  });
-
-  it("shows 'Agregar' button after switching to the 'Individual' tab", async () => {
-    render(<AddMovementModal />, { wrapper: makeWrapper() });
-    await openModal();
-
-    // Wait for modal to be rendered
-    await waitFor(() =>
-      expect(screen.getByText("Agregar Movimiento")).toBeInTheDocument(),
-    );
-
-    // Switch to "Individual" tab
-    await userEvent.click(screen.getByRole("tab", { name: /individual/i }));
-
-    await waitFor(() => {
-      // The footer confirm button should now say "Agregar"
-      const buttons = screen.getAllByRole("button");
-      const agregarBtn = buttons.find((b) => b.textContent?.trim() === "Agregar");
-      expect(agregarBtn).toBeDefined();
-    });
-    // "Importar" button should not be visible
     const allButtons = screen.getAllByRole("button");
     expect(allButtons.find((b) => b.textContent?.trim() === "Importar")).toBeUndefined();
   });
 
-  it("shows 'Importar' button after switching back to the 'Archivo' tab", async () => {
+  it("shows 'Importar' button after switching to the 'Importar PDF' tab", async () => {
     render(<AddMovementModal />, { wrapper: makeWrapper() });
     await openModal();
 
@@ -137,13 +114,34 @@ describe("AddMovementModal", () => {
       expect(screen.getByText("Agregar Movimiento")).toBeInTheDocument(),
     );
 
-    // Switch to Individual, then back to Archivo
-    await userEvent.click(screen.getByRole("tab", { name: /individual/i }));
-    await userEvent.click(screen.getByRole("tab", { name: /archivo/i }));
+    // Switch to "Importar PDF" tab
+    await userEvent.click(screen.getByRole("tab", { name: /importar pdf/i }));
 
     await waitFor(() => {
       const buttons = screen.getAllByRole("button");
-      expect(buttons.find((b) => b.textContent?.trim() === "Importar")).toBeDefined();
+      const importarBtn = buttons.find((b) => b.textContent?.trim() === "Importar");
+      expect(importarBtn).toBeDefined();
+    });
+    // "Agregar" button should not be visible
+    const allButtons = screen.getAllByRole("button");
+    expect(allButtons.find((b) => b.textContent?.trim() === "Agregar")).toBeUndefined();
+  });
+
+  it("shows 'Agregar' button after switching back to the 'Manual' tab", async () => {
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+
+    await waitFor(() =>
+      expect(screen.getByText("Agregar Movimiento")).toBeInTheDocument(),
+    );
+
+    // Switch to Importar PDF, then back to Manual
+    await userEvent.click(screen.getByRole("tab", { name: /importar pdf/i }));
+    await userEvent.click(screen.getByRole("tab", { name: /manual/i }));
+
+    await waitFor(() => {
+      const buttons = screen.getAllByRole("button");
+      expect(buttons.find((b) => b.textContent?.trim() === "Agregar")).toBeDefined();
     });
   });
 });

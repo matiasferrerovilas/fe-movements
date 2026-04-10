@@ -27,7 +27,7 @@ const mockSummary: WorkspaceSummary = {
 
 const server = setupServer(
   http.get(
-    "http://localhost:8080/v1/workspaces/0/summary/monthly",
+    "http://localhost:8080/workspaces/0/summary/monthly",
     () => HttpResponse.json(mockSummary),
   ),
 );
@@ -46,7 +46,7 @@ function makeWrapper() {
 }
 
 describe("useWorkspaceSummary", () => {
-  it("calls GET /v1/workspaces/0/summary/monthly with year and month params", async () => {
+  it("calls GET /workspaces/0/summary/monthly with year and month params", async () => {
     const { result } = renderHook(() => useWorkspaceSummary(2026, 4), {
       wrapper: makeWrapper(),
     });
@@ -89,7 +89,7 @@ describe("useWorkspaceSummary", () => {
   it("returns error state when the request fails", async () => {
     server.use(
       http.get(
-        "http://localhost:8080/v1/workspaces/0/summary/monthly",
+        "http://localhost:8080/workspaces/0/summary/monthly",
         () => HttpResponse.json({ message: "Server error" }, { status: 500 }),
       ),
     );

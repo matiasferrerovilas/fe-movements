@@ -7,7 +7,7 @@ export async function getWorkspaceMonthlySummary(
   month: number,
 ): Promise<WorkspaceSummary> {
   return api
-    .get<WorkspaceSummary>(`workspaces/${workspaceId}/summary/monthly`, {
+    .get<WorkspaceSummary>(`/workspaces/${workspaceId}/summary/monthly`, {
       params: { year, month },
     })
     .then((r) => r.data)

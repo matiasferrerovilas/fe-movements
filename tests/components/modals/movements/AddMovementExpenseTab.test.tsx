@@ -20,8 +20,8 @@ const mockMemberships: Membership[] = [
 ];
 
 const mockCategories: Category[] = [
-  { id: 1, description: "Supermercado" },
-  { id: 2, description: "Transporte" },
+  { id: 1, description: "Supermercado", isActive: true, isDeletable: false },
+  { id: 2, description: "Transporte", isActive: true, isDeletable: true },
 ];
 
 const mockCurrencies: Currency[] = [
@@ -45,8 +45,8 @@ const mockMovementToEdit: Movement = {
   date: "2024-03-15",
   owner: { id: 1, email: "test@test.com" },
   bank: "GALICIA",
-  category: { id: 1, description: "Supermercado" },
-  currency: { id: 1, symbol: "ARS", description: "Peso argentino" },
+  category: { id: 1, description: "Supermercado", isActive: true, isDeletable: false },
+  currency: { id: 1, symbol: "ARS", code: "ARS", name: "Peso argentino" },
   type: "DEBITO",
   cuotasTotales: null,
   cuotaActual: null,
