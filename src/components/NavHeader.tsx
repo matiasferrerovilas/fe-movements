@@ -18,6 +18,7 @@ import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
 import MoonOutlined from "@ant-design/icons/MoonOutlined";
 import PieChartOutlined from "@ant-design/icons/PieChartOutlined";
+import SafetyOutlined from "@ant-design/icons/SafetyOutlined";
 import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import SunOutlined from "@ant-design/icons/SunOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
@@ -67,6 +68,13 @@ const NAV_ITEMS: SideBarItem[] = [
     label: "Ajustes",
     path: "/settings",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+  },
+  {
+    key: "admin",
+    icon: <SafetyOutlined />,
+    label: "Admin",
+    path: "/admin",
+    roles: [RoleEnum.ADMIN],
   },
 ];
 
