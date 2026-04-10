@@ -146,15 +146,15 @@ interface CurrencyPanelProps {
 
 function CurrencyPanel({ data, loading }: CurrencyPanelProps) {
   const { token } = theme.useToken();
-  const { ingresado, gastado, diferencia, categoriaConMayorGasto, comparacion } = data;
+  const { totalIngresado, totalGastado, diferencia, categoriaConMayorGasto, comparacionVsMesAnterior } = data;
 
   return (
     <>
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
         <KpiCard
           title="Ingresado"
-          amount={ingresado}
-          delta={comparacion.diferenciaIngresado}
+          amount={totalIngresado}
+          delta={comparacionVsMesAnterior.diferenciaIngreso}
           deltaLabel="vs mes anterior"
           icon={<ArrowUpOutlined style={{ color: token.colorSuccess }} />}
           iconBg={token.colorSuccessBg}
@@ -163,8 +163,8 @@ function CurrencyPanel({ data, loading }: CurrencyPanelProps) {
         />
         <KpiCard
           title="Gastado"
-          amount={-gastado}
-          delta={-comparacion.diferenciaGastado}
+          amount={-totalGastado}
+          delta={-comparacionVsMesAnterior.diferenciaGasto}
           deltaLabel="vs mes anterior"
           icon={<ArrowDownOutlined style={{ color: token.colorError }} />}
           iconBg={token.colorErrorBg}
@@ -174,7 +174,7 @@ function CurrencyPanel({ data, loading }: CurrencyPanelProps) {
         <KpiCard
           title="Diferencia"
           amount={diferencia}
-          delta={comparacion.diferenciaIngresado - comparacion.diferenciaGastado}
+          delta={comparacionVsMesAnterior.diferenciaIngreso - comparacionVsMesAnterior.diferenciaGasto}
           deltaLabel="vs mes anterior"
           icon={
             diferencia >= 0 ? (
@@ -328,14 +328,14 @@ export default function MonthlySummary() {
               <ArrowUpOutlined style={{ color: token.colorSuccess, fontSize: 12 }} />
               <Text type="secondary" style={{ fontSize: 12 }}>Ingresos</Text>
               <Text strong style={{ fontSize: 13 }}>
-                ${totalUSD.ingresado.toLocaleString("es-AR", { maximumFractionDigits: 2 })}
+                ${(totalUSD.totalIngresado).toLocaleString("es-AR", { maximumFractionDigits: 2 })}
               </Text>
             </Flex>
             <Flex align="center" gap={6}>
               <ArrowDownOutlined style={{ color: token.colorError, fontSize: 12 }} />
               <Text type="secondary" style={{ fontSize: 12 }}>Gastos</Text>
               <Text strong style={{ fontSize: 13 }}>
-                ${totalUSD.gastado.toLocaleString("es-AR", { maximumFractionDigits: 2 })}
+                ${(totalUSD.totalGastado).toLocaleString("es-AR", { maximumFractionDigits: 2 })}
               </Text>
             </Flex>
             <Flex align="center" gap={6}>

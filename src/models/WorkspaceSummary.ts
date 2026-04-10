@@ -1,23 +1,24 @@
 export interface WorkspaceSummaryComparacion {
-  ingresadoMesAnterior: number;
-  gastadoMesAnterior: number;
-  diferenciaIngresado: number;
-  diferenciaGastado: number;
+  totalIngresadoMesAnterior: number;
+  totalGastadoMesAnterior: number;
+  diferenciaIngreso: number;
+  diferenciaGasto: number;
 }
 
 export interface WorkspaceSummaryPorMoneda {
   currency: string;
-  ingresado: number;
-  gastado: number;
+  totalIngresado: number;
+  totalGastado: number;
   diferencia: number;
   categoriaConMayorGasto: string | null;
-  comparacion: WorkspaceSummaryComparacion;
+  comparacionVsMesAnterior: WorkspaceSummaryComparacion;
 }
 
 export interface WorkspaceSummaryTotalUSD {
-  ingresado: number;
-  gastado: number;
+  totalIngresado: number;
+  totalGastado: number;
   diferencia: number;
+  comparacionVsMesAnterior: WorkspaceSummaryComparacion;
 }
 
 export interface WorkspaceSummary {

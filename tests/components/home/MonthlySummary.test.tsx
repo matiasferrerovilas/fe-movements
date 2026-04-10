@@ -29,35 +29,41 @@ const mockSummary: WorkspaceSummary = {
   porMoneda: [
     {
       currency: "ARS",
-      ingresado: 500000,
-      gastado: 320000,
+      totalIngresado: 500000,
+      totalGastado: 320000,
       diferencia: 180000,
       categoriaConMayorGasto: "HOGAR",
-      comparacion: {
-        ingresadoMesAnterior: 450000,
-        gastadoMesAnterior: 300000,
-        diferenciaIngresado: 50000,
-        diferenciaGastado: 20000,
+      comparacionVsMesAnterior: {
+        totalIngresadoMesAnterior: 450000,
+        totalGastadoMesAnterior: 300000,
+        diferenciaIngreso: 50000,
+        diferenciaGasto: 20000,
       },
     },
     {
       currency: "USD",
-      ingresado: 1000,
-      gastado: 750,
+      totalIngresado: 1000,
+      totalGastado: 750,
       diferencia: 250,
       categoriaConMayorGasto: "TRANSPORTE",
-      comparacion: {
-        ingresadoMesAnterior: 1000,
-        gastadoMesAnterior: 800,
-        diferenciaIngresado: 0,
-        diferenciaGastado: -50,
+      comparacionVsMesAnterior: {
+        totalIngresadoMesAnterior: 1000,
+        totalGastadoMesAnterior: 800,
+        diferenciaIngreso: 0,
+        diferenciaGasto: -50,
       },
     },
   ],
   totalUnificadoUSD: {
-    ingresado: 1383.08,
-    gastado: 995.4,
+    totalIngresado: 1383.08,
+    totalGastado: 995.4,
     diferencia: 387.68,
+    comparacionVsMesAnterior: {
+      totalIngresadoMesAnterior: 0,
+      totalGastadoMesAnterior: 0,
+      diferenciaIngreso: 0,
+      diferenciaGasto: 0,
+    },
   },
 };
 
