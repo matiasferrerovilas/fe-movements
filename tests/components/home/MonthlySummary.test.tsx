@@ -21,6 +21,10 @@ vi.mock("@react-keycloak/web", () => ({
   })),
 }));
 
+vi.mock("@tanstack/react-router", () => ({
+  useNavigate: () => vi.fn(),
+}));
+
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
 const mockSummary: WorkspaceSummary = {
@@ -77,6 +81,19 @@ const mockSummaryOneMoneda: WorkspaceSummary = {
 const server = setupServer(
   http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
     HttpResponse.json(mockSummary),
+  ),
+  // BudgetAlert is rendered inside MonthlySummary — return null defaults so it renders nothing
+  http.get("http://localhost:8080/settings/defaults/DEFAULT_ACCOUNT", () =>
+    HttpResponse.json({ key: "DEFAULT_ACCOUNT", value: null }),
+  ),
+  http.get("http://localhost:8080/settings/defaults/DEFAULT_CURRENCY", () =>
+    HttpResponse.json({ key: "DEFAULT_CURRENCY", value: null }),
+  ),
+  http.get("http://localhost:8080/currency", () =>
+    HttpResponse.json([]),
+  ),
+  http.get("http://localhost:8080/v1/budgets", () =>
+    HttpResponse.json([]),
   ),
 );
 

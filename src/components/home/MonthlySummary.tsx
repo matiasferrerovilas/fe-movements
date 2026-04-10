@@ -18,6 +18,7 @@ import {
 } from "antd";
 import { useWorkspaceSummary } from "../../apis/hooks/useWorkspaceSummary";
 import type { WorkspaceSummaryPorMoneda } from "../../models/WorkspaceSummary";
+import BudgetAlert from "./BudgetAlert";
 
 dayjs.locale("es");
 
@@ -359,6 +360,8 @@ export default function MonthlySummary() {
           </Flex>
         </>
       )}
+
+      <BudgetAlert />
     </div>
   );
 }

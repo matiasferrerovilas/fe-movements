@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ConfigProvider } from "antd";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { ThemeContext } from "../../src/apis/theme/ThemeContext";
 
@@ -18,6 +19,10 @@ vi.mock("@tanstack/react-router", () => ({
 
 vi.mock("../../src/apis/hooks/useUserRole", () => ({
   useUserRoles: vi.fn(),
+}));
+
+vi.mock("../../src/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: vi.fn().mockReturnValue({ data: null, isLoading: false }),
 }));
 
 import { useKeycloak } from "@react-keycloak/web";
@@ -52,10 +57,15 @@ function mockDefaults() {
 }
 
 function makeWrapper(isDark: boolean, toggleTheme = vi.fn()) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   return ({ children }: { children: ReactNode }) => (
-    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
-      <ConfigProvider>{children}</ConfigProvider>
-    </ThemeContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeContext.Provider value={{ isDark, toggleTheme }}>
+        <ConfigProvider>{children}</ConfigProvider>
+      </ThemeContext.Provider>
+    </QueryClientProvider>
   );
 }
 
