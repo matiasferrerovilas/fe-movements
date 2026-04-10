@@ -9,6 +9,7 @@ import {
   Menu,
   type MenuProps,
   Segmented,
+  Tag,
   theme,
   Typography,
 } from "antd";
@@ -25,12 +26,18 @@ import UserOutlined from "@ant-design/icons/UserOutlined";
 import { useKeycloak } from "@react-keycloak/web";
 import { useRouter, useRouterState } from "@tanstack/react-router";
 import { Header } from "antd/es/layout/layout";
+import { useCurrentUser } from "../apis/hooks/useCurrentUser";
 import { useUserRoles } from "../apis/hooks/useUserRole";
 import { RoleEnum } from "../enums/RoleEnum";
 import { useTheme } from "../apis/theme/ThemeContext";
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
+
+const USER_TYPE_COLOR: Record<string, string> = {
+  CONSUMER: "blue",
+  COMPANY: "green",
+};
 
 type SideBarItem = {
   key: string;
@@ -188,6 +195,7 @@ export default function NavHeader() {
   const router = useRouter();
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
   const { hasAnyRole } = useUserRoles();
+  const { data: currentUser } = useCurrentUser();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const visibleItems = NAV_ITEMS.filter(
@@ -236,12 +244,17 @@ export default function NavHeader() {
       <Flex align="center" gap={10} style={{ cursor: "pointer" }}>
         {!isMobile && (
           <Flex vertical align="flex-end">
-            <Text strong style={{ fontSize: 13, lineHeight: 1.3 }}>
-              {username}
-            </Text>
             <Text type="secondary" style={{ fontSize: 11 }}>
               {email}
             </Text>
+            {currentUser?.userType && (
+              <Tag
+                color={USER_TYPE_COLOR[currentUser.userType] ?? "default"}
+                style={{ marginTop: 2, marginInlineEnd: 0, fontSize: 10, lineHeight: "16px", padding: "0 5px" }}
+              >
+                {currentUser.userType}
+              </Tag>
+            )}
           </Flex>
         )}
         <Avatar
@@ -347,6 +360,14 @@ export default function NavHeader() {
             <Text type="secondary" style={{ fontSize: 12 }}>
               {email}
             </Text>
+            {currentUser?.userType && (
+              <Tag
+                color={USER_TYPE_COLOR[currentUser.userType] ?? "default"}
+                style={{ marginTop: 4, alignSelf: "flex-start", fontSize: 11 }}
+              >
+                {currentUser.userType}
+              </Tag>
+            )}
           </Flex>
         }
         placement="left"
