@@ -14,6 +14,7 @@ import {
   Typography,
 } from "antd";
 import BookOutlined from "@ant-design/icons/BookOutlined";
+import FundOutlined from "@ant-design/icons/FundOutlined";
 import LineChartOutlined from "@ant-design/icons/LineChartOutlined";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
@@ -60,6 +61,13 @@ const NAV_ITEMS: SideBarItem[] = [
     icon: <BookOutlined />,
     label: "Servicios",
     path: "/services",
+    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+  },
+  {
+    key: "budgets",
+    icon: <FundOutlined />,
+    label: "Presupuestos",
+    path: "/budgets",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
   {

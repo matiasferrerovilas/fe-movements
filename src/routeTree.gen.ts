@@ -13,6 +13,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MovementRouteImport } from './routes/movement'
+import { Route as BudgetsRouteImport } from './routes/budgets'
 import { Route as BalanceRouteImport } from './routes/balance'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -37,6 +38,11 @@ const MovementRoute = MovementRouteImport.update({
   path: '/movement',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BudgetsRoute = BudgetsRouteImport.update({
+  id: '/budgets',
+  path: '/budgets',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BalanceRoute = BalanceRouteImport.update({
   id: '/balance',
   path: '/balance',
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/balance': typeof BalanceRoute
+  '/budgets': typeof BudgetsRoute
   '/movement': typeof MovementRoute
   '/onboarding': typeof OnboardingRoute
   '/services': typeof ServicesRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/balance': typeof BalanceRoute
+  '/budgets': typeof BudgetsRoute
   '/movement': typeof MovementRoute
   '/onboarding': typeof OnboardingRoute
   '/services': typeof ServicesRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/balance': typeof BalanceRoute
+  '/budgets': typeof BudgetsRoute
   '/movement': typeof MovementRoute
   '/onboarding': typeof OnboardingRoute
   '/services': typeof ServicesRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/balance'
+    | '/budgets'
     | '/movement'
     | '/onboarding'
     | '/services'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/balance'
+    | '/budgets'
     | '/movement'
     | '/onboarding'
     | '/services'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/balance'
+    | '/budgets'
     | '/movement'
     | '/onboarding'
     | '/services'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   BalanceRoute: typeof BalanceRoute
+  BudgetsRoute: typeof BudgetsRoute
   MovementRoute: typeof MovementRoute
   OnboardingRoute: typeof OnboardingRoute
   ServicesRoute: typeof ServicesRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MovementRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/budgets': {
+      id: '/budgets'
+      path: '/budgets'
+      fullPath: '/budgets'
+      preLoaderRoute: typeof BudgetsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/balance': {
       id: '/balance'
       path: '/balance'
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   BalanceRoute: BalanceRoute,
+  BudgetsRoute: BudgetsRoute,
   MovementRoute: MovementRoute,
   OnboardingRoute: OnboardingRoute,
   ServicesRoute: ServicesRoute,
