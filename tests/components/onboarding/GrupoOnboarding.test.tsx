@@ -17,12 +17,12 @@ describe("GrupoOnboarding", () => {
   describe("render inicial", () => {
     it("muestra el texto descriptivo", () => {
       renderGrupo();
-      expect(screen.getByText(/querés crear algunos grupos/i)).toBeInTheDocument();
+      expect(screen.getByText(/querés crear algunos workspaces/i)).toBeInTheDocument();
     });
 
     it("muestra un input vacío por defecto", () => {
       renderGrupo();
-      expect(screen.getByPlaceholderText("Nombre del grupo")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Nombre del workspace")).toBeInTheDocument();
     });
 
     it("muestra solo el botón Siguiente (sin Omitir)", () => {
@@ -32,14 +32,14 @@ describe("GrupoOnboarding", () => {
     });
   });
 
-  describe("agregar y eliminar grupos", () => {
-    it("agrega un nuevo input al hacer click en Agregar grupo", async () => {
+  describe("agregar y eliminar workspaces", () => {
+    it("agrega un nuevo input al hacer click en Agregar workspace", async () => {
       const user = userEvent.setup();
       renderGrupo();
 
-      await user.click(screen.getByText("Agregar grupo"));
+      await user.click(screen.getByText("Agregar workspace"));
 
-      const inputs = screen.getAllByPlaceholderText("Nombre del grupo");
+      const inputs = screen.getAllByPlaceholderText("Nombre del workspace");
       expect(inputs).toHaveLength(2);
     });
 
@@ -47,14 +47,14 @@ describe("GrupoOnboarding", () => {
       const user = userEvent.setup();
       renderGrupo();
 
-      await user.click(screen.getByText("Agregar grupo"));
+      await user.click(screen.getByText("Agregar workspace"));
 
-      expect(screen.getAllByRole("button", { name: /Eliminar grupo/i })).toHaveLength(2);
+      expect(screen.getAllByRole("button", { name: /Eliminar workspace/i })).toHaveLength(2);
     });
 
     it("no muestra botón de eliminar cuando solo hay un campo", () => {
       renderGrupo();
-      expect(screen.queryByRole("button", { name: /Eliminar grupo/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Eliminar workspace/i })).not.toBeInTheDocument();
     });
   });
 
@@ -63,7 +63,7 @@ describe("GrupoOnboarding", () => {
       const user = userEvent.setup();
       renderGrupo();
 
-      await user.type(screen.getByPlaceholderText("Nombre del grupo"), "Grupo1!");
+      await user.type(screen.getByPlaceholderText("Nombre del workspace"), "Grupo1!");
       // El click dispara validateFields que rechaza — la promesa queda interna en el form
       await user.click(screen.getByText("Siguiente"));
 
@@ -77,7 +77,7 @@ describe("GrupoOnboarding", () => {
       const onNext = vi.fn();
       renderGrupo(onNext);
 
-      await user.type(screen.getByPlaceholderText("Nombre del grupo"), "Familia");
+      await user.type(screen.getByPlaceholderText("Nombre del workspace"), "Familia");
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));

@@ -1,37 +1,46 @@
 import { Button, Card, Col, Divider, Flex, Form, Input, Row, theme, Typography } from "antd";
-import { useAllGroupsWithUsers } from "../../apis/hooks/useGroups";
+import { useAllWorkspacesWithUsers } from "../../apis/hooks/useWorkspaces";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
-import SettingGroupCard from "./SettingGroupCard";
+import SettingWorkspaceCard from "./SettingWorkspaceCard";
 import type {
-  CreateGroupForm,
-  GroupDetail,
-} from "../../models/UserGroup";
-import { useMutation } from "@tanstack/react-query";
-import { useGroupsSubscription } from "../../apis/websocket/useGroupsSubscription";
-import { addGroupApi, setDefaultGroupApi } from "../../apis/GroupApi";
+  CreateWorkspaceForm,
+  WorkspaceDetail,
+} from "../../models/UserWorkspace";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useWorkspacesSubscription } from "../../apis/websocket/useWorkspacesSubscription";
+import { addWorkspaceApi, setDefaultWorkspaceApi } from "../../apis/WorkspaceApi";
 
 const { Title, Text } = Typography;
 
-export function SettingGroups() {
-  const { data: groups = [], isLoading } = useAllGroupsWithUsers();
-  const [form] = Form.useForm<CreateGroupForm>();
+export function SettingWorkspaces() {
+  const queryClient = useQueryClient();
+  const { data: groups = [], isLoading } = useAllWorkspacesWithUsers();
+  const [form] = Form.useForm<CreateWorkspaceForm>();
   const { token } = theme.useToken();
 
-  useGroupsSubscription();
+  useWorkspacesSubscription();
 
-  const addGroupMutation = useMutation({
-    mutationFn: ({ group }: { group: CreateGroupForm }) => addGroupApi(group),
+  const addWorkspaceMutation = useMutation({
+    mutationFn: ({ group }: { group: CreateWorkspaceForm }) => addWorkspaceApi(group),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workspace-count"] });
+      queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
+    },
     onError: (err) => console.error("Error creando grupo:", err),
   });
 
-  const setDefaultMutation = useMutation({
-    mutationFn: (id: number) => setDefaultGroupApi(id),
+  const setDefaultWorkspaceMutation = useMutation({
+    mutationFn: (id: number) => setDefaultWorkspaceApi(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workspace-count"] });
+      queryClient.invalidateQueries({ queryKey: ["user-defaults"] });
+    },
     onError: (err) => console.error("Error cambiando grupo default:", err),
   });
 
-  const onFinish = (values: CreateGroupForm) => {
-    addGroupMutation.mutate({ group: values });
+  const onFinish = (values: CreateWorkspaceForm) => {
+    addWorkspaceMutation.mutate({ group: values });
     form.resetFields();
   };
 
@@ -55,10 +64,10 @@ export function SettingGroups() {
         </div>
         <div>
           <Title level={5} style={{ margin: 0 }}>
-            Gestionar Grupos
+            Gestionar Workspaces
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Crea y administra grupos para organizar tus gastos.
+            Crea y administra workspaces para organizar tus gastos.
           </Text>
         </div>
       </Flex>
@@ -84,21 +93,21 @@ export function SettingGroups() {
             marginBottom: 10,
           }}
         >
-          Nuevo Grupo
+          Nuevo Workspace
         </Text>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Row gutter={[12, 0]} align="middle">
             <Col xs={24} sm={16} md={18}>
               <Form.Item
-                name="name"
+                name="description"
                 style={{ margin: 0 }}
                 rules={[
-                  { required: true, message: "Ingresá el nombre del grupo" },
+                  { required: true, message: "Ingresá el nombre del workspace" },
                 ]}
               >
                 <Input
                   style={{ borderRadius: 10, height: 40, fontSize: 14 }}
-                  placeholder="Nombre del grupo..."
+                  placeholder="Nombre del workspace..."
                 />
               </Form.Item>
             </Col>
@@ -109,7 +118,7 @@ export function SettingGroups() {
                 block
                 htmlType="submit"
                 style={{ height: 40, borderRadius: 10, fontWeight: 600 }}
-                loading={addGroupMutation.isPending}
+                loading={addWorkspaceMutation.isPending}
               >
                 Agregar
               </Button>
@@ -120,16 +129,16 @@ export function SettingGroups() {
 
       {/* Lista de grupos */}
       <Flex vertical gap={10}>
-        {groups.map((group: GroupDetail, index: number) => (
+        {groups.map((group: WorkspaceDetail, index: number) => (
           <div
             key={group.id}
             className="step-enter-right"
             style={{ animationDelay: `${Math.min(index, 7) * 55}ms` }}
           >
-            <SettingGroupCard
+            <SettingWorkspaceCard
               group={group}
-              onSetDefault={(id) => setDefaultMutation.mutate(id)}
-              isSettingDefault={setDefaultMutation.isPending}
+              onSetDefault={(id) => setDefaultWorkspaceMutation.mutate(id)}
+              isSettingDefault={setDefaultWorkspaceMutation.isPending}
             />
           </div>
         ))}

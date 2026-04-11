@@ -7,7 +7,7 @@ export interface CurrencySymbol {
 
 export interface BudgetRecord {
   id: number;
-  accountId: number;
+  workspaceId: number;
   category: Category | null;
   currency: CurrencySymbol;
   amount: number;
@@ -18,7 +18,7 @@ export interface BudgetRecord {
 }
 
 export interface BudgetToAdd {
-  accountId: number;
+  workspaceId: number;
   category: string | null;
   currency: string;
   amount: number;
@@ -31,7 +31,7 @@ export interface BudgetToUpdate {
 }
 
 export interface BudgetQueryParams {
-  accountId: number;
+  workspaceId: number;
   currency: string;
   year: number;
   month: number;

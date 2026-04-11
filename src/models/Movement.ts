@@ -1,6 +1,6 @@
 import type { Category } from "./Category";
 import type { Currency } from "./Currency";
-import type { AccountWithoutMembers } from "./UserGroup";
+import type { AccountWithoutMembers } from "./UserWorkspace";
 import type { User } from "./User";
 
 export interface Movement {
@@ -28,5 +28,5 @@ export interface CreateMovementForm {
   cuotaActual?: number;
   cuotasTotales?: number;
   category?: string;
-  groupId: number;
+  workspaceId: number;
 }

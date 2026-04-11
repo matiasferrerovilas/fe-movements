@@ -16,7 +16,7 @@ import {
 } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useGroups } from "../../apis/hooks/useGroups";
+import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
 import { useIncome } from "../../apis/hooks/useIncome";
 import { useUserDefault } from "../../apis/hooks/useSettings";
 import {
@@ -40,10 +40,10 @@ export function SettingIngreso() {
   const [form] = Form.useForm<IncomeAddForm>();
   const { data: ingresos, isLoading } = useIncome();
   const { token } = theme.useToken();
-  const { data: memberships = [] } = useGroups();
+  const { data: memberships = [] } = useWorkspaces();
   const { data: currencies = [] } = useCurrency();
   const { data: banks = [] } = useBanks();
-  const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
+  const { data: defaultAccount } = useUserDefault("DEFAULT_WORKSPACE");
   const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const queryClient = useQueryClient();
@@ -77,13 +77,13 @@ export function SettingIngreso() {
     const currencySymbol = currencies.find(
       (c) => c.id === defaultCurrency?.value
     )?.symbol;
-    const groupDescription = memberships.find(
-      (m) => m.accountId === defaultAccount?.value
-    )?.groupDescription;
+    const workspaceDescription = memberships.find(
+      (m) => m.workspaceId === defaultAccount?.value
+    )?.workspaceName;
     form.setFieldsValue({
       bank: bankDescription,
       currency: currencySymbol,
-      group: groupDescription,
+      workspace: workspaceDescription,
     });
   }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies, memberships, form]);
 
@@ -117,7 +117,7 @@ export function SettingIngreso() {
             Gestionar Ingresos
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Configurá tu ingreso mensual por grupo. Se genera un movimiento
+            Configurá tu ingreso mensual por workspace. Se genera un movimiento
             automático cada mes.
           </Text>
         </div>
@@ -144,9 +144,9 @@ export function SettingIngreso() {
           onFinish={onFinish}
           initialValues={
             memberships && {
-              group: memberships.find(
-              (m) => m.accountId === defaultAccount?.value
-            )?.groupDescription,
+              workspace: memberships.find(
+              (m) => m.workspaceId === defaultAccount?.value
+            )?.workspaceName,
               bank: banks.find((b) => b.id === defaultBank?.value)?.description,
               currency: currencies.find(
                 (c) => c.id === defaultCurrency?.value
@@ -172,16 +172,16 @@ export function SettingIngreso() {
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item
-                name="group"
-                label="Grupo"
-                rules={[{ required: true, message: "Seleccione un grupo" }]}
+                name="workspace"
+                label="Workspace"
+                rules={[{ required: true, message: "Seleccione un workspace" }]}
               >
                 <Select
-                  placeholder="Seleccionar grupo"
+                  placeholder="Seleccionar workspace"
                   options={memberships.map((membership) => ({
-                    label: membership.groupDescription,
-                    value: membership.groupDescription,
-                    key: membership.accountId,
+                    label: membership.workspaceName,
+                    value: membership.workspaceName,
+                    key: membership.workspaceId,
                   }))}
                 />
               </Form.Item>

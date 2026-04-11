@@ -10,11 +10,11 @@ import { ServiceCard } from "../../../src/components/services/ServiceCard";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../../src/apis/hooks/useGroups", () => ({
-  useGroups: vi.fn(),
+vi.mock("../../../src/apis/hooks/useWorkspaces", () => ({
+  useWorkspaces: vi.fn(),
 }));
 
-import { useGroups } from "../../../src/apis/hooks/useGroups";
+import { useWorkspaces } from "../../../src/apis/hooks/useWorkspaces";
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 
@@ -35,7 +35,8 @@ function makeService(overrides?: Partial<Service>): Service {
     id: 1,
     amount: 1500,
     description: "Netflix",
-    group: "Familia",
+    workspaceName: "Familia",
+    workspaceId: 10,
     date: "2026-01-01",
     user: "me@test.com",
     currency: { id: 1, symbol: "ARS", name: "Peso argentino" },
@@ -76,13 +77,13 @@ describe("ServiceCard", () => {
     handlePay = vi.fn();
     handleUpdate = vi.fn();
 
-    vi.mocked(useGroups).mockReturnValue({
+    vi.mocked(useWorkspaces).mockReturnValue({
       data: [
-        { accountId: 10, membershipId: 1, groupDescription: "Familia", role: "ADMIN" },
-        { accountId: 20, membershipId: 2, groupDescription: "Trabajo", role: "FAMILY" },
+        { workspaceId: 10, membershipId: 1, workspaceName: "Familia", role: "ADMIN" },
+        { workspaceId: 20, membershipId: 2, workspaceName: "Trabajo", role: "FAMILY" },
       ],
       isSuccess: true,
-    } as ReturnType<typeof useGroups>);
+    } as ReturnType<typeof useWorkspaces>);
   });
 
   afterEach(() => {
@@ -257,7 +258,7 @@ describe("ServiceCard", () => {
     });
 
     it("envía la descripción del grupo (no el ID) al guardar la edición", async () => {
-      const service = makeService({ isPaid: true, group: "Familia" });
+      const service = makeService({ isPaid: true, workspaceName: "Familia", workspaceId: 10 });
 
       render(
         <ServiceCard
@@ -274,7 +275,7 @@ describe("ServiceCard", () => {
       expect(handleUpdate).toHaveBeenCalledWith(
         expect.objectContaining<Partial<ServiceToUpdate>>({
           id: service.id,
-          changes: expect.objectContaining({ group: "Familia" }),
+          changes: expect.objectContaining({ workspace: "Familia" }),
         }),
       );
     });

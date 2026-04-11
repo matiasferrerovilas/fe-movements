@@ -29,10 +29,10 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
     <Space direction="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
-          ¿Querés crear algunos grupos?
+          ¿Querés crear algunos workspaces?
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
-          Un grupo sirve para agrupar movimientos.
+          Un workspace sirve para agrupar movimientos.
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
           Por defecto se crea uno para tus movimientos propios.
@@ -69,7 +69,7 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
                       ]}
                     >
                       <Input
-                        placeholder="Nombre del grupo"
+                        placeholder="Nombre del workspace"
                         style={{ borderRadius: 8 }}
                       />
                     </Form.Item>
@@ -81,7 +81,7 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
                         danger
                         icon={<DeleteOutlined />}
                         onClick={() => remove(name)}
-                        aria-label="Eliminar grupo"
+                        aria-label="Eliminar workspace"
                       />
                     )}
                   </Col>
@@ -94,7 +94,7 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
                   block
                   icon={<PlusOutlined />}
                 >
-                  Agregar grupo
+                  Agregar workspace
                 </Button>
               </Form.Item>
             </>
@@ -102,7 +102,7 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
         </Form.List>
 
         <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 12, textAlign: "center" }}>
-          Si no querés crear grupos ahora, dejá el campo vacío y hacé click en Siguiente.
+          Si no querés crear workspaces ahora, dejá el campo vacío y hacé click en Siguiente.
         </Text>
 
         <Row gutter={[16, 10]}>

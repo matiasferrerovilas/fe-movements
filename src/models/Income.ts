@@ -11,13 +11,13 @@ export interface Income {
 export interface IncomeAddForm {
   amount: number;
   bank: string;
-  group: string;
+  workspace: string;
   currency: string;
 }
 
 export interface IncomeAddPayload {
   amount: number;
   bank: string;
-  group: string;
+  workspace: string;
   currency: CurrencyRecord;
 }

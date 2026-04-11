@@ -18,11 +18,11 @@ export default function BudgetAlert() {
   const { token } = theme.useToken();
   const navigate = useNavigate();
 
-  const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
+  const { data: defaultAccount } = useUserDefault("DEFAULT_WORKSPACE");
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const { data: currencies } = useCurrency();
 
-  const accountId = defaultAccount?.value ?? null;
+  const workspaceId = defaultAccount?.value ?? null;
   const currencyId = defaultCurrency?.value ?? null;
   const currencySymbol =
     currencyId !== null
@@ -35,9 +35,9 @@ export default function BudgetAlert() {
 
   // Always call the hook; use a placeholder when prerequisites are missing
   // (query will be skipped via `enabled` once we support it, but for now
-  //  we rely on accountId/currencySymbol guard below before rendering)
+  //  we rely on workspaceId/currencySymbol guard below before rendering)
   const { data: budgets } = useBudgets({
-    accountId: accountId ?? 0,
+    workspaceId: workspaceId ?? 0,
     currency: currencySymbol ?? "",
     year,
     month,
@@ -47,7 +47,7 @@ export default function BudgetAlert() {
   const [editingBudget, setEditingBudget] = useState<BudgetRecord | null>(null);
 
   // Don't render anything if the user has no defaults configured
-  if (!accountId || !currencySymbol) return null;
+  if (!workspaceId || !currencySymbol) return null;
 
   const alertBudgets = (budgets ?? []).filter(
     (b) => b.percentage >= ALERT_THRESHOLD,

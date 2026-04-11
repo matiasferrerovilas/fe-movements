@@ -12,9 +12,9 @@ export interface AccountWithMembers {
 }
 
 export interface Membership {
-  accountId: number;
+  workspaceId: number;
   membershipId: number;
-  groupDescription: string;
+  workspaceName: string;
   role: string;
 }
 
@@ -24,20 +24,20 @@ export interface AccountMember {
   role: string;
 }
 
-export interface GroupDetail {
+export interface WorkspaceDetail {
   id: number;
   name: string;
   membersCount: number;
   isDefault: boolean;
 }
 
-export interface CreateGroupForm {
+export interface CreateWorkspaceForm {
   description: string;
 }
 
 export interface CreateInvitationForm {
   emails: string[];
-  groupId: number;
+  workspaceId: number;
 }
 
 export interface Invitations {

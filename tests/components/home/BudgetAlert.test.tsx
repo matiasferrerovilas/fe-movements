@@ -31,7 +31,7 @@ const CURRENCY_SYMBOL = "ARS";
 const mockBudgets: BudgetRecord[] = [
   {
     id: 1,
-    accountId: ACCOUNT_ID,
+    workspaceId: ACCOUNT_ID,
     category: { id: 8, description: "Supermercado", isActive: true, isDeletable: false },
     currency: { id: CURRENCY_ID, symbol: CURRENCY_SYMBOL },
     amount: 5000,
@@ -42,7 +42,7 @@ const mockBudgets: BudgetRecord[] = [
   },
   {
     id: 2,
-    accountId: ACCOUNT_ID,
+    workspaceId: ACCOUNT_ID,
     category: { id: 9, description: "Transporte", isActive: true, isDeletable: false },
     currency: { id: CURRENCY_ID, symbol: CURRENCY_SYMBOL },
     amount: 10000,
@@ -53,7 +53,7 @@ const mockBudgets: BudgetRecord[] = [
   },
   {
     id: 3,
-    accountId: ACCOUNT_ID,
+    workspaceId: ACCOUNT_ID,
     category: { id: 10, description: "Ocio", isActive: true, isDeletable: false },
     currency: { id: CURRENCY_ID, symbol: CURRENCY_SYMBOL },
     amount: 2000,
@@ -67,8 +67,8 @@ const mockBudgets: BudgetRecord[] = [
 // ── MSW server ────────────────────────────────────────────────────────────────
 
 const server = setupServer(
-  http.get("http://localhost:8080/settings/defaults/DEFAULT_ACCOUNT", () =>
-    HttpResponse.json({ key: "DEFAULT_ACCOUNT", value: ACCOUNT_ID }),
+  http.get("http://localhost:8080/settings/defaults/DEFAULT_WORKSPACE", () =>
+    HttpResponse.json({ key: "DEFAULT_WORKSPACE", value: ACCOUNT_ID }),
   ),
   http.get("http://localhost:8080/settings/defaults/DEFAULT_CURRENCY", () =>
     HttpResponse.json({ key: "DEFAULT_CURRENCY", value: CURRENCY_ID }),
@@ -76,13 +76,13 @@ const server = setupServer(
   http.get("http://localhost:8080/currency", () =>
     HttpResponse.json([{ id: CURRENCY_ID, symbol: CURRENCY_SYMBOL, description: "Peso argentino", code: "ARS" }]),
   ),
-  http.get("http://localhost:8080/v1/budgets", () =>
+  http.get("http://localhost:8080/budgets", () =>
     HttpResponse.json(mockBudgets),
   ),
-  http.delete("http://localhost:8080/v1/budgets/:id", () =>
+  http.delete("http://localhost:8080/budgets/:id", () =>
     new HttpResponse(null, { status: 204 }),
   ),
-  http.patch("http://localhost:8080/v1/budgets/:id", () =>
+  http.patch("http://localhost:8080/budgets/:id", () =>
     new HttpResponse(null, { status: 200 }),
   ),
 );
@@ -113,10 +113,10 @@ function renderAlert() {
 
 describe("BudgetAlert", () => {
   describe("no renderiza nada cuando faltan defaults", () => {
-    it("retorna null cuando DEFAULT_ACCOUNT no tiene valor", async () => {
+    it("retorna null cuando DEFAULT_WORKSPACE no tiene valor", async () => {
       server.use(
-        http.get("http://localhost:8080/settings/defaults/DEFAULT_ACCOUNT", () =>
-          HttpResponse.json({ key: "DEFAULT_ACCOUNT", value: null }),
+        http.get("http://localhost:8080/settings/defaults/DEFAULT_WORKSPACE", () =>
+          HttpResponse.json({ key: "DEFAULT_WORKSPACE", value: null }),
         ),
       );
 
@@ -150,7 +150,7 @@ describe("BudgetAlert", () => {
         percentage: 40,
       }));
       server.use(
-        http.get("http://localhost:8080/v1/budgets", () =>
+        http.get("http://localhost:8080/budgets", () =>
           HttpResponse.json(allBelowThreshold),
         ),
       );
@@ -164,7 +164,7 @@ describe("BudgetAlert", () => {
 
     it("retorna null cuando la lista de presupuestos está vacía", async () => {
       server.use(
-        http.get("http://localhost:8080/v1/budgets", () =>
+        http.get("http://localhost:8080/budgets", () =>
           HttpResponse.json([]),
         ),
       );
@@ -232,7 +232,7 @@ describe("BudgetAlert", () => {
     it("llama a DELETE /v1/budgets/:id al confirmar eliminación", async () => {
       let capturedId: string | undefined;
       server.use(
-        http.delete("http://localhost:8080/v1/budgets/:id", ({ params }) => {
+        http.delete("http://localhost:8080/budgets/:id", ({ params }) => {
           capturedId = params.id as string;
           return new HttpResponse(null, { status: 204 });
         }),

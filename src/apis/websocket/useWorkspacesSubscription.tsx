@@ -2,26 +2,26 @@ import { useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
 import { EventType, type EventWrapper } from "./EventWrapper";
-import type { GroupDetail } from "../../models/UserGroup";
+import type { WorkspaceDetail } from "../../models/UserWorkspace";
 import { useKeycloak } from "@react-keycloak/web";
-import { useGroups } from "../hooks/useGroups";
+import { useWorkspaces } from "../hooks/useWorkspaces";
 
-const USER_GROUPS_QUERY_KEY = ["user-groups-count"] as const;
+const USER_WORKSPACES_COUNT_QUERY_KEY = ["workspace-count"] as const;
 
-export const useGroupsSubscription = () => {
+export const useWorkspacesSubscription = () => {
   const queryClient = useQueryClient();
   const ws = useWebSocket();
   const { keycloak } = useKeycloak();
   const keycloakUserId = keycloak.subject;
-  const { data: memberships = [] } = useGroups();
+  const { data: memberships = [] } = useWorkspaces();
 
   const leaveTopics = useMemo(
-    () => memberships.map((m) => `/topic/account/${m.accountId}/leave`),
+    () => memberships.map((m) => `/topic/account/${m.workspaceId}/leave`),
     [memberships],
   );
 
   const membersUpdateTopics = useMemo(
-    () => memberships.map((m) => `/topic/account/${m.accountId}/members/update`),
+    () => memberships.map((m) => `/topic/account/${m.workspaceId}/members/update`),
     [memberships],
   );
 
@@ -30,15 +30,15 @@ export const useGroupsSubscription = () => {
     callbackRef.current = (event: EventWrapper<unknown>) => {
       switch (event.eventType) {
         case EventType.ACCOUNT_LEFT: {
-          queryClient.invalidateQueries({ queryKey: ["user-groups"] });
-          queryClient.invalidateQueries({ queryKey: USER_GROUPS_QUERY_KEY });
+          queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
+          queryClient.invalidateQueries({ queryKey: USER_WORKSPACES_COUNT_QUERY_KEY });
           break;
         }
         case EventType.MEMBERSHIP_UPDATED: {
-          const updated = event.message as GroupDetail;
+          const updated = event.message as WorkspaceDetail;
           queryClient.setQueryData(
-            USER_GROUPS_QUERY_KEY,
-            (old?: GroupDetail[]) => {
+            USER_WORKSPACES_COUNT_QUERY_KEY,
+            (old?: WorkspaceDetail[]) => {
               if (!old) return [updated];
               const base = old.map((g) => ({ ...g, isDefault: false }));
               const exists = base.some((g) => g.id === updated.id);

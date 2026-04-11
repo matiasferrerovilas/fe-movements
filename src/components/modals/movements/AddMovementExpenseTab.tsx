@@ -18,7 +18,7 @@ import CreditCardOutlined from "@ant-design/icons/CreditCardOutlined";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import TagOutlined from "@ant-design/icons/TagOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
-import { useGroups } from "../../../apis/hooks/useGroups";
+import { useWorkspaces } from "../../../apis/hooks/useWorkspaces";
 import { useMutation } from "@tanstack/react-query";
 import { TypeEnum, TypeEnumLabel } from "../../../enums/TypeExpense";
 import type { CreateMovementForm, Movement } from "../../../models/Movement";
@@ -46,12 +46,12 @@ const AddMovementExpenseTab = forwardRef<
   AddMovementExpenseTabProps
 >(({ onSuccess, movementToEdit }, ref) => {
   const { token } = theme.useToken();
-  const { data: memberships = [] } = useGroups();
+  const { data: memberships = [] } = useWorkspaces();
   const [form] = Form.useForm<CreateMovementForm>();
   const { data: categories = [] } = useCategory();
   const { data: currencies = [] } = useCurrency();
   const { data: banks = [] } = useBanks();
-  const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
+  const { data: defaultAccount } = useUserDefault("DEFAULT_WORKSPACE");
   const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
 
@@ -64,7 +64,7 @@ const AddMovementExpenseTab = forwardRef<
       type: movementToEdit.type,
       cuotaActual: movementToEdit.cuotaActual ?? undefined,
       cuotasTotales: movementToEdit.cuotasTotales ?? undefined,
-      groupId: movementToEdit.account?.id,
+      workspaceId: movementToEdit.account?.id,
       category: movementToEdit.category?.description,
       currency: movementToEdit.currency?.symbol,
       date: dayjs(movementToEdit.date),
@@ -80,7 +80,7 @@ const AddMovementExpenseTab = forwardRef<
       (c) => c.id === defaultCurrency?.value,
     )?.symbol;
     form.setFieldsValue({
-      groupId: defaultAccount?.value ?? undefined,
+      workspaceId: defaultAccount?.value ?? undefined,
       bank: bankDescription,
       currency: currencySymbol,
       date: dayjs(),
@@ -91,6 +91,7 @@ const AddMovementExpenseTab = forwardRef<
     defaultCurrency,
     banks,
     currencies,
+    memberships,
     form,
     movementToEdit,
   ]);
@@ -126,7 +127,7 @@ const AddMovementExpenseTab = forwardRef<
       layout="vertical"
       initialValues={{
         date: dayjs(),
-        groupId: defaultAccount?.value ?? undefined,
+        workspaceId: defaultAccount?.value ?? undefined,
         bank: banks.find((b) => b.id === defaultBank?.value)?.description,
         currency: currencies.find((c) => c.id === defaultCurrency?.value)?.symbol,
       }}
@@ -306,20 +307,20 @@ const AddMovementExpenseTab = forwardRef<
       </Divider>
 
       <Row gutter={[12, 4]}>
-        {/* Grupo */}
+        {/* Workspace */}
         <Col xs={24}>
           <Form.Item
-            name="groupId"
-            label="Grupo"
-            rules={[{ required: true, message: "Seleccione un grupo" }]}
+            name="workspaceId"
+            label="Workspace"
+            rules={[{ required: true, message: "Seleccione un workspace" }]}
           >
             <Select
-              placeholder="Seleccionar grupo"
+              placeholder="Seleccionar workspace"
               suffixIcon={<TeamOutlined style={{ color: token.colorTextTertiary }} />}
               options={memberships.map((membership) => ({
-                label: membership.groupDescription,
-                value: membership.accountId,
-                key: membership.accountId,
+                label: membership.workspaceName,
+                value: membership.workspaceId,
+                key: membership.workspaceId,
               }))}
             />
           </Form.Item>

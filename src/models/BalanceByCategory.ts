@@ -5,7 +5,7 @@ export interface BalanceByCategory {
   total: number;
 }
 export interface BalanceByGroup {
-  groupDescription: string;
+  workspaceDescription: string;
   year: number;
   month: number;
   currencySymbol: string;

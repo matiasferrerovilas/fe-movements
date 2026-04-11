@@ -15,7 +15,7 @@ import { onBoardingGuard } from "../apis/auth/onBoardingGuard";
 import { useKeycloak } from "@react-keycloak/web";
 import { AuthContext } from "../apis/auth/AuthContext";
 import TipoOnboarding from "../components/onboarding/TipoOnboarding";
-import { GroupEnum } from "../enums/GroupEnum";
+import { WorkspaceEnum } from "../enums/WorkspaceEnum";
 
 const { Title, Text } = Typography;
 
@@ -59,7 +59,7 @@ function RouteComponent() {
 
   const steps = [
     {
-      title: "Grupos",
+      title: "Workspaces",
       description: "Organizá tus cuentas",
       content: <GrupoOnboarding initialValues={formData} onNext={handleNext} />,
     },
@@ -108,7 +108,7 @@ function RouteComponent() {
               (g: string) => g && g.trim(),
             );
             if (newGroups.length === 0) {
-              newGroups.push(GroupEnum.DEFAULT);
+              newGroups.push(WorkspaceEnum.DEFAULT);
             }
             const selectedGroup = values.accountToAdd || newGroups[0];
 

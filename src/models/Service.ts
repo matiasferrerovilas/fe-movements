@@ -4,7 +4,8 @@ export interface Service {
   id: number;
   amount: number;
   description: string;
-  group: string;
+  workspaceName: string;
+  workspaceId: number;
   date: string;
   user: string;
   currency: Currency | null;
@@ -19,6 +20,6 @@ export interface ServiceToUpdate {
 export interface ServiceToUpdateChanges {
   amount: number;
   description: string;
-  group: string;
+  workspace: string;
   lastPayment: Date | null;
 }

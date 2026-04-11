@@ -20,7 +20,7 @@ import type { Dayjs } from "dayjs";
 import { DatePicker } from "antd";
 import { DollarOutlined, EuroOutlined } from "@ant-design/icons";
 import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
-import { useGroups } from "../apis/hooks/useGroups";
+import { useWorkspaces } from "../apis/hooks/useWorkspaces";
 import { useCurrency } from "../apis/hooks/useCurrency";
 import { useUserDefault } from "../apis/hooks/useSettings";
 import {
@@ -110,7 +110,7 @@ function RouteComponent() {
     [handleFiltersChange],
   );
 
-  const { data: memberships = [] } = useGroups();
+  const { data: memberships = [] } = useWorkspaces();
   const { data: currencies = [] } = useCurrency();
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
 
@@ -118,7 +118,7 @@ function RouteComponent() {
     if (memberships.length > 0 && filtersRef.current.account === null) {
       handleChange(
         "account",
-        memberships.map((m) => m.accountId),
+        memberships.map((m) => m.workspaceId),
       );
     }
   }, [memberships, handleChange]);
@@ -159,7 +159,7 @@ function RouteComponent() {
       Object.values(
         groupData.reduce(
           (acc, item) => {
-            const group = item.groupDescription;
+            const group = item.workspaceDescription;
             if (!acc[group]) acc[group] = { group };
             acc[group][item.currencySymbol] = Number(item.total);
             return acc;
@@ -250,9 +250,9 @@ function RouteComponent() {
                 allowClear
                 placeholder="Todos los grupos"
                 options={memberships.map((m) => ({
-                  label: m.groupDescription,
-                  value: m.accountId,
-                  key: m.accountId,
+                  label: m.workspaceName,
+                  value: m.workspaceId,
+                  key: m.workspaceId,
                 }))}
               />
             </Flex>
@@ -413,7 +413,7 @@ function RouteComponent() {
       <div style={{ marginTop: 20 }}>
         <EvolucionAnual
           year={dayjs(filters.dates[0]).year()}
-          groupIds={filters.account}
+          workspaceIds={filters.account}
         />
       </div>
     </div>

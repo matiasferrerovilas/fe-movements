@@ -20,8 +20,8 @@ vi.mock("../../../../src/apis/websocket/WebSocketProvider", () => ({
   })),
 }));
 
-vi.mock("../../../../src/apis/hooks/useGroups", () => ({
-  useGroups: vi.fn(() => ({ data: [], isSuccess: true })),
+vi.mock("../../../../src/apis/hooks/useWorkspaces", () => ({
+  useWorkspaces: vi.fn(() => ({ data: [], isSuccess: true })),
 }));
 
 // ── Fixtures ────────────────────────────────────────────────────────────────

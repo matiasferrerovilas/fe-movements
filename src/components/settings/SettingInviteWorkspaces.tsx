@@ -1,14 +1,14 @@
 import MailOutlined from "@ant-design/icons/MailOutlined";
 import { Badge, Card, Space, theme, Typography } from "antd";
-import { useInvitations } from "../../apis/hooks/useGroups";
-import type { Invitations } from "../../models/UserGroup";
-import SettingInviteGroupCard from "./SettingInviteGroupCard";
+import { useWorkspaceInvitations } from "../../apis/hooks/useWorkspaces";
+import type { Invitations } from "../../models/UserWorkspace";
+import SettingInviteWorkspaceCard from "./SettingInviteWorkspaceCard";
 import { useInvitationSubscription } from "../../apis/websocket/useInvitationSubscription";
 
 const { Text } = Typography;
 
-export function SettingInviteGroups() {
-  const { data: invitations, isFetching } = useInvitations();
+export function SettingInviteWorkspaces() {
+  const { data: invitations, isFetching } = useWorkspaceInvitations();
   const { token } = theme.useToken();
 
   useInvitationSubscription();
@@ -57,7 +57,7 @@ export function SettingInviteGroups() {
     >
       <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
         {invitations?.map((invite: Invitations) => (
-          <SettingInviteGroupCard key={invite.id} invite={invite} />
+          <SettingInviteWorkspaceCard key={invite.id} invite={invite} />
         ))}
       </Space>
       </Card>

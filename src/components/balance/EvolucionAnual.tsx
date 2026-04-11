@@ -42,12 +42,12 @@ const MONTH_LABELS = [
 
 type Props = {
   year: number;
-  groupIds?: number[] | null;
+  workspaceIds?: number[] | null;
 };
 
-export default function EvolucionAnual({ year, groupIds }: Props) {
+export default function EvolucionAnual({ year, workspaceIds }: Props) {
   const { token } = theme.useToken();
-  const { data = [], isFetching } = useBalanceMonthlyEvolution(year, groupIds);
+  const { data = [], isFetching } = useBalanceMonthlyEvolution(year, workspaceIds);
 
   const currencies = useMemo(
     () => [...new Set(data.map((d) => d.currencySymbol))],

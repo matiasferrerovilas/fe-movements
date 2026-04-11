@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import type { Invitations } from "../../../src/models/UserGroup";
+import type { Invitations } from "../../../src/models/UserWorkspace";
 import type { EventWrapper } from "../../../src/apis/websocket/EventWrapper";
 import { EventType } from "../../../src/apis/websocket/EventWrapper";
 import { useInvitationSubscription } from "../../../src/apis/websocket/useInvitationSubscription";
@@ -158,7 +158,7 @@ describe("useInvitationSubscription", () => {
   });
 
   it("adds a new invitation to the cache on INVITATION_ADDED", () => {
-    queryClient.setQueryData(["invitations-groups"], []);
+    queryClient.setQueryData(["workspace-invitations"], []);
 
     renderHook(() => useInvitationSubscription(), {
       wrapper: makeWrapper(queryClient),
@@ -173,11 +173,11 @@ describe("useInvitationSubscription", () => {
       wsMock.trigger(`/topic/invitation/${userId}/new`, event);
     });
 
-    expect(queryClient.getQueryData(["invitations-groups"])).toEqual([invitation]);
+    expect(queryClient.getQueryData(["workspace-invitations"])).toEqual([invitation]);
   });
 
   it("does not add a duplicate invitation on INVITATION_ADDED", () => {
-    queryClient.setQueryData(["invitations-groups"], [invitation]);
+    queryClient.setQueryData(["workspace-invitations"], [invitation]);
 
     renderHook(() => useInvitationSubscription(), {
       wrapper: makeWrapper(queryClient),
@@ -192,12 +192,12 @@ describe("useInvitationSubscription", () => {
       wsMock.trigger(`/topic/invitation/${userId}/new`, event);
     });
 
-    expect(queryClient.getQueryData<Invitations[]>(["invitations-groups"])).toHaveLength(1);
+    expect(queryClient.getQueryData<Invitations[]>(["workspace-invitations"])).toHaveLength(1);
   });
 
   it("removes invitation from cache and invalidates user-groups on INVITATION_CONFIRMED_REJECTED", () => {
     const inv2: Invitations = { id: 2, nameAccount: "Trabajo", invitedBy: "boss@test.com" };
-    queryClient.setQueryData(["invitations-groups"], [invitation, inv2]);
+    queryClient.setQueryData(["workspace-invitations"], [invitation, inv2]);
 
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
@@ -214,14 +214,14 @@ describe("useInvitationSubscription", () => {
       wsMock.trigger(`/topic/invitation/${userId}/update`, event);
     });
 
-    const remaining = queryClient.getQueryData<Invitations[]>(["invitations-groups"]);
+    const remaining = queryClient.getQueryData<Invitations[]>(["workspace-invitations"]);
     expect(remaining).toEqual([inv2]);
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-groups"] });
-    expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["user-groups-count"] });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-workspaces"] });
+    expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["workspace-count"] });
   });
 
   it("ignores invitation sent by the current user", () => {
-    queryClient.setQueryData(["invitations-groups"], []);
+    queryClient.setQueryData(["workspace-invitations"], []);
 
     // The current user's preferred_username matches invitedBy
     vi.mocked(useKeycloak).mockReturnValue({
@@ -246,6 +246,6 @@ describe("useInvitationSubscription", () => {
     });
 
     // Cache should remain empty because the invitation was sent by the current user
-    expect(queryClient.getQueryData<Invitations[]>(["invitations-groups"])).toEqual([]);
+    expect(queryClient.getQueryData<Invitations[]>(["workspace-invitations"])).toEqual([]);
   });
 });

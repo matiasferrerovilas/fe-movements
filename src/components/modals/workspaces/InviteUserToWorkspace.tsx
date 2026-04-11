@@ -6,15 +6,15 @@ import UserAddOutlined from "@ant-design/icons/UserAddOutlined";
 import { useMutation } from "@tanstack/react-query";
 import type {
   CreateInvitationForm,
-  GroupDetail,
-} from "../../../models/UserGroup";
-import { addInvitationGroupApi } from "../../../apis/GroupApi";
+  WorkspaceDetail,
+} from "../../../models/UserWorkspace";
+import { addInvitationWorkspaceApi } from "../../../apis/WorkspaceApi";
 import { ColorEnum } from "../../../enums/ColorEnum";
 
-interface InviteUserToGroupProps {
-  group: GroupDetail;
+interface InviteUserToWorkspaceProps {
+  group: WorkspaceDetail;
 }
-export default function InviteUserToGroup({ group }: InviteUserToGroupProps) {
+export default function InviteUserToWorkspace({ group }: InviteUserToWorkspaceProps) {
   const [form] = Form.useForm();
   const [modalOpen, setModalOpen] = useState(false);
   const handleCloseModal = () => {
@@ -22,7 +22,7 @@ export default function InviteUserToGroup({ group }: InviteUserToGroupProps) {
   };
   const addInvitationMutation = useMutation({
     mutationFn: (invitation: CreateInvitationForm) =>
-      addInvitationGroupApi(invitation),
+      addInvitationWorkspaceApi(invitation),
     onError: (err) => {
       console.error("Error creando Invitacion:", err);
     },
@@ -35,7 +35,7 @@ export default function InviteUserToGroup({ group }: InviteUserToGroupProps) {
   const handleSubmit = (values: { email: string }) => {
     addInvitationMutation.mutate({
       emails: [values.email],
-      groupId: group.id,
+      workspaceId: group.id,
     });
   };
 

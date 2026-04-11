@@ -5,13 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { GroupDetail } from "../../../../src/models/UserGroup";
-import ExitGroupModal from "../../../../src/components/modals/groups/ExitGroupModal";
+import type { WorkspaceDetail } from "../../../../src/models/UserWorkspace";
+import ExitWorkspaceModal from "../../../../src/components/modals/workspaces/ExitWorkspaceModal";
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 
 const server = setupServer(
-  http.delete("http://localhost:8080/account/:id", () =>
+  http.delete("http://localhost:8080/workspace/:id", () =>
     HttpResponse.json({}, { status: 200 }),
   ),
 );
@@ -28,11 +28,11 @@ function makeWrapper(queryClient: QueryClient) {
   );
 }
 
-const group: GroupDetail = { id: 5, name: "Familia", membersCount: 3, isDefault: false };
+const group: WorkspaceDetail = { id: 5, name: "Familia", membersCount: 3, isDefault: false };
 
 // ── Tests ──────────────────────────────────────────────────────────────────
 
-describe("ExitGroupModal", () => {
+describe("ExitWorkspaceModal", () => {
   let queryClient: QueryClient;
 
   beforeEach(() => {
@@ -46,12 +46,12 @@ describe("ExitGroupModal", () => {
   });
 
   it("renders the exit group button", () => {
-    render(<ExitGroupModal group={group} />, { wrapper: makeWrapper(queryClient) });
+    render(<ExitWorkspaceModal group={group} />, { wrapper: makeWrapper(queryClient) });
     expect(screen.getByTitle("Salir del grupo")).toBeInTheDocument();
   });
 
   it("shows confirmation popover when the button is clicked", async () => {
-    render(<ExitGroupModal group={group} />, { wrapper: makeWrapper(queryClient) });
+    render(<ExitWorkspaceModal group={group} />, { wrapper: makeWrapper(queryClient) });
 
     await userEvent.click(screen.getByTitle("Salir del grupo"));
 
@@ -60,10 +60,10 @@ describe("ExitGroupModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls DELETE /account/{id} when confirmed and invalidates user-groups caches", async () => {
+    it("calls DELETE /workspace/{id} when confirmed and invalidates user-groups caches", async () => {
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
-    render(<ExitGroupModal group={group} />, { wrapper: makeWrapper(queryClient) });
+    render(<ExitWorkspaceModal group={group} />, { wrapper: makeWrapper(queryClient) });
 
     // Open the popconfirm
     await userEvent.click(screen.getByTitle("Salir del grupo"));
@@ -72,21 +72,21 @@ describe("ExitGroupModal", () => {
     await userEvent.click(await screen.findByText("Sí"));
 
     await waitFor(() => {
-      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-groups"] });
-      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-groups-count"] });
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-workspaces"] });
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["workspace-count"] });
     });
   });
 
   it("does not invalidate caches when the mutation request fails", async () => {
     server.use(
-      http.delete("http://localhost:8080/account/:id", () =>
+      http.delete("http://localhost:8080/workspace/:id", () =>
         HttpResponse.json({ message: "Forbidden" }, { status: 403 }),
       ),
     );
 
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
-    render(<ExitGroupModal group={group} />, { wrapper: makeWrapper(queryClient) });
+    render(<ExitWorkspaceModal group={group} />, { wrapper: makeWrapper(queryClient) });
 
     await userEvent.click(screen.getByTitle("Salir del grupo"));
     await userEvent.click(await screen.findByText("Sí"));
@@ -94,15 +94,15 @@ describe("ExitGroupModal", () => {
     // Give time for the mutation to settle
     await waitFor(() => {
       // onError is called instead of onSuccess, so invalidateQueries is NOT called
-      expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["user-groups"] });
+      expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["user-workspaces"] });
     });
   });
 
   it("does not call the API when the user cancels", async () => {
     const deleteSpy = vi.fn(() => HttpResponse.json({}));
-    server.use(http.delete("http://localhost:8080/account/:id", deleteSpy));
+    server.use(http.delete("http://localhost:8080/workspace/:id", deleteSpy));
 
-    render(<ExitGroupModal group={group} />, { wrapper: makeWrapper(queryClient) });
+    render(<ExitWorkspaceModal group={group} />, { wrapper: makeWrapper(queryClient) });
 
     await userEvent.click(screen.getByTitle("Salir del grupo"));
     await userEvent.click(await screen.findByText("No"));

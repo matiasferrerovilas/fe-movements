@@ -2,7 +2,7 @@ import { Col, DatePicker, Row, Select } from "antd";
 import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import type { BalanceFilters } from "../../routes/balance";
 import { useCallback, useEffect, useState } from "react";
-import { useGroups } from "../../apis/hooks/useGroups";
+import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
@@ -19,7 +19,7 @@ export default function FiltrosResumenMensual({
   initialFilters,
   onFiltersChange,
 }: Props) {
-  const { data: memberships = [] } = useGroups();
+  const { data: memberships = [] } = useWorkspaces();
   const { data: currencies = [] } = useCurrency();
   const [filters, setFilters] = useState<BalanceFilters>(initialFilters);
   const { RangePicker } = DatePicker;
@@ -115,9 +115,9 @@ export default function FiltrosResumenMensual({
             allowClear
             placeholder="Seleccionar grupo"
             options={memberships.map((membership) => ({
-              label: membership.groupDescription,
-              value: membership.accountId,
-              key: membership.accountId,
+              label: membership.workspaceName,
+              value: membership.workspaceId,
+              key: membership.workspaceId,
             }))}
           />
         </Col>

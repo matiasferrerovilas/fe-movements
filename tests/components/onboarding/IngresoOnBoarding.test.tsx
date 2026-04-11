@@ -85,21 +85,21 @@ describe("IngresoOnBoarding", () => {
       expect(screen.queryByText("Omitir por ahora")).not.toBeInTheDocument();
     });
 
-    it("no muestra el selector de grupo si no hay grupos custom", async () => {
+    it("no muestra el selector de workspace si no hay workspaces custom", async () => {
       renderIngreso();
       await waitFor(() =>
         expect(screen.getByText("Finalizar")).toBeInTheDocument(),
       );
-      expect(screen.queryByText("Grupo")).not.toBeInTheDocument();
+      expect(screen.queryByText("Workspace")).not.toBeInTheDocument();
     });
 
-    it("muestra el selector de grupo si hay grupos definidos", async () => {
+    it("muestra el selector de workspace si hay workspaces definidos", async () => {
       renderIngreso(vi.fn(), vi.fn(), {
         userType: "CONSUMER",
         accountsToAdd: ["Familia", "Personal"],
       } as never);
       await waitFor(() =>
-        expect(screen.getByText("Grupo")).toBeInTheDocument(),
+        expect(screen.getByText("Workspace")).toBeInTheDocument(),
       );
     });
   });

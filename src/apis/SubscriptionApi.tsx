@@ -11,7 +11,7 @@ export interface ServiceToAdd {
   currency: CurrencyRecord;
   lastPayment: Date | null;
   isPaid: boolean;
-  groupId: number;
+  workspaceId: number;
 }
 export async function getSubscriptionsApi() {
   return api

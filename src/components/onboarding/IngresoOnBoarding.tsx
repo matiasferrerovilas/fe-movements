@@ -105,10 +105,10 @@ export default function IngresoOnBoarding({
             <Col xs={24}>
               <Form.Item
                 name="accountToAdd"
-                label={<Text strong>Grupo</Text>}
+                label={<Text strong>Workspace</Text>}
               >
                 <Select
-                  placeholder="Seleccioná un grupo"
+                  placeholder="Seleccioná un workspace"
                   options={accountsToAddOptions.map((g) => ({ label: g, value: g }))}
                 />
               </Form.Item>

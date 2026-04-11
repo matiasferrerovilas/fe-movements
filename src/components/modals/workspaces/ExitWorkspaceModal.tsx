@@ -1,30 +1,30 @@
 import { Button, Popconfirm } from "antd";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { GroupDetail } from "../../../models/UserGroup";
-import { exitGroupApi } from "../../../apis/GroupApi";
+import type { WorkspaceDetail } from "../../../models/UserWorkspace";
+import { exitWorkspaceApi } from "../../../apis/WorkspaceApi";
 
-interface ExitGroupModalProps {
-  group: GroupDetail;
+interface ExitWorkspaceModalProps {
+  group: WorkspaceDetail;
 }
-export default function ExitGroupModal({ group }: ExitGroupModalProps) {
+export default function ExitWorkspaceModal({ group }: ExitWorkspaceModalProps) {
   const queryClient = useQueryClient();
-  const exitGroupMutation = useMutation({
-    mutationFn: () => exitGroupApi(group.id),
+  const exitWorkspaceMutation = useMutation({
+    mutationFn: () => exitWorkspaceApi(group.id),
     onError: (err) => {
       console.error("Error saliendo del grupo:", err);
     },
     onSuccess: () => {
       console.debug("✅ Has salido del grupo correctamente");
-      queryClient.invalidateQueries({ queryKey: ["user-groups"] });
-      queryClient.invalidateQueries({ queryKey: ["user-groups-count"] });
+      queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
+      queryClient.invalidateQueries({ queryKey: ["workspace-count"] });
     },
   });
 
   return (
     <Popconfirm
       title="¿Estás seguro de que quieres salir del grupo?"
-      onConfirm={() => exitGroupMutation.mutate()}
+      onConfirm={() => exitWorkspaceMutation.mutate()}
       okText="Sí"
       cancelText="No"
       placement="topRight"

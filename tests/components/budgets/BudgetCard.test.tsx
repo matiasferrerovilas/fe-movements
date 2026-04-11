@@ -19,7 +19,7 @@ function makeWrapper() {
 
 const baseBudget: BudgetRecord = {
   id: 1,
-  accountId: 10,
+  workspaceId: 10,
   category: { id: 8, description: "Supermercado", isActive: true, isDeletable: false },
   currency: { id: 1, symbol: "ARS" },
   amount: 5000,

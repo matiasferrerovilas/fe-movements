@@ -1,33 +1,33 @@
 import Card from "antd/es/card/Card";
-import type { ConfirmInvitations, Invitations } from "../../models/UserGroup";
+import type { ConfirmInvitations, Invitations } from "../../models/UserWorkspace";
 import { Button, Col, Flex, Row, theme, Typography } from "antd";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import { useMutation } from "@tanstack/react-query";
-import { acceptRejectGroupInvitationApi } from "../../apis/GroupApi";
+import { acceptRejectWorkspaceInvitationApi } from "../../apis/WorkspaceApi";
 
 const { Text } = Typography;
 
-interface SettingInviteGroupCardProps {
+interface SettingInviteWorkspaceCardProps {
   invite: Invitations;
 }
 
-export default function SettingInviteGroupCard({
+export default function SettingInviteWorkspaceCard({
   invite,
-}: SettingInviteGroupCardProps) {
+}: SettingInviteWorkspaceCardProps) {
   const { token } = theme.useToken();
 
-  const addGroupMutation = useMutation({
+  const respondInvitationMutation = useMutation({
     mutationFn: (confirmInvitation: ConfirmInvitations) =>
-      acceptRejectGroupInvitationApi(confirmInvitation),
+      acceptRejectWorkspaceInvitationApi(confirmInvitation),
     onError: (err) => console.error("Error respondiendo invitacion:", err),
   });
 
   const handleAccept = () =>
-    addGroupMutation.mutate({ id: invite.id, status: true });
+    respondInvitationMutation.mutate({ id: invite.id, status: true });
   const handleReject = () =>
-    addGroupMutation.mutate({ id: invite.id, status: false });
+    respondInvitationMutation.mutate({ id: invite.id, status: false });
 
   return (
     <Card
@@ -103,7 +103,7 @@ export default function SettingInviteGroupCard({
             <Button
               type="primary"
               icon={<CheckOutlined />}
-              loading={addGroupMutation.isPending}
+              loading={respondInvitationMutation.isPending}
               onClick={handleAccept}
               block
               style={{
@@ -121,7 +121,7 @@ export default function SettingInviteGroupCard({
             <Button
               danger
               icon={<CloseOutlined />}
-              disabled={addGroupMutation.isPending}
+              disabled={respondInvitationMutation.isPending}
               onClick={handleReject}
               block
               style={{ borderRadius: 20, fontWeight: 600 }}

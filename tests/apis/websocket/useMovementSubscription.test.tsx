@@ -4,22 +4,22 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import type { Movement } from "../../../src/models/Movement";
 import type { PageResponse } from "../../../src/models/BaseMode";
-import type { Membership } from "../../../src/models/UserGroup";
+import type { Membership } from "../../../src/models/UserWorkspace";
 import type { EventWrapper } from "../../../src/apis/websocket/EventWrapper";
 import { EventType } from "../../../src/apis/websocket/EventWrapper";
 import { useMovementSubscription } from "../../../src/apis/websocket/useMovementSubscription";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../../src/apis/hooks/useGroups", () => ({
-  useGroups: vi.fn(),
+vi.mock("../../../src/apis/hooks/useWorkspaces", () => ({
+  useWorkspaces: vi.fn(),
 }));
 
 vi.mock("../../../src/apis/websocket/WebSocketProvider", () => ({
   useWebSocket: vi.fn(),
 }));
 
-import { useGroups } from "../../../src/apis/hooks/useGroups";
+import { useWorkspaces } from "../../../src/apis/hooks/useWorkspaces";
 import { useWebSocket } from "../../../src/apis/websocket/WebSocketProvider";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -51,8 +51,8 @@ function makeWrapper(queryClient: QueryClient) {
 // ── Fixtures ───────────────────────────────────────────────────────────────
 
 const memberships: Membership[] = [
-  { accountId: 10, membershipId: 1, groupDescription: "Familia", role: "ADMIN" },
-  { accountId: 20, membershipId: 2, groupDescription: "Trabajo", role: "FAMILY" },
+  { workspaceId: 10, membershipId: 1, workspaceName: "Familia", role: "ADMIN" },
+  { workspaceId: 20, membershipId: 2, workspaceName: "Trabajo", role: "FAMILY" },
 ];
 
 function makeMovement(id: number): Movement {
@@ -97,10 +97,10 @@ describe("useMovementSubscription", () => {
 
     wsMock = makeWsMock();
 
-    vi.mocked(useGroups).mockReturnValue({
+    vi.mocked(useWorkspaces).mockReturnValue({
       data: memberships,
       isSuccess: true,
-    } as ReturnType<typeof useGroups>);
+    } as ReturnType<typeof useWorkspaces>);
 
     vi.mocked(useWebSocket).mockReturnValue(wsMock);
   });
@@ -115,19 +115,19 @@ describe("useMovementSubscription", () => {
     });
 
     expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/movimientos/${memberships[0].accountId}/new`,
+      `/topic/movimientos/${memberships[0].workspaceId}/new`,
       expect.any(Function),
     );
     expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/movimientos/${memberships[0].accountId}/delete`,
+      `/topic/movimientos/${memberships[0].workspaceId}/delete`,
       expect.any(Function),
     );
     expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/movimientos/${memberships[1].accountId}/new`,
+      `/topic/movimientos/${memberships[1].workspaceId}/new`,
       expect.any(Function),
     );
     expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/movimientos/${memberships[1].accountId}/delete`,
+      `/topic/movimientos/${memberships[1].workspaceId}/delete`,
       expect.any(Function),
     );
     // 2 memberships × 2 topics = 4
@@ -145,10 +145,10 @@ describe("useMovementSubscription", () => {
   });
 
   it("does not subscribe when memberships list is empty", () => {
-    vi.mocked(useGroups).mockReturnValue({
+    vi.mocked(useWorkspaces).mockReturnValue({
       data: [],
       isSuccess: true,
-    } as ReturnType<typeof useGroups>);
+    } as ReturnType<typeof useWorkspaces>);
 
     renderHook(() => useMovementSubscription(), {
       wrapper: makeWrapper(queryClient),
@@ -166,11 +166,11 @@ describe("useMovementSubscription", () => {
 
     expect(wsMock.unsubscribe).toHaveBeenCalledTimes(4);
     expect(wsMock.unsubscribe).toHaveBeenCalledWith(
-      `/topic/movimientos/${memberships[0].accountId}/new`,
+      `/topic/movimientos/${memberships[0].workspaceId}/new`,
       expect.any(Function),
     );
     expect(wsMock.unsubscribe).toHaveBeenCalledWith(
-      `/topic/movimientos/${memberships[0].accountId}/delete`,
+      `/topic/movimientos/${memberships[0].workspaceId}/delete`,
       expect.any(Function),
     );
   });
@@ -193,7 +193,7 @@ describe("useMovementSubscription", () => {
     };
 
     act(() => {
-      wsMock.trigger(`/topic/movimientos/${memberships[0].accountId}/new`, event);
+      wsMock.trigger(`/topic/movimientos/${memberships[0].workspaceId}/new`, event);
     });
 
     const cached = queryClient.getQueryData<PageResponse<Movement>>(["movement-history", 0]);
@@ -219,7 +219,7 @@ describe("useMovementSubscription", () => {
     };
 
     act(() => {
-      wsMock.trigger(`/topic/movimientos/${memberships[0].accountId}/new`, event);
+      wsMock.trigger(`/topic/movimientos/${memberships[0].workspaceId}/new`, event);
     });
 
     const cached = queryClient.getQueryData<PageResponse<Movement>>(["movement-history", 0]);
@@ -245,7 +245,7 @@ describe("useMovementSubscription", () => {
     };
 
     act(() => {
-      wsMock.trigger(`/topic/movimientos/${memberships[0].accountId}/delete`, event);
+      wsMock.trigger(`/topic/movimientos/${memberships[0].workspaceId}/delete`, event);
     });
 
     const cached = queryClient.getQueryData<PageResponse<Movement>>(["movement-history", 0]);
@@ -271,7 +271,7 @@ describe("useMovementSubscription", () => {
     };
 
     act(() => {
-      wsMock.trigger(`/topic/movimientos/${memberships[0].accountId}/delete`, event);
+      wsMock.trigger(`/topic/movimientos/${memberships[0].workspaceId}/delete`, event);
     });
 
     const cached = queryClient.getQueryData<PageResponse<Movement>>(["movement-history", 0]);

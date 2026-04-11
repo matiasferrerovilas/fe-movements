@@ -42,7 +42,7 @@ function makeServiceToAdd(lastPayment: Date | null): ServiceToAdd {
     currency: { symbol: "ARS" },
     lastPayment,
     isPaid: true,
-    groupId: 10,
+    workspaceId: 10,
   };
 }
 
@@ -52,7 +52,7 @@ function makeServiceToUpdate(lastPayment: Date | null): ServiceToUpdate {
     changes: {
       amount: 999,
       description: "Netflix",
-      group: "Familia",
+      workspace: "Familia",
       lastPayment,
     },
   };

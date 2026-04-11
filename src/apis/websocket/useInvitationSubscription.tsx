@@ -3,11 +3,11 @@ import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
 import { EventType, type EventWrapper } from "./EventWrapper";
-import type { Invitations } from "../../models/UserGroup";
+import type { Invitations } from "../../models/UserWorkspace";
 import { useKeycloak } from "@react-keycloak/web";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 
-const INVITATIONS_ACCOUNT_QUERY_KEY = "invitations-groups" as const;
+const INVITATIONS_ACCOUNT_QUERY_KEY = "workspace-invitations" as const;
 
 export const useInvitationSubscription = () => {
   const queryClient = useQueryClient();
@@ -49,7 +49,7 @@ export const useInvitationSubscription = () => {
           case EventType.INVITATION_CONFIRMED_REJECTED: {
             const payload = event.message;
 
-            queryClient.invalidateQueries({ queryKey: ["user-groups"] });
+            queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
 
             return old.filter((i) => i.id !== payload.id);
           }

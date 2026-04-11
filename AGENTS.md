@@ -39,9 +39,23 @@ Aplicación SPA de gestión financiera personal. Permite registrar movimientos, 
 No existen archivos `.env`. Toda la configuración es inyectada en el contenedor al arrancar via `window.env`:
 
 ```ts
-window.env.backend.api          // base URL del backend REST
+window.env.backend.api          // base URL del backend REST (ya incluye /v1/)
 window.env.backend.websocketUrl // URL WebSocket
 window.env.keycloak             // { clientId, realm, url }
+```
+
+### Axios — paths de API
+
+La instancia de Axios en `src/apis/axios.tsx` usa `window.env.backend.api` como `baseURL`, que ya incluye el prefijo `/v1/`. **Nunca agregar `v1/` en los `BASE_PATH` de los archivos de API** — los paths deben ser relativos sin ese prefijo:
+
+```ts
+// Correcto
+const BASE_PATH = "budgets";       // → /v1/budgets
+const BASE_PATH = "profiles";      // → /v1/profiles
+
+// Incorrecto
+const BASE_PATH = "v1/budgets";    // ❌ genera /v1/v1/budgets
+const BASE_PATH = "v1/profiles";   // ❌ genera /v1/v1/profiles
 ```
 
 ---

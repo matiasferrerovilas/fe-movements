@@ -29,8 +29,8 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { deleteSubscriptionApi } from "../../apis/SubscriptionApi";
 import dayjs from "dayjs";
-import { useGroups } from "../../apis/hooks/useGroups";
-import type { Membership } from "../../models/UserGroup";
+import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
+import type { Membership } from "../../models/UserWorkspace";
 
 const { Text, Title } = Typography;
 
@@ -45,7 +45,7 @@ interface ServiceCardProps extends React.HTMLAttributes<HTMLElement> {
 interface ServiceFormUpdate {
   amount: number;
   lastPayment: dayjs.Dayjs | null;
-  group: string;
+  workspace: string;
   description: string;
 }
 
@@ -56,7 +56,7 @@ export const ServiceCard = React.memo(function ServiceCard({
 }: ServiceCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [form] = Form.useForm<ServiceFormUpdate>();
-  const { data: userGroups = [] } = useGroups();
+  const { data: userGroups = [] } = useWorkspaces();
   const { token } = theme.useToken();
 
   const isPaid = service.isPaid;
@@ -82,7 +82,7 @@ export const ServiceCard = React.memo(function ServiceCard({
             lastPayment: values.lastPayment
               ? dayjs(values.lastPayment).toDate()
               : null,
-            group: values.group,
+            workspace: values.workspace,
           },
         });
         setIsEditing(false);
@@ -122,7 +122,7 @@ export const ServiceCard = React.memo(function ServiceCard({
         initialValues={{
           description: service.description,
           amount: service.amount,
-          group: service.group,
+          workspace: service.workspaceName,
           lastPayment: service.lastPayment
             ? dayjs(service.lastPayment)
             : dayjs(),
@@ -246,7 +246,7 @@ export const ServiceCard = React.memo(function ServiceCard({
         <div style={{ marginTop: 8 }}>
           {isEditing ? (
             <Form.Item
-              name="group"
+              name="workspace"
               label="Grupo"
               rules={[{ required: true, message: "Seleccione un grupo" }]}
               style={{ marginBottom: 8 }}
@@ -254,16 +254,16 @@ export const ServiceCard = React.memo(function ServiceCard({
               <Select
                 placeholder="Seleccionar grupo"
                 options={userGroups.map((group: Membership) => ({
-                  label: group.groupDescription,
-                  value: group.groupDescription,
-                  key: group.accountId,
+                  label: group.workspaceName,
+                  value: group.workspaceName,
+                  key: group.workspaceId,
                 }))}
               />
             </Form.Item>
           ) : (
             <Flex gap={6} wrap="wrap" style={{ marginTop: 4 }}>
               <Tag color={isPaid ? "green" : "red"} variant="solid">
-                {service.group}
+                {service.workspaceName}
               </Tag>
               <Tag color={isPaid ? "green" : "red"} variant="solid">
                 {service.user}

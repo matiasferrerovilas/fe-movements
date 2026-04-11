@@ -15,7 +15,7 @@ import ModalComponent from "../modals/Modal";
 import { useAddBudget, useUpdateBudget } from "../../apis/hooks/useBudget";
 import { useCategory } from "../../apis/hooks/useCategory";
 import { useCurrency } from "../../apis/hooks/useCurrency";
-import { useGroups } from "../../apis/hooks/useGroups";
+import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
 import type { BudgetRecord, BudgetToAdd } from "../../models/Budget";
 
 const { Text } = Typography;
@@ -23,7 +23,7 @@ const { Text } = Typography;
 // ── Add form ────────────────────────────────────────────────────────────────
 
 interface AddBudgetForm {
-  accountId: number;
+  workspaceId: number;
   category: string | null;
   currency: string;
   amount: number;
@@ -43,7 +43,7 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
   const addBudget = useAddBudget();
   const { data: categories = [] } = useCategory();
   const { data: currencies = [] } = useCurrency();
-  const { data: memberships = [] } = useGroups();
+  const { data: memberships = [] } = useWorkspaces();
 
   const handleClose = () => {
     form.resetFields();
@@ -59,7 +59,7 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
           : null);
 
     const payload: BudgetToAdd = {
-      accountId: values.accountId,
+      workspaceId: values.workspaceId,
       category: values.category ?? null,
       currency: values.currency,
       amount: values.amount,
@@ -102,15 +102,15 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
         style={{ marginTop: 8 }}
       >
         <Form.Item
-          name="accountId"
+          name="workspaceId"
           label="Grupo / Cuenta"
           rules={[{ required: true, message: "Seleccioná un grupo" }]}
         >
           <Select
             placeholder="Seleccioná un grupo"
             options={memberships.map((m) => ({
-              label: m.groupDescription,
-              value: m.accountId,
+              label: m.workspaceName,
+              value: m.workspaceId,
             }))}
           />
         </Form.Item>

@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { Button, Form, Select, Typography, Upload } from "antd";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
-import { useGroups } from "../../../apis/hooks/useGroups";
+import { useWorkspaces } from "../../../apis/hooks/useWorkspaces";
 import { useMutation } from "@tanstack/react-query";
 import { useBanks } from "../../../apis/hooks/useBank";
 import { useUserDefault } from "../../../apis/hooks/useSettings";
@@ -12,13 +12,13 @@ const { Text } = Typography;
 export interface UploadForm {
   fileList: UploadFile<File>[] | null;
   bank: string | null;
-  groupId: number | null;
+  workspaceId: number | null;
 }
 
 export interface UploadPayload {
   file: File | null;
   bank: string | null;
-  groupId: number | null;
+  workspaceId: number | null;
 }
 
 interface ImportMovementTabProps {
@@ -27,9 +27,9 @@ interface ImportMovementTabProps {
 
 const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
   ({ onSuccess }, ref) => {
-    const { data: memberships = [] } = useGroups();
+    const { data: memberships = [] } = useWorkspaces();
     const { data: banks = [] } = useBanks();
-    const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
+    const { data: defaultAccount } = useUserDefault("DEFAULT_WORKSPACE");
     const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
     const [form] = Form.useForm<UploadForm>();
 
@@ -49,7 +49,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         (b) => b.id === defaultBank?.value
       )?.description;
       form.setFieldsValue({
-        groupId: defaultAccount?.value ?? undefined,
+        workspaceId: defaultAccount?.value ?? undefined,
         bank: bankDescription,
       });
     }, [defaultAccount, defaultBank, banks, form]);
@@ -62,7 +62,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         const payload: UploadForm = {
           fileList: values.fileList,
           bank: values.bank,
-          groupId: values.groupId,
+          workspaceId: values.workspaceId,
         };
 
         uploadMutation.mutate({
@@ -83,7 +83,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         form={form}
         layout="vertical"
         initialValues={{
-          groupId: defaultAccount?.value ?? undefined,
+          workspaceId: defaultAccount?.value ?? undefined,
           bank: banks.find((b) => b.id === defaultBank?.value)?.description,
         }}
       >
@@ -115,15 +115,15 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         </Form.Item>
 
         <Form.Item
-          name="groupId"
+          name="workspaceId"
           label="Grupo"
           rules={[{ required: true, message: "Seleccione un grupo" }]}
         >
           <Select
             placeholder="Seleccionar grupo"
             options={memberships.map((membership) => ({
-              label: membership.groupDescription,
-              value: membership.accountId,
+              label: membership.workspaceName,
+              value: membership.workspaceId,
             }))}
           />
         </Form.Item>

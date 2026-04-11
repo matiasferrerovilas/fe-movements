@@ -1,23 +1,23 @@
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import { StarFilled, StarOutlined } from "@ant-design/icons";
 import { Button, Card, Flex, Space, theme, Tooltip, Typography } from "antd";
-import type { GroupDetail } from "../../models/UserGroup";
-import InviteUserToGroup from "../modals/groups/InviteUserToGroup";
-import ExitGroupModal from "../modals/groups/ExitGroupModal";
+import type { WorkspaceDetail } from "../../models/UserWorkspace";
+import InviteUserToWorkspace from "../modals/workspaces/InviteUserToWorkspace";
+import ExitWorkspaceModal from "../modals/workspaces/ExitWorkspaceModal";
 
 const { Text } = Typography;
 
-interface SettingGroupCardProps {
-  group: GroupDetail;
-  onSetDefault: (groupId: number) => void;
+interface SettingWorkspaceCardProps {
+  group: WorkspaceDetail;
+  onSetDefault: (workspaceId: number) => void;
   isSettingDefault?: boolean;
 }
 
-export default function SettingGroupCard({
+export default function SettingWorkspaceCard({
   group,
   onSetDefault,
   isSettingDefault,
-}: SettingGroupCardProps) {
+}: SettingWorkspaceCardProps) {
   const { token } = theme.useToken();
   const isDefault = group.isDefault;
 
@@ -95,8 +95,8 @@ export default function SettingGroupCard({
           <Tooltip
             title={
               isDefault
-                ? "Ya es el grupo por defecto"
-                : "Establecer como grupo por defecto"
+                ? "Ya es el workspace por defecto"
+                : "Establecer como workspace por defecto"
             }
           >
             <Button
@@ -121,8 +121,8 @@ export default function SettingGroupCard({
               }
             />
           </Tooltip>
-          <ExitGroupModal group={group} />
-          <InviteUserToGroup group={group} />
+          <ExitWorkspaceModal group={group} />
+          <InviteUserToWorkspace group={group} />
         </Space>
       </Flex>
     </Card>

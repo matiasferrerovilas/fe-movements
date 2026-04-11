@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
-import { useGroups } from "../hooks/useGroups";
+import { useWorkspaces } from "../hooks/useWorkspaces";
 import type { Movement } from "../../models/Movement";
 import type { PageResponse } from "../../models/BaseMode";
 import { EventType, type EventWrapper } from "./EventWrapper";
@@ -13,13 +13,13 @@ const DEFAULT_PAGE_SIZE = 25;
 export const useMovementSubscription = () => {
   const queryClient = useQueryClient();
   const ws = useWebSocket();
-  const { data: memberships = [] } = useGroups();
+  const { data: memberships = [] } = useWorkspaces();
 
   const topics = useMemo(
     () =>
       memberships.flatMap((m) => [
-        `/topic/movimientos/${m.accountId}/new`,
-        `/topic/movimientos/${m.accountId}/delete`,
+        `/topic/movimientos/${m.workspaceId}/new`,
+        `/topic/movimientos/${m.workspaceId}/delete`,
       ]),
     [memberships]
   );

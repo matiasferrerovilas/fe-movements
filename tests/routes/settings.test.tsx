@@ -18,13 +18,13 @@ vi.mock("../../src/components/settings/SettingAccount", () => ({
   default: () => <div data-testid="setting-account">SettingAccount</div>,
 }));
 
-vi.mock("../../src/components/settings/SettingGroups", () => ({
-  SettingGroups: () => <div data-testid="setting-groups">SettingGroups</div>,
+vi.mock("../../src/components/settings/SettingWorkspaces", () => ({
+  SettingWorkspaces: () => <div data-testid="setting-groups">SettingWorkspaces</div>,
 }));
 
-vi.mock("../../src/components/settings/SettingInviteGroups", () => ({
-  SettingInviteGroups: () => (
-    <div data-testid="setting-invite-groups">SettingInviteGroups</div>
+vi.mock("../../src/components/settings/SettingInviteWorkspaces", () => ({
+  SettingInviteWorkspaces: () => (
+    <div data-testid="setting-invite-groups">SettingInviteWorkspaces</div>
   ),
 }));
 
@@ -89,7 +89,7 @@ describe("Settings route — estructura de tabs", () => {
     renderSettings();
 
     expect(screen.getByText("Cuenta")).toBeInTheDocument();
-    expect(screen.getByText("Grupos")).toBeInTheDocument();
+    expect(screen.getByText("Workspaces")).toBeInTheDocument();
     expect(screen.getByText("Mis finanzas")).toBeInTheDocument();
     expect(screen.getByText("Categorías")).toBeInTheDocument();
   });
@@ -123,11 +123,11 @@ describe("Settings route — estructura de tabs", () => {
     expect(screen.getByTestId("setting-ingreso")).toBeInTheDocument();
   });
 
-  it("al hacer click en 'Grupos' muestra SettingInviteGroups y SettingGroups", async () => {
+  it("al hacer click en 'Workspaces' muestra SettingInviteWorkspaces y SettingWorkspaces", async () => {
     const user = userEvent.setup();
     renderSettings();
 
-    await user.click(screen.getByText("Grupos"));
+    await user.click(screen.getByText("Workspaces"));
 
     expect(screen.getByTestId("setting-invite-groups")).toBeInTheDocument();
     expect(screen.getByTestId("setting-groups")).toBeInTheDocument();

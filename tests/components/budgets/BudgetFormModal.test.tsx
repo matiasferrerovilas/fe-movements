@@ -35,8 +35,8 @@ const mockCurrencies: Currency[] = [
 ];
 
 const mockMemberships = [
-  { accountId: 10, groupDescription: "Familia" },
-  { accountId: 20, groupDescription: "Personal" },
+  { workspaceId: 10, workspaceName: "Familia" },
+  { workspaceId: 20, workspaceName: "Personal" },
 ];
 
 // ── MSW server ────────────────────────────────────────────────────────────
@@ -48,13 +48,13 @@ const server = setupServer(
   http.get("http://localhost:8080/currency", () =>
     HttpResponse.json(mockCurrencies),
   ),
-  http.get("http://localhost:8080/account/membership", () =>
+  http.get("http://localhost:8080/workspace/membership", () =>
     HttpResponse.json(mockMemberships),
   ),
-  http.post("http://localhost:8080/v1/budgets", () =>
+  http.post("http://localhost:8080/budgets", () =>
     new HttpResponse(null, { status: 201 }),
   ),
-  http.patch("http://localhost:8080/v1/budgets/:id", () =>
+  http.patch("http://localhost:8080/budgets/:id", () =>
     new HttpResponse(null, { status: 200 }),
   ),
 );
@@ -79,7 +79,7 @@ function makeWrapper() {
 
 const baseBudget: BudgetRecord = {
   id: 1,
-  accountId: 10,
+  workspaceId: 10,
   category: { id: 1, description: "Hogar", isActive: true, isDeletable: false },
   currency: { id: 1, symbol: "ARS" },
   amount: 5000,
@@ -157,7 +157,7 @@ describe("AddBudgetModal", () => {
     let capturedBody: unknown;
 
     server.use(
-      http.post("http://localhost:8080/v1/budgets", async ({ request }) => {
+      http.post("http://localhost:8080/budgets", async ({ request }) => {
         capturedBody = await request.json();
         return new HttpResponse(null, { status: 201 });
       }),
@@ -193,7 +193,7 @@ describe("AddBudgetModal", () => {
 
     await waitFor(() => {
       expect(capturedBody).toMatchObject({
-        accountId: 10,
+        workspaceId: 10,
         currency: "ARS",
         amount: 8000,
         year: null,
@@ -267,7 +267,7 @@ describe("EditBudgetModal", () => {
 
     server.use(
       http.patch(
-        "http://localhost:8080/v1/budgets/:id",
+        "http://localhost:8080/budgets/:id",
         async ({ request, params }) => {
           capturedBody = await request.json();
           capturedId = params.id as string;

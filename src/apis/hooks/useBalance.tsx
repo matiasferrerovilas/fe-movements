@@ -34,10 +34,10 @@ export const useBalanceSeparateByGroup = (year: number, month: number) =>
 
 export const useBalanceMonthlyEvolution = (
   year: number,
-  groupIds?: number[] | null,
+  workspaceIds?: number[] | null,
 ) =>
   useQuery({
-    queryKey: ["balance", "monthly-evolution", year, groupIds],
-    queryFn: () => getMonthlyEvolution(year, groupIds ?? undefined),
+    queryKey: ["balance", "monthly-evolution", year, workspaceIds],
+    queryFn: () => getMonthlyEvolution(year, workspaceIds ?? undefined),
     enabled: !!year,
   });

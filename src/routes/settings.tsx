@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SettingIngreso } from "../components/settings/SettingIngreso";
 import { Col, Flex, Grid, Row, Tabs } from "antd";
-import { SettingGroups } from "../components/settings/SettingGroups";
-import { SettingInviteGroups } from "../components/settings/SettingInviteGroups";
+import { SettingWorkspaces } from "../components/settings/SettingWorkspaces";
+import { SettingInviteWorkspaces } from "../components/settings/SettingInviteWorkspaces";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
 import SettingAccount from "../components/settings/SettingAccount";
@@ -28,13 +28,13 @@ const TABS = [
     children: <SettingAccount />,
   },
   {
-    key: "grupos",
-    label: "Grupos",
+    key: "workspaces",
+    label: "Workspaces",
     icon: <TeamOutlined />,
     children: (
       <Flex vertical gap={16}>
-        <SettingInviteGroups />
-        <SettingGroups />
+        <SettingInviteWorkspaces />
+        <SettingWorkspaces />
       </Flex>
     ),
   },

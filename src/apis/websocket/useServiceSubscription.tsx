@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "./WebSocketProvider";
-import { useGroups } from "../hooks/useGroups";
+import { useWorkspaces } from "../hooks/useWorkspaces";
 import type { Service } from "../../models/Service";
 import { EventType, type EventWrapper } from "./EventWrapper";
 
@@ -11,14 +11,14 @@ const SERVICE_KEY = "service-history" as const;
 export const useServiceSubscription = () => {
   const queryClient = useQueryClient();
   const ws = useWebSocket();
-  const { data: memberships = [] } = useGroups();
+  const { data: memberships = [] } = useWorkspaces();
 
   const topics = useMemo(
     () =>
       memberships.flatMap((m) => [
-        `/topic/servicios/${m.accountId}/update`,
-        `/topic/servicios/${m.accountId}/new`,
-        `/topic/servicios/${m.accountId}/remove`,
+        `/topic/servicios/${m.workspaceId}/update`,
+        `/topic/servicios/${m.workspaceId}/new`,
+        `/topic/servicios/${m.workspaceId}/remove`,
       ]),
     [memberships]
   );

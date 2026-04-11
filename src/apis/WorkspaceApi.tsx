@@ -1,64 +1,65 @@
 import type {
-  GroupDetail,
+  WorkspaceDetail,
   ConfirmInvitations,
-  CreateGroupForm,
+  CreateWorkspaceForm,
   CreateInvitationForm,
   Invitations,
   Membership,
-} from "../models/UserGroup";
+} from "../models/UserWorkspace";
 import { api } from "./axios";
 
-const baseUrl = "/account";
-export async function exitGroupApi(id: number) {
+const baseUrl = "/workspace";
+
+export async function exitWorkspaceApi(id: number) {
   return api
     .delete(baseUrl + "/" + id)
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error exiting group:", error);
+      console.error("Error exiting workspace:", error);
       throw error;
     });
 }
 
-export async function addGroupApi(group: CreateGroupForm) {
+export async function addWorkspaceApi(workspace: CreateWorkspaceForm) {
   return api
-    .post(baseUrl, group)
+    .post(baseUrl, workspace)
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error adding a group:", error);
+      console.error("Error adding a workspace:", error);
       throw error;
     });
 }
 
-export const setDefaultGroupApi = (id: number) =>
+export const setDefaultWorkspaceApi = (id: number) =>
   api
     .patch(baseUrl + `/${id}/default`)
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error setting default group:", error);
+      console.error("Error setting default workspace:", error);
       throw error;
     });
 
-export async function addInvitationGroupApi(invitation: CreateInvitationForm) {
+export async function addInvitationWorkspaceApi(invitation: CreateInvitationForm) {
   return api
-    .post(baseUrl + "/" + invitation.groupId + "/invitations", invitation)
+    .post(baseUrl + "/" + invitation.workspaceId + "/invitations", invitation)
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error adding a group:", error);
+      console.error("Error adding workspace invitation:", error);
       throw error;
     });
 }
 
-export async function getAllInvitations() {
+export async function getAllWorkspaceInvitations() {
   return api
     .get<Invitations[]>(baseUrl + "/invitations")
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error fetching expenses:", error);
+      console.error("Error fetching workspace invitations:", error);
       throw error;
     });
 }
 
-export async function acceptRejectGroupInvitationApi(
+export async function acceptRejectWorkspaceInvitationApi(
   confirmInvitations: ConfirmInvitations,
 ) {
   return api
@@ -68,27 +69,27 @@ export async function acceptRejectGroupInvitationApi(
     )
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error adding a group:", error);
+      console.error("Error responding to workspace invitation:", error);
       throw error;
     });
 }
 
-export async function getAllGroupsWithUsers() {
+export async function getAllWorkspacesWithUsers() {
   return api
-    .get<GroupDetail[]>(baseUrl + "/count")
+    .get<WorkspaceDetail[]>(baseUrl + "/count")
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error fetching groups count:", error);
+      console.error("Error fetching workspaces count:", error);
       throw error;
     });
 }
 
-export async function getAllUserGroups() {
+export async function getAllUserWorkspaces() {
   return api
     .get<Membership[]>(baseUrl + "/membership")
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Error fetching all groups:", error);
+      console.error("Error fetching user workspaces:", error);
       throw error;
     });
 }

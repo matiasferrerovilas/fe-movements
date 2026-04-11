@@ -18,7 +18,7 @@ import {
 const mockBudgets: BudgetRecord[] = [
   {
     id: 1,
-    accountId: 10,
+    workspaceId: 10,
     category: { id: 8, description: "Supermercado", isActive: true, isDeletable: false },
     currency: { id: 1, symbol: "ARS" },
     amount: 5000,
@@ -29,7 +29,7 @@ const mockBudgets: BudgetRecord[] = [
   },
   {
     id: 2,
-    accountId: 10,
+    workspaceId: 10,
     category: null,
     currency: { id: 1, symbol: "ARS" },
     amount: 10000,
@@ -43,16 +43,16 @@ const mockBudgets: BudgetRecord[] = [
 // ── MSW server ──────────────────────────────────────────────────────────────
 
 const server = setupServer(
-  http.get("http://localhost:8080/v1/budgets", () =>
+  http.get("http://localhost:8080/budgets", () =>
     HttpResponse.json(mockBudgets),
   ),
-  http.post("http://localhost:8080/v1/budgets", () =>
+  http.post("http://localhost:8080/budgets", () =>
     new HttpResponse(null, { status: 201 }),
   ),
-  http.patch("http://localhost:8080/v1/budgets/:id", () =>
+  http.patch("http://localhost:8080/budgets/:id", () =>
     new HttpResponse(null, { status: 200 }),
   ),
-  http.delete("http://localhost:8080/v1/budgets/:id", () =>
+  http.delete("http://localhost:8080/budgets/:id", () =>
     new HttpResponse(null, { status: 204 }),
   ),
 );
@@ -75,7 +75,7 @@ function makeWrapper() {
   };
 }
 
-const defaultParams = { accountId: 10, currency: "ARS", year: 2026, month: 4 };
+const defaultParams = { workspaceId: 10, currency: "ARS", year: 2026, month: 4 };
 
 // ── useBudgets ──────────────────────────────────────────────────────────────
 
@@ -121,7 +121,7 @@ describe("useBudgets", () => {
 
   it("returns error state when the request fails", async () => {
     server.use(
-      http.get("http://localhost:8080/v1/budgets", () =>
+      http.get("http://localhost:8080/budgets", () =>
         HttpResponse.json({ message: "Server Error" }, { status: 500 }),
       ),
     );
@@ -135,7 +135,7 @@ describe("useBudgets", () => {
 
   it("returns an empty array when the server returns an empty list", async () => {
     server.use(
-      http.get("http://localhost:8080/v1/budgets", () =>
+      http.get("http://localhost:8080/budgets", () =>
         HttpResponse.json([]),
       ),
     );
@@ -166,7 +166,7 @@ describe("useAddBudget", () => {
   it("calls POST /v1/budgets with the correct payload", async () => {
     let capturedBody: unknown;
     server.use(
-      http.post("http://localhost:8080/v1/budgets", async ({ request }) => {
+      http.post("http://localhost:8080/budgets", async ({ request }) => {
         capturedBody = await request.json();
         return new HttpResponse(null, { status: 201 });
       }),
@@ -176,7 +176,7 @@ describe("useAddBudget", () => {
     const { result } = renderHook(() => useAddBudget(), { wrapper });
 
     const payload = {
-      accountId: 10,
+      workspaceId: 10,
       category: "Supermercado",
       currency: "ARS",
       amount: 5000,
@@ -195,7 +195,7 @@ describe("useAddBudget", () => {
   it("calls POST /v1/budgets with null category (presupuesto sin categoría)", async () => {
     let capturedBody: unknown;
     server.use(
-      http.post("http://localhost:8080/v1/budgets", async ({ request }) => {
+      http.post("http://localhost:8080/budgets", async ({ request }) => {
         capturedBody = await request.json();
         return new HttpResponse(null, { status: 201 });
       }),
@@ -205,7 +205,7 @@ describe("useAddBudget", () => {
     const { result } = renderHook(() => useAddBudget(), { wrapper });
 
     const payload = {
-      accountId: 10,
+      workspaceId: 10,
       category: null,
       currency: "USD",
       amount: 2000,
@@ -229,7 +229,7 @@ describe("useAddBudget", () => {
 
     await act(async () => {
       result.current.mutate({
-        accountId: 10,
+        workspaceId: 10,
         category: "Supermercado",
         currency: "ARS",
         amount: 5000,
@@ -244,7 +244,7 @@ describe("useAddBudget", () => {
 
   it("returns error state when POST /v1/budgets fails", async () => {
     server.use(
-      http.post("http://localhost:8080/v1/budgets", () =>
+      http.post("http://localhost:8080/budgets", () =>
         HttpResponse.json({ message: "Conflict" }, { status: 409 }),
       ),
     );
@@ -254,7 +254,7 @@ describe("useAddBudget", () => {
 
     await act(async () => {
       result.current.mutate({
-        accountId: 10,
+        workspaceId: 10,
         category: "Supermercado",
         currency: "ARS",
         amount: 5000,
@@ -276,7 +276,7 @@ describe("useUpdateBudget", () => {
     let capturedId: string | undefined;
     server.use(
       http.patch(
-        "http://localhost:8080/v1/budgets/:id",
+        "http://localhost:8080/budgets/:id",
         async ({ request, params }) => {
           capturedBody = await request.json();
           capturedId = params.id as string;
@@ -313,7 +313,7 @@ describe("useUpdateBudget", () => {
 
   it("returns error state when PATCH /v1/budgets/{id} fails", async () => {
     server.use(
-      http.patch("http://localhost:8080/v1/budgets/:id", () =>
+      http.patch("http://localhost:8080/budgets/:id", () =>
         HttpResponse.json({ message: "Forbidden" }, { status: 403 }),
       ),
     );
@@ -337,7 +337,7 @@ describe("useDeleteBudget", () => {
     let capturedId: string | undefined;
     server.use(
       http.delete(
-        "http://localhost:8080/v1/budgets/:id",
+        "http://localhost:8080/budgets/:id",
         ({ params }) => {
           capturedId = params.id as string;
           return new HttpResponse(null, { status: 204 });
@@ -372,7 +372,7 @@ describe("useDeleteBudget", () => {
 
   it("returns error state when DELETE /v1/budgets/{id} returns 403", async () => {
     server.use(
-      http.delete("http://localhost:8080/v1/budgets/:id", () =>
+      http.delete("http://localhost:8080/budgets/:id", () =>
         HttpResponse.json({ message: "Forbidden" }, { status: 403 }),
       ),
     );

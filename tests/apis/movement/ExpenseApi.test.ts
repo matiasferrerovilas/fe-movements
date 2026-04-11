@@ -19,7 +19,7 @@ function makeForm(date: Date): CreateMovementForm {
     currency: "ARS",
     amount: 1000,
     type: "DEBITO",
-    groupId: 10,
+    workspaceId: 10,
     category: "Supermercado",
   };
 }

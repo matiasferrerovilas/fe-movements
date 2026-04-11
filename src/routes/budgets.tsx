@@ -16,7 +16,7 @@ import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { useBudgets } from "../apis/hooks/useBudget";
 import { useDeleteBudget } from "../apis/hooks/useBudget";
 import { useUserDefault } from "../apis/hooks/useSettings";
-import { useGroups } from "../apis/hooks/useGroups";
+import { useWorkspaces } from "../apis/hooks/useWorkspaces";
 import { useCurrency } from "../apis/hooks/useCurrency";
 import { RoleEnum } from "../enums/RoleEnum";
 import { BudgetCard } from "../components/budgets/BudgetCard";
@@ -51,26 +51,26 @@ function RouteComponent() {
   const isMobile = !screens.md;
 
   const [filters, setFilters] = useState<BudgetFilterValues>({
-    accountId: null,
+    workspaceId: null,
     currency: null,
   });
   const filtersRef = useRef(filters);
 
   const [editingBudget, setEditingBudget] = useState<BudgetRecord | null>(null);
 
-  const { data: memberships = [] } = useGroups();
+  const { data: memberships = [] } = useWorkspaces();
   const { data: currencies = [] } = useCurrency();
-  const { data: defaultAccount } = useUserDefault("DEFAULT_ACCOUNT");
+  const { data: defaultAccount } = useUserDefault("DEFAULT_WORKSPACE");
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
 
   // Pre-populate filters with user defaults once data is available
   useEffect(() => {
     if (
       defaultAccount?.value &&
-      filtersRef.current.accountId === null &&
-      memberships.some((m) => m.accountId === defaultAccount.value)
+      filtersRef.current.workspaceId === null &&
+      memberships.some((m) => m.workspaceId === defaultAccount.value)
     ) {
-      const next = { ...filtersRef.current, accountId: defaultAccount.value };
+      const next = { ...filtersRef.current, workspaceId: defaultAccount.value };
       filtersRef.current = next;
       setFilters(next);
     }
@@ -92,11 +92,11 @@ function RouteComponent() {
     setFilters(next);
   }, []);
 
-  const isReady = !!(filters.accountId && filters.currency);
+  const isReady = !!(filters.workspaceId && filters.currency);
 
   const { data: budgets = [], isFetching } = useBudgets(
     {
-      accountId: filters.accountId ?? 0,
+      workspaceId: filters.workspaceId ?? 0,
       currency: filters.currency ?? "",
       year: CURRENT_YEAR,
       month: CURRENT_MONTH,

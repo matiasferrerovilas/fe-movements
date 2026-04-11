@@ -1,11 +1,11 @@
 import { Col, Flex, Row, Select, Typography } from "antd";
-import { useGroups } from "../../apis/hooks/useGroups";
+import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 
 const { Text } = Typography;
 
 export interface BudgetFilterValues {
-  accountId: number | null;
+  workspaceId: number | null;
   currency: string | null;
 }
 
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export function BudgetFilters({ filters, onFiltersChange }: Props) {
-  const { data: memberships = [] } = useGroups();
+  const { data: memberships = [] } = useWorkspaces();
   const { data: currencies = [] } = useCurrency();
 
   return (
@@ -26,15 +26,15 @@ export function BudgetFilters({ filters, onFiltersChange }: Props) {
             Grupo / Cuenta
           </Text>
           <Select
-            value={filters.accountId}
+            value={filters.workspaceId}
             onChange={(val: number) =>
-              onFiltersChange({ ...filters, accountId: val })
+              onFiltersChange({ ...filters, workspaceId: val })
             }
             placeholder="Seleccioná un grupo"
             style={{ width: "100%" }}
             options={memberships.map((m) => ({
-              label: m.groupDescription,
-              value: m.accountId,
+              label: m.workspaceName,
+              value: m.workspaceId,
             }))}
           />
         </Flex>

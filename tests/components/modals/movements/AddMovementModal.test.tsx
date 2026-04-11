@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { Membership } from "../../../../src/models/UserGroup";
+import type { Membership } from "../../../../src/models/UserWorkspace";
 import type { BankRecord } from "../../../../src/models/Bank";
 import type { UserSetting } from "../../../../src/models/UserSetting";
 import type { Category } from "../../../../src/models/Category";
@@ -15,7 +15,7 @@ import AddMovementModal from "../../../../src/components/modals/movements/AddMov
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
 const mockMemberships: Membership[] = [
-  { accountId: 10, membershipId: 1, groupDescription: "Familia", role: "ADMIN" },
+  { workspaceId: 10, membershipId: 1, workspaceName: "Familia", role: "ADMIN" },
 ];
 
 const mockBanks: BankRecord[] = [
@@ -30,14 +30,14 @@ const mockCurrencies: Currency[] = [
   { id: 1, symbol: "ARS", description: "Peso argentino" },
 ];
 
-const defaultAccountSetting: UserSetting = { key: "DEFAULT_ACCOUNT", value: 10 };
+const defaultAccountSetting: UserSetting = { key: "DEFAULT_WORKSPACE", value: 10 };
 const defaultBankSetting: UserSetting = { key: "DEFAULT_BANK", value: 1 };
 const defaultCurrencySetting: UserSetting = { key: "DEFAULT_CURRENCY", value: 1 };
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 
 const server = setupServer(
-  http.get("http://localhost:8080/account/membership", () =>
+  http.get("http://localhost:8080/workspace/membership", () =>
     HttpResponse.json(mockMemberships),
   ),
   http.get("http://localhost:8080/banks", () =>
@@ -49,7 +49,7 @@ const server = setupServer(
   http.get("http://localhost:8080/currency", () =>
     HttpResponse.json(mockCurrencies),
   ),
-  http.get("http://localhost:8080/settings/defaults/DEFAULT_ACCOUNT", () =>
+  http.get("http://localhost:8080/settings/defaults/DEFAULT_WORKSPACE", () =>
     HttpResponse.json(defaultAccountSetting),
   ),
   http.get("http://localhost:8080/settings/defaults/DEFAULT_BANK", () =>
