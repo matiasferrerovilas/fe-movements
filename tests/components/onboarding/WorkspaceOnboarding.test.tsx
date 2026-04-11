@@ -3,30 +3,30 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ConfigProvider } from "antd";
 import type { ReactNode } from "react";
-import GrupoOnboarding from "../../../src/components/onboarding/GrupoOnboarding";
+import WorkspaceOnboarding from "../../../src/components/onboarding/WorkspaceOnboarding";
 
 function wrapper({ children }: { children: ReactNode }) {
   return <ConfigProvider>{children}</ConfigProvider>;
 }
 
-function renderGrupo(onNext = vi.fn()) {
-  return render(<GrupoOnboarding initialValues={{}} onNext={onNext} />, { wrapper });
+function renderWorkspace(onNext = vi.fn()) {
+  return render(<WorkspaceOnboarding initialValues={{}} onNext={onNext} />, { wrapper });
 }
 
-describe("GrupoOnboarding", () => {
+describe("WorkspaceOnboarding", () => {
   describe("render inicial", () => {
     it("muestra el texto descriptivo", () => {
-      renderGrupo();
+      renderWorkspace();
       expect(screen.getByText(/querés crear algunos workspaces/i)).toBeInTheDocument();
     });
 
     it("muestra un input vacío por defecto", () => {
-      renderGrupo();
+      renderWorkspace();
       expect(screen.getByPlaceholderText("Nombre del workspace")).toBeInTheDocument();
     });
 
     it("muestra solo el botón Siguiente (sin Omitir)", () => {
-      renderGrupo();
+      renderWorkspace();
       expect(screen.getByText("Siguiente")).toBeInTheDocument();
       expect(screen.queryByText("Omitir por ahora")).not.toBeInTheDocument();
     });
@@ -35,7 +35,7 @@ describe("GrupoOnboarding", () => {
   describe("agregar y eliminar workspaces", () => {
     it("agrega un nuevo input al hacer click en Agregar workspace", async () => {
       const user = userEvent.setup();
-      renderGrupo();
+      renderWorkspace();
 
       await user.click(screen.getByText("Agregar workspace"));
 
@@ -45,7 +45,7 @@ describe("GrupoOnboarding", () => {
 
     it("muestra el botón de eliminar cuando hay más de un campo", async () => {
       const user = userEvent.setup();
-      renderGrupo();
+      renderWorkspace();
 
       await user.click(screen.getByText("Agregar workspace"));
 
@@ -53,7 +53,7 @@ describe("GrupoOnboarding", () => {
     });
 
     it("no muestra botón de eliminar cuando solo hay un campo", () => {
-      renderGrupo();
+      renderWorkspace();
       expect(screen.queryByRole("button", { name: /Eliminar workspace/i })).not.toBeInTheDocument();
     });
   });
@@ -61,10 +61,9 @@ describe("GrupoOnboarding", () => {
   describe("validación", () => {
     it("rechaza nombres con números o símbolos", async () => {
       const user = userEvent.setup();
-      renderGrupo();
+      renderWorkspace();
 
       await user.type(screen.getByPlaceholderText("Nombre del workspace"), "Grupo1!");
-      // El click dispara validateFields que rechaza — la promesa queda interna en el form
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() =>
@@ -75,7 +74,7 @@ describe("GrupoOnboarding", () => {
     it("avanza con los grupos completados al escribir nombres válidos", async () => {
       const user = userEvent.setup();
       const onNext = vi.fn();
-      renderGrupo(onNext);
+      renderWorkspace(onNext);
 
       await user.type(screen.getByPlaceholderText("Nombre del workspace"), "Familia");
       await user.click(screen.getByText("Siguiente"));
@@ -87,9 +86,8 @@ describe("GrupoOnboarding", () => {
     it("avanza con accountsToAdd vacío cuando el campo está vacío", async () => {
       const user = userEvent.setup();
       const onNext = vi.fn();
-      renderGrupo(onNext);
+      renderWorkspace(onNext);
 
-      // No escribimos nada — click directo en Siguiente
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));
@@ -99,7 +97,7 @@ describe("GrupoOnboarding", () => {
 
   describe("Omitir", () => {
     it("no existe el botón Omitir por ahora", () => {
-      renderGrupo();
+      renderWorkspace();
       expect(screen.queryByText("Omitir por ahora")).not.toBeInTheDocument();
     });
   });

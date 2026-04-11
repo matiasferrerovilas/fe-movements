@@ -45,7 +45,7 @@ export default function CategoriaOnboarding({ initialValues, onNext, onPrev }: P
   };
 
   return (
-    <Space direction="vertical" style={{ width: "100%" }}>
+    <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
           Agregá las categorías con las que clasificás tus gastos.

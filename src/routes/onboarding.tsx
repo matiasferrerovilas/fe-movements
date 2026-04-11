@@ -1,8 +1,8 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Card, Col, Row, Steps, Typography } from "antd";
 import IngresoOnBoarding from "../components/onboarding/IngresoOnBoarding";
-import GrupoOnboarding from "../components/onboarding/GrupoOnboarding";
+import WorkspaceOnboarding from "../components/onboarding/WorkspaceOnboarding";
 import CategoriaOnboarding from "../components/onboarding/CategoriaOnboarding";
 import BancoOnboarding from "../components/onboarding/BancoOnboarding";
 import {
@@ -10,12 +10,12 @@ import {
   type OnboardingForm,
   type OnboardingIngresoForm,
 } from "../apis/onboarding/OnBoarding";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { onBoardingGuard } from "../apis/auth/onBoardingGuard";
 import { useKeycloak } from "@react-keycloak/web";
-import { AuthContext } from "../apis/auth/AuthContext";
 import TipoOnboarding from "../components/onboarding/TipoOnboarding";
 import { WorkspaceEnum } from "../enums/WorkspaceEnum";
+import { CURRENT_USER_QUERY_KEY } from "../apis/hooks/useCurrentUser";
 
 const { Title, Text } = Typography;
 
@@ -26,11 +26,11 @@ export const Route = createFileRoute("/onboarding")({
 
 function RouteComponent() {
   const { keycloak } = useKeycloak();
+  const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [formData, setFormData] = useState<Partial<OnboardingForm>>({});
   const router = useRouter();
-  const { completeOnboarding } = useContext(AuthContext);
 
   const handleNext = (values: Partial<OnboardingForm>) => {
     setDirection("forward");
@@ -51,7 +51,7 @@ function RouteComponent() {
       } catch {
         // token refresh no crítico, continuar igual
       }
-      completeOnboarding();
+      await queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
       router.invalidate();
       router.navigate({ to: "/", replace: true });
     },
@@ -61,7 +61,7 @@ function RouteComponent() {
     {
       title: "Workspaces",
       description: "Organizá tus cuentas",
-      content: <GrupoOnboarding initialValues={formData} onNext={handleNext} />,
+      content: <WorkspaceOnboarding initialValues={formData} onNext={handleNext} />,
     },
     {
       title: "Categorías",

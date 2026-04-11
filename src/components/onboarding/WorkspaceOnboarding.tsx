@@ -10,7 +10,7 @@ interface Props {
   onNext: (values: Pick<OnboardingForm, "accountsToAdd">) => void;
 }
 
-export default function GrupoOnboarding({ initialValues, onNext }: Props) {
+export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
   const [form] = Form.useForm<{ accountsToAdd: string[] }>();
 
   const handleSubmit = () => {
@@ -26,7 +26,7 @@ export default function GrupoOnboarding({ initialValues, onNext }: Props) {
   };
 
   return (
-    <Space direction="vertical" style={{ width: "100%" }}>
+    <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
           ¿Querés crear algunos workspaces?

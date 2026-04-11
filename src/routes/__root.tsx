@@ -14,6 +14,7 @@ import module from "../../package.json";
 export interface RootRouteContext {
   queryClient: QueryClient;
   auth: AuthContextState & {
+    firstLogin: boolean;
     keycloak: Keycloak;
   };
   skipAuth: boolean;

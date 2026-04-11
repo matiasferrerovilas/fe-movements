@@ -12,6 +12,7 @@ import { useKeycloak } from "@react-keycloak/web";
 import esES from "antd/locale/es_ES";
 import { ThemeProvider } from "./apis/theme/ThemeProvider";
 import { useTheme } from "./apis/theme/ThemeContext";
+import { useCurrentUser } from "./apis/hooks/useCurrentUser";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -41,7 +42,6 @@ const router = createRouter({
       authenticated: false,
       firstLogin: false,
       loading: true,
-      completeOnboarding: () => {},
       keycloak: undefined as never,
     },
     skipAuth: false,
@@ -53,6 +53,8 @@ const router = createRouter({
 function RouterWithAuth() {
   const auth = useContext(AuthContext);
   const { keycloak } = useKeycloak();
+  const { data: currentUser } = useCurrentUser();
+  const firstLogin = currentUser?.isFirstLogin ?? false;
 
   // Cada vez que el estado de auth cambia (loading, firstLogin, authenticated)
   // actualizamos el contexto del router y lo invalidamos para que los beforeLoad
@@ -61,14 +63,14 @@ function RouterWithAuth() {
     router.update({
       context: {
         queryClient,
-        auth: { ...auth, keycloak },
+        auth: { ...auth, firstLogin, keycloak },
         skipAuth: false,
       },
     });
     if (!auth.loading) {
       router.invalidate();
     }
-  }, [auth.loading, auth.firstLogin, auth.authenticated, auth, keycloak]);
+  }, [auth.loading, firstLogin, auth.authenticated, auth, keycloak]);
 
   return <RouterProvider router={router} />;
 }

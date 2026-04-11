@@ -34,7 +34,7 @@ export default function TipoOnboarding({
   };
 
   return (
-    <Space direction="vertical" style={{ width: "100%" }}>
+    <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
           ¿Cuál será el uso de la cuenta?
@@ -65,7 +65,7 @@ export default function TipoOnboarding({
                   background: isConsumer ? token.colorPrimaryBg : "transparent",
                 }}
               >
-                <Space direction="vertical" align="center">
+                 <Space orientation="vertical" align="center">
                   <UserOutlined style={{ fontSize: 40 }} />
                   <Text strong>Usuario</Text>
                 </Space>
@@ -84,7 +84,7 @@ export default function TipoOnboarding({
                   background: !isConsumer ? token.colorPrimaryBg : "transparent",
                 }}
               >
-                <Space direction="vertical" align="center">
+                 <Space orientation="vertical" align="center">
                   <ShopOutlined style={{ fontSize: 40 }} />
                   <Text strong>Emprendedor</Text>
                 </Space>

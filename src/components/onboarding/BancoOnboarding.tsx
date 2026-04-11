@@ -66,7 +66,7 @@ export default function BancoOnboarding({ initialValues, onNext, onPrev }: Props
   };
 
   return (
-    <Space direction="vertical" style={{ width: "100%" }}>
+    <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
           Agregá los bancos que usás y elegí cuál es tu default.
