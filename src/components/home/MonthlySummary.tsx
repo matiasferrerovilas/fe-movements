@@ -16,6 +16,7 @@ import {
   theme,
   Typography,
 } from "antd";
+import { useUserDefault } from "../../apis/hooks/useSettings";
 import { useWorkspaceSummary } from "../../apis/hooks/useWorkspaceSummary";
 import type { WorkspaceSummaryPorMoneda } from "../../models/WorkspaceSummary";
 import BudgetAlert from "./BudgetAlert";
@@ -226,7 +227,14 @@ export default function MonthlySummary() {
   const month = now.month() + 1;
   const monthLabel = now.format("MMMM YYYY");
 
-  const { data, isFetching, isError } = useWorkspaceSummary(year, month);
+  const { data: defaultWorkspace } = useUserDefault("DEFAULT_WORKSPACE");
+  const workspaceId = defaultWorkspace?.value ?? null;
+
+  const { data, isFetching, isError } = useWorkspaceSummary(
+    workspaceId,
+    year,
+    month,
+  );
 
   if (isError) {
     return (

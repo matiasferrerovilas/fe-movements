@@ -25,40 +25,38 @@ export const useWorkspacesSubscription = () => {
     [memberships],
   );
 
-  const callbackRef = useRef<((event: EventWrapper<unknown>) => void) | null>(null);
-  if (!callbackRef.current) {
-    callbackRef.current = (event: EventWrapper<unknown>) => {
-      switch (event.eventType) {
-        case EventType.ACCOUNT_LEFT: {
-          queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
-          queryClient.invalidateQueries({ queryKey: USER_WORKSPACES_COUNT_QUERY_KEY });
-          break;
-        }
-        case EventType.MEMBERSHIP_UPDATED: {
-          const updated = event.message as WorkspaceDetail;
-          queryClient.setQueryData(
-            USER_WORKSPACES_COUNT_QUERY_KEY,
-            (old?: WorkspaceDetail[]) => {
-              if (!old) return [updated];
-              const base = old.map((g) => ({ ...g, isDefault: false }));
-              const exists = base.some((g) => g.id === updated.id);
-              return exists
-                ? base.map((g) => (g.id === updated.id ? updated : g))
-                : [...base, updated];
-            },
-          );
-          break;
-        }
-        default:
-          console.warn("⚠️ Evento desconocido:", event.eventType);
+  // El callback solo usa queryClient (estable), así que se puede inicializar directamente
+  const callbackRef = useRef((event: EventWrapper<unknown>) => {
+    switch (event.eventType) {
+      case EventType.ACCOUNT_LEFT: {
+        queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
+        queryClient.invalidateQueries({ queryKey: USER_WORKSPACES_COUNT_QUERY_KEY });
+        break;
       }
-    };
-  }
+      case EventType.MEMBERSHIP_UPDATED: {
+        const updated = event.message as WorkspaceDetail;
+        queryClient.setQueryData(
+          USER_WORKSPACES_COUNT_QUERY_KEY,
+          (old?: WorkspaceDetail[]) => {
+            if (!old) return [updated];
+            const base = old.map((g) => ({ ...g, isDefault: false }));
+            const exists = base.some((g) => g.id === updated.id);
+            return exists
+              ? base.map((g) => (g.id === updated.id ? updated : g))
+              : [...base, updated];
+          },
+        );
+        break;
+      }
+      default:
+        console.warn("⚠️ Evento desconocido:", event.eventType);
+    }
+  });
 
   useEffect(() => {
     if (!ws?.isConnected || !keycloakUserId) return;
 
-    const callback = callbackRef.current!;
+    const callback = callbackRef.current;
 
     const topics = [
       `/topic/account/default/${keycloakUserId}`,

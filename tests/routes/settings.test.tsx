@@ -52,7 +52,6 @@ vi.mock("../../src/components/settings/SettingCategory", () => ({
 
 // ── Import después de mocks ────────────────────────────────────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const { Route } = await import("../../src/routes/settings");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RouteComponent = (Route as any).component as React.FC;

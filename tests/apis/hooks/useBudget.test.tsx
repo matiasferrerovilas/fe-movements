@@ -158,6 +158,45 @@ describe("useBudgets", () => {
   it("uses the correct query key constant", () => {
     expect(BUDGETS_QUERY_KEY).toBe("budgets");
   });
+
+  it("does not fetch when workspaceId is 0", async () => {
+    const { wrapper } = makeWrapper();
+    const { result } = renderHook(
+      () => useBudgets({ workspaceId: 0, currency: "ARS", year: 2026, month: 4 }),
+      { wrapper },
+    );
+
+    // The query should stay in pending state without fetching
+    expect(result.current.isPending).toBe(true);
+    expect(result.current.fetchStatus).toBe("idle");
+    expect(result.current.data).toBeUndefined();
+  });
+
+  it("does not fetch when currency is empty string", async () => {
+    const { wrapper } = makeWrapper();
+    const { result } = renderHook(
+      () => useBudgets({ workspaceId: 10, currency: "", year: 2026, month: 4 }),
+      { wrapper },
+    );
+
+    // The query should stay in pending state without fetching
+    expect(result.current.isPending).toBe(true);
+    expect(result.current.fetchStatus).toBe("idle");
+    expect(result.current.data).toBeUndefined();
+  });
+
+  it("does not fetch when both workspaceId and currency are invalid", async () => {
+    const { wrapper } = makeWrapper();
+    const { result } = renderHook(
+      () => useBudgets({ workspaceId: 0, currency: "", year: 2026, month: 4 }),
+      { wrapper },
+    );
+
+    // The query should stay in pending state without fetching
+    expect(result.current.isPending).toBe(true);
+    expect(result.current.fetchStatus).toBe("idle");
+    expect(result.current.data).toBeUndefined();
+  });
 });
 
 // ── useAddBudget ─────────────────────────────────────────────────────────────

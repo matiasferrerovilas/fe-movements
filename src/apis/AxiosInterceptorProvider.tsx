@@ -1,5 +1,5 @@
-// AxiosInterceptorProvider.tsx - Espera en el interceptor, no en la UI
-import { useEffect, useRef } from "react";
+// AxiosInterceptorProvider.tsx - Registra interceptor antes de renderizar children
+import { useLayoutEffect, useRef } from "react";
 import { useKeycloak } from "@react-keycloak/web";
 import { api } from "./axios";
 
@@ -9,30 +9,19 @@ export function AxiosInterceptorProvider({
   children: React.ReactNode;
 }) {
   const { keycloak, initialized } = useKeycloak();
-  const isInterceptorMounted = useRef(false);
+  const interceptorsRef = useRef<{ request: number; response: number } | null>(null);
 
-  useEffect(() => {
-    // Evita montar múltiples veces
-    if (isInterceptorMounted.current) return;
+  // useLayoutEffect se ejecuta sincrónicamente ANTES del paint, garantizando que
+  // el interceptor esté registrado antes de que cualquier child pueda disparar un fetch.
+  useLayoutEffect(() => {
+    // Si Keycloak no está inicializado, no hacemos nada todavía
+    if (!initialized) return;
+
+    // Si ya tenemos interceptores registrados, no los volvemos a registrar
+    if (interceptorsRef.current) return;
 
     const requestInterceptor = api.interceptors.request.use(
       async (config) => {
-        // Espera a que Keycloak esté listo SOLO en el momento del request
-        if (!initialized) {
-          // Espera hasta 5 segundos a que Keycloak inicialice
-          const timeout = 5000;
-          const startTime = Date.now();
-
-          while (!initialized && Date.now() - startTime < timeout) {
-            await new Promise((resolve) => setTimeout(resolve, 100));
-          }
-
-          if (!initialized) {
-            console.error("Timeout esperando inicialización de Keycloak");
-            return Promise.reject(new Error("Keycloak no inicializado"));
-          }
-        }
-
         if (keycloak.authenticated && keycloak.token) {
           try {
             // Renueva si expira en menos de 30 segundos
@@ -43,8 +32,8 @@ export function AxiosInterceptorProvider({
             keycloak.login();
             return Promise.reject(error);
           }
-        } else if (initialized && !keycloak.authenticated) {
-          // Si ya está inicializado pero no autenticado, redirige
+        } else if (!keycloak.authenticated) {
+          // Si no está autenticado, redirige
           keycloak.login();
           return Promise.reject(new Error("No autenticado"));
         }
@@ -62,7 +51,6 @@ export function AxiosInterceptorProvider({
         if (
           error.response?.status === 401 &&
           !originalRequest._retry &&
-          initialized &&
           keycloak.authenticated
         ) {
           originalRequest._retry = true;
@@ -89,15 +77,20 @@ export function AxiosInterceptorProvider({
       }
     );
 
-    isInterceptorMounted.current = true;
+    interceptorsRef.current = { request: requestInterceptor, response: responseInterceptor };
 
     return () => {
-      api.interceptors.request.eject(requestInterceptor);
-      api.interceptors.response.eject(responseInterceptor);
-      isInterceptorMounted.current = false;
+      if (interceptorsRef.current) {
+        api.interceptors.request.eject(interceptorsRef.current.request);
+        api.interceptors.response.eject(interceptorsRef.current.response);
+        interceptorsRef.current = null;
+      }
     };
   }, [keycloak, initialized]);
 
-  // Renderiza children inmediatamente, NO espera a Keycloak
+  // No renderiza children hasta que Keycloak esté inicializado
+  // (el useLayoutEffect ya habrá registrado el interceptor para ese momento)
+  if (!initialized) return null;
+
   return <>{children}</>;
 }

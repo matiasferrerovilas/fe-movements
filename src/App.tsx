@@ -6,7 +6,7 @@ import { routeTree } from "./routeTree.gen";
 import { ConfigProvider, theme } from "antd";
 import { WebSocketProvider } from "./apis/websocket/WebSocketProvider";
 import type { RootRouteContext } from "./routes/__root";
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { AuthContext } from "./apis/auth/AuthContext";
 import { useKeycloak } from "@react-keycloak/web";
 import esES from "antd/locale/es_ES";
@@ -53,24 +53,35 @@ const router = createRouter({
 function RouterWithAuth() {
   const auth = useContext(AuthContext);
   const { keycloak } = useKeycloak();
-  const { data: currentUser } = useCurrentUser();
+  const { data: currentUser, isSuccess: userReady } = useCurrentUser();
   const firstLogin = currentUser?.isFirstLogin ?? false;
+
+  // authRef permite leer el valor actual de auth dentro del efecto sin convertirlo
+  // en dependencia reactiva — el objeto cambia de referencia en cada render aunque
+  // sus valores primitivos (loading, authenticated) sean los mismos.
+  const authRef = useRef(auth);
+  useLayoutEffect(() => {
+    authRef.current = auth;
+  });
 
   // Cada vez que el estado de auth cambia (loading, firstLogin, authenticated)
   // actualizamos el contexto del router y lo invalidamos para que los beforeLoad
   // guards se re-ejecuten con los valores correctos.
+  // IMPORTANTE: solo invalidamos cuando auth Y useCurrentUser están listos para
+  // evitar que los guards corran con firstLogin=false antes de que /me resuelva.
   useEffect(() => {
+    const currentAuth = authRef.current;
     router.update({
       context: {
         queryClient,
-        auth: { ...auth, firstLogin, keycloak },
+        auth: { ...currentAuth, firstLogin, keycloak },
         skipAuth: false,
       },
     });
-    if (!auth.loading) {
+    if (!currentAuth.loading && userReady) {
       router.invalidate();
     }
-  }, [auth.loading, firstLogin, auth.authenticated, auth, keycloak]);
+  }, [auth.loading, auth.authenticated, firstLogin, userReady, keycloak]);
 
   return <RouterProvider router={router} />;
 }

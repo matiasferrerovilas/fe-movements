@@ -56,7 +56,7 @@ const mockSummary: WorkspaceSummary = {
 
 const server = setupServer(
   http.get(
-    "http://localhost:8080/workspaces/0/summary/monthly",
+    "http://localhost:8080/workspaces/:workspaceId/summary/monthly",
     () => HttpResponse.json(mockSummary),
   ),
 );
@@ -75,8 +75,8 @@ function makeWrapper() {
 }
 
 describe("useWorkspaceSummary", () => {
-  it("calls GET /workspaces/0/summary/monthly with year and month params", async () => {
-    const { result } = renderHook(() => useWorkspaceSummary(2026, 4), {
+  it("calls GET /workspaces/:workspaceId/summary/monthly with year and month params", async () => {
+    const { result } = renderHook(() => useWorkspaceSummary(42, 2026, 4), {
       wrapper: makeWrapper(),
     });
 
@@ -86,7 +86,7 @@ describe("useWorkspaceSummary", () => {
   });
 
   it("returns the full summary shape including porMoneda and totalUnificadoUSD", async () => {
-    const { result } = renderHook(() => useWorkspaceSummary(2026, 4), {
+    const { result } = renderHook(() => useWorkspaceSummary(42, 2026, 4), {
       wrapper: makeWrapper(),
     });
 
@@ -111,7 +111,7 @@ describe("useWorkspaceSummary", () => {
   });
 
   it("does not mark data as stale immediately (staleTime: 1min)", async () => {
-    const { result } = renderHook(() => useWorkspaceSummary(2026, 4), {
+    const { result } = renderHook(() => useWorkspaceSummary(42, 2026, 4), {
       wrapper: makeWrapper(),
     });
 
@@ -122,16 +122,27 @@ describe("useWorkspaceSummary", () => {
   it("returns error state when the request fails", async () => {
     server.use(
       http.get(
-        "http://localhost:8080/workspaces/0/summary/monthly",
+        "http://localhost:8080/workspaces/:workspaceId/summary/monthly",
         () => HttpResponse.json({ message: "Server error" }, { status: 500 }),
       ),
     );
 
-    const { result } = renderHook(() => useWorkspaceSummary(2026, 4), {
+    const { result } = renderHook(() => useWorkspaceSummary(42, 2026, 4), {
       wrapper: makeWrapper(),
     });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.data).toBeUndefined();
+  });
+
+  it("does not fetch when workspaceId is null", async () => {
+    const { result } = renderHook(() => useWorkspaceSummary(null, 2026, 4), {
+      wrapper: makeWrapper(),
+    });
+
+    // The query should stay in pending state without fetching
+    expect(result.current.isPending).toBe(true);
+    expect(result.current.fetchStatus).toBe("idle");
     expect(result.current.data).toBeUndefined();
   });
 });

@@ -104,19 +104,36 @@ interface NavSliderProps {
 
 function NavSlider({ items, activeKey, onSelect, token }: NavSliderProps) {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [barStyle, setBarStyle] = useState({ left: 0, width: 0 });
-  const [mounted, setMounted] = useState(false);
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const mountedRef = useRef(false);
 
   useEffect(() => {
     const idx = items.findIndex((i) => i.key === activeKey);
     const el = itemRefs.current[idx];
+    const bar = barRef.current;
+    if (!bar) return;
+
     if (!el) {
-      setBarStyle({ left: 0, width: 0 });
+      bar.style.left = "0px";
+      bar.style.width = "0px";
       return;
     }
-    setBarStyle({ left: el.offsetLeft, width: el.offsetWidth });
-    if (!mounted) setMounted(true);
-  }, [activeKey, items, mounted]);
+
+    if (!mountedRef.current) {
+      // Primera vez: posicionar sin transición
+      bar.style.transition = "none";
+      bar.style.left = `${el.offsetLeft}px`;
+      bar.style.width = `${el.offsetWidth}px`;
+      // Forzar reflow para que el siguiente cambio de transition se aplique
+      bar.getBoundingClientRect();
+      bar.style.transition =
+        "left 0.35s cubic-bezier(0.25, 1, 0.5, 1), width 0.35s cubic-bezier(0.25, 1, 0.5, 1)";
+      mountedRef.current = true;
+    } else {
+      bar.style.left = `${el.offsetLeft}px`;
+      bar.style.width = `${el.offsetWidth}px`;
+    }
+  }, [activeKey, items]);
 
   return (
     <nav
@@ -170,17 +187,15 @@ function NavSlider({ items, activeKey, onSelect, token }: NavSliderProps) {
 
       {/* Sliding indicator bar */}
       <div
+        ref={barRef}
         style={{
           position: "absolute",
           bottom: 0,
           height: 2,
           backgroundColor: token.colorPrimary,
           borderRadius: "1px 1px 0 0",
-          left: barStyle.left,
-          width: barStyle.width,
-          transition: mounted
-            ? "left 0.35s cubic-bezier(0.25, 1, 0.5, 1), width 0.35s cubic-bezier(0.25, 1, 0.5, 1)"
-            : "none",
+          left: 0,
+          width: 0,
           pointerEvents: "none",
         }}
       />

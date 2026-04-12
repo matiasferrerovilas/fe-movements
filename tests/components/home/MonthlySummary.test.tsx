@@ -79,12 +79,12 @@ const mockSummaryOneMoneda: WorkspaceSummary = {
 // ── MSW server ────────────────────────────────────────────────────────────────
 
 const server = setupServer(
-  http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+  http.get("http://localhost:8080/workspaces/:workspaceId/summary/monthly", () =>
     HttpResponse.json(mockSummary),
   ),
-  // BudgetAlert is rendered inside MonthlySummary — return null defaults so it renders nothing
+  // DEFAULT_WORKSPACE must have a valid value for MonthlySummary to fetch
   http.get("http://localhost:8080/settings/defaults/DEFAULT_WORKSPACE", () =>
-    HttpResponse.json({ key: "DEFAULT_WORKSPACE", value: null }),
+    HttpResponse.json({ key: "DEFAULT_WORKSPACE", value: 42 }),
   ),
   http.get("http://localhost:8080/settings/defaults/DEFAULT_CURRENCY", () =>
     HttpResponse.json({ key: "DEFAULT_CURRENCY", value: null }),
@@ -164,7 +164,7 @@ describe("MonthlySummary", () => {
   describe("single currency — no tabs", () => {
     it("does not render tabs when only one currency", async () => {
       server.use(
-        http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+        http.get("http://localhost:8080/workspaces/:workspaceId/summary/monthly", () =>
           HttpResponse.json(mockSummaryOneMoneda),
         ),
       );
@@ -178,7 +178,7 @@ describe("MonthlySummary", () => {
 
     it("shows KPI cards directly without tabs", async () => {
       server.use(
-        http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+        http.get("http://localhost:8080/workspaces/:workspaceId/summary/monthly", () =>
           HttpResponse.json(mockSummaryOneMoneda),
         ),
       );
@@ -206,7 +206,7 @@ describe("MonthlySummary", () => {
         porMoneda: [{ ...mockSummaryOneMoneda.porMoneda[0], categoriaConMayorGasto: null }],
       };
       server.use(
-        http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+        http.get("http://localhost:8080/workspaces/:workspaceId/summary/monthly", () =>
           HttpResponse.json(noCategory),
         ),
       );
@@ -239,7 +239,7 @@ describe("MonthlySummary", () => {
   describe("empty state", () => {
     it("shows empty message when porMoneda is empty", async () => {
       server.use(
-        http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+        http.get("http://localhost:8080/workspaces/:workspaceId/summary/monthly", () =>
           HttpResponse.json({ ...mockSummary, porMoneda: [] }),
         ),
       );
@@ -255,7 +255,7 @@ describe("MonthlySummary", () => {
   describe("error state", () => {
     it("shows an error message when the request fails", async () => {
       server.use(
-        http.get("http://localhost:8080/workspaces/0/summary/monthly", () =>
+        http.get("http://localhost:8080/workspaces/:workspaceId/summary/monthly", () =>
           HttpResponse.json({ message: "Error" }, { status: 500 }),
         ),
       );
@@ -265,6 +265,26 @@ describe("MonthlySummary", () => {
       expect(
         await screen.findByText("No se pudo cargar el resumen mensual."),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("no default workspace", () => {
+    it("does not fetch summary when DEFAULT_WORKSPACE is null", async () => {
+      server.use(
+        http.get("http://localhost:8080/settings/defaults/DEFAULT_WORKSPACE", () =>
+          HttpResponse.json({ key: "DEFAULT_WORKSPACE", value: null }),
+        ),
+      );
+
+      render(<MonthlySummary />, { wrapper: makeWrapper() });
+
+      // The header should render, but no KPI cards (empty state)
+      const expectedMonth = dayjs().locale("es").format("MMMM YYYY");
+      expect(await screen.findByText(expectedMonth, { exact: false })).toBeInTheDocument();
+      
+      // Since workspaceId is null, query is disabled → shows loading skeleton
+      // Check that no error message is shown (query didn't fail, it's just disabled)
+      expect(screen.queryByText("No se pudo cargar el resumen mensual.")).not.toBeInTheDocument();
     });
   });
 });

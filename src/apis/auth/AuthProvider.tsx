@@ -1,22 +1,14 @@
-import { useState, useEffect } from "react";
 import { useKeycloak } from "@react-keycloak/web";
 import { AuthContext } from "./AuthContext";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { keycloak } = useKeycloak();
+  const { keycloak, initialized } = useKeycloak();
 
-  const [state, setState] = useState({ authenticated: false, loading: true });
-
-  useEffect(() => {
-    if (!keycloak) return;
-
-    if (!keycloak.authenticated) {
-      setState({ authenticated: false, loading: false });
-      return;
-    }
-
-    setState({ authenticated: true, loading: false });
-  }, [keycloak?.authenticated, keycloak]);
+  // Derivamos el estado directamente de Keycloak en lugar de sincronizarlo con useEffect+setState
+  const state = {
+    authenticated: initialized ? (keycloak.authenticated ?? false) : false,
+    loading: !initialized,
+  };
 
   return (
     <AuthContext.Provider value={state}>{children}</AuthContext.Provider>
