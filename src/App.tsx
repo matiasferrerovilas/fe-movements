@@ -3,7 +3,7 @@ import { AxiosInterceptorProvider } from "./apis/AxiosInterceptorProvider";
 import "./App.css";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import { ConfigProvider, theme } from "antd";
+import { ConfigProvider, theme, App as AntdApp } from "antd";
 import { WebSocketProvider } from "./apis/websocket/WebSocketProvider";
 import type { RootRouteContext } from "./routes/__root";
 import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
@@ -102,13 +102,15 @@ function ThemedApp() {
 
   return (
     <ConfigProvider locale={esES} theme={themeConfig}>
-      <AxiosInterceptorProvider>
-        <QueryClientProvider client={queryClient}>
-          <WebSocketProvider>
-            <RouterWithAuth />
-          </WebSocketProvider>
-        </QueryClientProvider>
-      </AxiosInterceptorProvider>
+      <AntdApp>
+        <AxiosInterceptorProvider>
+          <QueryClientProvider client={queryClient}>
+            <WebSocketProvider>
+              <RouterWithAuth />
+            </WebSocketProvider>
+          </QueryClientProvider>
+        </AxiosInterceptorProvider>
+      </AntdApp>
     </ConfigProvider>
   );
 }

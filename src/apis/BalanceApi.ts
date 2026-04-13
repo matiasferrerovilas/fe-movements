@@ -13,28 +13,28 @@ import { api } from "./axios";
 const formatDate = (date: Date) => dayjs(date).format("YYYY-MM-DD");
 
 export async function getBalance(filters: BalanceFilters) {
-  try {
-    const params = new URLSearchParams();
+  const params = new URLSearchParams();
 
-    if (filters.year) params.set("year", String(filters.year));
-    if (filters.month) params.set("month", String(filters.month));
-    if (filters.currency?.length)
-      params.set("currencies", String(filters.currency));
-    filters.account?.forEach((g) => params.append("groups", String(g)));
-    if (filters.dates) {
-      params.set("startDate", formatDate(filters.dates[0]));
-      params.set("endDate", formatDate(filters.dates[1]));
-    }
-    const { data } = await api.get<BalanceResponse>("/balance", {
+  if (filters.year) params.set("year", String(filters.year));
+  if (filters.month) params.set("month", String(filters.month));
+  if (filters.currency?.length)
+    params.set("currencies", String(filters.currency));
+  filters.account?.forEach((g) => params.append("groups", String(g)));
+  if (filters.dates) {
+    params.set("startDate", formatDate(filters.dates[0]));
+    params.set("endDate", formatDate(filters.dates[1]));
+  }
+
+  return api
+    .get<BalanceResponse>("/balance", {
       params,
       paramsSerializer: () => params.toString(),
+    })
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching balance:", error);
+      throw error;
     });
-
-    return data;
-  } catch (error) {
-    console.error("Error fetching balance:", error);
-    throw error;
-  }
 }
 
 export async function getBalanceWithCategoryByYear(filters: BalanceFilters) {
@@ -85,9 +85,13 @@ export const getMonthlyEvolution = (
   accountIds?: number[],
 ): Promise<MonthlyEvolutionRecord[]> => {
   return api
-    .get("/balance/monthly-evolution", {
+    .get<MonthlyEvolutionRecord[]>("/balance/monthly-evolution", {
       params: { year, accountIds },
       paramsSerializer: { indexes: null },
     })
-    .then((res) => res.data);
+    .then((res) => res.data)
+    .catch((error) => {
+      console.error("Error fetching monthly evolution:", error);
+      throw error;
+    });
 };

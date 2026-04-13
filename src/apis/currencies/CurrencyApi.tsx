@@ -1,10 +1,5 @@
 import { api } from "../axios";
-
-export interface Currency {
-  symbol: string;
-  description: string;
-  id: number;
-}
+import type { Currency } from "../../models/Currency";
 
 export async function getAllCurrencies() {
   return api

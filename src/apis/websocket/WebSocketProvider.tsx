@@ -1,14 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-refresh/only-export-components */
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Client } from "@stomp/stompjs";
+import { Client, type StompSubscription } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useKeycloak } from "@react-keycloak/web";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type EventCallback<T = any> = (payload: T) => void;
 
 interface WebSocketContextProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscribe: <T = any>(topic: string, callback: EventCallback<T>) => void;
   unsubscribe: (topic: string, callback: EventCallback) => void;
   isConnected: boolean;
@@ -25,7 +26,7 @@ export const WebSocketProvider = ({
 }) => {
   const clientRef = useRef<Client | null>(null);
   const subscriptionsRef = useRef<Map<string, Set<EventCallback>>>(new Map());
-  const activeSubscriptionsRef = useRef<Map<string, any>>(new Map()); // Guarda las suscripciones STOMP
+  const activeSubscriptionsRef = useRef<Map<string, StompSubscription>>(new Map());
   const { keycloak, initialized } = useKeycloak();
   const [isConnected, setIsConnected] = useState(false);
 

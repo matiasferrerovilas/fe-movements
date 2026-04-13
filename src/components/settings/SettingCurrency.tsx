@@ -2,7 +2,7 @@ import { DollarOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
 import { Button, Card, Divider, Flex, Space, theme, Tooltip, Typography } from "antd";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useUserDefault, useSetUserDefault } from "../../apis/hooks/useSettings";
-import type { Currency } from "../../apis/currencies/CurrencyApi";
+import type { Currency } from "../../models/Currency";
 
 const { Title, Text } = Typography;
 

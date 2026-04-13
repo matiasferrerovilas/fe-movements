@@ -50,6 +50,12 @@ vi.mock("../../src/components/settings/SettingCategory", () => ({
   ),
 }));
 
+vi.mock("../../src/components/settings/SettingPreferences", () => ({
+  SettingPreferences: () => (
+    <div data-testid="setting-preferences">SettingPreferences</div>
+  ),
+}));
+
 // ── Import después de mocks ────────────────────────────────────────────────
 
 const { Route } = await import("../../src/routes/settings");
@@ -84,19 +90,14 @@ afterEach(() => {
 });
 
 describe("Settings route — estructura de tabs", () => {
-  it("renderiza las 4 tabs correctas", () => {
+  it("renderiza las 5 tabs correctas", () => {
     renderSettings();
 
     expect(screen.getByText("Cuenta")).toBeInTheDocument();
     expect(screen.getByText("Workspaces")).toBeInTheDocument();
     expect(screen.getByText("Mis finanzas")).toBeInTheDocument();
     expect(screen.getByText("Categorías")).toBeInTheDocument();
-  });
-
-  it("no renderiza la tab 'Preferencias' (eliminada)", () => {
-    renderSettings();
-
-    expect(screen.queryByText("Preferencias")).not.toBeInTheDocument();
+    expect(screen.getByText("Preferencias")).toBeInTheDocument();
   });
 
   it("la tab activa por defecto es 'Cuenta' y muestra SettingAccount", () => {
@@ -139,5 +140,14 @@ describe("Settings route — estructura de tabs", () => {
     await user.click(screen.getByText("Categorías"));
 
     expect(screen.getByTestId("setting-category")).toBeInTheDocument();
+  });
+
+  it("al hacer click en 'Preferencias' muestra SettingPreferences", async () => {
+    const user = userEvent.setup();
+    renderSettings();
+
+    await user.click(screen.getByText("Preferencias"));
+
+    expect(screen.getByTestId("setting-preferences")).toBeInTheDocument();
   });
 });

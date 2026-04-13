@@ -1,4 +1,5 @@
 import {
+  App,
   Button,
   Card,
   Col,
@@ -8,7 +9,6 @@ import {
   Form,
   Input,
   InputNumber,
-  message,
   Popconfirm,
   Row,
   Select,
@@ -26,10 +26,9 @@ import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import type { Service, ServiceToUpdate } from "../../models/Service";
 import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { deleteSubscriptionApi } from "../../apis/SubscriptionApi";
 import dayjs from "dayjs";
 import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
+import { useDeleteService } from "../../apis/hooks/useService";
 import type { Membership } from "../../models/UserWorkspace";
 
 const { Text, Title } = Typography;
@@ -58,6 +57,7 @@ export const ServiceCard = React.memo(function ServiceCard({
   const [form] = Form.useForm<ServiceFormUpdate>();
   const { data: userGroups = [] } = useWorkspaces();
   const { token } = theme.useToken();
+  const { message } = App.useApp();
 
   const isPaid = service.isPaid;
   const statusColor = isPaid ? token.colorSuccess : token.colorError;
@@ -100,11 +100,7 @@ export const ServiceCard = React.memo(function ServiceCard({
     setIsEditing(false);
   };
 
-  const deleteServiceMutation = useMutation({
-    mutationFn: () => deleteSubscriptionApi(service),
-    onError: (err) => console.error("Error eliminando el servicio:", err),
-    onSuccess: () => console.debug("✅ Servicio eliminado correctamente"),
-  });
+  const deleteServiceMutation = useDeleteService();
 
   return (
     <Card
@@ -227,7 +223,7 @@ export const ServiceCard = React.memo(function ServiceCard({
               <Popconfirm
                 title="¿Eliminar el servicio?"
                 description="Esta acción no se puede deshacer."
-                onConfirm={() => deleteServiceMutation.mutate()}
+                onConfirm={() => deleteServiceMutation.mutate(service)}
                 okText="Sí"
                 cancelText="No"
                 placement="topRight"
