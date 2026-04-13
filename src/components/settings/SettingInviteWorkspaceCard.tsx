@@ -4,7 +4,7 @@ import { Button, Col, Flex, Row, theme, Typography } from "antd";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { acceptRejectWorkspaceInvitationApi } from "../../apis/WorkspaceApi";
 
 const { Text } = Typography;
@@ -17,10 +17,20 @@ export default function SettingInviteWorkspaceCard({
   invite,
 }: SettingInviteWorkspaceCardProps) {
   const { token } = theme.useToken();
+  const queryClient = useQueryClient();
 
   const respondInvitationMutation = useMutation({
     mutationFn: (confirmInvitation: ConfirmInvitations) =>
       acceptRejectWorkspaceInvitationApi(confirmInvitation),
+    onSuccess: (_, variables) => {
+      if (variables.status) {
+        // On accept: user joined a new workspace
+        void queryClient.invalidateQueries({ queryKey: ["workspace-count"] });
+        void queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
+      }
+      // Always: clear the invitations list (both accept and reject)
+      void queryClient.invalidateQueries({ queryKey: ["workspace-invitations"] });
+    },
     onError: (err) => console.error("Error respondiendo invitacion:", err),
   });
 

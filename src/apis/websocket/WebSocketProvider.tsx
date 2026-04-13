@@ -38,12 +38,14 @@ export const WebSocketProvider = ({
     const token = keycloak.token;
 
     const baseUrlOriginal = window.env;
-    const baseUrl =
-      baseUrlOriginal.backend.websocketUrl != undefined
-        ? baseUrlOriginal.backend.websocketUrl
-        : "https://movement.eva-core.com";
+    const baseUrl = baseUrlOriginal.backend.websocketUrl;
 
-    console.debug("Iniciando conexión WebSocket a:", baseUrlOriginal);
+    if (!baseUrl) {
+      console.error("WebSocket URL not configured in window.env.backend.websocketUrl");
+      return;
+    }
+
+    console.debug("Iniciando conexión WebSocket a:", baseUrl);
     const client = new Client({
       webSocketFactory: () => new SockJS(`${baseUrl}/ws?access_token=${token}`),
       reconnectDelay: 5000,

@@ -50,7 +50,7 @@ export const useMigrateCategory = () => {
       migrateCategoryApi(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
-      queryClient.invalidateQueries({ queryKey: ["movements"] });
+      queryClient.invalidateQueries({ queryKey: ["movement-history"] });
     },
   });
 };

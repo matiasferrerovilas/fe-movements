@@ -195,7 +195,7 @@ describe("useInvitationSubscription", () => {
     expect(queryClient.getQueryData<Invitations[]>(["workspace-invitations"])).toHaveLength(1);
   });
 
-  it("removes invitation from cache and invalidates user-groups on INVITATION_CONFIRMED_REJECTED", () => {
+  it("removes invitation from cache and invalidates user-workspaces and workspace-count on INVITATION_CONFIRMED_REJECTED", () => {
     const inv2: Invitations = { id: 2, nameAccount: "Trabajo", invitedBy: "boss@test.com" };
     queryClient.setQueryData(["workspace-invitations"], [invitation, inv2]);
 
@@ -217,7 +217,7 @@ describe("useInvitationSubscription", () => {
     const remaining = queryClient.getQueryData<Invitations[]>(["workspace-invitations"]);
     expect(remaining).toEqual([inv2]);
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-workspaces"] });
-    expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["workspace-count"] });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["workspace-count"] });
   });
 
   it("ignores invitation sent by the current user", () => {

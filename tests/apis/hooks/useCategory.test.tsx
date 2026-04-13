@@ -265,7 +265,7 @@ describe("useMigrateCategory", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["categories"] });
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["movements"] });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["movement-history"] });
   });
 
   it("returns error state when PATCH /categories/migrate fails", async () => {

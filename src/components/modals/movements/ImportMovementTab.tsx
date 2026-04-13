@@ -54,8 +54,9 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
       });
     }, [defaultAccount, defaultBank, banks, form]);
 
-    useImperativeHandle(ref, () => ({      handleConfirm: () => {
-        const values = form.getFieldsValue();
+    useImperativeHandle(ref, () => ({
+      handleConfirm: async () => {
+        const values = await form.validateFields();
 
         const file = values.fileList?.[0]?.originFileObj ?? null;
 

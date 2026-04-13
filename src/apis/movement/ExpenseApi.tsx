@@ -50,10 +50,11 @@ export async function getExpenseApi({
 }
 
 export async function uploadExpenseApi(form: UploadPayload) {
-  const formData = new FormData();
   if (form.file == null || form.bank == null || form.workspaceId == null) {
-    return;
+    throw new Error("Missing required fields: file, bank, or workspaceId");
   }
+
+  const formData = new FormData();
   formData.append("file", form.file);
   formData.append("bank", form.bank);
   formData.append("workspaceId", form.workspaceId.toString());

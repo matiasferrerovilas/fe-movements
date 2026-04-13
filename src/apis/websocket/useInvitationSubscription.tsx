@@ -49,6 +49,7 @@ export const useInvitationSubscription = () => {
             }
             case EventType.INVITATION_CONFIRMED_REJECTED: {
               queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
+              queryClient.invalidateQueries({ queryKey: ["workspace-count"] });
               return old.filter((i) => i.id !== payload.id);
             }
             default:

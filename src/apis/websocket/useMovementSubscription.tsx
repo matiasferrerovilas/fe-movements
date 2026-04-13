@@ -65,8 +65,11 @@ export const useMovementSubscription = () => {
                   );
                   totalElements = old.totalElements + 1;
                 } else {
-                  content = old.content;
-                  totalElements = old.totalElements + 1;
+                  // For pages > 0, invalidate the query to refetch fresh data
+                  void queryClient.invalidateQueries({
+                    queryKey: [EXPENSES_QUERY_KEY],
+                  });
+                  return old;
                 }
               }
               break;
