@@ -286,10 +286,10 @@ describe("EditBudgetModal", () => {
       expect(screen.getByRole("spinbutton")).toBeInTheDocument();
     });
 
-    // Limpiar y escribir nuevo monto
+    // Limpiar y escribir nuevo monto (triple-click para seleccionar todo)
     const amountInput = screen.getByRole("spinbutton");
-    await user.clear(amountInput);
-    await user.type(amountInput, "7500");
+    await user.tripleClick(amountInput);
+    await user.keyboard("7500");
 
     await user.click(screen.getByText("Guardar"));
 
