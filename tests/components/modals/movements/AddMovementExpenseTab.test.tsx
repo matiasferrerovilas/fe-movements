@@ -43,7 +43,7 @@ const mockMovementToEdit: Movement = {
   amount: 1500,
   description: "Supermercado Dia",
   date: "2024-03-15",
-  owner: { id: 1, email: "test@test.com" },
+  owner: { id: 1, givenName: "Test" },
   bank: "GALICIA",
   category: { id: 1, description: "Supermercado", isActive: true, isDeletable: false },
   currency: { id: 1, symbol: "ARS", code: "ARS", name: "Peso argentino" },

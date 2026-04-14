@@ -1,9 +1,10 @@
-import { useKeycloak } from "@react-keycloak/web";
 import { createFileRoute } from "@tanstack/react-router";
 import { Grid, Typography } from "antd";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
+import { useCurrentUser } from "../apis/hooks/useCurrentUser";
 import { RoleEnum } from "../enums/RoleEnum";
 import MonthlySummary from "../components/home/MonthlySummary";
+import { getUserDisplayName } from "../components/utils/userDisplayName";
 
 const { Title } = Typography;
 const { useBreakpoint } = Grid;
@@ -18,8 +19,8 @@ export const Route = createFileRoute("/")({
 function RouteComponent() {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
-  const { keycloak } = useKeycloak();
-  const username = keycloak.tokenParsed?.preferred_username;
+  const { data: currentUser } = useCurrentUser();
+  const displayName = currentUser ? getUserDisplayName(currentUser) : null;
 
   return (
     <div
@@ -39,7 +40,7 @@ function RouteComponent() {
           animationDelay: "0ms",
         }}
       >
-        Bienvenido{username ? `, ${username}` : ""}
+        Bienvenido{displayName ? `, ${displayName}` : ""}
       </Title>
 
       <MonthlySummary />

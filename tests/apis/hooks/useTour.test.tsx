@@ -21,6 +21,8 @@ afterAll(() => server.close());
 const mockCurrentUser: CurrentUser = {
   id: 42,
   email: "test@example.com",
+  givenName: "Test",
+  familyName: "User",
   isFirstLogin: false,
   userType: "ADMIN",
   hasSeenTour: false,

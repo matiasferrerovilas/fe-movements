@@ -33,6 +33,7 @@ import { RoleEnum } from "../enums/RoleEnum";
 import { useTheme } from "../apis/theme/ThemeContext";
 import NavTour from "./NavTour";
 import WorkspaceSelector from "./WorkspaceSelector";
+import { getUserDisplayName } from "./utils/userDisplayName";
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -219,9 +220,6 @@ export default function NavHeader() {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
   const { keycloak } = useKeycloak();
-  const user = keycloak?.tokenParsed;
-  const username = user?.preferred_username;
-  const email = user?.email;
   const { token } = theme.useToken();
   const { isDark, toggleTheme } = useTheme();
 
@@ -230,6 +228,10 @@ export default function NavHeader() {
   const { hasAnyRole } = useUserRoles();
   const { data: currentUser } = useCurrentUser();
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Nombre y email del usuario - usa currentUser con fallback
+  const displayName = currentUser ? getUserDisplayName(currentUser) : null;
+  const email = currentUser?.email;
 
   // Tour state and refs
   const [tourOpen, setTourOpen] = useState(false);
@@ -317,8 +319,8 @@ export default function NavHeader() {
       <Flex align="center" gap={10} style={{ cursor: "pointer" }}>
         {!isMobile && (
           <Flex vertical align="flex-end">
-            <Text type="secondary" style={{ fontSize: 11 }}>
-              {email}
+            <Text style={{ fontSize: 12, fontWeight: 500 }}>
+              {displayName || email}
             </Text>
             {currentUser?.userType && (
               <Tag
@@ -429,10 +431,12 @@ export default function NavHeader() {
       <Drawer
         title={
           <Flex vertical>
-            <Text strong>{username}</Text>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              {email}
-            </Text>
+            <Text strong>{displayName || email}</Text>
+            {displayName && (
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {email}
+              </Text>
+            )}
             {currentUser?.userType && (
               <Tag
                 color={USER_TYPE_COLOR[currentUser.userType] ?? "default"}

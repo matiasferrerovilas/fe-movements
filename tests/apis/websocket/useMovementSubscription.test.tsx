@@ -61,7 +61,7 @@ function makeMovement(id: number): Movement {
     amount: 100,
     description: `Movimiento ${id}`,
     date: "2026-01-01",
-    owner: { id: 1, email: "me@test.com", isFirstLogin: false, userType: "ADMIN" },
+    owner: { id: 1, givenName: "Test" },
     bank: "BANCO_X",
     category: null,
     currency: null,

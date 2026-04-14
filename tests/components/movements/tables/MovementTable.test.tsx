@@ -41,7 +41,7 @@ function makeMovement(id: number): Movement {
     amount: 500,
     description: `Movimiento ${id}`,
     date: "2026-01-15",
-    owner: { id: 1, email: "test@test.com" },
+    owner: { id: 1, givenName: "Test" },
     bank: "GALICIA",
     category: null,
     currency: { id: 1, symbol: "ARS", code: "ARS", name: "Peso argentino" },

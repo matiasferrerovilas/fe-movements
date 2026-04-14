@@ -166,7 +166,7 @@ export default function MovementTable({ filters }: MovementTableProps) {
                       {capitalizeFirst(record.bank)}
                     </Col>
                     <Col span={2}>{capitalizeFirst(record.account.name)}</Col>
-                    <Col span={2}>{capitalizeFirst(record.owner.email)}</Col>
+                    <Col span={2}>{capitalizeFirst(record.owner.givenName ?? "")}</Col>
                     <Col span={2}>{TypeEnumLabel[record.type as TypeEnum] ?? record.type}</Col>
                     <Col span={4}>{record.description}</Col>
                     <Col span={1}>{record.installments}</Col>
@@ -247,7 +247,7 @@ export default function MovementTable({ filters }: MovementTableProps) {
                 <Row justify="space-between" align="middle">
                   <Text type="secondary" style={{ fontSize: 11 }}>
                     {capitalizeFirst(record.account.name)} ·{" "}
-                    {capitalizeFirst(record.owner.email)}
+                    {capitalizeFirst(record.owner.givenName ?? "")}
                   </Text>
                   <div>
                     <ActionButtons record={record} />
