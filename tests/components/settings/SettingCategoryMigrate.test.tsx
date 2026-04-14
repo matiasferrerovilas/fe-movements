@@ -25,10 +25,11 @@ const mockCategories: Category[] = [
 ];
 
 const server = setupServer(
-  http.get("http://localhost:8080/categories", () =>
+  // Las categorías ahora se obtienen sin workspaceId en el path
+  http.get("http://localhost:8080/workspace/categories", () =>
     HttpResponse.json(mockCategories),
   ),
-  http.patch("http://localhost:8080/categories/migrate", () =>
+  http.patch("http://localhost:8080/workspace/categories/migrate", () =>
     new HttpResponse(null, { status: 200 }),
   ),
 );
@@ -201,7 +202,7 @@ describe("SettingCategoryMigrate", () => {
     });
   });
 
-  describe("endpoint PATCH /categories/migrate", () => {
+  describe("endpoint PATCH /workspace/{workspaceId}/categories/migrate", () => {
     it("el endpoint es llamado con fromCategoryId y toCategoryId", async () => {
       // Este test verifica la integración a nivel de hook (cubierto en useCategory.test.tsx)
       // Aquí verificamos que el componente tiene el botón Migrar y el Popconfirm configurado

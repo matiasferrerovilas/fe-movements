@@ -16,7 +16,6 @@ import {
 } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
 import { useIncome } from "../../apis/hooks/useIncome";
 import { useUserDefault } from "../../apis/hooks/useSettings";
 import {
@@ -40,10 +39,8 @@ export function SettingIngreso() {
   const [form] = Form.useForm<IncomeAddForm>();
   const { data: ingresos, isLoading } = useIncome();
   const { token } = theme.useToken();
-  const { data: memberships = [] } = useWorkspaces();
   const { data: currencies = [] } = useCurrency();
   const { data: banks = [] } = useBanks();
-  const { data: defaultAccount } = useUserDefault("DEFAULT_WORKSPACE");
   const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const queryClient = useQueryClient();
@@ -77,15 +74,11 @@ export function SettingIngreso() {
     const currencySymbol = currencies.find(
       (c) => c.id === defaultCurrency?.value
     )?.symbol;
-    const workspaceDescription = memberships.find(
-      (m) => m.workspaceId === defaultAccount?.value
-    )?.workspaceName;
     form.setFieldsValue({
       bank: bankDescription,
       currency: currencySymbol,
-      workspace: workspaceDescription,
     });
-  }, [defaultAccount, defaultBank, defaultCurrency, banks, currencies, memberships, form]);
+  }, [defaultBank, defaultCurrency, banks, currencies, form]);
 
   const onFinish = (values: IncomeAddForm) => {
     createIngresoMutation.mutate({
@@ -117,8 +110,8 @@ export function SettingIngreso() {
             Gestionar Ingresos
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Configurá tu ingreso mensual por workspace. Se genera un movimiento
-            automático cada mes.
+            Configurá tu ingreso mensual. Se genera un movimiento
+            automático cada mes en el workspace activo.
           </Text>
         </div>
       </Flex>
@@ -142,17 +135,12 @@ export function SettingIngreso() {
           form={form}
           layout="vertical"
           onFinish={onFinish}
-          initialValues={
-            memberships && {
-              workspace: memberships.find(
-              (m) => m.workspaceId === defaultAccount?.value
-            )?.workspaceName,
-              bank: banks.find((b) => b.id === defaultBank?.value)?.description,
-              currency: currencies.find(
-                (c) => c.id === defaultCurrency?.value
-              )?.symbol,
-            }
-          }
+          initialValues={{
+            bank: banks.find((b) => b.id === defaultBank?.value)?.description,
+            currency: currencies.find(
+              (c) => c.id === defaultCurrency?.value
+            )?.symbol,
+          }}
         >
           <Row gutter={[12, 0]}>
             <Col xs={24} sm={12}>
@@ -172,22 +160,6 @@ export function SettingIngreso() {
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item
-                name="workspace"
-                label="Workspace"
-                rules={[{ required: true, message: "Seleccione un workspace" }]}
-              >
-                <Select
-                  placeholder="Seleccionar workspace"
-                  options={memberships.map((membership) => ({
-                    label: membership.workspaceName,
-                    value: membership.workspaceName,
-                    key: membership.workspaceId,
-                  }))}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item
                 name="currency"
                 label="Moneda"
                 rules={[{ required: true, message: "Ingrese Moneda" }]}
@@ -201,7 +173,7 @@ export function SettingIngreso() {
                 </Select>
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12}>
+            <Col xs={24}>
               <Form.Item
                 name="amount"
                 label="Monto"

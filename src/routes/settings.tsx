@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SettingIngreso } from "../components/settings/SettingIngreso";
 import { Col, Flex, Grid, Row, Tabs } from "antd";
-import { SettingWorkspaces } from "../components/settings/SettingWorkspaces";
+import { SettingCurrentWorkspace } from "../components/settings/SettingCurrentWorkspace";
 import { SettingInviteWorkspaces } from "../components/settings/SettingInviteWorkspaces";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
 import SettingAccount from "../components/settings/SettingAccount";
 import { SettingBank } from "../components/settings/SettingBank";
 import { SettingCurrency } from "../components/settings/SettingCurrency";
-import { UserOutlined, TeamOutlined, WalletOutlined, TagOutlined, BellOutlined } from "@ant-design/icons";
+import { UserOutlined, TeamOutlined, WalletOutlined, BellOutlined } from "@ant-design/icons";
 import { SettingCategory } from "../components/settings/SettingCategory";
 import { SettingPreferences } from "../components/settings/SettingPreferences";
 
@@ -29,13 +29,14 @@ const TABS = [
     children: <SettingAccount />,
   },
   {
-    key: "workspaces",
-    label: "Workspaces",
+    key: "workspace",
+    label: "Mi Workspace",
     icon: <TeamOutlined />,
     children: (
       <Flex vertical gap={16}>
         <SettingInviteWorkspaces />
-        <SettingWorkspaces />
+        <SettingCurrentWorkspace />
+        <SettingCategory />
       </Flex>
     ),
   },
@@ -50,12 +51,6 @@ const TABS = [
         <SettingIngreso />
       </Flex>
     ),
-  },
-  {
-    key: "categorias",
-    label: "Categorías",
-    icon: <TagOutlined />,
-    children: <SettingCategory />,
   },
   {
     key: "preferencias",

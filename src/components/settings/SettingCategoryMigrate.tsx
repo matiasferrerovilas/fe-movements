@@ -30,6 +30,7 @@ export function SettingCategoryMigrate() {
   const isAdmin =
     roles.includes("ROLE_ADMIN") || roles.includes("ADMIN");
 
+  // Las categorías se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
   const { data: categories = [] } = useCategory();
   const migrateMutation = useMigrateCategory();
   const [form] = Form.useForm<MigrateCategoryForm>();

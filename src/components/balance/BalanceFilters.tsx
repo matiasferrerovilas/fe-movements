@@ -6,7 +6,6 @@ import type { Dayjs } from "dayjs";
 import { useMemo } from "react";
 import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import type { BalanceFilters as BalanceFiltersType } from "../../routes/balance";
-import type { Membership } from "../../models/UserWorkspace";
 import type { Currency } from "../../models/Currency";
 import { capitalize } from "./constants";
 
@@ -18,7 +17,6 @@ const currencyIcon = (currency?: CurrencyEnum) =>
 
 type BalanceFiltersProps = {
   filters: BalanceFiltersType;
-  memberships: Membership[];
   currencies: Currency[];
   onFilterChange: <K extends keyof BalanceFiltersType>(
     key: K,
@@ -28,7 +26,6 @@ type BalanceFiltersProps = {
 
 export default function BalanceFilters({
   filters,
-  memberships,
   currencies,
   onFilterChange,
 }: BalanceFiltersProps) {
@@ -54,7 +51,7 @@ export default function BalanceFilters({
       style={{ marginBottom: 24, animationDelay: "60ms" }}
     >
       <Row gutter={[16, 16]} align="bottom">
-        <Col xs={24} sm={12} md={6}>
+        <Col xs={24} sm={12} md={8}>
           <Flex vertical gap={4}>
             <Text type="secondary" style={{ fontSize: 12 }}>
               Moneda
@@ -77,7 +74,7 @@ export default function BalanceFilters({
           </Flex>
         </Col>
 
-        <Col xs={24} sm={12} md={10}>
+        <Col xs={24} sm={12} md={16}>
           <Flex vertical gap={4}>
             <Text type="secondary" style={{ fontSize: 12 }}>
               Período
@@ -86,27 +83,6 @@ export default function BalanceFilters({
               style={{ width: "100%" }}
               value={rangePickerValue}
               onChange={handleRangeChange}
-            />
-          </Flex>
-        </Col>
-
-        <Col xs={24} sm={12} md={8}>
-          <Flex vertical gap={4}>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              Grupos
-            </Text>
-            <Select
-              mode="multiple"
-              value={filters.account ?? []}
-              onChange={(val: number[]) => onFilterChange("account", val)}
-              style={{ width: "100%" }}
-              allowClear
-              placeholder="Todos los grupos"
-              options={memberships.map((m) => ({
-                label: m.workspaceName,
-                value: m.workspaceId,
-                key: m.workspaceId,
-              }))}
             />
           </Flex>
         </Col>

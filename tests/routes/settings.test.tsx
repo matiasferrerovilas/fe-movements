@@ -18,8 +18,8 @@ vi.mock("../../src/components/settings/SettingAccount", () => ({
   default: () => <div data-testid="setting-account">SettingAccount</div>,
 }));
 
-vi.mock("../../src/components/settings/SettingWorkspaces", () => ({
-  SettingWorkspaces: () => <div data-testid="setting-groups">SettingWorkspaces</div>,
+vi.mock("../../src/components/settings/SettingCurrentWorkspace", () => ({
+  SettingCurrentWorkspace: () => <div data-testid="setting-current-workspace">SettingCurrentWorkspace</div>,
 }));
 
 vi.mock("../../src/components/settings/SettingInviteWorkspaces", () => ({
@@ -90,13 +90,12 @@ afterEach(() => {
 });
 
 describe("Settings route — estructura de tabs", () => {
-  it("renderiza las 5 tabs correctas", () => {
+  it("renderiza las 4 tabs correctas", () => {
     renderSettings();
 
     expect(screen.getByText("Cuenta")).toBeInTheDocument();
-    expect(screen.getByText("Workspaces")).toBeInTheDocument();
+    expect(screen.getByText("Mi Workspace")).toBeInTheDocument();
     expect(screen.getByText("Mis finanzas")).toBeInTheDocument();
-    expect(screen.getByText("Categorías")).toBeInTheDocument();
     expect(screen.getByText("Preferencias")).toBeInTheDocument();
   });
 
@@ -123,22 +122,14 @@ describe("Settings route — estructura de tabs", () => {
     expect(screen.getByTestId("setting-ingreso")).toBeInTheDocument();
   });
 
-  it("al hacer click en 'Workspaces' muestra SettingInviteWorkspaces y SettingWorkspaces", async () => {
+  it("al hacer click en 'Mi Workspace' muestra SettingInviteWorkspaces, SettingCurrentWorkspace y SettingCategory", async () => {
     const user = userEvent.setup();
     renderSettings();
 
-    await user.click(screen.getByText("Workspaces"));
+    await user.click(screen.getByText("Mi Workspace"));
 
     expect(screen.getByTestId("setting-invite-groups")).toBeInTheDocument();
-    expect(screen.getByTestId("setting-groups")).toBeInTheDocument();
-  });
-
-  it("al hacer click en 'Categorías' muestra SettingCategory", async () => {
-    const user = userEvent.setup();
-    renderSettings();
-
-    await user.click(screen.getByText("Categorías"));
-
+    expect(screen.getByTestId("setting-current-workspace")).toBeInTheDocument();
     expect(screen.getByTestId("setting-category")).toBeInTheDocument();
   });
 

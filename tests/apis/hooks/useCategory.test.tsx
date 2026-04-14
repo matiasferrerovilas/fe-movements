@@ -28,16 +28,20 @@ const newCategory: Category = {
 };
 
 const server = setupServer(
-  http.get("http://localhost:8080/categories", () =>
+  // GET /workspace/categories (sin workspaceId - usa DEFAULT_WORKSPACE del usuario)
+  http.get("http://localhost:8080/workspace/categories", () =>
     HttpResponse.json(mockCategories),
   ),
-  http.post("http://localhost:8080/categories", () =>
+  // POST /workspace/categories?description=...
+  http.post("http://localhost:8080/workspace/categories", () =>
     HttpResponse.json(newCategory, { status: 201 }),
   ),
-  http.delete("http://localhost:8080/categories/:id", () =>
+  // DELETE /workspace/categories/{categoryId}
+  http.delete("http://localhost:8080/workspace/categories/:categoryId", () =>
     new HttpResponse(null, { status: 204 }),
   ),
-  http.patch("http://localhost:8080/categories/migrate", () =>
+  // PATCH /workspace/categories/migrate
+  http.patch("http://localhost:8080/workspace/categories/migrate", () =>
     new HttpResponse(null, { status: 200 }),
   ),
 );
@@ -63,7 +67,7 @@ function makeWrapper() {
 // ── useCategory ────────────────────────────────────────────────────────────
 
 describe("useCategory", () => {
-  it("calls GET /categories and returns the category list", async () => {
+  it("calls GET /workspace/categories and returns the category list", async () => {
     const { wrapper } = makeWrapper();
     const { result } = renderHook(() => useCategory(), { wrapper });
 
@@ -97,7 +101,7 @@ describe("useCategory", () => {
 
   it("returns error state when the request fails", async () => {
     server.use(
-      http.get("http://localhost:8080/categories", () =>
+      http.get("http://localhost:8080/workspace/categories", () =>
         HttpResponse.json({ message: "Server Error" }, { status: 500 }),
       ),
     );
@@ -111,7 +115,7 @@ describe("useCategory", () => {
 
   it("returns an empty array when the server returns an empty list", async () => {
     server.use(
-      http.get("http://localhost:8080/categories", () =>
+      http.get("http://localhost:8080/workspace/categories", () =>
         HttpResponse.json([]),
       ),
     );
@@ -135,26 +139,47 @@ describe("useCategory", () => {
 // ── useAddCategory ─────────────────────────────────────────────────────────
 
 describe("useAddCategory", () => {
-  it("calls POST /categories with the description and returns the created category", async () => {
+  it("calls POST /workspace/categories and returns the created category", async () => {
     const { wrapper } = makeWrapper();
     const { result } = renderHook(() => useAddCategory(), { wrapper });
 
     await act(async () => {
-      result.current.mutate("salud");
+      result.current.mutate({ description: "salud" });
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toEqual(newCategory);
   });
 
-  it("invalidates the categories query on success", async () => {
+  it("sends description as query param", async () => {
+    let capturedDescription: string | null = null;
+    server.use(
+      http.post("http://localhost:8080/workspace/categories", ({ request }) => {
+        const url = new URL(request.url);
+        capturedDescription = url.searchParams.get("description");
+        return HttpResponse.json(newCategory, { status: 201 });
+      }),
+    );
+
+    const { wrapper } = makeWrapper();
+    const { result } = renderHook(() => useAddCategory(), { wrapper });
+
+    await act(async () => {
+      result.current.mutate({ description: "nueva" });
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(capturedDescription).toBe("nueva");
+  });
+
+  it("invalidates categories query on success", async () => {
     const { wrapper, queryClient } = makeWrapper();
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
     const { result } = renderHook(() => useAddCategory(), { wrapper });
 
     await act(async () => {
-      result.current.mutate("salud");
+      result.current.mutate({ description: "salud" });
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -163,9 +188,9 @@ describe("useAddCategory", () => {
     });
   });
 
-  it("returns error state when POST /categories fails", async () => {
+  it("returns error state when POST fails", async () => {
     server.use(
-      http.post("http://localhost:8080/categories", () =>
+      http.post("http://localhost:8080/workspace/categories", () =>
         HttpResponse.json({ message: "Bad Request" }, { status: 400 }),
       ),
     );
@@ -174,7 +199,7 @@ describe("useAddCategory", () => {
     const { result } = renderHook(() => useAddCategory(), { wrapper });
 
     await act(async () => {
-      result.current.mutate("salud");
+      result.current.mutate({ description: "salud" });
     });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
@@ -185,25 +210,34 @@ describe("useAddCategory", () => {
 // ── useDeleteCategory ──────────────────────────────────────────────────────
 
 describe("useDeleteCategory", () => {
-  it("calls DELETE /categories/{id} and resolves successfully", async () => {
+  it("calls DELETE /workspace/categories/{categoryId} and resolves successfully", async () => {
+    let capturedCategoryId: string | null = null;
+    server.use(
+      http.delete("http://localhost:8080/workspace/categories/:categoryId", ({ params }) => {
+        capturedCategoryId = params.categoryId as string;
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
     const { wrapper } = makeWrapper();
     const { result } = renderHook(() => useDeleteCategory(), { wrapper });
 
     await act(async () => {
-      result.current.mutate(2);
+      result.current.mutate({ categoryId: 2 });
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(capturedCategoryId).toBe("2");
   });
 
-  it("invalidates the categories query on success", async () => {
+  it("invalidates categories query on success", async () => {
     const { wrapper, queryClient } = makeWrapper();
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
     const { result } = renderHook(() => useDeleteCategory(), { wrapper });
 
     await act(async () => {
-      result.current.mutate(2);
+      result.current.mutate({ categoryId: 2 });
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -212,9 +246,9 @@ describe("useDeleteCategory", () => {
     });
   });
 
-  it("returns error state when DELETE /categories/{id} returns 404", async () => {
+  it("returns error state when DELETE returns 404", async () => {
     server.use(
-      http.delete("http://localhost:8080/categories/:id", () =>
+      http.delete("http://localhost:8080/workspace/categories/:categoryId", () =>
         HttpResponse.json({ message: "Not Found" }, { status: 404 }),
       ),
     );
@@ -223,7 +257,7 @@ describe("useDeleteCategory", () => {
     const { result } = renderHook(() => useDeleteCategory(), { wrapper });
 
     await act(async () => {
-      result.current.mutate(99);
+      result.current.mutate({ categoryId: 99 });
     });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
@@ -233,10 +267,10 @@ describe("useDeleteCategory", () => {
 // ── useMigrateCategory ─────────────────────────────────────────────────────
 
 describe("useMigrateCategory", () => {
-  it("calls PATCH /categories/migrate with the correct payload", async () => {
+  it("calls PATCH /workspace/categories/migrate with the correct payload", async () => {
     let capturedBody: unknown;
     server.use(
-      http.patch("http://localhost:8080/categories/migrate", async ({ request }) => {
+      http.patch("http://localhost:8080/workspace/categories/migrate", async ({ request }) => {
         capturedBody = await request.json();
         return new HttpResponse(null, { status: 200 });
       }),
@@ -253,7 +287,7 @@ describe("useMigrateCategory", () => {
     expect(capturedBody).toEqual({ fromCategoryId: 1, toCategoryId: 2 });
   });
 
-  it("invalidates categories and movements queries on success", async () => {
+  it("invalidates categories and movement-history queries on success", async () => {
     const { wrapper, queryClient } = makeWrapper();
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
@@ -264,13 +298,15 @@ describe("useMigrateCategory", () => {
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["categories"] });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ["categories"],
+    });
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["movement-history"] });
   });
 
-  it("returns error state when PATCH /categories/migrate fails", async () => {
+  it("returns error state when PATCH fails", async () => {
     server.use(
-      http.patch("http://localhost:8080/categories/migrate", () =>
+      http.patch("http://localhost:8080/workspace/categories/migrate", () =>
         HttpResponse.json({ message: "Internal Server Error" }, { status: 500 }),
       ),
     );

@@ -11,7 +11,6 @@ import {
   InputNumber,
   Popconfirm,
   Row,
-  Select,
   Tag,
   theme,
   Tooltip,
@@ -27,9 +26,7 @@ import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import type { Service, ServiceToUpdate } from "../../models/Service";
 import React, { useState } from "react";
 import dayjs from "dayjs";
-import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
 import { useDeleteService } from "../../apis/hooks/useService";
-import type { Membership } from "../../models/UserWorkspace";
 
 const { Text, Title } = Typography;
 
@@ -44,7 +41,6 @@ interface ServiceCardProps extends React.HTMLAttributes<HTMLElement> {
 interface ServiceFormUpdate {
   amount: number;
   lastPayment: dayjs.Dayjs | null;
-  workspace: string;
   description: string;
 }
 
@@ -55,7 +51,6 @@ export const ServiceCard = React.memo(function ServiceCard({
 }: ServiceCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [form] = Form.useForm<ServiceFormUpdate>();
-  const { data: userGroups = [] } = useWorkspaces();
   const { token } = theme.useToken();
   const { message } = App.useApp();
 
@@ -82,7 +77,6 @@ export const ServiceCard = React.memo(function ServiceCard({
             lastPayment: values.lastPayment
               ? dayjs(values.lastPayment).toDate()
               : null,
-            workspace: values.workspace,
           },
         });
         setIsEditing(false);
@@ -118,7 +112,6 @@ export const ServiceCard = React.memo(function ServiceCard({
         initialValues={{
           description: service.description,
           amount: service.amount,
-          workspace: service.workspaceName,
           lastPayment: service.lastPayment
             ? dayjs(service.lastPayment)
             : dayjs(),
@@ -238,34 +231,16 @@ export const ServiceCard = React.memo(function ServiceCard({
           )}
         </Flex>
 
-        {/* Grupo + usuario / edit grupo */}
+        {/* Grupo + usuario */}
         <div style={{ marginTop: 8 }}>
-          {isEditing ? (
-            <Form.Item
-              name="workspace"
-              label="Grupo"
-              rules={[{ required: true, message: "Seleccione un grupo" }]}
-              style={{ marginBottom: 8 }}
-            >
-              <Select
-                placeholder="Seleccionar grupo"
-                options={userGroups.map((group: Membership) => ({
-                  label: group.workspaceName,
-                  value: group.workspaceName,
-                  key: group.workspaceId,
-                }))}
-              />
-            </Form.Item>
-          ) : (
-            <Flex gap={6} wrap="wrap" style={{ marginTop: 4 }}>
-              <Tag color={isPaid ? "green" : "red"} variant="solid">
-                {service.workspaceName}
-              </Tag>
-              <Tag color={isPaid ? "green" : "red"} variant="solid">
-                {service.user}
-              </Tag>
-            </Flex>
-          )}
+          <Flex gap={6} wrap="wrap" style={{ marginTop: 4 }}>
+            <Tag color={isPaid ? "green" : "red"} variant="solid">
+              {service.workspaceName}
+            </Tag>
+            <Tag color={isPaid ? "green" : "red"} variant="solid">
+              {service.user}
+            </Tag>
+          </Flex>
         </div>
 
         {/* Último pago */}

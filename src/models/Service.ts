@@ -20,6 +20,5 @@ export interface ServiceToUpdate {
 export interface ServiceToUpdateChanges {
   amount: number;
   description: string;
-  workspace: string;
   lastPayment: Date | null;
 }

@@ -121,6 +121,7 @@ function CategoryCard({ category, onDelete, isDeleting }: CategoryCardProps) {
 }
 
 export function SettingCategory() {
+  // Las categorías se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
   const { data: categories = [], isLoading } = useCategory();
   const addCategoryMutation = useAddCategory();
   const deleteCategoryMutation = useDeleteCategory();
@@ -128,9 +129,14 @@ export function SettingCategory() {
   const { token } = theme.useToken();
 
   const onFinish = (values: AddCategoryForm) => {
-    addCategoryMutation.mutate(values.description, {
-      onSuccess: () => form.resetFields(),
-    });
+    addCategoryMutation.mutate(
+      { description: values.description },
+      { onSuccess: () => form.resetFields() },
+    );
+  };
+
+  const handleDelete = (categoryId: number) => {
+    deleteCategoryMutation.mutate({ categoryId });
   };
 
   return (
@@ -234,7 +240,7 @@ export function SettingCategory() {
             >
               <CategoryCard
                 category={category}
-                onDelete={(id) => deleteCategoryMutation.mutate(id)}
+                onDelete={(categoryId) => handleDelete(categoryId)}
                 isDeleting={deleteCategoryMutation.isPending}
               />
             </div>

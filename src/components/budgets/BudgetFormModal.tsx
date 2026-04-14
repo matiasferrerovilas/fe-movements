@@ -15,7 +15,6 @@ import ModalComponent from "../modals/Modal";
 import { useAddBudget, useUpdateBudget } from "../../apis/hooks/useBudget";
 import { useCategory } from "../../apis/hooks/useCategory";
 import { useCurrency } from "../../apis/hooks/useCurrency";
-import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
 import type { BudgetRecord, BudgetToAdd } from "../../models/Budget";
 
 const { Text } = Typography;
@@ -23,7 +22,6 @@ const { Text } = Typography;
 // ── Add form ────────────────────────────────────────────────────────────────
 
 interface AddBudgetForm {
-  workspaceId: number;
   category: string | null;
   currency: string;
   amount: number;
@@ -41,9 +39,11 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
   const isRecurring = Form.useWatch("isRecurring", form);
 
   const addBudget = useAddBudget();
+  
+  // Las categorías se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
   const { data: categories = [] } = useCategory();
+  
   const { data: currencies = [] } = useCurrency();
-  const { data: memberships = [] } = useWorkspaces();
 
   const handleClose = () => {
     form.resetFields();
@@ -59,7 +59,6 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
           : null);
 
     const payload: BudgetToAdd = {
-      workspaceId: values.workspaceId,
       category: values.category ?? null,
       currency: values.currency,
       amount: values.amount,
@@ -101,20 +100,6 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
         initialValues={{ isRecurring: true, monthYear: dayjs() }}
         style={{ marginTop: 8 }}
       >
-        <Form.Item
-          name="workspaceId"
-          label="Grupo / Cuenta"
-          rules={[{ required: true, message: "Seleccioná un grupo" }]}
-        >
-          <Select
-            placeholder="Seleccioná un grupo"
-            options={memberships.map((m) => ({
-              label: m.workspaceName,
-              value: m.workspaceId,
-            }))}
-          />
-        </Form.Item>
-
         <Form.Item
           name="currency"
           label="Moneda"

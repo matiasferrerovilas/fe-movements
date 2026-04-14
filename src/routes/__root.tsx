@@ -57,6 +57,7 @@ function RootComponent() {
             style={{
               textAlign: "center",
               backgroundColor: ColorEnum.FONDO_GENERAL,
+              marginTop: 32,
             }}
           >
             M-1 ©{new Date().getFullYear()} Created by Mati FV v{module.version}

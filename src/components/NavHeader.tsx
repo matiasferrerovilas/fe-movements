@@ -32,6 +32,7 @@ import { useUserRoles } from "../apis/hooks/useUserRole";
 import { RoleEnum } from "../enums/RoleEnum";
 import { useTheme } from "../apis/theme/ThemeContext";
 import NavTour from "./NavTour";
+import WorkspaceSelector from "./WorkspaceSelector";
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -368,8 +369,8 @@ export default function NavHeader() {
           </>
         ) : (
           <>
-            {/* Desktop: logo izquierda + nav centrado + theme toggle + avatar */}
-            <Flex style={{ flex: 1 }} align="center">
+            {/* Desktop: logo izquierda + workspace selector + nav centrado + theme toggle + avatar */}
+            <Flex style={{ flex: 1 }} align="center" gap={12}>
               <button
                 onClick={() => router.navigate({ to: "/" })}
                 style={{
@@ -387,6 +388,7 @@ export default function NavHeader() {
               >
                 <img src="/favicon.png" alt="Movements" style={{ height: 40, width: 40 }} />
               </button>
+              <WorkspaceSelector />
             </Flex>
             <NavSlider
               items={visibleItems}
@@ -427,6 +429,7 @@ export default function NavHeader() {
         size={240}
         styles={{ body: { padding: 0 } }}
       >
+        <WorkspaceSelector compact />
         <Menu
           mode="inline"
           selectedKeys={[activeKey]}

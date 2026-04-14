@@ -30,26 +30,19 @@ const mockCategories: Category[] = [
 ];
 
 const mockCurrencies: Currency[] = [
-  { id: 1, code: "ARS", name: "Peso Argentino", symbol: "ARS" },
-  { id: 2, code: "USD", name: "Dólar", symbol: "USD" },
-];
-
-const mockMemberships = [
-  { workspaceId: 10, workspaceName: "Familia" },
-  { workspaceId: 20, workspaceName: "Personal" },
+  { id: 1, symbol: "ARS", description: "Peso Argentino" },
+  { id: 2, symbol: "USD", description: "Dólar" },
 ];
 
 // ── MSW server ────────────────────────────────────────────────────────────
 
 const server = setupServer(
-  http.get("http://localhost:8080/categories", () =>
+  // Las categorías se obtienen del workspace activo del usuario (sin workspaceId en path)
+  http.get("http://localhost:8080/workspace/categories", () =>
     HttpResponse.json(mockCategories),
   ),
   http.get("http://localhost:8080/currency", () =>
     HttpResponse.json(mockCurrencies),
-  ),
-  http.get("http://localhost:8080/workspace/membership", () =>
-    HttpResponse.json(mockMemberships),
   ),
   http.post("http://localhost:8080/budgets", () =>
     new HttpResponse(null, { status: 201 }),
@@ -146,7 +139,7 @@ describe("AddBudgetModal", () => {
       // buscamos específicamente dentro del contexto de error de Ant Design
       const errorMessages = document.querySelectorAll(".ant-form-item-explain-error");
       const errorTexts = Array.from(errorMessages).map((el) => el.textContent);
-      expect(errorTexts).toContain("Seleccioná un grupo");
+      // Ya no hay selector de grupo - el workspace activo se usa automáticamente
       expect(errorTexts).toContain("Seleccioná una moneda");
       expect(errorTexts).toContain("Ingresá un monto");
     });
@@ -171,14 +164,8 @@ describe("AddBudgetModal", () => {
       expect(screen.getByText("Agregar presupuesto")).toBeInTheDocument(),
     );
 
-    // Select grupo
-    const grupoSelect = screen.getAllByRole("combobox")[0];
-    await user.click(grupoSelect);
-    const familiaOption = await screen.findByText("Familia");
-    await user.click(familiaOption);
-
     // Select moneda
-    const monedaSelect = screen.getAllByRole("combobox")[1];
+    const monedaSelect = screen.getAllByRole("combobox")[0];
     await user.click(monedaSelect);
     const arsOption = await screen.findAllByText("ARS");
     await user.click(arsOption[arsOption.length - 1]);
@@ -192,8 +179,8 @@ describe("AddBudgetModal", () => {
     await user.click(screen.getByText("Agregar"));
 
     await waitFor(() => {
+      // Ya no se envía workspaceId - el backend usa el workspace activo del usuario
       expect(capturedBody).toMatchObject({
-        workspaceId: 10,
         currency: "ARS",
         amount: 8000,
         year: null,

@@ -46,14 +46,13 @@ export const getExpenseApi = ({
 };
 
 export const uploadExpenseApi = async (form: UploadPayload) => {
-  if (form.file == null || form.bank == null || form.workspaceId == null) {
-    throw new Error("Missing required fields: file, bank, or workspaceId");
+  if (form.file == null || form.bank == null) {
+    throw new Error("Missing required fields: file or bank");
   }
 
   const formData = new FormData();
   formData.append("file", form.file);
   formData.append("bank", form.bank);
-  formData.append("workspaceId", form.workspaceId.toString());
 
   const response = await api.post("/expenses/import-file", formData, {
     headers: {

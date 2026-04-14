@@ -32,13 +32,14 @@ const newCategory: Category = {
 };
 
 const server = setupServer(
-  http.get("http://localhost:8080/categories", () =>
+  // Las categorías ahora se obtienen sin workspaceId en el path
+  http.get("http://localhost:8080/workspace/categories", () =>
     HttpResponse.json(mockCategories),
   ),
-  http.post("http://localhost:8080/categories", () =>
+  http.post("http://localhost:8080/workspace/categories", () =>
     HttpResponse.json(newCategory, { status: 201 }),
   ),
-  http.delete("http://localhost:8080/categories/:id", () =>
+  http.delete("http://localhost:8080/workspace/categories/:id", () =>
     new HttpResponse(null, { status: 204 }),
   ),
 );
@@ -98,7 +99,7 @@ describe("SettingCategory", () => {
 
     it("muestra solo el formulario cuando no hay categorías", async () => {
       server.use(
-        http.get("http://localhost:8080/categories", () =>
+        http.get("http://localhost:8080/workspace/categories", () =>
           HttpResponse.json([]),
         ),
       );
@@ -113,11 +114,11 @@ describe("SettingCategory", () => {
   });
 
   describe("formulario de creación", () => {
-    it("llama POST /categories con la descripción como query param al hacer submit", async () => {
+    it("llama POST /workspace/categories con la descripción como query param al hacer submit", async () => {
       const user = userEvent.setup();
       let capturedUrl: string | undefined;
       server.use(
-        http.post("http://localhost:8080/categories", ({ request }) => {
+        http.post("http://localhost:8080/workspace/categories", ({ request }) => {
           capturedUrl = request.url;
           return HttpResponse.json(newCategory, { status: 201 });
         }),
@@ -211,12 +212,12 @@ describe("SettingCategory", () => {
       expect(deleteHogarBtn).not.toBeDisabled();
     });
 
-    it("llama DELETE /categories/{id} al confirmar el popconfirm", async () => {
+    it("llama DELETE /workspace/categories/{id} al confirmar el popconfirm", async () => {
       const user = userEvent.setup();
       let deletedId: string | undefined;
       server.use(
         http.delete(
-          "http://localhost:8080/categories/:id",
+          "http://localhost:8080/workspace/categories/:id",
           ({ params }) => {
             deletedId = params.id as string;
             return new HttpResponse(null, { status: 204 });

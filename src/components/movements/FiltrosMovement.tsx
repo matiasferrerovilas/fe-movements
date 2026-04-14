@@ -42,6 +42,7 @@ export default function FiltrosMovement({
   initialFilters,
   AddEditMovementModal,
 }: Props) {
+  // Las categorías se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
   const { data: categories = [] } = useCategory();
   const [filters, setFilters] = useState<MovementFilters>(initialFilters);
   const { data: currencies = [] } = useCurrency();

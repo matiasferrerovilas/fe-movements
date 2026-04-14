@@ -5,7 +5,6 @@ import { CurrencyEnum } from "../enums/CurrencyEnum";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RoleEnum } from "../enums/RoleEnum";
 import dayjs from "dayjs";
-import { useWorkspaces } from "../apis/hooks/useWorkspaces";
 import { useCurrency } from "../apis/hooks/useCurrency";
 import { useUserDefault } from "../apis/hooks/useSettings";
 import {
@@ -28,7 +27,6 @@ export const Route = createFileRoute("/balance")({
 });
 
 export type BalanceFilters = {
-  account: number[] | null;
   currency: CurrencyEnum;
   year?: number;
   month?: number;
@@ -43,7 +41,6 @@ const DEFAULT_DATES: [Date, Date] = [
 function RouteComponent() {
   const [filters, setFilters] = useState<BalanceFilters>({
     currency: CurrencyEnum.ARS,
-    account: null,
     dates: DEFAULT_DATES,
   });
 
@@ -60,18 +57,8 @@ function RouteComponent() {
     [handleFiltersChange],
   );
 
-  const { data: memberships = [] } = useWorkspaces();
   const { data: currencies = [] } = useCurrency();
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
-
-  useEffect(() => {
-    if (memberships.length > 0 && filtersRef.current.account === null) {
-      handleChange(
-        "account",
-        memberships.map((m) => m.workspaceId),
-      );
-    }
-  }, [memberships, handleChange]);
 
   useEffect(() => {
     const symbol = currencies.find(
@@ -136,7 +123,6 @@ function RouteComponent() {
       {/* Filtros */}
       <BalanceFilters
         filters={filters}
-        memberships={memberships}
         currencies={currencies}
         onFilterChange={handleChange}
       />
@@ -161,10 +147,7 @@ function RouteComponent() {
       </Row>
 
       <div style={{ marginTop: 20 }}>
-        <EvolucionAnual
-          year={dayjs(filters.dates[0]).year()}
-          workspaceIds={filters.account}
-        />
+        <EvolucionAnual year={dayjs(filters.dates[0]).year()} />
       </div>
     </div>
   );

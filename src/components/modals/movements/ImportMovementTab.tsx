@@ -1,7 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { Button, Form, Select, Typography, Upload } from "antd";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
-import { useWorkspaces } from "../../../apis/hooks/useWorkspaces";
 import { useMutation } from "@tanstack/react-query";
 import { useBanks } from "../../../apis/hooks/useBank";
 import { useUserDefault } from "../../../apis/hooks/useSettings";
@@ -12,13 +11,11 @@ const { Text } = Typography;
 export interface UploadForm {
   fileList: UploadFile<File>[] | null;
   bank: string | null;
-  workspaceId: number | null;
 }
 
 export interface UploadPayload {
   file: File | null;
   bank: string | null;
-  workspaceId: number | null;
 }
 
 interface ImportMovementTabProps {
@@ -27,9 +24,7 @@ interface ImportMovementTabProps {
 
 const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
   ({ onSuccess }, ref) => {
-    const { data: memberships = [] } = useWorkspaces();
     const { data: banks = [] } = useBanks();
-    const { data: defaultAccount } = useUserDefault("DEFAULT_WORKSPACE");
     const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
     const [form] = Form.useForm<UploadForm>();
 
@@ -49,10 +44,9 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         (b) => b.id === defaultBank?.value
       )?.description;
       form.setFieldsValue({
-        workspaceId: defaultAccount?.value ?? undefined,
         bank: bankDescription,
       });
-    }, [defaultAccount, defaultBank, banks, form]);
+    }, [defaultBank, banks, form]);
 
     useImperativeHandle(ref, () => ({
       handleConfirm: async () => {
@@ -60,15 +54,9 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
 
         const file = values.fileList?.[0]?.originFileObj ?? null;
 
-        const payload: UploadForm = {
-          fileList: values.fileList,
-          bank: values.bank,
-          workspaceId: values.workspaceId,
-        };
-
         uploadMutation.mutate({
-          ...payload,
           file,
+          bank: values.bank,
         });
       },
     }));
@@ -84,18 +72,17 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         form={form}
         layout="vertical"
         initialValues={{
-          workspaceId: defaultAccount?.value ?? undefined,
           bank: banks.find((b) => b.id === defaultBank?.value)?.description,
         }}
       >
         <div style={{ marginBottom: 10 }}>
           <Text type="secondary">
-            🔹 Podés importar tu resumen bancario en formato{" "}
+            Podés importar tu resumen bancario en formato{" "}
             <strong>PDF</strong>.
             <br />
-            🔹 Bancos soportados actualmente: BBVA, Galicia.
+            Bancos soportados actualmente: BBVA, Galicia.
             <br />
-            🔹 Solo se admiten <strong>
+            Solo se admiten <strong>
               resúmenes de tarjeta de crédito
             </strong>{" "}
             por el momento.
@@ -113,20 +100,6 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
               </Select.Option>
             ))}
           </Select>
-        </Form.Item>
-
-        <Form.Item
-          name="workspaceId"
-          label="Grupo"
-          rules={[{ required: true, message: "Seleccione un grupo" }]}
-        >
-          <Select
-            placeholder="Seleccionar grupo"
-            options={memberships.map((membership) => ({
-              label: membership.workspaceName,
-              value: membership.workspaceId,
-            }))}
-          />
         </Form.Item>
 
         <Form.Item

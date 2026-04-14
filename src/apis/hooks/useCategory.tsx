@@ -9,6 +9,10 @@ import {
 
 const CATEGORIES_QUERY_KEY = "categories" as const;
 
+/**
+ * Hook para obtener categorías del workspace activo del usuario.
+ * El backend determina el workspace automáticamente desde DEFAULT_WORKSPACE.
+ */
 export const useCategory = () =>
   useQuery({
     queryKey: [CATEGORIES_QUERY_KEY],
@@ -23,22 +27,36 @@ export const useCategory = () =>
       })),
   });
 
+export interface AddCategoryParams {
+  description: string;
+}
+
 export const useAddCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (description: string) => addCategoryApi(description),
+    mutationFn: ({ description }: AddCategoryParams) =>
+      addCategoryApi(description),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
+      queryClient.invalidateQueries({
+        queryKey: [CATEGORIES_QUERY_KEY],
+      });
     },
   });
 };
 
+export interface DeleteCategoryParams {
+  categoryId: number;
+}
+
 export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => deleteCategoryApi(id),
+    mutationFn: ({ categoryId }: DeleteCategoryParams) =>
+      deleteCategoryApi(categoryId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
+      queryClient.invalidateQueries({
+        queryKey: [CATEGORIES_QUERY_KEY],
+      });
     },
   });
 };
@@ -46,10 +64,11 @@ export const useDeleteCategory = () => {
 export const useMigrateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: MigrateCategoryPayload) =>
-      migrateCategoryApi(payload),
+    mutationFn: (payload: MigrateCategoryPayload) => migrateCategoryApi(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
+      queryClient.invalidateQueries({
+        queryKey: [CATEGORIES_QUERY_KEY],
+      });
       queryClient.invalidateQueries({ queryKey: ["movement-history"] });
     },
   });

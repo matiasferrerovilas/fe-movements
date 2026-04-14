@@ -39,3 +39,6 @@ export const getAllWorkspacesWithUsers = () =>
 
 export const getAllUserWorkspaces = () =>
   api.get<Membership[]>(`${baseUrl}/membership`).then((response) => response.data);
+
+export const getWorkspaceMembers = () =>
+  api.get<string[]>(`${baseUrl}/members`).then((response) => response.data);

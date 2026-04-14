@@ -19,7 +19,6 @@ export const getBalance = (filters: BalanceFilters) => {
   if (filters.month) params.set("month", String(filters.month));
   if (filters.currency?.length)
     params.set("currencies", String(filters.currency));
-  filters.account?.forEach((g) => params.append("groups", String(g)));
   if (filters.dates) {
     params.set("startDate", formatDate(filters.dates[0]));
     params.set("endDate", formatDate(filters.dates[1]));
@@ -43,10 +42,6 @@ export const getBalanceWithCategoryByYear = (filters: BalanceFilters) => {
   if (filters.currency?.length)
     params.set("currencies", String(filters.currency));
 
-  if (filters.account?.length) {
-    filters.account.forEach((g) => params.append("groups", String(g)));
-  }
-
   return api
     .get<BalanceByCategory[]>("/balance/category", { params })
     .then((response) => response.data);
@@ -67,11 +62,9 @@ export const getBalanceWithGroupByYearAndMonth = ({
 
 export const getMonthlyEvolution = (
   year: number,
-  accountIds?: number[],
 ): Promise<MonthlyEvolutionRecord[]> =>
   api
     .get<MonthlyEvolutionRecord[]>("/balance/monthly-evolution", {
-      params: { year, accountIds },
-      paramsSerializer: { indexes: null },
+      params: { year },
     })
     .then((res) => res.data);

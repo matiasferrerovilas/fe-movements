@@ -28,5 +28,4 @@ export interface CreateMovementForm {
   cuotaActual?: number;
   cuotasTotales?: number;
   category?: string;
-  workspaceId: number;
 }

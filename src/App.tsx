@@ -13,6 +13,7 @@ import esES from "antd/locale/es_ES";
 import { ThemeProvider } from "./apis/theme/ThemeProvider";
 import { useTheme } from "./apis/theme/ThemeContext";
 import { useCurrentUser } from "./apis/hooks/useCurrentUser";
+import { WorkspaceProvider } from "./apis/workspace/WorkspaceProvider";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -106,7 +107,9 @@ function ThemedApp() {
         <AxiosInterceptorProvider>
           <QueryClientProvider client={queryClient}>
             <WebSocketProvider>
-              <RouterWithAuth />
+              <WorkspaceProvider>
+                <RouterWithAuth />
+              </WorkspaceProvider>
             </WebSocketProvider>
           </QueryClientProvider>
         </AxiosInterceptorProvider>

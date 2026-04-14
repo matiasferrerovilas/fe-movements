@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -39,7 +39,7 @@ function makeService(overrides?: Partial<Service>): Service {
     workspaceId: 10,
     date: "2026-01-01",
     user: "me@test.com",
-    currency: { id: 1, symbol: "ARS", name: "Peso argentino" },
+    currency: { id: 1, symbol: "ARS", description: "Peso argentino" },
     lastPayment: null,
     isPaid: false,
     ...overrides,
@@ -256,7 +256,7 @@ describe("ServiceCard", () => {
       );
     });
 
-    it("envía la descripción del grupo (no el ID) al guardar la edición", async () => {
+    it("no envía workspace al guardar la edición (el backend usa el workspace activo)", async () => {
       const service = makeService({ isPaid: true, workspaceName: "Familia", workspaceId: 10 });
 
       render(
@@ -271,10 +271,11 @@ describe("ServiceCard", () => {
       await userEvent.click(editBtn());
       await userEvent.click(saveBtn());
 
+      // Verificar que se llamó con los cambios esperados (sin workspace)
       expect(handleUpdate).toHaveBeenCalledWith(
         expect.objectContaining<Partial<ServiceToUpdate>>({
           id: service.id,
-          changes: expect.objectContaining({ workspace: "Familia" }),
+          changes: expect.not.objectContaining({ workspace: expect.anything() }),
         }),
       );
     });

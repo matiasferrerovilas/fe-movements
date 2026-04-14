@@ -21,7 +21,6 @@ import CloseCircleOutlined from "@ant-design/icons/CloseCircleOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import dayjs from "dayjs";
 import type { ServiceToAdd } from "../../apis/SubscriptionApi";
-import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useUserDefault } from "../../apis/hooks/useSettings";
 
@@ -33,7 +32,6 @@ interface CreateServiceForm {
   currency: string;
   isPaid: boolean;
   lastPayment?: dayjs.Dayjs;
-  workspaceId: number;
 }
 
 interface ServiceCardFormProps extends React.HTMLAttributes<HTMLElement> {
@@ -43,9 +41,7 @@ interface ServiceCardFormProps extends React.HTMLAttributes<HTMLElement> {
 export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const [form] = Form.useForm<CreateServiceForm>();
   const [isPaid, setIsPaid] = useState(false);
-  const { data: memberships = [] } = useWorkspaces();
   const { data: currencies = [] } = useCurrency();
-  const { data: defaultAccount } = useUserDefault("DEFAULT_WORKSPACE");
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const { token } = theme.useToken();
 
@@ -56,25 +52,21 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
       lastPayment: values.lastPayment ? values.lastPayment.toDate() : null,
       isPaid: values.isPaid,
       currency: { symbol: values.currency },
-      workspaceId: values.workspaceId,
     };
     handleAddService(service);
     form.resetFields();
     setIsPaid(false);
   };
   useEffect(() => {
-    if (!memberships.length) return;
-
     const currencySymbol = currencies.find(
       (c) => c.id === defaultCurrency?.value
     )?.symbol;
 
     form.setFieldsValue({
-      workspaceId: defaultAccount?.value ?? undefined,
       currency: currencySymbol,
       isPaid: false,
     });
-  }, [memberships, defaultAccount, defaultCurrency, currencies, form]);
+  }, [defaultCurrency, currencies, form]);
 
   return (
     <Card
@@ -133,14 +125,11 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={
-          memberships && {
-            workspaceId: defaultAccount?.value ?? undefined,
-            isPaid: false,
-            currency: currencies.find((c) => c.id === defaultCurrency?.value)
-              ?.symbol,
-          }
-        }
+        initialValues={{
+          isPaid: false,
+          currency: currencies.find((c) => c.id === defaultCurrency?.value)
+            ?.symbol,
+        }}
       >
         <Row gutter={[12, 0]}>
           <Col xs={24} sm={12}>
@@ -150,22 +139,6 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
               rules={[{ required: true, message: "Ingrese una descripción" }]}
             >
               <Input placeholder="Ej: Internet, Luz, Netflix..." />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item
-              name="workspaceId"
-              label="Grupo"
-              rules={[{ required: true, message: "Seleccione un grupo" }]}
-            >
-              <Select
-                placeholder="Seleccionar grupo"
-                options={memberships.map((membership) => ({
-                  label: membership.workspaceName,
-                  value: membership.workspaceId,
-                  key: membership.workspaceId,
-                }))}
-              />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
@@ -197,12 +170,13 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={isPaid ? 12 : 24}>
+          <Col xs={24} sm={12}>
             <Form.Item name="isPaid" label="Estado" valuePropName="checked">
               <Switch
                 checkedChildren="Pagado"
                 unCheckedChildren="Pendiente"
                 onChange={(checked) => setIsPaid(checked)}
+                style={{ width: "100%" }}
               />
             </Form.Item>
           </Col>

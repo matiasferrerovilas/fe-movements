@@ -18,7 +18,6 @@ export interface BudgetRecord {
 }
 
 export interface BudgetToAdd {
-  workspaceId: number;
   category: string | null;
   currency: string;
   amount: number;
@@ -31,7 +30,6 @@ export interface BudgetToUpdate {
 }
 
 export interface BudgetQueryParams {
-  workspaceId: number;
   currency: string;
   year: number;
   month: number;

@@ -75,7 +75,7 @@ function makeWrapper() {
   };
 }
 
-const defaultParams = { workspaceId: 10, currency: "ARS", year: 2026, month: 4 };
+const defaultParams = { currency: "ARS", year: 2026, month: 4 };
 
 // ── useBudgets ──────────────────────────────────────────────────────────────
 
@@ -159,36 +159,10 @@ describe("useBudgets", () => {
     expect(BUDGETS_QUERY_KEY).toBe("budgets");
   });
 
-  it("does not fetch when workspaceId is 0", async () => {
-    const { wrapper } = makeWrapper();
-    const { result } = renderHook(
-      () => useBudgets({ workspaceId: 0, currency: "ARS", year: 2026, month: 4 }),
-      { wrapper },
-    );
-
-    // The query should stay in pending state without fetching
-    expect(result.current.isPending).toBe(true);
-    expect(result.current.fetchStatus).toBe("idle");
-    expect(result.current.data).toBeUndefined();
-  });
-
   it("does not fetch when currency is empty string", async () => {
     const { wrapper } = makeWrapper();
     const { result } = renderHook(
-      () => useBudgets({ workspaceId: 10, currency: "", year: 2026, month: 4 }),
-      { wrapper },
-    );
-
-    // The query should stay in pending state without fetching
-    expect(result.current.isPending).toBe(true);
-    expect(result.current.fetchStatus).toBe("idle");
-    expect(result.current.data).toBeUndefined();
-  });
-
-  it("does not fetch when both workspaceId and currency are invalid", async () => {
-    const { wrapper } = makeWrapper();
-    const { result } = renderHook(
-      () => useBudgets({ workspaceId: 0, currency: "", year: 2026, month: 4 }),
+      () => useBudgets({ currency: "", year: 2026, month: 4 }),
       { wrapper },
     );
 
@@ -214,8 +188,8 @@ describe("useAddBudget", () => {
     const { wrapper } = makeWrapper();
     const { result } = renderHook(() => useAddBudget(), { wrapper });
 
+    // Ya no se envía workspaceId - el backend usa el workspace activo del usuario
     const payload = {
-      workspaceId: 10,
       category: "Supermercado",
       currency: "ARS",
       amount: 5000,
@@ -243,8 +217,8 @@ describe("useAddBudget", () => {
     const { wrapper } = makeWrapper();
     const { result } = renderHook(() => useAddBudget(), { wrapper });
 
+    // Ya no se envía workspaceId - el backend usa el workspace activo del usuario
     const payload = {
-      workspaceId: 10,
       category: null,
       currency: "USD",
       amount: 2000,
@@ -268,7 +242,6 @@ describe("useAddBudget", () => {
 
     await act(async () => {
       result.current.mutate({
-        workspaceId: 10,
         category: "Supermercado",
         currency: "ARS",
         amount: 5000,
@@ -293,7 +266,6 @@ describe("useAddBudget", () => {
 
     await act(async () => {
       result.current.mutate({
-        workspaceId: 10,
         category: "Supermercado",
         currency: "ARS",
         amount: 5000,
