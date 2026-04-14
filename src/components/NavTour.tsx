@@ -1,21 +1,15 @@
 import { Tour } from "antd";
 import type { TourProps } from "antd";
-import { useMemo } from "react";
+import type { MutableRefObject } from "react";
 import { useMarkTourSeen } from "../apis/hooks/useTour";
 
-type NavRefs = {
-  balance: HTMLButtonElement | null;
-  servicios: HTMLButtonElement | null;
-  presupuestos: HTMLButtonElement | null;
-  gastos: HTMLButtonElement | null;
-  ajustes: HTMLButtonElement | null;
-  admin?: HTMLButtonElement | null;
-};
+type NavRefsMap = MutableRefObject<Record<string, HTMLButtonElement | null>>;
 
 type NavTourProps = {
   open: boolean;
   onClose: () => void;
-  refs: NavRefs;
+  navRefsMap: NavRefsMap;
+  hasAdmin: boolean;
 };
 
 const TOUR_STEPS: Record<string, { title: string; description: string }> = {
@@ -51,7 +45,7 @@ const TOUR_STEPS: Record<string, { title: string; description: string }> = {
   },
 };
 
-export default function NavTour({ open, onClose, refs }: NavTourProps) {
+export default function NavTour({ open, onClose, navRefsMap, hasAdmin }: NavTourProps) {
   const { mutate: markSeen } = useMarkTourSeen();
 
   const handleClose = () => {
@@ -59,21 +53,19 @@ export default function NavTour({ open, onClose, refs }: NavTourProps) {
     onClose();
   };
 
-  const steps = useMemo((): TourProps["steps"] => {
-    const baseSteps: NonNullable<TourProps["steps"]> = [
-      { target: refs.balance, ...TOUR_STEPS.balance },
-      { target: refs.servicios, ...TOUR_STEPS.servicios },
-      { target: refs.presupuestos, ...TOUR_STEPS.presupuestos },
-      { target: refs.gastos, ...TOUR_STEPS.gastos },
-      { target: refs.ajustes, ...TOUR_STEPS.ajustes },
-    ];
+  // Use functions to access refs - this is the recommended pattern for Tour
+  // Cast to the expected type since we know the refs will be populated when tour opens
+  const steps: NonNullable<TourProps["steps"]> = [
+    { target: () => navRefsMap.current.balance as HTMLElement, ...TOUR_STEPS.balance },
+    { target: () => navRefsMap.current.servicios as HTMLElement, ...TOUR_STEPS.servicios },
+    { target: () => navRefsMap.current.budgets as HTMLElement, ...TOUR_STEPS.presupuestos },
+    { target: () => navRefsMap.current.expenses as HTMLElement, ...TOUR_STEPS.gastos },
+    { target: () => navRefsMap.current.settings as HTMLElement, ...TOUR_STEPS.ajustes },
+  ];
 
-    if (refs.admin) {
-      baseSteps.push({ target: refs.admin, ...TOUR_STEPS.admin });
-    }
-
-    return baseSteps;
-  }, [refs]);
+  if (hasAdmin) {
+    steps.push({ target: () => navRefsMap.current.admin as HTMLElement, ...TOUR_STEPS.admin });
+  }
 
   return (
     <Tour

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { ReactNode } from "react";
+import type { MutableRefObject, ReactNode } from "react";
 import NavTour from "../../src/components/NavTour";
 
 // Mock the useTour hook
@@ -22,7 +22,7 @@ function makeWrapper() {
 }
 
 describe("NavTour", () => {
-  const createMockRefs = () => {
+  const createMockRefsMap = () => {
     // Create actual DOM elements for refs
     const balance = document.createElement("button");
     balance.textContent = "Balance";
@@ -32,38 +32,41 @@ describe("NavTour", () => {
     servicios.textContent = "Servicios";
     document.body.appendChild(servicios);
 
-    const presupuestos = document.createElement("button");
-    presupuestos.textContent = "Presupuestos";
-    document.body.appendChild(presupuestos);
+    const budgets = document.createElement("button");
+    budgets.textContent = "Presupuestos";
+    document.body.appendChild(budgets);
 
-    const gastos = document.createElement("button");
-    gastos.textContent = "Gastos";
-    document.body.appendChild(gastos);
+    const expenses = document.createElement("button");
+    expenses.textContent = "Gastos";
+    document.body.appendChild(expenses);
 
-    const ajustes = document.createElement("button");
-    ajustes.textContent = "Ajustes";
-    document.body.appendChild(ajustes);
+    const settings = document.createElement("button");
+    settings.textContent = "Ajustes";
+    document.body.appendChild(settings);
 
-    return {
-      elements: { balance, servicios, presupuestos, gastos, ajustes },
-      refs: {
+    const elements = { balance, servicios, budgets, expenses, settings };
+
+    const navRefsMap: MutableRefObject<Record<string, HTMLButtonElement | null>> = {
+      current: {
         balance,
         servicios,
-        presupuestos,
-        gastos,
-        ajustes,
+        budgets,
+        expenses,
+        settings,
       },
     };
+
+    return { elements, navRefsMap };
   };
 
-  let mockElements: ReturnType<typeof createMockRefs>["elements"];
-  let mockRefs: ReturnType<typeof createMockRefs>["refs"];
+  let mockElements: ReturnType<typeof createMockRefsMap>["elements"];
+  let mockNavRefsMap: ReturnType<typeof createMockRefsMap>["navRefsMap"];
 
   beforeEach(() => {
     vi.clearAllMocks();
-    const created = createMockRefs();
+    const created = createMockRefsMap();
     mockElements = created.elements;
-    mockRefs = created.refs;
+    mockNavRefsMap = created.navRefsMap;
   });
 
   afterEach(() => {
@@ -76,9 +79,10 @@ describe("NavTour", () => {
   });
 
   it("should render tour when open is true", () => {
-    render(<NavTour open={true} onClose={vi.fn()} refs={mockRefs} />, {
-      wrapper: makeWrapper(),
-    });
+    render(
+      <NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} hasAdmin={false} />,
+      { wrapper: makeWrapper() },
+    );
 
     // First step should show Balance title in the tour
     expect(screen.getByText(/Visualiza el resumen de tus ingresos/)).toBeInTheDocument();
@@ -87,9 +91,10 @@ describe("NavTour", () => {
   });
 
   it("should not render tour when open is false", () => {
-    render(<NavTour open={false} onClose={vi.fn()} refs={mockRefs} />, {
-      wrapper: makeWrapper(),
-    });
+    render(
+      <NavTour open={false} onClose={vi.fn()} navRefsMap={mockNavRefsMap} hasAdmin={false} />,
+      { wrapper: makeWrapper() },
+    );
 
     // Tour content should not be visible
     expect(
@@ -99,9 +104,10 @@ describe("NavTour", () => {
 
   it("should call onClose and markSeen when tour is closed via X button", async () => {
     const onClose = vi.fn();
-    render(<NavTour open={true} onClose={onClose} refs={mockRefs} />, {
-      wrapper: makeWrapper(),
-    });
+    render(
+      <NavTour open={true} onClose={onClose} navRefsMap={mockNavRefsMap} hasAdmin={false} />,
+      { wrapper: makeWrapper() },
+    );
 
     // Find and click the close button (X)
     const closeButton = document.querySelector(".ant-tour-close");
@@ -116,27 +122,26 @@ describe("NavTour", () => {
   });
 
   it("should show step indicator with correct format", () => {
-    render(<NavTour open={true} onClose={vi.fn()} refs={mockRefs} />, {
-      wrapper: makeWrapper(),
-    });
+    render(
+      <NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} hasAdmin={false} />,
+      { wrapper: makeWrapper() },
+    );
 
     // Should show "1 / 5" for first step (5 items without admin)
     expect(screen.getByText("1 / 5")).toBeInTheDocument();
   });
 
-  it("should have 6 steps when admin ref is provided", async () => {
+  it("should have 6 steps when hasAdmin is true", async () => {
     const admin = document.createElement("button");
     admin.textContent = "Admin";
     document.body.appendChild(admin);
 
-    const refsWithAdmin = {
-      ...mockRefs,
-      admin,
-    };
+    mockNavRefsMap.current.admin = admin;
 
-    render(<NavTour open={true} onClose={vi.fn()} refs={refsWithAdmin} />, {
-      wrapper: makeWrapper(),
-    });
+    render(
+      <NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} hasAdmin={true} />,
+      { wrapper: makeWrapper() },
+    );
 
     // Should show "1 / 6" for first step (6 items with admin)
     expect(screen.getByText("1 / 6")).toBeInTheDocument();
@@ -146,9 +151,10 @@ describe("NavTour", () => {
   });
 
   it("should navigate through steps when clicking next", async () => {
-    render(<NavTour open={true} onClose={vi.fn()} refs={mockRefs} />, {
-      wrapper: makeWrapper(),
-    });
+    render(
+      <NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} hasAdmin={false} />,
+      { wrapper: makeWrapper() },
+    );
 
     // First step
     expect(screen.getByText("1 / 5")).toBeInTheDocument();

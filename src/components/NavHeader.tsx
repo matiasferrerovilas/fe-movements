@@ -461,14 +461,8 @@ export default function NavHeader() {
         <NavTour
           open={tourOpen}
           onClose={() => setTourOpen(false)}
-          refs={{
-            balance: navRefsMap.current.balance ?? null,
-            servicios: navRefsMap.current.servicios ?? null,
-            presupuestos: navRefsMap.current.budgets ?? null,
-            gastos: navRefsMap.current.expenses ?? null,
-            ajustes: navRefsMap.current.settings ?? null,
-            admin: navRefsMap.current.admin ?? undefined,
-          }}
+          navRefsMap={navRefsMap}
+          hasAdmin={hasAnyRole(RoleEnum.ADMIN)}
         />
       )}
     </>
