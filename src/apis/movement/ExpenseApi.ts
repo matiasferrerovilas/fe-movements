@@ -8,7 +8,7 @@ import { api } from "../axios";
 type ParamsValue = string | number | boolean | undefined | null;
 type ParamsObject = Record<string, ParamsValue | ParamsValue[]>;
 
-export async function getExpenseApi({
+export const getExpenseApi = ({
   page = 0,
   size,
   filters,
@@ -16,7 +16,7 @@ export async function getExpenseApi({
   page?: number;
   size?: number;
   filters?: MovementFilters;
-}) {
+}) => {
   const params: ParamsObject = {
     page,
     size,
@@ -42,14 +42,10 @@ export async function getExpenseApi({
         return searchParams.toString();
       },
     })
-    .then((res) => res.data)
-    .catch((error) => {
-      console.error("Error fetching expenses:", error);
-      throw error;
-    });
-}
+    .then((res) => res.data);
+};
 
-export async function uploadExpenseApi(form: UploadPayload) {
+export const uploadExpenseApi = async (form: UploadPayload) => {
   if (form.file == null || form.bank == null || form.workspaceId == null) {
     throw new Error("Missing required fields: file, bank, or workspaceId");
   }
@@ -66,9 +62,9 @@ export async function uploadExpenseApi(form: UploadPayload) {
   });
 
   return response.data;
-}
+};
 
-export async function updateExpense(id: number, movement: CreateMovementForm) {
+export const updateExpense = (id: number, movement: CreateMovementForm) => {
   const payload = {
     ...movement,
     category: movement.category
@@ -76,67 +72,19 @@ export async function updateExpense(id: number, movement: CreateMovementForm) {
       : undefined,
     date: dayjs(movement.date).format("YYYY-MM-DD"),
   };
-  return api
-    .patch(`/expenses/${id}`, payload)
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error updating movement:", error);
-      throw error;
-    });
-}
+  return api.patch(`/expenses/${id}`, payload).then((response) => response.data);
+};
 
-export async function uploadExpense(movement: CreateMovementForm) {
+export const uploadExpense = (movement: CreateMovementForm) => {
   const payload = {
     ...movement,
     date: dayjs(movement.date).format("YYYY-MM-DD"),
   };
-  return api
-    .post("/expenses", payload)
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error adding movement:", error);
-      throw error;
-    });
-}
+  return api.post("/expenses", payload).then((response) => response.data);
+};
 
-export async function updateExpenseApi(expense: Movement) {
-  const payload = {
-    amount: expense.amount,
-    bank: expense.bank,
-    description: expense.description,
-    date: expense.date ? dayjs(expense.date).format("YYYY-MM-DD") : null,
-    currency: expense.currency?.symbol || null,
-    type: expense.type,
-    category: expense.category || null,
-    cuotaActual: expense.cuotaActual ?? null,
-    cuotasTotales: expense.cuotasTotales ?? null,
-  };
+export const deleteExpenseApi = (id: number) =>
+  api.delete(`/expenses/${id}`).then((response) => response.data);
 
-  const response = await api.patch(`/expenses/${expense.id}`, payload, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  return response.data;
-}
-
-export async function deleteExpenseApi(id: number) {
-  const response = await api.delete(`/expenses/${id}`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  return response.data;
-}
-
-export async function deleteAllMovements() {
-  return api
-    .delete("/expenses/all")
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error deleting all movements:", error);
-      throw error;
-    });
-}
+export const deleteAllMovements = () =>
+  api.delete("/expenses/all").then((response) => response.data);

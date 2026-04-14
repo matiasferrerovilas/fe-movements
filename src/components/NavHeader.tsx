@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Avatar,
   Button,
@@ -31,6 +31,7 @@ import { useCurrentUser } from "../apis/hooks/useCurrentUser";
 import { useUserRoles } from "../apis/hooks/useUserRole";
 import { RoleEnum } from "../enums/RoleEnum";
 import { useTheme } from "../apis/theme/ThemeContext";
+import NavTour from "./NavTour";
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -100,9 +101,10 @@ interface NavSliderProps {
   activeKey: string;
   onSelect: (item: SideBarItem) => void;
   token: ReturnType<typeof theme.useToken>["token"];
+  onRefRegister?: (key: string, el: HTMLButtonElement | null) => void;
 }
 
-function NavSlider({ items, activeKey, onSelect, token }: NavSliderProps) {
+function NavSlider({ items, activeKey, onSelect, token, onRefRegister }: NavSliderProps) {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const barRef = useRef<HTMLDivElement | null>(null);
   const mountedRef = useRef(false);
@@ -150,7 +152,10 @@ function NavSlider({ items, activeKey, onSelect, token }: NavSliderProps) {
         return (
           <button
             key={item.key}
-            ref={(el) => { itemRefs.current[idx] = el; }}
+            ref={(el) => {
+              itemRefs.current[idx] = el;
+              onRefRegister?.(item.key, el);
+            }}
             onClick={() => onSelect(item)}
             style={{
               display: "flex",
@@ -220,6 +225,28 @@ export default function NavHeader() {
   const { hasAnyRole } = useUserRoles();
   const { data: currentUser } = useCurrentUser();
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Tour state and refs
+  const [tourOpen, setTourOpen] = useState(false);
+  const navRefsMap = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  const handleRefRegister = useCallback(
+    (key: string, el: HTMLButtonElement | null) => {
+      navRefsMap.current[key] = el;
+    },
+    [],
+  );
+
+  // Show tour only on desktop when user hasn't seen it
+  const shouldShowTour = !isMobile && currentUser?.hasSeenTour === false;
+
+  useEffect(() => {
+    if (shouldShowTour && !tourOpen) {
+      // Small delay for DOM to be ready
+      const timer = setTimeout(() => setTourOpen(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [shouldShowTour, tourOpen]);
 
   const visibleItems = NAV_ITEMS.filter(
     (item) => !item.roles?.length || hasAnyRole(...(item.roles ?? [])),
@@ -366,6 +393,7 @@ export default function NavHeader() {
               activeKey={activeKey}
               onSelect={handleClick}
               token={token}
+              onRefRegister={handleRefRegister}
             />
             <Flex style={{ flex: 1 }} justify="flex-end" align="center" gap={8}>
               {ThemeToggle}
@@ -427,6 +455,22 @@ export default function NavHeader() {
           </Button>
         </div>
       </Drawer>
+
+      {/* Navigation Tour */}
+      {shouldShowTour && (
+        <NavTour
+          open={tourOpen}
+          onClose={() => setTourOpen(false)}
+          refs={{
+            balance: navRefsMap.current.balance ?? null,
+            servicios: navRefsMap.current.servicios ?? null,
+            presupuestos: navRefsMap.current.budgets ?? null,
+            gastos: navRefsMap.current.expenses ?? null,
+            ajustes: navRefsMap.current.settings ?? null,
+            admin: navRefsMap.current.admin ?? undefined,
+          }}
+        />
+      )}
     </>
   );
 }

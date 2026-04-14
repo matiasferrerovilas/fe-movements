@@ -3,4 +3,5 @@ export interface CurrentUser {
   email: string | null;
   isFirstLogin: boolean;
   userType: string | null;
+  hasSeenTour: boolean;
 }

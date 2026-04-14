@@ -16,6 +16,7 @@ export const useBalance = (filters: BalanceFilters) =>
     queryKey: [BALANCE_QUERY_KEY, filters],
     queryFn: () => getBalance(filters),
     staleTime: 5 * 60 * 1000,
+    refetchOnMount: "always",
   });
 
 export const useBalanceSeparateByCategory = (filters: BalanceFilters) =>
@@ -23,6 +24,7 @@ export const useBalanceSeparateByCategory = (filters: BalanceFilters) =>
     queryKey: [BALANCE_CATEGORY_QUERY_KEY, filters],
     queryFn: () => getBalanceWithCategoryByYear(filters),
     staleTime: 5 * 60 * 1000,
+    refetchOnMount: "always",
   });
 
 export const useBalanceSeparateByGroup = (year: number, month: number) =>
@@ -31,6 +33,7 @@ export const useBalanceSeparateByGroup = (year: number, month: number) =>
     queryFn: () =>
       getBalanceWithGroupByYearAndMonth({ year: year, month: month }),
     staleTime: 5 * 60 * 1000,
+    refetchOnMount: "always",
   });
 
 export const useBalanceMonthlyEvolution = (
@@ -41,4 +44,5 @@ export const useBalanceMonthlyEvolution = (
     queryKey: ["balance", "monthly-evolution", year, workspaceIds],
     queryFn: () => getMonthlyEvolution(year, workspaceIds ?? undefined),
     enabled: !!year,
+    refetchOnMount: "always",
   });

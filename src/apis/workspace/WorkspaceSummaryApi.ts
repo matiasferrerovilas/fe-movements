@@ -1,18 +1,13 @@
 import type { WorkspaceSummary } from "../../models/WorkspaceSummary";
 import { api } from "../axios";
 
-export async function getWorkspaceMonthlySummary(
+export const getWorkspaceMonthlySummary = (
   workspaceId: number,
   year: number,
   month: number,
-): Promise<WorkspaceSummary> {
-  return api
+): Promise<WorkspaceSummary> =>
+  api
     .get<WorkspaceSummary>(`/workspaces/${workspaceId}/summary/monthly`, {
       params: { year, month },
     })
-    .then((r) => r.data)
-    .catch((error) => {
-      console.error("Error fetching workspace monthly summary:", error);
-      throw error;
-    });
-}
+    .then((r) => r.data);

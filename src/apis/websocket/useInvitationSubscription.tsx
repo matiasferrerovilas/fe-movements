@@ -32,8 +32,8 @@ export const useInvitationSubscription = () => {
       });
 
       queries.forEach(([queryKey, oldData]) => {
-        console.log("📨 Nueva invitación recibida:", event);
-        console.log("📨 Old Data:", oldData);
+        console.debug("📨 Nueva invitación recibida:", event);
+        console.debug("📨 Old Data:", oldData);
         if (!oldData) return;
 
         queryClient.setQueryData(queryKey, (old?: Invitations[]) => {

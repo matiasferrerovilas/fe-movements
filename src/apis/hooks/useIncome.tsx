@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllIncomes } from "../income/IncomeAPI";
+import { getAllIncomes } from "../income/IncomeApi";
 
 const INCOME_QUERY_KEY = "income-all" as const;
 

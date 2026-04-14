@@ -78,7 +78,7 @@ describe("useInvitationSubscription", () => {
     });
 
     vi.mocked(useCurrentUser).mockReturnValue({
-      data: { id: userId, email: "me@test.com", isFirstLogin: false, userType: "ADMIN" },
+      data: { id: userId, email: "me@test.com", isFirstLogin: false, userType: "ADMIN", hasSeenTour: true },
       isSuccess: true,
     } as ReturnType<typeof useCurrentUser>);
 

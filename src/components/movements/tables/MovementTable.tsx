@@ -13,13 +13,11 @@ import {
 } from "antd";
 import type { Movement } from "../../../models/Movement";
 import type { MovementFilters } from "../../../routes/movement";
-import { useMovement } from "../../../apis/hooks/useMovement";
+import { useDeleteMovement, useMovement } from "../../../apis/hooks/useMovement";
 import { usePagination } from "../../../apis/hooks/usePagination";
 import dayjs from "dayjs";
 import { TypeEnum, TypeEnumLabel } from "../../../enums/TypeExpense";
 import { useMovementSubscription } from "../../../apis/websocket/useMovementSubscription";
-import { useMutation } from "@tanstack/react-query";
-import { deleteExpenseApi } from "../../../apis/movement/ExpenseApi";
 import { DeleteOutlined } from "@ant-design/icons";
 import CategoryCircleTable from "./CategoryCircleTable";
 import { capitalizeFirst } from "../../utils/stringFunctions";
@@ -49,16 +47,12 @@ export default function MovementTable({ filters }: MovementTableProps) {
 
   useMovementSubscription();
 
-  const uploadMutation = useMutation({
-    mutationFn: (id: number) => deleteExpenseApi(id),
-    onSuccess: () => console.debug("✅ Movimiento eliminado correctamente"),
-    onError: (err) => console.error("❌ Error eliminado el movimiento", err),
-  });
+  const deleteMutation = useDeleteMovement();
 
   const { data: movements = { content: [], totalElements: 0, totalPages: 0 } } =
     useMovement(filters, page, pageSize);
 
-  const handleDelete = (id: number) => uploadMutation.mutate(id);
+  const handleDelete = (id: number) => deleteMutation.mutate(id);
 
   const formattedMovements = useMemo<FormattedMovement[]>(() => {
     return movements.content.map((m) => {

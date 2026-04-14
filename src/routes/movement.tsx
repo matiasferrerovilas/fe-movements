@@ -12,9 +12,6 @@ export const Route = createFileRoute("/movement")({
   beforeLoad: protectedRouteGuard({
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   }),
-  loader: ({ context: { queryClient } }) => {
-    queryClient.invalidateQueries({ queryKey: ["movement-history"] });
-  },
   component: RouteComponent,
 });
 

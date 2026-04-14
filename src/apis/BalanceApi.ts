@@ -12,7 +12,7 @@ import { api } from "./axios";
 
 const formatDate = (date: Date) => dayjs(date).format("YYYY-MM-DD");
 
-export async function getBalance(filters: BalanceFilters) {
+export const getBalance = (filters: BalanceFilters) => {
   const params = new URLSearchParams();
 
   if (filters.year) params.set("year", String(filters.year));
@@ -30,68 +30,48 @@ export async function getBalance(filters: BalanceFilters) {
       params,
       paramsSerializer: () => params.toString(),
     })
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error fetching balance:", error);
-      throw error;
-    });
-}
+    .then((response) => response.data);
+};
 
-export async function getBalanceWithCategoryByYear(filters: BalanceFilters) {
+export const getBalanceWithCategoryByYear = (filters: BalanceFilters) => {
   const params = new URLSearchParams();
   if (filters.dates) {
     params.set("startDate", formatDate(filters.dates[0]));
     params.set("endDate", formatDate(filters.dates[1]));
   }
 
-  // currencies: string[]
   if (filters.currency?.length)
     params.set("currencies", String(filters.currency));
 
-  // groups: number[]
   if (filters.account?.length) {
     filters.account.forEach((g) => params.append("groups", String(g)));
   }
 
   return api
     .get<BalanceByCategory[]>("/balance/category", { params })
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error fetching balances:", error);
-      throw error;
-    });
-}
+    .then((response) => response.data);
+};
 
-export async function getBalanceWithGroupByYearAndMonth({
+export const getBalanceWithGroupByYearAndMonth = ({
   year,
   month,
 }: {
   year: number;
   month: number;
-}) {
-  return api
+}) =>
+  api
     .get<BalanceByGroup[]>("/balance/group", {
       params: { year, month },
     })
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error fetching balances:", error);
-      throw error;
-    });
-}
+    .then((response) => response.data);
 
 export const getMonthlyEvolution = (
   year: number,
   accountIds?: number[],
-): Promise<MonthlyEvolutionRecord[]> => {
-  return api
+): Promise<MonthlyEvolutionRecord[]> =>
+  api
     .get<MonthlyEvolutionRecord[]>("/balance/monthly-evolution", {
       params: { year, accountIds },
       paramsSerializer: { indexes: null },
     })
-    .then((res) => res.data)
-    .catch((error) => {
-      console.error("Error fetching monthly evolution:", error);
-      throw error;
-    });
-};
+    .then((res) => res.data);

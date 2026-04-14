@@ -1,25 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
-import {
-  Card,
-  Col,
-  Divider,
-  Empty,
-  Flex,
-  Row,
-  Select,
-  Spin,
-  theme,
-  Typography,
-} from "antd";
+import { Col, Divider, Row, Typography } from "antd";
 import { CurrencyEnum } from "../enums/CurrencyEnum";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RoleEnum } from "../enums/RoleEnum";
 import dayjs from "dayjs";
-import type { Dayjs } from "dayjs";
-import { DatePicker } from "antd";
-import { DollarOutlined, EuroOutlined } from "@ant-design/icons";
-import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
 import { useWorkspaces } from "../apis/hooks/useWorkspaces";
 import { useCurrency } from "../apis/hooks/useCurrency";
 import { useUserDefault } from "../apis/hooks/useSettings";
@@ -28,33 +13,17 @@ import {
   useBalanceSeparateByGroup,
 } from "../apis/hooks/useBalance";
 import ResumenMensual from "../components/balance/ResumenMensual";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  Rectangle,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import EvolucionAnual from "../components/balance/EvolucionAnual";
+import BalanceFilters from "../components/balance/BalanceFilters";
+import CategoryPieChart from "../components/balance/CategoryPieChart";
+import GroupBarChart from "../components/balance/GroupBarChart";
 
 const { Title, Text } = Typography;
-const { RangePicker } = DatePicker;
 
 export const Route = createFileRoute("/balance")({
   beforeLoad: protectedRouteGuard({
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   }),
-  loader: ({ context: { queryClient } }) => {
-    queryClient.invalidateQueries({ queryKey: ["balance"] });
-    queryClient.invalidateQueries({ queryKey: ["balance-category"] });
-  },
   component: RouteComponent,
 });
 
@@ -66,31 +35,12 @@ export type BalanceFilters = {
   dates: [Date, Date];
 };
 
-const CHART_COLORS = [
-  "#6366f1",
-  "#22c55e",
-  "#f59e0b",
-  "#ef4444",
-  "#3b82f6",
-  "#ec4899",
-  "#14b8a6",
-  "#f97316",
-];
-
-const capitalize = (str: string) =>
-  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-
-const currencyIcon = (currency?: CurrencyEnum) =>
-  currency === CurrencyEnum.EUR ? <EuroOutlined /> : <DollarOutlined />;
-
 const DEFAULT_DATES: [Date, Date] = [
   dayjs().startOf("month").toDate(),
   dayjs().endOf("month").toDate(),
 ];
 
 function RouteComponent() {
-  const { token } = theme.useToken();
-
   const [filters, setFilters] = useState<BalanceFilters>({
     currency: CurrencyEnum.ARS,
     account: null,
@@ -170,243 +120,43 @@ function RouteComponent() {
     [groupData],
   );
 
-  const rangePickerValue = useMemo(
-    () =>
-      filters.dates
-        ? ([dayjs(filters.dates[0]), dayjs(filters.dates[1])] as [Dayjs, Dayjs])
-        : null,
-    [filters.dates],
-  );
-
-  const handleRangeChange = useCallback(
-    (dates: [Dayjs | null, Dayjs | null] | null) => {
-      if (!dates?.[0] || !dates?.[1]) return;
-      handleChange("dates", [
-        dates[0].hour(12).minute(0).second(0).millisecond(0).toDate(),
-        dates[1].hour(12).minute(0).second(0).millisecond(0).toDate(),
-      ]);
-    },
-    [handleChange],
-  );
-
-  const categoryTotal = useMemo(
-    () => categoryChart.reduce((sum, item) => sum + item.value, 0),
-    [categoryChart],
-  );
-
   return (
     <div style={{ paddingTop: 24, paddingBottom: 40 }}>
-      {/* ── Page header ── */}
-      <div className="fade-in-up" style={{ marginBottom: 20, animationDelay: "0ms" }}>
+      {/* Page header */}
+      <div
+        className="fade-in-up"
+        style={{ marginBottom: 20, animationDelay: "0ms" }}
+      >
         <Title level={3} style={{ margin: 0 }}>
           Balance Financiero
         </Title>
         <Text type="secondary">Vista detallada de ingresos y gastos</Text>
       </div>
 
-      {/* ── Filtros en card separada ── */}
-      <Card className="fade-in-up" style={{ marginBottom: 24, animationDelay: "60ms" }}>
-        <Row gutter={[16, 16]} align="bottom">
-          <Col xs={24} sm={12} md={6}>
-            <Flex vertical gap={4}>
-              <Text type="secondary" style={{ fontSize: 12 }}>Moneda</Text>
-              <Select
-                value={filters.currency}
-                onChange={(val: CurrencyEnum) => handleChange("currency", val)}
-                style={{ width: "100%" }}
-                suffixIcon={currencyIcon(filters.currency)}
-                options={currencies.map((c) => ({
-                  value: c.symbol,
-                  label: (
-                    <Flex gap={6} align="center">
-                      {currencyIcon(c.symbol as CurrencyEnum)}
-                      {capitalize(c.symbol)}
-                    </Flex>
-                  ),
-                }))}
-              />
-            </Flex>
-          </Col>
+      {/* Filtros */}
+      <BalanceFilters
+        filters={filters}
+        memberships={memberships}
+        currencies={currencies}
+        onFilterChange={handleChange}
+      />
 
-          <Col xs={24} sm={12} md={10}>
-            <Flex vertical gap={4}>
-              <Text type="secondary" style={{ fontSize: 12 }}>Período</Text>
-              <RangePicker
-                style={{ width: "100%" }}
-                value={rangePickerValue}
-                onChange={handleRangeChange}
-              />
-            </Flex>
-          </Col>
-
-          <Col xs={24} sm={12} md={8}>
-            <Flex vertical gap={4}>
-              <Text type="secondary" style={{ fontSize: 12 }}>Grupos</Text>
-              <Select
-                mode="multiple"
-                value={filters.account ?? []}
-                onChange={(val: number[]) => handleChange("account", val)}
-                style={{ width: "100%" }}
-                allowClear
-                placeholder="Todos los grupos"
-                options={memberships.map((m) => ({
-                  label: m.workspaceName,
-                  value: m.workspaceId,
-                  key: m.workspaceId,
-                }))}
-              />
-            </Flex>
-          </Col>
-        </Row>
-      </Card>
-
-      {/* ── Summary cards ── */}
+      {/* Summary cards */}
       <ResumenMensual filters={filters} />
 
       <Divider style={{ margin: "8px 0 24px" }} />
 
-      {/* ── Charts ── */}
+      {/* Charts */}
       <Row gutter={[20, 20]}>
-        {/* Donut — Gastos por categoría */}
         <Col xs={24} lg={12}>
-          <Card
-            title="Gastos por Categoría"
-            className="fade-in-up"
-            style={{
-              borderRadius: token.borderRadiusLG,
-              borderColor: token.colorBorder,
-              height: "100%",
-              animationDelay: "300ms",
-            }}
-          >
-            {fetchingCategory ? (
-              <Flex justify="center" style={{ padding: 40 }}>
-                <Spin indicator={<LoadingOutlined spin />} size="large" />
-              </Flex>
-            ) : categoryChart.length === 0 ? (
-              <Flex justify="center" style={{ padding: 40 }}>
-                <Empty description="Sin datos para el período" />
-              </Flex>
-            ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={categoryChart}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={70}
-                    outerRadius={110}
-                    paddingAngle={3}
-                    label={false}
-                  >
-                    {categoryChart.map((_, idx) => (
-                      <Cell
-                        key={idx}
-                        fill={CHART_COLORS[idx % CHART_COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  {/* Total central */}
-                  <text
-                    x="50%"
-                    y="46%"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    style={{
-                      fontSize: 13,
-                      fill: token.colorTextSecondary,
-                      fontFamily: "inherit",
-                    }}
-                  >
-                    Total
-                  </text>
-                  <text
-                    x="50%"
-                    y="56%"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 700,
-                      fill: token.colorText,
-                      fontFamily: "inherit",
-                    }}
-                  >
-                    ${categoryTotal.toLocaleString("es-AR", { maximumFractionDigits: 0 })}
-                  </text>
-                  <Tooltip
-                    formatter={(val, name) => {
-                      const pct = categoryTotal > 0
-                        ? ((Number(val) / categoryTotal) * 100).toFixed(1)
-                        : "0.0";
-                      return [`$${Number(val).toLocaleString("es-AR")} (${pct}%)`, name];
-                    }}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
-          </Card>
+          <CategoryPieChart data={categoryChart} isFetching={fetchingCategory} />
         </Col>
-
-        {/* Barras — Gastos por grupo y moneda */}
         <Col xs={24} lg={12}>
-          <Card
-            title="Gastos por Grupo"
-            className="fade-in-up"
-            style={{
-              borderRadius: token.borderRadiusLG,
-              borderColor: token.colorBorder,
-              height: "100%",
-              animationDelay: "360ms",
-            }}
-          >
-            {fetchingGroup ? (
-              <Flex justify="center" style={{ padding: 40 }}>
-                <Spin indicator={<LoadingOutlined spin />} size="large" />
-              </Flex>
-            ) : groupChart.length === 0 ? (
-              <Flex justify="center" style={{ padding: 40 }}>
-                <Empty description="Sin datos para el período" />
-              </Flex>
-            ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart
-                  data={groupChart}
-                  margin={{ top: 4, right: 8, left: 0, bottom: 4 }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke={token.colorBorderSecondary}
-                  />
-                  <XAxis dataKey="group" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} width={60} />
-                  <Tooltip
-                    formatter={(val) =>
-                      `$${(val ?? 0).toLocaleString("es-AR")}`
-                    }
-                  />
-                  <Legend />
-                  {groupCurrencies.map((currency, idx) => (
-                    <Bar
-                      key={currency}
-                      dataKey={currency}
-                      name={currency}
-                      fill={CHART_COLORS[idx % CHART_COLORS.length]}
-                      radius={[4, 4, 0, 0]}
-                      activeBar={
-                        <Rectangle
-                          fill={CHART_COLORS[(idx + 2) % CHART_COLORS.length]}
-                        />
-                      }
-                    />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </Card>
+          <GroupBarChart
+            data={groupChart}
+            currencies={groupCurrencies}
+            isFetching={fetchingGroup}
+          />
         </Col>
       </Row>
 

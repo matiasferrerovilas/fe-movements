@@ -19,6 +19,7 @@ const mockCurrentUser: CurrentUser = {
   email: "test@example.com",
   isFirstLogin: false,
   userType: "ADMIN",
+  hasSeenTour: true,
 };
 
 const server = setupServer(

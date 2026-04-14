@@ -29,7 +29,7 @@ import {
   addIncome,
   deleteIncome,
   reloadIncome,
-} from "../../apis/income/IncomeAPI";
+} from "../../apis/income/IncomeApi";
 import type { Income, IncomeAddForm, IncomeAddPayload } from "../../models/Income";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useBanks } from "../../apis/hooks/useBank";
