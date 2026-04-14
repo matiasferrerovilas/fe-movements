@@ -79,6 +79,10 @@ const NAV_ITEMS: SideBarItem[] = [
     path: "/movement",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
+];
+
+// Items que van en el dropdown del usuario
+const USER_MENU_ITEMS: SideBarItem[] = [
   {
     key: "settings",
     icon: <SettingOutlined />,
@@ -253,6 +257,10 @@ export default function NavHeader() {
     (item) => !item.roles?.length || hasAnyRole(...(item.roles ?? [])),
   );
 
+  const userMenuVisible = USER_MENU_ITEMS.filter(
+    (item) => !item.roles?.length || hasAnyRole(...(item.roles ?? [])),
+  );
+
   const isHome = currentPath === "/";
   const activeKey = visibleItems.find((i) => i.path === currentPath)?.key ?? "";
 
@@ -262,6 +270,20 @@ export default function NavHeader() {
   };
 
   const dropdownItems: MenuProps["items"] = [
+    ...userMenuVisible.map((item) => ({
+      key: item.key,
+      label: item.label,
+      icon: item.icon,
+      onClick: () => router.navigate({ to: item.path }),
+    })),
+    { type: "divider" as const },
+    {
+      key: "theme",
+      label: isDark ? "Modo claro" : "Modo oscuro",
+      icon: isDark ? <SunOutlined /> : <MoonOutlined />,
+      onClick: toggleTheme,
+    },
+    { type: "divider" as const },
     {
       key: "logout",
       label: "Cerrar sesión",
@@ -334,7 +356,7 @@ export default function NavHeader() {
           height: 56,
         }}
       >
-        {/* Mobile: hamburger + logo + theme toggle + avatar */}
+        {/* Mobile: hamburger + logo + avatar */}
         {isMobile ? (
           <>
             <Button
@@ -363,13 +385,12 @@ export default function NavHeader() {
               <img src="/favicon.png" alt="Movements" style={{ height: 40, width: 40 }} />
             </button>
             <Flex align="center" gap={4}>
-              {ThemeToggle}
               {UserAvatar}
             </Flex>
           </>
         ) : (
           <>
-            {/* Desktop: logo izquierda + workspace selector + nav centrado + theme toggle + avatar */}
+            {/* Desktop: logo izquierda + workspace selector + nav centrado + avatar */}
             <Flex style={{ flex: 1 }} align="center" gap={12}>
               <button
                 onClick={() => router.navigate({ to: "/" })}
@@ -398,7 +419,6 @@ export default function NavHeader() {
               onRefRegister={handleRefRegister}
             />
             <Flex style={{ flex: 1 }} justify="flex-end" align="center" gap={8}>
-              {ThemeToggle}
               {UserAvatar}
             </Flex>
           </>
@@ -434,12 +454,21 @@ export default function NavHeader() {
           mode="inline"
           selectedKeys={[activeKey]}
           style={{ border: "none", paddingTop: 8 }}
-          items={visibleItems.map((item) => ({
-            key: item.key,
-            icon: item.icon,
-            label: item.label,
-            onClick: () => handleClick(item),
-          }))}
+          items={[
+            ...visibleItems.map((item) => ({
+              key: item.key,
+              icon: item.icon,
+              label: item.label,
+              onClick: () => handleClick(item),
+            })),
+            { type: "divider" as const },
+            ...userMenuVisible.map((item) => ({
+              key: item.key,
+              icon: item.icon,
+              label: item.label,
+              onClick: () => handleClick(item),
+            })),
+          ]}
         />
         <div style={{ padding: "16px 16px 0" }}>
           <Flex gap={8} style={{ marginBottom: 8 }}>
@@ -465,7 +494,6 @@ export default function NavHeader() {
           open={tourOpen}
           onClose={() => setTourOpen(false)}
           navRefsMap={navRefsMap}
-          hasAdmin={hasAnyRole(RoleEnum.ADMIN)}
         />
       )}
     </>

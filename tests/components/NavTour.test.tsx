@@ -40,11 +40,7 @@ describe("NavTour", () => {
     expenses.textContent = "Gastos";
     document.body.appendChild(expenses);
 
-    const settings = document.createElement("button");
-    settings.textContent = "Ajustes";
-    document.body.appendChild(settings);
-
-    const elements = { balance, servicios, budgets, expenses, settings };
+    const elements = { balance, servicios, budgets, expenses };
 
     const navRefsMap: MutableRefObject<Record<string, HTMLButtonElement | null>> = {
       current: {
@@ -52,7 +48,6 @@ describe("NavTour", () => {
         servicios,
         budgets,
         expenses,
-        settings,
       },
     };
 
@@ -79,10 +74,9 @@ describe("NavTour", () => {
   });
 
   it("should render tour when open is true", () => {
-    render(
-      <NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} hasAdmin={false} />,
-      { wrapper: makeWrapper() },
-    );
+    render(<NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} />, {
+      wrapper: makeWrapper(),
+    });
 
     // First step should show Balance title in the tour
     expect(screen.getByText(/Visualiza el resumen de tus ingresos/)).toBeInTheDocument();
@@ -91,10 +85,9 @@ describe("NavTour", () => {
   });
 
   it("should not render tour when open is false", () => {
-    render(
-      <NavTour open={false} onClose={vi.fn()} navRefsMap={mockNavRefsMap} hasAdmin={false} />,
-      { wrapper: makeWrapper() },
-    );
+    render(<NavTour open={false} onClose={vi.fn()} navRefsMap={mockNavRefsMap} />, {
+      wrapper: makeWrapper(),
+    });
 
     // Tour content should not be visible
     expect(
@@ -104,10 +97,9 @@ describe("NavTour", () => {
 
   it("should call onClose and markSeen when tour is closed via X button", async () => {
     const onClose = vi.fn();
-    render(
-      <NavTour open={true} onClose={onClose} navRefsMap={mockNavRefsMap} hasAdmin={false} />,
-      { wrapper: makeWrapper() },
-    );
+    render(<NavTour open={true} onClose={onClose} navRefsMap={mockNavRefsMap} />, {
+      wrapper: makeWrapper(),
+    });
 
     // Find and click the close button (X)
     const closeButton = document.querySelector(".ant-tour-close");
@@ -122,42 +114,30 @@ describe("NavTour", () => {
   });
 
   it("should show step indicator with correct format", () => {
-    render(
-      <NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} hasAdmin={false} />,
-      { wrapper: makeWrapper() },
-    );
+    render(<NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} />, {
+      wrapper: makeWrapper(),
+    });
 
-    // Should show "1 / 5" for first step (5 items without admin)
-    expect(screen.getByText("1 / 5")).toBeInTheDocument();
+    // Should show "1 / 4" for first step (4 items: balance, servicios, presupuestos, gastos)
+    expect(screen.getByText("1 / 4")).toBeInTheDocument();
   });
 
-  it("should have 6 steps when hasAdmin is true", async () => {
-    const admin = document.createElement("button");
-    admin.textContent = "Admin";
-    document.body.appendChild(admin);
+  it("should have 4 steps total", () => {
+    render(<NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} />, {
+      wrapper: makeWrapper(),
+    });
 
-    mockNavRefsMap.current.admin = admin;
-
-    render(
-      <NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} hasAdmin={true} />,
-      { wrapper: makeWrapper() },
-    );
-
-    // Should show "1 / 6" for first step (6 items with admin)
-    expect(screen.getByText("1 / 6")).toBeInTheDocument();
-
-    // Cleanup
-    admin.parentNode?.removeChild(admin);
+    // Tour should have 4 steps: Balance, Servicios, Presupuestos, Gastos
+    expect(screen.getByText("1 / 4")).toBeInTheDocument();
   });
 
   it("should navigate through steps when clicking next", async () => {
-    render(
-      <NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} hasAdmin={false} />,
-      { wrapper: makeWrapper() },
-    );
+    render(<NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} />, {
+      wrapper: makeWrapper(),
+    });
 
     // First step
-    expect(screen.getByText("1 / 5")).toBeInTheDocument();
+    expect(screen.getByText("1 / 4")).toBeInTheDocument();
 
     // Click next button
     const nextButton = screen.getByRole("button", { name: /next/i });
@@ -165,7 +145,7 @@ describe("NavTour", () => {
 
     // Should be on second step
     await waitFor(() => {
-      expect(screen.getByText("2 / 5")).toBeInTheDocument();
+      expect(screen.getByText("2 / 4")).toBeInTheDocument();
     });
   });
 });

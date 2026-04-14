@@ -9,7 +9,6 @@ type NavTourProps = {
   open: boolean;
   onClose: () => void;
   navRefsMap: NavRefsMap;
-  hasAdmin: boolean;
 };
 
 const TOUR_STEPS: Record<string, { title: string; description: string }> = {
@@ -33,19 +32,9 @@ const TOUR_STEPS: Record<string, { title: string; description: string }> = {
     description:
       "Registra y consulta todos tus movimientos. Filtra por tipo, banco, categoría y más.",
   },
-  ajustes: {
-    title: "Ajustes",
-    description:
-      "Configura tu cuenta, moneda por defecto, categorías, bancos y administra tus grupos.",
-  },
-  admin: {
-    title: "Administración",
-    description:
-      "Panel de administración del sistema. Gestión avanzada de usuarios y configuración.",
-  },
 };
 
-export default function NavTour({ open, onClose, navRefsMap, hasAdmin }: NavTourProps) {
+export default function NavTour({ open, onClose, navRefsMap }: NavTourProps) {
   const { mutate: markSeen } = useMarkTourSeen();
 
   const handleClose = () => {
@@ -60,12 +49,7 @@ export default function NavTour({ open, onClose, navRefsMap, hasAdmin }: NavTour
     { target: () => navRefsMap.current.servicios as HTMLElement, ...TOUR_STEPS.servicios },
     { target: () => navRefsMap.current.budgets as HTMLElement, ...TOUR_STEPS.presupuestos },
     { target: () => navRefsMap.current.expenses as HTMLElement, ...TOUR_STEPS.gastos },
-    { target: () => navRefsMap.current.settings as HTMLElement, ...TOUR_STEPS.ajustes },
   ];
-
-  if (hasAdmin) {
-    steps.push({ target: () => navRefsMap.current.admin as HTMLElement, ...TOUR_STEPS.admin });
-  }
 
   return (
     <Tour

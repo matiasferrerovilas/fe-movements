@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ConfigProvider } from "antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -92,43 +92,90 @@ afterEach(() => {
 
 describe("NavHeader", () => {
   describe("render inicial", () => {
-    it("muestra el toggle de tema en modo light", () => {
+    it("muestra el avatar del usuario", () => {
       renderNavHeader(false);
-      // Segmented renderiza los dos íconos; el activo es el sol
-      expect(document.querySelector(".ant-segmented")).toBeInTheDocument();
-    });
-
-    it("muestra el toggle de tema en modo dark", () => {
-      renderNavHeader(true);
-      expect(document.querySelector(".ant-segmented")).toBeInTheDocument();
+      // El avatar debería estar presente
+      expect(document.querySelector(".ant-avatar")).toBeInTheDocument();
     });
   });
 
-  describe("toggle de tema", () => {
-    it("llama a toggleTheme al hacer click en la opción inactiva (light → dark)", async () => {
+  describe("dropdown del usuario", () => {
+    it("muestra 'Modo oscuro' en el dropdown cuando está en modo light", async () => {
+      const user = userEvent.setup();
+      renderNavHeader(false);
+
+      // Click en el avatar para abrir el dropdown
+      const avatar = document.querySelector(".ant-avatar");
+      await user.click(avatar as HTMLElement);
+
+      // Esperar a que aparezca el menú
+      await waitFor(() => {
+        expect(screen.getByText("Modo oscuro")).toBeInTheDocument();
+      });
+    });
+
+    it("muestra 'Modo claro' en el dropdown cuando está en modo dark", async () => {
+      const user = userEvent.setup();
+      renderNavHeader(true);
+
+      // Click en el avatar para abrir el dropdown
+      const avatar = document.querySelector(".ant-avatar");
+      await user.click(avatar as HTMLElement);
+
+      // Esperar a que aparezca el menú
+      await waitFor(() => {
+        expect(screen.getByText("Modo claro")).toBeInTheDocument();
+      });
+    });
+
+    it("llama a toggleTheme al hacer click en 'Modo oscuro'", async () => {
       const toggleTheme = vi.fn();
       const user = userEvent.setup();
       renderNavHeader(false, toggleTheme);
 
-      // En modo light el activo es "light"; click en "dark" (MoonOutlined) dispara el toggle
-      const options = document.querySelectorAll(".ant-segmented-item");
-      // options[1] = dark (luna)
-      await user.click(options[1] as HTMLElement);
+      // Click en el avatar para abrir el dropdown
+      const avatar = document.querySelector(".ant-avatar");
+      await user.click(avatar as HTMLElement);
+
+      // Esperar y hacer click en "Modo oscuro"
+      await waitFor(() => {
+        expect(screen.getByText("Modo oscuro")).toBeInTheDocument();
+      });
+      await user.click(screen.getByText("Modo oscuro"));
 
       expect(toggleTheme).toHaveBeenCalledTimes(1);
     });
 
-    it("llama a toggleTheme al hacer click en la opción inactiva (dark → light)", async () => {
+    it("llama a toggleTheme al hacer click en 'Modo claro'", async () => {
       const toggleTheme = vi.fn();
       const user = userEvent.setup();
       renderNavHeader(true, toggleTheme);
 
-      // En modo dark el activo es "dark"; click en "light" (SunOutlined) dispara el toggle
-      const options = document.querySelectorAll(".ant-segmented-item");
-      // options[0] = light (sol)
-      await user.click(options[0] as HTMLElement);
+      // Click en el avatar para abrir el dropdown
+      const avatar = document.querySelector(".ant-avatar");
+      await user.click(avatar as HTMLElement);
+
+      // Esperar y hacer click en "Modo claro"
+      await waitFor(() => {
+        expect(screen.getByText("Modo claro")).toBeInTheDocument();
+      });
+      await user.click(screen.getByText("Modo claro"));
 
       expect(toggleTheme).toHaveBeenCalledTimes(1);
+    });
+
+    it("muestra 'Cerrar sesión' en el dropdown", async () => {
+      const user = userEvent.setup();
+      renderNavHeader(false);
+
+      // Click en el avatar para abrir el dropdown
+      const avatar = document.querySelector(".ant-avatar");
+      await user.click(avatar as HTMLElement);
+
+      // Esperar a que aparezca el menú
+      await waitFor(() => {
+        expect(screen.getByText("Cerrar sesión")).toBeInTheDocument();
+      });
     });
   });
 });
