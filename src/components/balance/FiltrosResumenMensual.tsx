@@ -2,7 +2,6 @@ import { Col, DatePicker, Row, Select } from "antd";
 import { CurrencyEnum } from "../../enums/CurrencyEnum";
 import type { BalanceFilters } from "../../routes/balance";
 import { useCallback, useEffect, useState } from "react";
-import { useWorkspaces } from "../../apis/hooks/useWorkspaces";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
@@ -19,7 +18,6 @@ export default function FiltrosResumenMensual({
   initialFilters,
   onFiltersChange,
 }: Props) {
-  const { data: memberships = [] } = useWorkspaces();
   const { data: currencies = [] } = useCurrency();
   const [filters, setFilters] = useState<BalanceFilters>(initialFilters);
   const { RangePicker } = DatePicker;
@@ -43,7 +41,7 @@ export default function FiltrosResumenMensual({
   const handleChange = useCallback(
     (
       key: keyof BalanceFilters,
-      value: string[] | CurrencyEnum | number[] | Date[],
+      value: string[] | CurrencyEnum | Date[],
     ) => setFilters((prev) => ({ ...prev, [key]: value })),
     [],
   );
@@ -102,23 +100,6 @@ export default function FiltrosResumenMensual({
 
               handleChange("dates", [startDateFormated, endDateFormated]);
             }}
-          />
-        </Col>
-        <Col>
-          <Select
-            mode="multiple"
-            value={filters.account}
-            onChange={(val: number[]) =>
-              handleChange("account", val as number[])
-            }
-            style={{ minWidth: 200 }}
-            allowClear
-            placeholder="Seleccionar grupo"
-            options={memberships.map((membership) => ({
-              label: membership.workspaceName,
-              value: membership.workspaceId,
-              key: membership.workspaceId,
-            }))}
           />
         </Col>
       </Row>

@@ -20,11 +20,10 @@ export const paySubscriptionApi = (service: Service) =>
   api.patch(`${BASE_PATH}/${service.id}/payment`).then((response) => response.data);
 
 export const updateSubscriptionApi = (serviceToUpdate: ServiceToUpdate) => {
-  const { workspace: _workspace, ...changes } = serviceToUpdate.changes;
   const payload = {
-    ...changes,
-    lastPayment: changes.lastPayment
-      ? dayjs(changes.lastPayment).format("YYYY-MM-DD")
+    ...serviceToUpdate.changes,
+    lastPayment: serviceToUpdate.changes.lastPayment
+      ? dayjs(serviceToUpdate.changes.lastPayment).format("YYYY-MM-DD")
       : null,
   };
   return api
