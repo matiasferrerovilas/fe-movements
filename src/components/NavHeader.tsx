@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Avatar,
   Button,
@@ -30,10 +30,12 @@ import { Header } from "antd/es/layout/layout";
 import { useCurrentUser } from "../apis/hooks/useCurrentUser";
 import { useUserRoles } from "../apis/hooks/useUserRole";
 import { RoleEnum } from "../enums/RoleEnum";
+import { UserTypeEnum } from "../enums/UserTypeEnum";
 import { useTheme } from "../apis/theme/ThemeContext";
 import NavTour from "./NavTour";
 import WorkspaceSelector from "./WorkspaceSelector";
 import { getUserDisplayName } from "./utils/userDisplayName";
+import { getServiceLabels } from "./utils/serviceLabels";
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -51,36 +53,40 @@ type SideBarItem = {
   roles?: string[];
 };
 
-const NAV_ITEMS: SideBarItem[] = [
-  {
-    key: "balance",
-    icon: <PieChartOutlined />,
-    label: "Balance",
-    path: "/balance",
-    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
-  },
-  {
-    key: "servicios",
-    icon: <BookOutlined />,
-    label: "Servicios",
-    path: "/services",
-    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
-  },
-  {
-    key: "budgets",
-    icon: <FundOutlined />,
-    label: "Presupuestos",
-    path: "/budgets",
-    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
-  },
-  {
-    key: "expenses",
-    icon: <LineChartOutlined />,
-    label: "Gastos",
-    path: "/movement",
-    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
-  },
-];
+const getNavItems = (userType: UserTypeEnum | null): SideBarItem[] => {
+  const labels = getServiceLabels(userType);
+
+  return [
+    {
+      key: "balance",
+      icon: <PieChartOutlined />,
+      label: "Balance",
+      path: "/balance",
+      roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+    },
+    {
+      key: "servicios",
+      icon: <BookOutlined />,
+      label: labels.plural,
+      path: "/services",
+      roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+    },
+    {
+      key: "budgets",
+      icon: <FundOutlined />,
+      label: "Presupuestos",
+      path: "/budgets",
+      roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+    },
+    {
+      key: "expenses",
+      icon: <LineChartOutlined />,
+      label: "Gastos",
+      path: "/movement",
+      roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+    },
+  ];
+};
 
 // Items que van en el dropdown del usuario
 const USER_MENU_ITEMS: SideBarItem[] = [
@@ -233,6 +239,12 @@ export default function NavHeader() {
   const displayName = currentUser ? getUserDisplayName(currentUser) : null;
   const email = currentUser?.email;
 
+  // Generar items de navegación dinámicamente según el tipo de usuario
+  const navItems = useMemo(
+    () => getNavItems(currentUser?.userType ?? null),
+    [currentUser?.userType],
+  );
+
   // Tour state and refs
   const [tourOpen, setTourOpen] = useState(false);
   const navRefsMap = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -255,7 +267,7 @@ export default function NavHeader() {
     }
   }, [shouldShowTour, tourOpen]);
 
-  const visibleItems = NAV_ITEMS.filter(
+  const visibleItems = navItems.filter(
     (item) => !item.roles?.length || hasAnyRole(...(item.roles ?? [])),
   );
 

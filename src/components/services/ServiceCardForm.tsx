@@ -23,6 +23,8 @@ import dayjs from "dayjs";
 import type { ServiceToAdd } from "../../apis/SubscriptionApi";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useUserDefault } from "../../apis/hooks/useSettings";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getServiceLabels } from "../utils/serviceLabels";
 
 const { Text } = Typography;
 
@@ -44,6 +46,9 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const { data: currencies = [] } = useCurrency();
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const { token } = theme.useToken();
+
+  const { data: currentUser } = useCurrentUser();
+  const labels = getServiceLabels(currentUser?.userType ?? null);
 
   const onFinish = (values: CreateServiceForm) => {
     const service: ServiceToAdd = {
@@ -101,7 +106,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
           </div>
           <div>
             <Text strong style={{ fontSize: 15 }}>
-              Nuevo Servicio
+              {labels.nuevo}
             </Text>
             <Text type="secondary" style={{ fontSize: 12, display: "block" }}>
               {isPaid ? "Marcado como pagado" : "Pendiente de pago"}
@@ -211,7 +216,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
             transition: "background 0.4s ease, border-color 0.4s ease",
           }}
         >
-          Agregar Servicio
+          {labels.agregar}
         </Button>
       </Form>
     </Card>

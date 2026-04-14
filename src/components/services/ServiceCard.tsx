@@ -27,6 +27,8 @@ import type { Service, ServiceToUpdate } from "../../models/Service";
 import React, { useState } from "react";
 import dayjs from "dayjs";
 import { useDeleteService } from "../../apis/hooks/useService";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getServiceLabels } from "../utils/serviceLabels";
 
 const { Text, Title } = Typography;
 
@@ -53,6 +55,9 @@ export const ServiceCard = React.memo(function ServiceCard({
   const [form] = Form.useForm<ServiceFormUpdate>();
   const { token } = theme.useToken();
   const { message } = App.useApp();
+
+  const { data: currentUser } = useCurrentUser();
+  const labels = getServiceLabels(currentUser?.userType ?? null);
 
   const isPaid = service.isPaid;
   const statusColor = isPaid ? token.colorSuccess : token.colorError;
@@ -214,7 +219,7 @@ export const ServiceCard = React.memo(function ServiceCard({
                 />
               </Tooltip>
               <Popconfirm
-                title="¿Eliminar el servicio?"
+                title={labels.eliminar}
                 description="Esta acción no se puede deshacer."
                 onConfirm={() => deleteServiceMutation.mutate(service)}
                 okText="Sí"

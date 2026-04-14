@@ -2,6 +2,9 @@ import { Tour } from "antd";
 import type { TourProps } from "antd";
 import type { MutableRefObject } from "react";
 import { useMarkTourSeen } from "../apis/hooks/useTour";
+import { useCurrentUser } from "../apis/hooks/useCurrentUser";
+import { getServiceLabels } from "./utils/serviceLabels";
+import type { UserTypeEnum } from "../enums/UserTypeEnum";
 
 type NavRefsMap = MutableRefObject<Record<string, HTMLButtonElement | null>>;
 
@@ -11,31 +14,40 @@ type NavTourProps = {
   navRefsMap: NavRefsMap;
 };
 
-const TOUR_STEPS: Record<string, { title: string; description: string }> = {
-  balance: {
-    title: "Balance",
-    description:
-      "Visualiza el resumen de tus ingresos y gastos. Gráficos por categoría, grupo y evolución mensual.",
-  },
-  servicios: {
-    title: "Servicios",
-    description:
-      "Gestiona tus suscripciones y servicios recurrentes. Lleva control de pagos mensuales.",
-  },
-  presupuestos: {
-    title: "Presupuestos",
-    description:
-      "Define presupuestos mensuales por categoría y monitorea tu progreso de gastos.",
-  },
-  gastos: {
-    title: "Gastos",
-    description:
-      "Registra y consulta todos tus movimientos. Filtra por tipo, banco, categoría y más.",
-  },
+const getTourSteps = (
+  userType: UserTypeEnum | null,
+): Record<string, { title: string; description: string }> => {
+  const labels = getServiceLabels(userType);
+
+  return {
+    balance: {
+      title: "Balance",
+      description:
+        "Visualiza el resumen de tus ingresos y gastos. Gráficos por categoría, grupo y evolución mensual.",
+    },
+    servicios: {
+      title: labels.tourTitle,
+      description: labels.tourDescription,
+    },
+    presupuestos: {
+      title: "Presupuestos",
+      description:
+        "Define presupuestos mensuales por categoría y monitorea tu progreso de gastos.",
+    },
+    gastos: {
+      title: "Gastos",
+      description:
+        "Registra y consulta todos tus movimientos. Filtra por tipo, banco, categoría y más.",
+    },
+  };
 };
 
 export default function NavTour({ open, onClose, navRefsMap }: NavTourProps) {
   const { mutate: markSeen } = useMarkTourSeen();
+  const { data: currentUser } = useCurrentUser();
+
+  const userType = currentUser?.userType ?? null;
+  const tourSteps = getTourSteps(userType);
 
   const handleClose = () => {
     markSeen();
@@ -45,10 +57,22 @@ export default function NavTour({ open, onClose, navRefsMap }: NavTourProps) {
   // Use functions to access refs - this is the recommended pattern for Tour
   // Cast to the expected type since we know the refs will be populated when tour opens
   const steps: NonNullable<TourProps["steps"]> = [
-    { target: () => navRefsMap.current.balance as HTMLElement, ...TOUR_STEPS.balance },
-    { target: () => navRefsMap.current.servicios as HTMLElement, ...TOUR_STEPS.servicios },
-    { target: () => navRefsMap.current.budgets as HTMLElement, ...TOUR_STEPS.presupuestos },
-    { target: () => navRefsMap.current.expenses as HTMLElement, ...TOUR_STEPS.gastos },
+    {
+      target: () => navRefsMap.current.balance as HTMLElement,
+      ...tourSteps.balance,
+    },
+    {
+      target: () => navRefsMap.current.servicios as HTMLElement,
+      ...tourSteps.servicios,
+    },
+    {
+      target: () => navRefsMap.current.budgets as HTMLElement,
+      ...tourSteps.presupuestos,
+    },
+    {
+      target: () => navRefsMap.current.expenses as HTMLElement,
+      ...tourSteps.gastos,
+    },
   ];
 
   return (

@@ -5,6 +5,8 @@ import {
   ClockCircleOutlined,
 } from "@ant-design/icons";
 import type { Service } from "../../models/Service";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getServiceLabels } from "../utils/serviceLabels";
 
 const { Text } = Typography;
 
@@ -15,6 +17,9 @@ interface ServiceSummaryProps {
 
 export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
   const { token } = theme.useToken();
+
+  const { data: currentUser } = useCurrentUser();
+  const labels = getServiceLabels(currentUser?.userType ?? null);
 
   const unpaidServices = services?.filter((s) => !s.isPaid) ?? [];
   const paidServices = services?.filter((s) => s.isPaid) ?? [];
@@ -31,11 +36,11 @@ export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
         <AppstoreOutlined style={{ fontSize: 20, color: token.colorPrimary }} />
       ),
       iconBg: token.colorPrimaryBg,
-      title: "Total Servicios",
+      title: labels.total,
       value: services?.length ?? 0,
       prefix: undefined,
       suffix: undefined,
-      sub: "Servicios registrados",
+      sub: labels.registrados,
       valueColor: token.colorPrimary,
     },
     {
@@ -50,7 +55,7 @@ export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
       value: totalPaid,
       prefix: "$",
       suffix: undefined,
-      sub: `${paidServices.length} servicios al día`,
+      sub: `${paidServices.length} ${labels.alDia}`,
       valueColor: token.colorSuccess,
     },
     {
@@ -65,7 +70,7 @@ export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
       value: totalUnpaid,
       prefix: "$",
       suffix: undefined,
-      sub: `${unpaidServices.length} servicios pendientes`,
+      sub: `${unpaidServices.length} ${labels.pendientes}`,
       valueColor: token.colorWarning,
     },
   ];

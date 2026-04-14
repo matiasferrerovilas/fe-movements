@@ -3,12 +3,29 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { MutableRefObject, ReactNode } from "react";
 import NavTour from "../../src/components/NavTour";
+import { useCurrentUser } from "../../src/apis/hooks/useCurrentUser";
 
 // Mock the useTour hook
 const mockMutate = vi.fn();
 vi.mock("../../src/apis/hooks/useTour", () => ({
   useMarkTourSeen: () => ({
     mutate: mockMutate,
+  }),
+}));
+
+// Mock useCurrentUser
+vi.mock("../../src/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: vi.fn().mockReturnValue({
+    data: {
+      id: 1,
+      email: "test@test.com",
+      givenName: "Test",
+      familyName: "User",
+      isFirstLogin: false,
+      userType: "CONSUMER",
+      hasSeenTour: true,
+    },
+    isLoading: false,
   }),
 }));
 
@@ -127,7 +144,7 @@ describe("NavTour", () => {
       wrapper: makeWrapper(),
     });
 
-    // Tour should have 4 steps: Balance, Servicios, Presupuestos, Gastos
+    // Tour should have 4 steps: Balance, Servicios/Gastos Recurrentes, Presupuestos, Gastos
     expect(screen.getByText("1 / 4")).toBeInTheDocument();
   });
 
