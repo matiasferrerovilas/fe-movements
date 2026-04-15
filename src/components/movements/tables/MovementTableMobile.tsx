@@ -48,7 +48,7 @@ export default function MovementTableMobile({
 
             <Row gutter={[8, 4]} style={{ marginBottom: 4 }}>
               <Col>
-                <CategoryCircleTable category={record.category?.description} />
+                <CategoryCircleTable category={record.category ?? undefined} />
               </Col>
               <Col>
                 <Tag>{capitalizeFirst(record.bank)}</Tag>

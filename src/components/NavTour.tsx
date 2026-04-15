@@ -20,11 +20,6 @@ const getTourSteps = (
   const labels = getServiceLabels(userType);
 
   return {
-    balance: {
-      title: "Balance",
-      description:
-        "Visualiza el resumen de tus ingresos y gastos. Gráficos por categoría, grupo y evolución mensual.",
-    },
     servicios: {
       title: labels.tourTitle,
       description: labels.tourDescription,
@@ -57,10 +52,6 @@ export default function NavTour({ open, onClose, navRefsMap }: NavTourProps) {
   // Use functions to access refs - this is the recommended pattern for Tour
   // Cast to the expected type since we know the refs will be populated when tour opens
   const steps: NonNullable<TourProps["steps"]> = [
-    {
-      target: () => navRefsMap.current.balance as HTMLElement,
-      ...tourSteps.balance,
-    },
     {
       target: () => navRefsMap.current.servicios as HTMLElement,
       ...tourSteps.servicios,

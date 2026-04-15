@@ -4,7 +4,9 @@ import {
   deleteCategoryApi,
   getCategoriesApi,
   migrateCategoryApi,
+  updateCategoryApi,
   type MigrateCategoryPayload,
+  type UpdateCategoryPayload,
 } from "../CategoryApi";
 
 const CATEGORIES_QUERY_KEY = "categories" as const;
@@ -65,6 +67,25 @@ export const useMigrateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: MigrateCategoryPayload) => migrateCategoryApi(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [CATEGORIES_QUERY_KEY],
+      });
+      queryClient.invalidateQueries({ queryKey: ["movement-history"] });
+    },
+  });
+};
+
+export interface UpdateCategoryParams {
+  categoryId: number;
+  payload: UpdateCategoryPayload;
+}
+
+export const useUpdateCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ categoryId, payload }: UpdateCategoryParams) =>
+      updateCategoryApi(categoryId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [CATEGORIES_QUERY_KEY],

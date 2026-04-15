@@ -46,3 +46,21 @@ export const migrateCategoryApi = (payload: MigrateCategoryPayload) =>
   api
     .patch<void>(`/${BASE_PATH}/categories/migrate`, payload)
     .then((response) => response.data);
+
+export interface UpdateCategoryPayload {
+  description?: string;
+  iconName?: string | null;
+  iconColor?: string | null;
+}
+
+/**
+ * Actualiza una categoría del workspace activo del usuario.
+ * PATCH /workspace/categories/{categoryId}
+ */
+export const updateCategoryApi = (
+  categoryId: number,
+  payload: UpdateCategoryPayload,
+) =>
+  api
+    .patch<Category>(`/${BASE_PATH}/categories/${categoryId}`, payload)
+    .then((response) => response.data);

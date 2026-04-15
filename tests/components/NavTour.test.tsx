@@ -40,10 +40,6 @@ function makeWrapper() {
 describe("NavTour", () => {
   const createMockRefsMap = () => {
     // Create actual DOM elements for refs
-    const balance = document.createElement("button");
-    balance.textContent = "Balance";
-    document.body.appendChild(balance);
-
     const servicios = document.createElement("button");
     servicios.textContent = "Servicios";
     document.body.appendChild(servicios);
@@ -56,11 +52,10 @@ describe("NavTour", () => {
     expenses.textContent = "Gastos";
     document.body.appendChild(expenses);
 
-    const elements = { balance, servicios, budgets, expenses };
+    const elements = { servicios, budgets, expenses };
 
     const navRefsMap: MutableRefObject<Record<string, HTMLButtonElement | null>> = {
       current: {
-        balance,
         servicios,
         budgets,
         expenses,
@@ -94,10 +89,10 @@ describe("NavTour", () => {
       wrapper: makeWrapper(),
     });
 
-    // First step should show Balance title in the tour
-    expect(screen.getByText(/Visualiza el resumen de tus ingresos/)).toBeInTheDocument();
-    // Check the tour title specifically
-    expect(document.querySelector(".ant-tour-title")).toHaveTextContent("Balance");
+    // First step should show Servicios description (for PERSONAL user type)
+    expect(screen.getByText(/Gestiona tus suscripciones y servicios recurrentes/)).toBeInTheDocument();
+    // Check the tour title specifically (should be "Servicios" for PERSONAL user type)
+    expect(document.querySelector(".ant-tour-title")).toHaveTextContent("Servicios");
   });
 
   it("should not render tour when open is false", () => {
@@ -107,7 +102,7 @@ describe("NavTour", () => {
 
     // Tour content should not be visible
     expect(
-      screen.queryByText(/Visualiza el resumen de tus ingresos/),
+      screen.queryByText(/Gestiona tus suscripciones y servicios recurrentes/),
     ).not.toBeInTheDocument();
   });
 
@@ -134,17 +129,17 @@ describe("NavTour", () => {
       wrapper: makeWrapper(),
     });
 
-    // Should show "1 / 4" for first step (4 items: balance, servicios, presupuestos, gastos)
-    expect(screen.getByText("1 / 4")).toBeInTheDocument();
+    // Should show "1 / 3" for first step (3 items: servicios, presupuestos, gastos)
+    expect(screen.getByText("1 / 3")).toBeInTheDocument();
   });
 
-  it("should have 4 steps total", () => {
+  it("should have 3 steps total", () => {
     render(<NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} />, {
       wrapper: makeWrapper(),
     });
 
-    // Tour should have 4 steps: Balance, Servicios/Gastos Recurrentes, Presupuestos, Gastos
-    expect(screen.getByText("1 / 4")).toBeInTheDocument();
+    // Tour should have 3 steps: Servicios/Gastos Recurrentes, Presupuestos, Gastos
+    expect(screen.getByText("1 / 3")).toBeInTheDocument();
   });
 
   it("should navigate through steps when clicking next", async () => {
@@ -153,7 +148,7 @@ describe("NavTour", () => {
     });
 
     // First step
-    expect(screen.getByText("1 / 4")).toBeInTheDocument();
+    expect(screen.getByText("1 / 3")).toBeInTheDocument();
 
     // Click next button
     const nextButton = screen.getByRole("button", { name: /next/i });
@@ -161,7 +156,7 @@ describe("NavTour", () => {
 
     // Should be on second step
     await waitFor(() => {
-      expect(screen.getByText("2 / 4")).toBeInTheDocument();
+      expect(screen.getByText("2 / 3")).toBeInTheDocument();
     });
   });
 });

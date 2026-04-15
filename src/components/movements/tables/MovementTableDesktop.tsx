@@ -54,7 +54,7 @@ export default function MovementTableDesktop({
               <Row justify="center" align="middle">
                 <Col span={2}>{record.formattedDate}</Col>
                 <Col span={2}>
-                  <CategoryCircleTable category={record.category?.description} />
+                  <CategoryCircleTable category={record.category ?? undefined} />
                 </Col>
                 <Col span={2}>{capitalizeFirst(record.bank)}</Col>
                 <Col span={2}>{capitalizeFirst(record.account.name)}</Col>

@@ -1,4 +1,4 @@
-import { DeleteOutlined, PlusOutlined, TagOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, TagOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -14,6 +14,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
+import { useState } from "react";
 import {
   useAddCategory,
   useCategory,
@@ -23,6 +24,8 @@ import type { Category } from "../../models/Category";
 import { SettingCategoryMigrate } from "./SettingCategoryMigrate";
 import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
 import { getEntityLabels } from "../utils/entityLabels";
+import { CategoryEditModal } from "./CategoryEditModal";
+import { getIconComponent } from "../../utils/getIconComponent";
 
 const { Title, Text } = Typography;
 
@@ -33,12 +36,17 @@ interface AddCategoryForm {
 interface CategoryCardProps {
   category: Category;
   onDelete: (id: number) => void;
+  onEdit: (category: Category) => void;
   isDeleting?: boolean;
   categoriasQuitar: string;
 }
 
-function CategoryCard({ category, onDelete, isDeleting, categoriasQuitar }: CategoryCardProps) {
+function CategoryCard({ category, onDelete, onEdit, isDeleting, categoriasQuitar }: CategoryCardProps) {
   const { token } = theme.useToken();
+  
+  // Usar iconName e iconColor de la categoría, o defaults si no están definidos
+  const IconComponent = getIconComponent(category.iconName ?? "TagOutlined");
+  const iconColor = category.iconColor ?? token.colorPrimary;
 
   return (
     <Card
@@ -59,16 +67,16 @@ function CategoryCard({ category, onDelete, isDeleting, categoriasQuitar }: Cate
               width: 44,
               height: 44,
               borderRadius: 13,
-              background: `linear-gradient(135deg, ${token.colorPrimary} 0%, ${token.colorPrimaryHover} 100%)`,
+              background: `linear-gradient(135deg, ${iconColor} 0%, ${iconColor}dd 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: `0 4px 14px ${token.colorPrimaryBorder}`,
+              boxShadow: `0 4px 14px ${iconColor}60`,
               flexShrink: 0,
               transition: "all 0.25s ease",
             }}
           >
-            <TagOutlined style={{ color: "#fff", fontSize: 20 }} />
+            <IconComponent style={{ color: "#fff", fontSize: 20 }} />
           </div>
           <Text
             strong
@@ -83,6 +91,23 @@ function CategoryCard({ category, onDelete, isDeleting, categoriasQuitar }: Cate
           </Text>
         </Flex>
         <Space size={4}>
+          <Tooltip title="Editar categoría">
+            <Button
+              type="text"
+              aria-label={`Editar categoría ${category.description}`}
+              onClick={() => onEdit(category)}
+              style={{
+                borderRadius: "50%",
+                width: 34,
+                height: 34,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 0,
+              }}
+              icon={<EditOutlined style={{ fontSize: 16 }} />}
+            />
+          </Tooltip>
           <Tooltip
             title={
               !category.isDeletable
@@ -133,6 +158,10 @@ export function SettingCategory() {
   const { data: currentUser } = useCurrentUser();
   const labels = getEntityLabels(currentUser?.userType ?? null);
 
+  // Estado para el modal de edición
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   const onFinish = (values: AddCategoryForm) => {
     addCategoryMutation.mutate(
       { description: values.description },
@@ -142,6 +171,16 @@ export function SettingCategory() {
 
   const handleDelete = (categoryId: number) => {
     deleteCategoryMutation.mutate({ categoryId });
+  };
+
+  const handleEdit = (category: Category) => {
+    setEditingCategory(category);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingCategory(null);
   };
 
   return (
@@ -246,6 +285,7 @@ export function SettingCategory() {
               <CategoryCard
                 category={category}
                 onDelete={(categoryId) => handleDelete(categoryId)}
+                onEdit={(cat) => handleEdit(cat)}
                 isDeleting={deleteCategoryMutation.isPending}
                 categoriasQuitar={labels.categoriasQuitar}
               />
@@ -255,6 +295,13 @@ export function SettingCategory() {
       </Card>
 
       <SettingCategoryMigrate />
+
+      {/* Modal de edición */}
+      <CategoryEditModal
+        category={editingCategory}
+        open={isEditModalOpen}
+        onClose={handleCloseEditModal}
+      />
     </>
   );
 }

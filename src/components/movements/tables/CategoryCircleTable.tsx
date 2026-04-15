@@ -1,47 +1,20 @@
-import {
-  CarOutlined,
-  CoffeeOutlined,
-  FieldTimeOutlined,
-  GiftOutlined,
-  HomeOutlined,
-  LaptopOutlined,
-  QuestionOutlined,
-  ShoppingCartOutlined,
-  SkinOutlined,
-  ToolOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
-import { capitalizeFirst } from "../../utils/stringFunctions";
 import { Popover } from "antd";
-
-const categoryIconMap: Record<
-  string,
-  { icon: React.ReactNode; color: string }
-> = {
-  hogar: { icon: <HomeOutlined />, color: "#faad14" },
-  regalos: { icon: <GiftOutlined />, color: "#eb2f96" },
-  restaurante: { icon: <CoffeeOutlined />, color: "#fa541c" },
-  ropa: { icon: <SkinOutlined />, color: "#722ed1" },
-  servicios: { icon: <ToolOutlined />, color: "#1890ff" },
-  "sin categoria": { icon: <QuestionOutlined />, color: "#d9d9d9" },
-  streaming: { icon: <VideoCameraOutlined />, color: "#13c2c2" },
-  supermercado: { icon: <ShoppingCartOutlined />, color: "#52c41a" },
-  tecnologia: { icon: <LaptopOutlined />, color: "#2f54eb" },
-  transporte: { icon: <CarOutlined />, color: "#9254de" },
-  viaje: { icon: <FieldTimeOutlined />, color: "#fa8c16" },
-};
+import { capitalizeFirst } from "../../utils/stringFunctions";
+import type { Category } from "../../../models/Category";
+import { getIconComponent } from "../../../utils/getIconComponent";
 
 export default function CategoryCircleTable({
   category,
 }: {
-  category?: string;
+  category?: Category;
 }) {
-  const key = category?.toLowerCase() ?? "sin categoria";
-  const { icon, color } =
-    categoryIconMap[key] ?? categoryIconMap["sin categoria"];
+  // Usar iconName e iconColor de la categoría, o defaults si no están definidos
+  const IconComponent = getIconComponent(category?.iconName ?? "QuestionOutlined");
+  const color = category?.iconColor ?? "#d9d9d9";
+  const displayName = category?.description ?? "Sin categoría";
 
   return (
-    <Popover content={capitalizeFirst(category)}>
+    <Popover content={capitalizeFirst(displayName)}>
       <div
         style={{
           width: 32,
@@ -54,9 +27,9 @@ export default function CategoryCircleTable({
           fontSize: 16,
           color: "#fff",
         }}
-        title={capitalizeFirst(category)}
+        title={capitalizeFirst(displayName)}
       >
-        {icon}
+        <IconComponent style={{ fontSize: 16, color: "#fff" }} />
       </div>
     </Popover>
   );
