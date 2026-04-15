@@ -3,8 +3,8 @@ import { getServiceLabels } from "../../../src/components/utils/serviceLabels";
 import { UserTypeEnum } from "../../../src/enums/UserTypeEnum";
 
 describe("getServiceLabels", () => {
-  it("retorna labels de 'Servicios' cuando userType es CONSUMER", () => {
-    const labels = getServiceLabels(UserTypeEnum.CONSUMER);
+  it("retorna labels de 'Servicios' cuando userType es PERSONAL", () => {
+    const labels = getServiceLabels(UserTypeEnum.PERSONAL);
 
     expect(labels.singular).toBe("Servicio");
     expect(labels.singularLower).toBe("servicio");
@@ -21,8 +21,8 @@ describe("getServiceLabels", () => {
     expect(labels.tourDescription).toContain("suscripciones y servicios");
   });
 
-  it("retorna labels de 'Gastos Recurrentes' cuando userType es COMPANY", () => {
-    const labels = getServiceLabels(UserTypeEnum.COMPANY);
+  it("retorna labels de 'Gastos Recurrentes' cuando userType es ENTERPRISE", () => {
+    const labels = getServiceLabels(UserTypeEnum.ENTERPRISE);
 
     expect(labels.singular).toBe("Gasto Recurrente");
     expect(labels.singularLower).toBe("gasto recurrente");
@@ -51,7 +51,7 @@ describe("getServiceLabels", () => {
   });
 
   it("retorna un objeto con todos los campos esperados", () => {
-    const labels = getServiceLabels(UserTypeEnum.CONSUMER);
+    const labels = getServiceLabels(UserTypeEnum.PERSONAL);
 
     expect(labels).toHaveProperty("singular");
     expect(labels).toHaveProperty("singularLower");

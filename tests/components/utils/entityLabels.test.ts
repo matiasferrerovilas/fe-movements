@@ -3,8 +3,8 @@ import { getEntityLabels } from "../../../src/components/utils/entityLabels";
 import { UserTypeEnum } from "../../../src/enums/UserTypeEnum";
 
 describe("getEntityLabels", () => {
-  it("retorna labels de CONSUMER cuando userType es CONSUMER", () => {
-    const labels = getEntityLabels(UserTypeEnum.CONSUMER);
+  it("retorna labels de CONSUMER cuando userType es PERSONAL", () => {
+    const labels = getEntityLabels(UserTypeEnum.PERSONAL);
 
     expect(labels.workspace).toBe("Workspace");
     expect(labels.workspacePlaceholder).toContain("Familia");
@@ -16,8 +16,8 @@ describe("getEntityLabels", () => {
     expect(labels.tus).toBe("tus");
   });
 
-  it("retorna labels de COMPANY cuando userType es COMPANY", () => {
-    const labels = getEntityLabels(UserTypeEnum.COMPANY);
+  it("retorna labels de COMPANY cuando userType es ENTERPRISE", () => {
+    const labels = getEntityLabels(UserTypeEnum.ENTERPRISE);
 
     expect(labels.workspace).toBe("Espacio de trabajo");
     expect(labels.workspacePlaceholder).toContain("Proyecto");
@@ -38,7 +38,7 @@ describe("getEntityLabels", () => {
   });
 
   it("retorna un objeto con todos los campos esperados", () => {
-    const labels = getEntityLabels(UserTypeEnum.CONSUMER);
+    const labels = getEntityLabels(UserTypeEnum.PERSONAL);
 
     // Verificar que existan los campos principales
     expect(labels).toHaveProperty("workspace");

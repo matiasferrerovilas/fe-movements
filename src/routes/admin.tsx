@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Col, Flex, Grid, Row, Tabs, Typography, theme } from "antd";
 import ToolOutlined from "@ant-design/icons/ToolOutlined";
 import SafetyOutlined from "@ant-design/icons/SafetyOutlined";
+import UserOutlined from "@ant-design/icons/UserOutlined";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
+import AdminUserType from "../components/admin/AdminUserType";
 
 const { useBreakpoint } = Grid;
 const { Title, Text } = Typography;
@@ -57,6 +59,12 @@ function MantenimientoPanel() {
 
 const ADMIN_TABS = [
   {
+    key: "perfil",
+    label: "Mi Perfil",
+    icon: <UserOutlined />,
+    children: <AdminUserType />,
+  },
+  {
     key: "mantenimiento",
     label: "Mantenimiento",
     icon: <ToolOutlined />,
@@ -107,7 +115,7 @@ function RouteComponent() {
         </Flex>
 
         <Tabs
-          defaultActiveKey="mantenimiento"
+          defaultActiveKey="perfil"
           size="middle"
           tabPlacement={isMobile ? "top" : "start"}
           items={ADMIN_TABS.map(({ key, label, icon, children }) => ({

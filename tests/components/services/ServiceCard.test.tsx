@@ -16,7 +16,7 @@ vi.mock("../../../src/apis/hooks/useWorkspaces", () => ({
 
 vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
-    data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+    data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
     isLoading: false,
   }),
 }));

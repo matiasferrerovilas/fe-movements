@@ -20,10 +20,10 @@ export default function TipoOnboarding({
   const [form] = Form.useForm<{ userType: string }>();
 
   // Derivamos el tipo seleccionado directamente del Form — único source of truth.
-  const selectedType = Form.useWatch("userType", form) ?? initialValues.userType ?? "CONSUMER";
-  const isConsumer = selectedType === "CONSUMER";
+  const selectedType = Form.useWatch("userType", form) ?? initialValues.userType ?? "PERSONAL";
+  const isPersonal = selectedType === "PERSONAL";
 
-  const handleSelect = (value: "CONSUMER" | "COMPANY") => {
+  const handleSelect = (value: "PERSONAL" | "ENTERPRISE") => {
     form.setFieldValue("userType", value);
   };
 
@@ -44,7 +44,7 @@ export default function TipoOnboarding({
       <Form
         form={form}
         layout="vertical"
-        initialValues={{ userType: initialValues.userType || "CONSUMER" }}
+        initialValues={{ userType: initialValues.userType || "PERSONAL" }}
       >
         <Form.Item
           name="userType"
@@ -54,15 +54,15 @@ export default function TipoOnboarding({
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12}>
               <Card
-                onClick={() => handleSelect("CONSUMER")}
+                onClick={() => handleSelect("PERSONAL")}
                 hoverable
                 style={{
-                  border: `2px ${isConsumer ? "solid" : "dashed"} ${isConsumer ? token.colorPrimary : token.colorBorderSecondary}`,
+                  border: `2px ${isPersonal ? "solid" : "dashed"} ${isPersonal ? token.colorPrimary : token.colorBorderSecondary}`,
                   borderRadius: 12,
                   textAlign: "center",
                   padding: 20,
                   transition: "all .25s ease",
-                  background: isConsumer ? token.colorPrimaryBg : "transparent",
+                  background: isPersonal ? token.colorPrimaryBg : "transparent",
                 }}
               >
                  <Space orientation="vertical" align="center">
@@ -73,15 +73,15 @@ export default function TipoOnboarding({
             </Col>
             <Col xs={24} md={12}>
               <Card
-                onClick={() => handleSelect("COMPANY")}
+                onClick={() => handleSelect("ENTERPRISE")}
                 hoverable
                 style={{
-                  border: `2px ${!isConsumer ? "solid" : "dashed"} ${!isConsumer ? token.colorPrimary : token.colorBorderSecondary}`,
+                  border: `2px ${!isPersonal ? "solid" : "dashed"} ${!isPersonal ? token.colorPrimary : token.colorBorderSecondary}`,
                   borderRadius: 12,
                   textAlign: "center",
                   padding: 20,
                   transition: "all .25s ease",
-                  background: !isConsumer ? token.colorPrimaryBg : "transparent",
+                  background: !isPersonal ? token.colorPrimaryBg : "transparent",
                 }}
               >
                  <Space orientation="vertical" align="center">

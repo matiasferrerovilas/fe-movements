@@ -20,7 +20,7 @@ afterAll(() => server.close());
 
 const validForm: OnboardingForm = {
   accountsToAdd: ["Familia"],
-  userType: "CONSUMER",
+  userType: "PERSONAL",
   onBoardingAmount: {
     amount: 100000,
     bank: "GALICIA",

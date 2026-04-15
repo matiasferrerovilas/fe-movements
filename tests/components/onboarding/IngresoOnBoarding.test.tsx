@@ -11,7 +11,7 @@ import type { OnboardingBankEntry } from "../../../src/apis/onboarding/OnBoardin
 
 // ── Mock useCurrentUser ────────────────────────────────────────────────────
 const mockCurrentUserReturn = vi.fn(() => ({
-  data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+  data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
   isLoading: false,
 }));
 
@@ -55,7 +55,7 @@ function renderIngreso(
     userType?: string;
     accountsToAdd?: string[];
     banksToAdd?: OnboardingBankEntry[];
-  } = { userType: "CONSUMER" },
+  } = { userType: "PERSONAL" },
 ) {
   return render(
     <IngresoOnBoarding
@@ -72,9 +72,9 @@ function renderIngreso(
 describe("IngresoOnBoarding", () => {
   describe("render inicial", () => {
     // FIXME: Estos tests necesitan que el mock de useCurrentUser sea dinámico
-    it.skip("muestra el título para usuario CONSUMER", async () => {
+    it.skip("muestra el título para usuario PERSONAL", async () => {
       mockCurrentUserReturn.mockReturnValue({
-        data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+        data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
         isLoading: false,
       });
       renderIngreso();
@@ -83,12 +83,12 @@ describe("IngresoOnBoarding", () => {
       );
     });
 
-    it.skip("muestra el título para usuario COMPANY", async () => {
+    it.skip("muestra el título para usuario ENTERPRISE", async () => {
       mockCurrentUserReturn.mockReturnValue({
-        data: { id: 1, email: "test@test.com", userType: "COMPANY" },
+        data: { id: 1, email: "test@test.com", userType: "ENTERPRISE" },
         isLoading: false,
       });
-      renderIngreso(vi.fn(), vi.fn(), { userType: "COMPANY" });
+      renderIngreso(vi.fn(), vi.fn(), { userType: "ENTERPRISE" });
       await waitFor(() =>
         expect(screen.getByText(/ingresá tu ingreso diario/i)).toBeInTheDocument(),
       );
@@ -113,7 +113,7 @@ describe("IngresoOnBoarding", () => {
 
     it("muestra el selector de workspace si hay workspaces definidos", async () => {
       renderIngreso(vi.fn(), vi.fn(), {
-        userType: "CONSUMER",
+        userType: "PERSONAL",
         accountsToAdd: ["Familia", "Personal"],
       } as never);
       await waitFor(() =>
@@ -125,7 +125,7 @@ describe("IngresoOnBoarding", () => {
   describe("bancos desde formData (no API)", () => {
     it("muestra los bancos pasados en banksToAdd como opciones del selector", async () => {
       renderIngreso(vi.fn(), vi.fn(), {
-        userType: "CONSUMER",
+        userType: "PERSONAL",
         banksToAdd: [
           { description: "GALICIA", isDefault: true },
           { description: "SANTANDER", isDefault: false },
@@ -144,7 +144,7 @@ describe("IngresoOnBoarding", () => {
       // Si el componente intentara llamar /banks sin handler MSW, msw arrojaría un warning.
       // Este test verifica que con banksToAdd vacío el campo banco sigue presente y no hay error.
       renderIngreso(vi.fn(), vi.fn(), {
-        userType: "CONSUMER",
+        userType: "PERSONAL",
         banksToAdd: [],
       });
 

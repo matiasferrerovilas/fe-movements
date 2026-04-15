@@ -41,8 +41,8 @@ const { Text } = Typography;
 const { useBreakpoint } = Grid;
 
 const USER_TYPE_COLOR: Record<string, string> = {
-  CONSUMER: "blue",
-  COMPANY: "green",
+  PERSONAL: "blue",
+  ENTERPRISE: "green",
 };
 
 type SideBarItem = {

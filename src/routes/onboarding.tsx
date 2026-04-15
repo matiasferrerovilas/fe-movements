@@ -117,7 +117,7 @@ function RouteComponent() {
 
             const finalData: OnboardingForm = {
               accountsToAdd: newGroups,
-              userType: formData.userType ?? "CONSUMER",
+              userType: formData.userType ?? "PERSONAL",
               categoriesToAdd: formData.categoriesToAdd ?? [],
               banksToAdd: formData.banksToAdd ?? [],
               onBoardingAmount: {

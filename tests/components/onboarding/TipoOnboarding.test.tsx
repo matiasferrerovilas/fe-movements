@@ -34,7 +34,7 @@ describe("TipoOnboarding", () => {
       expect(screen.getByText("Siguiente")).toBeInTheDocument();
     });
 
-    it("selecciona CONSUMER por defecto cuando no hay initialValues", () => {
+    it("selecciona PERSONAL por defecto cuando no hay initialValues", () => {
       renderTipo();
       // El texto de la descripción confirma la inicialización correcta
       expect(screen.getByText("¿Cuál será el uso de la cuenta?")).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe("TipoOnboarding", () => {
   });
 
   describe("selección de tipo", () => {
-    it("llama onNext con userType CONSUMER al hacer click en Siguiente con selección por defecto", async () => {
+    it("llama onNext con userType PERSONAL al hacer click en Siguiente con selección por defecto", async () => {
       const user = userEvent.setup();
       const onNext = vi.fn();
       renderTipo(onNext);
@@ -50,10 +50,10 @@ describe("TipoOnboarding", () => {
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));
-      expect(onNext).toHaveBeenCalledWith({ userType: "CONSUMER" });
+      expect(onNext).toHaveBeenCalledWith({ userType: "PERSONAL" });
     });
 
-    it("llama onNext con userType COMPANY al seleccionar Emprendedor", async () => {
+    it("llama onNext con userType ENTERPRISE al seleccionar Emprendedor", async () => {
       const user = userEvent.setup();
       const onNext = vi.fn();
       renderTipo(onNext);
@@ -62,18 +62,18 @@ describe("TipoOnboarding", () => {
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));
-      expect(onNext).toHaveBeenCalledWith({ userType: "COMPANY" });
+      expect(onNext).toHaveBeenCalledWith({ userType: "ENTERPRISE" });
     });
 
-    it("respeta el initialValue COMPANY", async () => {
+    it("respeta el initialValue ENTERPRISE", async () => {
       const user = userEvent.setup();
       const onNext = vi.fn();
-      renderTipo(onNext, vi.fn(), { userType: "COMPANY" });
+      renderTipo(onNext, vi.fn(), { userType: "ENTERPRISE" });
 
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));
-      expect(onNext).toHaveBeenCalledWith({ userType: "COMPANY" });
+      expect(onNext).toHaveBeenCalledWith({ userType: "ENTERPRISE" });
     });
   });
 

@@ -12,7 +12,7 @@ import ExitWorkspaceModal from "../../../../src/components/modals/workspaces/Exi
 
 vi.mock("../../../../src/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
-    data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+    data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
     isLoading: false,
   }),
 }));

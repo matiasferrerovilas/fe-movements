@@ -21,7 +21,7 @@ vi.mock("../../src/apis/hooks/useCurrentUser", () => ({
       givenName: "Test",
       familyName: "User",
       isFirstLogin: false,
-      userType: "CONSUMER",
+      userType: "PERSONAL",
       hasSeenTour: true,
     },
     isLoading: false,

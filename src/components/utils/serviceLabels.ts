@@ -2,11 +2,11 @@ import type { UserTypeEnum } from "../../enums/UserTypeEnum";
 
 /**
  * Retorna los labels de "Servicios" según el tipo de usuario.
- * CONSUMER → "Servicios" (uso personal: Netflix, luz, agua)
- * COMPANY → "Gastos Recurrentes" (uso empresarial: hosting, software, seguros)
+ * PERSONAL → "Servicios" (uso personal: Netflix, luz, agua)
+ * ENTERPRISE → "Gastos Recurrentes" (uso empresarial: hosting, software, seguros)
  */
 export const getServiceLabels = (userType: UserTypeEnum | null) => {
-  const isCompany = userType === "COMPANY";
+  const isCompany = userType === "ENTERPRISE";
 
   return {
     // Singular

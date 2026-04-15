@@ -2,11 +2,11 @@ import type { UserTypeEnum } from "../../enums/UserTypeEnum";
 
 /**
  * Retorna los labels personalizados según el tipo de usuario.
- * CONSUMER → Uso personal (Familia, sueldo, categorías personales)
- * COMPANY → Uso empresarial (Proyectos, ingresos, gastos del negocio)
+ * PERSONAL → Uso personal (Familia, sueldo, categorías personales)
+ * ENTERPRISE → Uso empresarial (Proyectos, ingresos, gastos del negocio)
  */
 export const getEntityLabels = (userType: UserTypeEnum | null) => {
-  const isCompany = userType === "COMPANY";
+  const isCompany = userType === "ENTERPRISE";
 
   return {
     // === WORKSPACE ===

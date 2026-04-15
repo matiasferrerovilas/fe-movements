@@ -15,6 +15,10 @@ vi.mock("@tanstack/react-router", () => ({
   createFileRoute: () => (opts: { component: ReactNode }) => opts,
 }));
 
+vi.mock("../../src/components/admin/AdminUserType", () => ({
+  default: () => <div>Mocked AdminUserType Component</div>,
+}));
+
 // ── Import después de mocks ────────────────────────────────────────────────
 
 const { Route } = await import("../../src/routes/admin");
@@ -64,25 +68,23 @@ describe("Admin route", () => {
   });
 
   describe("tabs", () => {
+    it("renderiza la tab 'Mi Perfil'", () => {
+      renderAdmin();
+
+      expect(screen.getByText("Mi Perfil")).toBeInTheDocument();
+    });
+
     it("renderiza la tab 'Mantenimiento'", () => {
       renderAdmin();
 
       expect(screen.getByText("Mantenimiento")).toBeInTheDocument();
     });
 
-    it("la tab activa por defecto muestra el placeholder de sin acciones", () => {
+    it("la tab activa por defecto muestra el componente AdminUserType", () => {
       renderAdmin();
 
       expect(
-        screen.getByText("Sin acciones configuradas"),
-      ).toBeInTheDocument();
-    });
-
-    it("muestra el texto de ayuda del placeholder", () => {
-      renderAdmin();
-
-      expect(
-        screen.getByText("Agregá acciones de mantenimiento acá."),
+        screen.getByText("Mocked AdminUserType Component"),
       ).toBeInTheDocument();
     });
   });
