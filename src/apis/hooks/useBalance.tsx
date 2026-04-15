@@ -5,7 +5,7 @@ import {
   getBalanceWithGroupByYearAndMonth,
   getMonthlyEvolution,
 } from "../BalanceApi";
-import type { BalanceFilters } from "../../routes/balance";
+import type { BalanceFilters } from "../../models/BalanceFilters";
 
 const BALANCE_QUERY_KEY = "balance" as const;
 const BALANCE_CATEGORY_QUERY_KEY = "balance-category" as const;

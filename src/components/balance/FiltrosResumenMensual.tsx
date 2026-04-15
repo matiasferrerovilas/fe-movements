@@ -1,6 +1,6 @@
 import { Col, DatePicker, Row, Select } from "antd";
 import { CurrencyEnum } from "../../enums/CurrencyEnum";
-import type { BalanceFilters } from "../../routes/balance";
+import type { BalanceFilters } from "../../models/BalanceFilters";
 import { useCallback, useEffect, useState } from "react";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import type { Dayjs } from "dayjs";

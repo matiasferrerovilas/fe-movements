@@ -19,7 +19,6 @@ import LineChartOutlined from "@ant-design/icons/LineChartOutlined";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
 import MoonOutlined from "@ant-design/icons/MoonOutlined";
-import PieChartOutlined from "@ant-design/icons/PieChartOutlined";
 import SafetyOutlined from "@ant-design/icons/SafetyOutlined";
 import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import SunOutlined from "@ant-design/icons/SunOutlined";
@@ -57,13 +56,6 @@ const getNavItems = (userType: UserTypeEnum | null): SideBarItem[] => {
   const labels = getServiceLabels(userType);
 
   return [
-    {
-      key: "balance",
-      icon: <PieChartOutlined />,
-      label: "Balance",
-      path: "/balance",
-      roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
-    },
     {
       key: "servicios",
       icon: <BookOutlined />,

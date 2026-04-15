@@ -7,7 +7,7 @@ import type {
   BalanceByCategory,
   BalanceByGroup,
 } from "../models/BalanceByCategory";
-import type { BalanceFilters } from "../routes/balance";
+import type { BalanceFilters } from "../models/BalanceFilters";
 import { api } from "./axios";
 
 const formatDate = (date: Date) => dayjs(date).format("YYYY-MM-DD");
