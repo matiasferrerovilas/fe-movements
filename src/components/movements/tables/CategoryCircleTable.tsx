@@ -41,7 +41,7 @@ export default function CategoryCircleTable({
     categoryIconMap[key] ?? categoryIconMap["sin categoria"];
 
   return (
-    <Popover content={category}>
+    <Popover content={capitalizeFirst(category)}>
       <div
         style={{
           width: 32,
