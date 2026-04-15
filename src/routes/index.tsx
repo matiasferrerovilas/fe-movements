@@ -1,16 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Col, Divider, Grid, Row, Typography } from "antd";
+import { Col, Divider, Grid, Row, Skeleton, Typography } from "antd";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { useCurrentUser } from "../apis/hooks/useCurrentUser";
 import { RoleEnum } from "../enums/RoleEnum";
 import MonthlySummary from "../components/home/MonthlySummary";
 import TopCategorias from "../components/home/TopCategorias";
-import CategoryPieChart from "../components/home/CategoryPieChart";
-import GroupBarChart from "../components/home/GroupBarChart";
-import EvolucionAnual from "../components/home/EvolucionAnual";
 import BalanceFiltersCollapsible from "../components/home/BalanceFiltersCollapsible";
 import { getUserDisplayName } from "../components/utils/userDisplayName";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CurrencyEnum } from "../enums/CurrencyEnum";
 import dayjs from "dayjs";
 import { useCurrency } from "../apis/hooks/useCurrency";
@@ -20,6 +17,20 @@ import {
   useBalanceSeparateByGroup,
 } from "../apis/hooks/useBalance";
 import type { BalanceFilters } from "../models/BalanceFilters";
+
+// Lazy load de componentes con Recharts para reducir bundle inicial
+const CategoryPieChart = lazy(() => import("../components/home/CategoryPieChart"));
+const GroupBarChart = lazy(() => import("../components/home/GroupBarChart"));
+const EvolucionAnual = lazy(() => import("../components/home/EvolucionAnual"));
+
+// Componente de loading para gráficos
+function ChartSkeleton() {
+  return (
+    <div style={{ padding: 20, minHeight: 300 }}>
+      <Skeleton active paragraph={{ rows: 6 }} />
+    </div>
+  );
+}
 
 const { Title } = Typography;
 const { useBreakpoint } = Grid;
@@ -152,23 +163,25 @@ function RouteComponent() {
       />
 
       {/* 6. Gráficos en Row/Col */}
-      <Row gutter={[20, 20]}>
-        <Col xs={24} lg={12}>
-          <CategoryPieChart data={categoryChart} isFetching={fetchingCategory} />
-        </Col>
-        <Col xs={24} lg={12}>
-          <GroupBarChart
-            data={groupChart}
-            currencies={groupCurrencies}
-            isFetching={fetchingGroup}
-          />
-        </Col>
-      </Row>
+      <Suspense fallback={<ChartSkeleton />}>
+        <Row gutter={[20, 20]}>
+          <Col xs={24} lg={12}>
+            <CategoryPieChart data={categoryChart} isFetching={fetchingCategory} />
+          </Col>
+          <Col xs={24} lg={12}>
+            <GroupBarChart
+              data={groupChart}
+              currencies={groupCurrencies}
+              isFetching={fetchingGroup}
+            />
+          </Col>
+        </Row>
 
-      {/* 7. Evolución temporal */}
-      <div style={{ marginTop: 20 }}>
-        <EvolucionAnual year={dayjs(filters.dates[0]).year()} />
-      </div>
+        {/* 7. Evolución temporal */}
+        <div style={{ marginTop: 20 }}>
+          <EvolucionAnual year={dayjs(filters.dates[0]).year()} />
+        </div>
+      </Suspense>
     </div>
   );
 }

@@ -25,7 +25,7 @@ describe("getIconComponent", () => {
     expect(IconComponent).toBe(QuestionOutlined);
     
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      'Ícono "IconoInexistente" no encontrado en @ant-design/icons. Usando QuestionOutlined por defecto.',
+      'Ícono "IconoInexistente" no encontrado en el mapa de iconos. Usando QuestionOutlined por defecto.',
     );
     
     consoleWarnSpy.mockRestore();
