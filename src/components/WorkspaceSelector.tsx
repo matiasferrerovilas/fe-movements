@@ -1,6 +1,7 @@
-import { Divider, Select, Space, Typography } from "antd";
+import { Badge, Divider, Select, Space, Typography, theme } from "antd";
 import SwapOutlined from "@ant-design/icons/SwapOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
+import AppstoreOutlined from "@ant-design/icons/AppstoreOutlined";
 import { useCurrentWorkspace } from "../apis/workspace/WorkspaceContext";
 import CreateWorkspaceModal from "./modals/workspaces/CreateWorkspaceModal";
 import { useCurrentUser } from "../apis/hooks/useCurrentUser";
@@ -18,6 +19,7 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
     useCurrentWorkspace();
   const { data: currentUser } = useCurrentUser();
   const labels = getEntityLabels(currentUser?.userType ?? null);
+  const { token } = theme.useToken();
 
   if (isLoading || workspaces.length === 0) {
     return null;
@@ -69,11 +71,29 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
   return (
     <CreateWorkspaceModal>
       {(openModal) => (
-        <Space size={8}>
+        <div
+          style={{
+            background: token.colorFillSecondary,
+            border: `1px solid ${token.colorBorder}`,
+            borderRadius: token.borderRadius,
+            padding: "4px 8px 4px 12px",
+            transition: "background 0.2s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = token.colorFillTertiary;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = token.colorFillSecondary;
+          }}
+        >
+          <AppstoreOutlined style={{ color: token.colorTextSecondary, fontSize: 14 }} />
           <Select
             value={currentWorkspace?.workspaceId}
             onChange={(value) => setCurrentWorkspace(value)}
-            style={{ minWidth: 140 }}
+            style={{ minWidth: 140, flex: 1 }}
             loading={isLoading}
             suffixIcon={<SwapOutlined />}
             variant="borderless"
@@ -95,7 +115,17 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
             )}
             options={workspaceOptions}
           />
-        </Space>
+          <Badge
+            count={workspaces.length}
+            showZero
+            style={{
+              backgroundColor: token.colorPrimaryBg,
+              color: token.colorPrimary,
+              fontWeight: 600,
+              fontSize: 11,
+            }}
+          />
+        </div>
       )}
     </CreateWorkspaceModal>
   );

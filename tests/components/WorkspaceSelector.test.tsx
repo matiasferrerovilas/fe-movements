@@ -119,6 +119,35 @@ describe("WorkspaceSelector", () => {
       expect(screen.getByTitle("Personal")).toBeInTheDocument();
     });
 
+    it("muestra el badge con la cantidad de workspaces", () => {
+      renderComponent();
+      
+      // Badge debería mostrar "3" (mockWorkspaces tiene 3 items)
+      expect(screen.getByText("3")).toBeInTheDocument();
+    });
+
+    it("muestra el ícono de AppstoreOutlined", () => {
+      renderComponent();
+      
+      // Verificar que el ícono está presente por su aria-label
+      const icon = screen.getByLabelText("appstore");
+      expect(icon).toBeInTheDocument();
+    });
+
+    it("muestra el badge con la cantidad correcta cuando hay 1 workspace", () => {
+      mockUseCurrentWorkspace.mockReturnValue({
+        currentWorkspace: mockWorkspaces[0],
+        workspaces: [mockWorkspaces[0]],
+        setCurrentWorkspace: mockSetCurrentWorkspace,
+        isLoading: false,
+      });
+
+      renderComponent();
+      
+      // Badge debería mostrar "1"
+      expect(screen.getByText("1")).toBeInTheDocument();
+    });
+
     it("llama a setCurrentWorkspace al seleccionar otro workspace", async () => {
       const user = userEvent.setup();
       renderComponent();
