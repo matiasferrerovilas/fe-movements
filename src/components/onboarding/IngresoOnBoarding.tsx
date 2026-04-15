@@ -11,6 +11,8 @@ import {
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import type { OnboardingBankEntry, OnboardingForm, OnboardingIngresoForm } from "../../apis/onboarding/OnBoarding";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../utils/entityLabels";
 
 const { Text } = Typography;
 
@@ -29,6 +31,8 @@ export default function IngresoOnBoarding({
 }: Props) {
   const [form] = Form.useForm<OnboardingIngresoForm>();
   const { data: currencies = [] } = useCurrency();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   // Usamos los bancos ingresados en el paso anterior (si los hay)
   const banksToAdd: OnboardingBankEntry[] = initialValues.banksToAdd ?? [];
@@ -48,9 +52,7 @@ export default function IngresoOnBoarding({
     <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
-          {initialValues.userType === "CONSUMER"
-            ? "Ingresá tu ingreso mensual"
-            : "Ingresá tu ingreso diario si tenés"}
+          {labels.ingresoOnboardingDescription}
         </Text>
       </div>
 
@@ -89,7 +91,7 @@ export default function IngresoOnBoarding({
           <Col xs={24}>
             <Form.Item
               name="amount"
-              label={<Text strong>¿Cuál es tu sueldo mensual?</Text>}
+              label={<Text strong>{labels.ingresoAmountLabel}</Text>}
             >
               <InputNumber
                 precision={2}

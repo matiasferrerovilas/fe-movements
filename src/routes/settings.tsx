@@ -11,6 +11,8 @@ import { SettingCurrency } from "../components/settings/SettingCurrency";
 import { UserOutlined, TeamOutlined, WalletOutlined, BellOutlined } from "@ant-design/icons";
 import { SettingCategory } from "../components/settings/SettingCategory";
 import { SettingPreferences } from "../components/settings/SettingPreferences";
+import { useCurrentUser } from "../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../components/utils/entityLabels";
 
 const { useBreakpoint } = Grid;
 
@@ -21,48 +23,49 @@ export const Route = createFileRoute("/settings")({
   component: RouteComponent,
 });
 
-const TABS = [
-  {
-    key: "cuenta",
-    label: "Cuenta",
-    icon: <UserOutlined />,
-    children: <SettingAccount />,
-  },
-  {
-    key: "workspace",
-    label: "Mi Workspace",
-    icon: <TeamOutlined />,
-    children: (
-      <Flex vertical gap={16}>
-        <SettingInviteWorkspaces />
-        <SettingCurrentWorkspace />
-        <SettingCategory />
-      </Flex>
-    ),
-  },
-  {
-    key: "finanzas",
-    label: "Mis finanzas",
-    icon: <WalletOutlined />,
-    children: (
-      <Flex vertical gap={16}>
-        <SettingBank />
-        <SettingCurrency />
-        <SettingIngreso />
-      </Flex>
-    ),
-  },
-  {
-    key: "preferencias",
-    label: "Preferencias",
-    icon: <BellOutlined />,
-    children: <SettingPreferences />,
-  },
-];
-
 function RouteComponent() {
   const screens = useBreakpoint();
-  const isMobile = !screens.md;
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
+
+  const TABS = [
+    {
+      key: "cuenta",
+      label: "Cuenta",
+      icon: <UserOutlined />,
+      children: <SettingAccount />,
+    },
+    {
+      key: "workspace",
+      label: labels.settingsTabWorkspace,
+      icon: <TeamOutlined />,
+      children: (
+        <Flex vertical gap={16}>
+          <SettingInviteWorkspaces />
+          <SettingCurrentWorkspace />
+          <SettingCategory />
+        </Flex>
+      ),
+    },
+    {
+      key: "finanzas",
+      label: labels.settingsTabFinanzas,
+      icon: <WalletOutlined />,
+      children: (
+        <Flex vertical gap={16}>
+          <SettingBank />
+          <SettingCurrency />
+          <SettingIngreso />
+        </Flex>
+      ),
+    },
+    {
+      key: "preferencias",
+      label: "Preferencias",
+      icon: <BellOutlined />,
+      children: <SettingPreferences />,
+    },
+  ];
 
   return (
     <Row justify="center" style={{ paddingTop: 30 }}>
@@ -70,7 +73,7 @@ function RouteComponent() {
         <Tabs
           defaultActiveKey="cuenta"
           size="middle"
-          tabPlacement={isMobile ? "top" : "start"}
+          tabPlacement={screens.md ? "start" : "top"}
           items={TABS.map(({ key, label, icon, children }) => ({
             key,
             label: (
@@ -79,7 +82,7 @@ function RouteComponent() {
               </span>
             ),
             children: (
-              <div style={{ paddingTop: isMobile ? 12 : 0 }}>{children}</div>
+              <div style={{ paddingTop: screens.md ? 0 : 12 }}>{children}</div>
             ),
           }))}
         />

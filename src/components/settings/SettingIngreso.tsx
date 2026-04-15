@@ -32,6 +32,8 @@ import {
 import type { Income, IncomeAddForm, IncomeAddPayload } from "../../models/Income";
 import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useBanks } from "../../apis/hooks/useBank";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../utils/entityLabels";
 
 const { Title, Text } = Typography;
 
@@ -44,6 +46,8 @@ export function SettingIngreso() {
   const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const queryClient = useQueryClient();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   const createIngresoMutation = useMutation({
     mutationFn: ({ income }: { income: IncomeAddPayload }) => addIncome(income),
@@ -110,8 +114,7 @@ export function SettingIngreso() {
             Gestionar Ingresos
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Configurá tu ingreso mensual. Se genera un movimiento
-            automático cada mes en el workspace activo.
+            {labels.ingresoDescripcion}
           </Text>
         </div>
       </Flex>

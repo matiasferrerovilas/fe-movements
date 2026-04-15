@@ -28,7 +28,6 @@ vi.mock("../../src/apis/hooks/useCurrentUser", () => ({
 import { useKeycloak } from "@react-keycloak/web";
 import { useRouter, useRouterState } from "@tanstack/react-router";
 import { useUserRoles } from "../../src/apis/hooks/useUserRole";
-import { useCurrentUser } from "../../src/apis/hooks/useCurrentUser";
 
 // ── Setup helpers ──────────────────────────────────────────────────────────
 

@@ -10,11 +10,15 @@ import {
 import { deleteAllMovements } from "../../apis/movement/ExpenseApi";
 import { useMutation } from "@tanstack/react-query";
 import { DeleteOutlined, SettingOutlined } from "@ant-design/icons";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../utils/entityLabels";
 
 const { Text } = Typography;
 
 export default function SettingAccount() {
   const { token } = theme.useToken();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   const deleteAllMovementsMutation = useMutation({
     mutationFn: () => deleteAllMovements(),
@@ -46,7 +50,7 @@ export default function SettingAccount() {
             Configuración de la cuenta
           </Typography.Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Acciones irreversibles sobre tu cuenta y datos.
+            {labels.settingsCuentaAcciones}
           </Text>
         </div>
       </Flex>

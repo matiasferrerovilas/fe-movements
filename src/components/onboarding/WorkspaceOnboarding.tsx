@@ -2,6 +2,8 @@ import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import { Button, Col, Form, Input, Row, Space, Typography } from "antd";
 import type { OnboardingForm } from "../../apis/onboarding/OnBoarding";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../utils/entityLabels";
 
 const { Text } = Typography;
 
@@ -12,6 +14,8 @@ interface Props {
 
 export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
   const [form] = Form.useForm<{ accountsToAdd: string[] }>();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
@@ -29,13 +33,13 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
     <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
-          ¿Querés crear algunos workspaces?
+          {labels.workspaceQuestion}
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
-          Un workspace sirve para agrupar movimientos.
+          {labels.workspaceDescription}
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
-          Por defecto se crea uno para tus movimientos propios.
+          {labels.workspaceDefault}
         </Text>
       </div>
 
@@ -69,21 +73,21 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
                       ]}
                     >
                       <Input
-                        placeholder="Nombre del workspace"
+                        placeholder={labels.workspacePlaceholder}
                         style={{ borderRadius: 8 }}
                       />
                     </Form.Item>
                   </Col>
                   <Col>
-                    {fields.length > 1 && (
-                      <Button
-                        type="text"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => remove(name)}
-                        aria-label="Eliminar workspace"
-                      />
-                    )}
+                      {fields.length > 1 && (
+                        <Button
+                          type="text"
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={() => remove(name)}
+                          aria-label={`Eliminar ${labels.workspaceSingular}`}
+                        />
+                      )}
                   </Col>
                 </Row>
               ))}
@@ -94,7 +98,7 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
                   block
                   icon={<PlusOutlined />}
                 >
-                  Agregar workspace
+                  {labels.workspaceCrear}
                 </Button>
               </Form.Item>
             </>
@@ -102,7 +106,7 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
         </Form.List>
 
         <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 12, textAlign: "center" }}>
-          Si no querés crear workspaces ahora, dejá el campo vacío y hacé click en Siguiente.
+          Si no querés crear {labels.workspacesLower} ahora, dejá el campo vacío y hacé click en Siguiente.
         </Text>
 
         <Row gutter={[16, 10]}>

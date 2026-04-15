@@ -23,6 +23,8 @@ import {
 import { useAddBank, useBanks, useDeleteBank } from "../../apis/hooks/useBank";
 import { useUserDefault, useSetUserDefault } from "../../apis/hooks/useSettings";
 import type { BankRecord } from "../../models/Bank";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../utils/entityLabels";
 
 const { Title, Text } = Typography;
 
@@ -37,6 +39,7 @@ interface BankCardProps {
   isSettingDefault?: boolean;
   onDelete: (id: number) => void;
   isDeleting?: boolean;
+  bancosQuitar: string;
 }
 
 function BankCard({
@@ -46,6 +49,7 @@ function BankCard({
   isSettingDefault,
   onDelete,
   isDeleting,
+  bancosQuitar,
 }: BankCardProps) {
   const { token } = theme.useToken();
   const isDefault = bank.id === defaultBankId;
@@ -157,7 +161,7 @@ function BankCard({
           >
             <Popconfirm
               title="¿Eliminar este banco?"
-              description="Se quitará de tu lista personal."
+              description={bancosQuitar}
               onConfirm={() => onDelete(bank.id)}
               okText="Eliminar"
               cancelText="Cancelar"
@@ -196,6 +200,8 @@ export function SettingBank() {
   const deleteBankMutation = useDeleteBank();
   const [form] = Form.useForm<AddBankForm>();
   const { token } = theme.useToken();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   const onFinish = (values: AddBankForm) => {
     addBankMutation.mutate(values.description, {
@@ -226,7 +232,7 @@ export function SettingBank() {
             Mis Bancos
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Agregá y gestioná los bancos en tu lista personal.
+            {labels.bancosSubtitle}
           </Text>
         </div>
       </Flex>
@@ -303,6 +309,7 @@ export function SettingBank() {
               isSettingDefault={setDefaultMutation.isPending}
               onDelete={(id) => deleteBankMutation.mutate(id)}
               isDeleting={deleteBankMutation.isPending}
+              bancosQuitar={labels.bancosQuitar}
             />
           </div>
         ))}

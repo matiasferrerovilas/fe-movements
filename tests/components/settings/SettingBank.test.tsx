@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterEach, afterAll, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -8,6 +8,14 @@ import type { ReactNode } from "react";
 import type { BankRecord } from "../../../src/models/Bank";
 import type { UserSetting } from "../../../src/models/UserSetting";
 import { SettingBank } from "../../../src/components/settings/SettingBank";
+
+// ── Mock useCurrentUser ────────────────────────────────────────────────────
+vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({
+    data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+    isLoading: false,
+  }),
+}));
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 

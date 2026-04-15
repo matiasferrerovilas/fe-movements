@@ -15,7 +15,8 @@ import { onBoardingGuard } from "../apis/auth/onBoardingGuard";
 import { useKeycloak } from "@react-keycloak/web";
 import TipoOnboarding from "../components/onboarding/TipoOnboarding";
 import { WorkspaceEnum } from "../enums/WorkspaceEnum";
-import { CURRENT_USER_QUERY_KEY } from "../apis/hooks/useCurrentUser";
+import { CURRENT_USER_QUERY_KEY, useCurrentUser } from "../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../components/utils/entityLabels";
 
 const { Title, Text } = Typography;
 
@@ -31,6 +32,8 @@ function RouteComponent() {
   const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [formData, setFormData] = useState<Partial<OnboardingForm>>({});
   const router = useRouter();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   const handleNext = (values: Partial<OnboardingForm>) => {
     setDirection("forward");
@@ -147,7 +150,7 @@ function RouteComponent() {
           <div style={{ textAlign: "center", marginBottom: 30 }}>
             <Title level={2} style={{ margin: 0 }}>Bienvenido</Title>
             <Text type="secondary">
-              Antes de comenzar configuremos tu cuenta
+              {labels.onboardingBienvenida}
             </Text>
           </div>
 

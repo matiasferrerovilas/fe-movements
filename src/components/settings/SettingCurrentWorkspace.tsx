@@ -7,6 +7,8 @@ import { useAllWorkspacesWithUsers, useWorkspaceMembers } from "../../apis/hooks
 import { useWorkspacesSubscription } from "../../apis/websocket/useWorkspacesSubscription";
 import InviteUserToWorkspace from "../modals/workspaces/InviteUserToWorkspace";
 import ExitWorkspaceModal from "../modals/workspaces/ExitWorkspaceModal";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../utils/entityLabels";
 
 const { Title, Text } = Typography;
 
@@ -16,6 +18,8 @@ export function SettingCurrentWorkspace() {
   const { data: workspaceDetails = [], isLoading } = useAllWorkspacesWithUsers();
   // Los miembros se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
   const { data: members = [], isLoading: loadingMembers } = useWorkspaceMembers();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   useWorkspacesSubscription();
 
@@ -73,7 +77,7 @@ export function SettingCurrentWorkspace() {
             </span>
           </Flex>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Gestiona el workspace actual
+            {labels.workspaceGestionar}
           </Text>
         </div>
         {canLeave && <ExitWorkspaceModal group={currentWorkspaceDetail} />}
@@ -87,7 +91,7 @@ export function SettingCurrentWorkspace() {
           <Flex align="center" gap={8}>
             <UserOutlined style={{ color: token.colorTextSecondary }} />
             <Text strong style={{ fontSize: 14 }}>
-              Miembros
+              {labels.miembros}
             </Text>
           </Flex>
           <InviteUserToWorkspace group={currentWorkspaceDetail} />
@@ -99,7 +103,7 @@ export function SettingCurrentWorkspace() {
             emptyText: (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description="No hay miembros en este workspace"
+                description={labels.workspaceNoMiembros}
               />
             ),
           }}

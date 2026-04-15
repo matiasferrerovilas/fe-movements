@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CreateWorkspaceForm } from "../../../models/UserWorkspace";
 import { addWorkspaceApi } from "../../../apis/WorkspaceApi";
 import ModalComponent from "../Modal";
+import { useCurrentUser } from "../../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../../utils/entityLabels";
 
 interface CreateWorkspaceModalProps {
   /** Render prop for the trigger element */
@@ -15,6 +17,8 @@ export default function CreateWorkspaceModal({ children }: CreateWorkspaceModalP
   const [form] = Form.useForm<CreateWorkspaceForm>();
   const [modalOpen, setModalOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => {
@@ -42,7 +46,7 @@ export default function CreateWorkspaceModal({ children }: CreateWorkspaceModalP
       <ModalComponent
         open={modalOpen}
         onClose={handleCloseModal}
-        title="Crear nuevo workspace"
+        title={labels.workspaceNuevo}
         width={400}
         footer={
           <Button
@@ -51,7 +55,7 @@ export default function CreateWorkspaceModal({ children }: CreateWorkspaceModalP
             loading={addWorkspaceMutation.isPending}
             onClick={() => form.submit()}
           >
-            Crear workspace
+            {labels.workspaceCrear}
           </Button>
         }
       >
@@ -62,13 +66,13 @@ export default function CreateWorkspaceModal({ children }: CreateWorkspaceModalP
           disabled={addWorkspaceMutation.isPending}
         >
           <Form.Item
-            label="Nombre del workspace"
+            label={labels.workspaceNombreLabel}
             name="description"
             rules={[
-              { required: true, message: "Ingresa el nombre del workspace" },
+              { required: true, message: `Ingresa el nombre del ${labels.workspaceSingular}` },
             ]}
           >
-            <Input placeholder="Ej: Familia, Trabajo, Personal..." />
+            <Input placeholder={labels.workspacePlaceholder} />
           </Form.Item>
         </Form>
       </ModalComponent>

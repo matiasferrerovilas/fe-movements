@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -7,6 +7,15 @@ import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
 import type { WorkspaceDetail } from "../../../../src/models/UserWorkspace";
 import ExitWorkspaceModal from "../../../../src/components/modals/workspaces/ExitWorkspaceModal";
+
+// ── Mocks ──────────────────────────────────────────────────────────────────
+
+vi.mock("../../../../src/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({
+    data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+    isLoading: false,
+  }),
+}));
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 

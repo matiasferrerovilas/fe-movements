@@ -9,6 +9,13 @@ import { SettingCurrentWorkspace } from "../../../src/components/settings/Settin
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
+vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({
+    data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+    isLoading: false,
+  }),
+}));
+
 const mockWorkspaces: Membership[] = [
   { workspaceId: 1, membershipId: 101, workspaceName: "Personal", role: "ADMIN" },
   { workspaceId: 2, membershipId: 102, workspaceName: "Familia", role: "FAMILY" },

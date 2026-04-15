@@ -3,7 +3,6 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { MutableRefObject, ReactNode } from "react";
 import NavTour from "../../src/components/NavTour";
-import { useCurrentUser } from "../../src/apis/hooks/useCurrentUser";
 
 // Mock the useTour hook
 const mockMutate = vi.fn();

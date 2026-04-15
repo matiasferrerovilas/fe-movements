@@ -15,6 +15,8 @@ import {
   theme,
 } from "antd";
 import { useState } from "react";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../utils/entityLabels";
 
 const { Text } = Typography;
 
@@ -30,6 +32,8 @@ export default function CategoriaOnboarding({ initialValues, onNext, onPrev }: P
   const [categories, setCategories] = useState<string[]>(
     initialValues.categoriesToAdd ?? [],
   );
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   const handleAdd = () => {
     form.validateFields().then(({ description }) => {
@@ -48,7 +52,7 @@ export default function CategoriaOnboarding({ initialValues, onNext, onPrev }: P
     <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
-          Agregá las categorías con las que clasificás tus gastos.
+          {labels.categoriasOnboarding}
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
           Ya hay algunas por defecto — podés agregar las tuyas.
@@ -75,7 +79,7 @@ export default function CategoriaOnboarding({ initialValues, onNext, onPrev }: P
               ]}
             >
               <Input
-                placeholder="Nombre de la categoría..."
+                placeholder={labels.categoriaPlaceholder}
                 style={{ borderRadius: 10, height: 40 }}
               />
             </Form.Item>

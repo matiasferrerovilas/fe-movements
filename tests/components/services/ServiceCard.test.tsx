@@ -14,6 +14,13 @@ vi.mock("../../../src/apis/hooks/useWorkspaces", () => ({
   useWorkspaces: vi.fn(),
 }));
 
+vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({
+    data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+    isLoading: false,
+  }),
+}));
+
 import { useWorkspaces } from "../../../src/apis/hooks/useWorkspaces";
 
 // ── MSW server ─────────────────────────────────────────────────────────────

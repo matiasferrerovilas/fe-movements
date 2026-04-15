@@ -5,6 +5,15 @@ import { ConfigProvider } from "antd";
 import type { ReactNode } from "react";
 import WorkspaceOnboarding from "../../../src/components/onboarding/WorkspaceOnboarding";
 
+// ── Mocks ──────────────────────────────────────────────────────────────────
+
+vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({
+    data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+    isLoading: false,
+  }),
+}));
+
 function wrapper({ children }: { children: ReactNode }) {
   return <ConfigProvider>{children}</ConfigProvider>;
 }
@@ -22,7 +31,7 @@ describe("WorkspaceOnboarding", () => {
 
     it("muestra un input vacío por defecto", () => {
       renderWorkspace();
-      expect(screen.getByPlaceholderText("Nombre del workspace")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Ej: Familia, Trabajo, Personal...")).toBeInTheDocument();
     });
 
     it("muestra solo el botón Siguiente (sin Omitir)", () => {
@@ -33,13 +42,13 @@ describe("WorkspaceOnboarding", () => {
   });
 
   describe("agregar y eliminar workspaces", () => {
-    it("agrega un nuevo input al hacer click en Agregar workspace", async () => {
+    it("agrega un nuevo input al hacer click en Crear workspace", async () => {
       const user = userEvent.setup();
       renderWorkspace();
 
-      await user.click(screen.getByText("Agregar workspace"));
+      await user.click(screen.getByText("Crear workspace"));
 
-      const inputs = screen.getAllByPlaceholderText("Nombre del workspace");
+      const inputs = screen.getAllByPlaceholderText("Ej: Familia, Trabajo, Personal...");
       expect(inputs).toHaveLength(2);
     });
 
@@ -47,7 +56,7 @@ describe("WorkspaceOnboarding", () => {
       const user = userEvent.setup();
       renderWorkspace();
 
-      await user.click(screen.getByText("Agregar workspace"));
+      await user.click(screen.getByText("Crear workspace"));
 
       expect(screen.getAllByRole("button", { name: /Eliminar workspace/i })).toHaveLength(2);
     });
@@ -63,7 +72,7 @@ describe("WorkspaceOnboarding", () => {
       const user = userEvent.setup();
       renderWorkspace();
 
-      await user.type(screen.getByPlaceholderText("Nombre del workspace"), "Grupo1!");
+      await user.type(screen.getByPlaceholderText("Ej: Familia, Trabajo, Personal..."), "Grupo1!");
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() =>
@@ -76,7 +85,7 @@ describe("WorkspaceOnboarding", () => {
       const onNext = vi.fn();
       renderWorkspace(onNext);
 
-      await user.type(screen.getByPlaceholderText("Nombre del workspace"), "Familia");
+      await user.type(screen.getByPlaceholderText("Ej: Familia, Trabajo, Personal..."), "Familia");
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));

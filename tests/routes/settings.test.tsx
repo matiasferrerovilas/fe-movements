@@ -6,6 +6,13 @@ import type { ReactNode } from "react";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
+vi.mock("../../src/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({
+    data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+    isLoading: false,
+  }),
+}));
+
 vi.mock("../../src/apis/auth/protectedRouteGuard", () => ({
   protectedRouteGuard: () => () => undefined,
 }));

@@ -5,6 +5,14 @@ import { ConfigProvider } from "antd";
 import type { ReactNode } from "react";
 import CategoriaOnboarding from "../../../src/components/onboarding/CategoriaOnboarding";
 
+// ── Mock useCurrentUser ────────────────────────────────────────────────────
+vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({
+    data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+    isLoading: false,
+  }),
+}));
+
 function wrapper({ children }: { children: ReactNode }) {
   return <ConfigProvider>{children}</ConfigProvider>;
 }
@@ -36,7 +44,7 @@ describe("CategoriaOnboarding", () => {
     it("muestra el input de nombre de categoría", () => {
       renderCategoria();
       expect(
-        screen.getByPlaceholderText("Nombre de la categoría..."),
+        screen.getByPlaceholderText("Ej: Hogar, Transporte, Entretenimiento..."),
       ).toBeInTheDocument();
     });
 
@@ -65,7 +73,7 @@ describe("CategoriaOnboarding", () => {
       const user = userEvent.setup();
       renderCategoria();
 
-      await user.type(screen.getByPlaceholderText("Nombre de la categoría..."), "Comida");
+      await user.type(screen.getByPlaceholderText("Ej: Hogar, Transporte, Entretenimiento..."), "Comida");
       await user.click(screen.getByRole("button", { name: /agregar/i }));
 
       await waitFor(() =>
@@ -77,7 +85,7 @@ describe("CategoriaOnboarding", () => {
       const user = userEvent.setup();
       renderCategoria();
 
-      await user.type(screen.getByPlaceholderText("Nombre de la categoría..."), "transporte");
+      await user.type(screen.getByPlaceholderText("Ej: Hogar, Transporte, Entretenimiento..."), "transporte");
       await user.click(screen.getByRole("button", { name: /agregar/i }));
 
       await waitFor(() =>
@@ -89,12 +97,12 @@ describe("CategoriaOnboarding", () => {
       const user = userEvent.setup();
       renderCategoria();
 
-      await user.type(screen.getByPlaceholderText("Nombre de la categoría..."), "Viajes");
+      await user.type(screen.getByPlaceholderText("Ej: Hogar, Transporte, Entretenimiento..."), "Viajes");
       await user.click(screen.getByRole("button", { name: /agregar/i }));
 
       // Re-query after re-render to avoid stale ref
       await waitFor(() =>
-        expect(screen.getByPlaceholderText("Nombre de la categoría...")).toHaveValue(""),
+        expect(screen.getByPlaceholderText("Ej: Hogar, Transporte, Entretenimiento...")).toHaveValue(""),
       );
     });
 
@@ -102,7 +110,7 @@ describe("CategoriaOnboarding", () => {
       const user = userEvent.setup();
       renderCategoria(vi.fn(), vi.fn(), { categoriesToAdd: ["COMIDA"] });
 
-      await user.type(screen.getByPlaceholderText("Nombre de la categoría..."), "comida");
+      await user.type(screen.getByPlaceholderText("Ej: Hogar, Transporte, Entretenimiento..."), "comida");
       await user.click(screen.getByRole("button", { name: /agregar/i }));
 
       await waitFor(() => {
@@ -130,7 +138,7 @@ describe("CategoriaOnboarding", () => {
       const user = userEvent.setup();
       renderCategoria();
 
-      await user.type(screen.getByPlaceholderText("Nombre de la categoría..."), "Cat123!");
+      await user.type(screen.getByPlaceholderText("Ej: Hogar, Transporte, Entretenimiento..."), "Cat123!");
       await user.click(screen.getByRole("button", { name: /agregar/i }));
 
       await waitFor(() =>

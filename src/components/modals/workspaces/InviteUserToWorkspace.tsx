@@ -10,6 +10,8 @@ import type {
 } from "../../../models/UserWorkspace";
 import { addInvitationWorkspaceApi } from "../../../apis/WorkspaceApi";
 import { ColorEnum } from "../../../enums/ColorEnum";
+import { useCurrentUser } from "../../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../../utils/entityLabels";
 
 interface InviteUserToWorkspaceProps {
   group: WorkspaceDetail;
@@ -17,6 +19,8 @@ interface InviteUserToWorkspaceProps {
 export default function InviteUserToWorkspace({ group }: InviteUserToWorkspaceProps) {
   const [form] = Form.useForm();
   const [modalOpen, setModalOpen] = useState(false);
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
   const handleCloseModal = () => {
     setModalOpen(false);
   };
@@ -51,12 +55,12 @@ export default function InviteUserToWorkspace({ group }: InviteUserToWorkspacePr
           fontSize: 18,
         }}
         onClick={() => setModalOpen(true)}
-        title="Invitar miembro"
+        title={labels.miembroInvitar}
       ></Button>
       <ModalComponent
         open={modalOpen}
         onClose={handleCloseModal}
-        title="Invitar miembro al grupo"
+        title={labels.miembroInvitar}
         footer={
           <Button
             type="primary"
@@ -75,7 +79,7 @@ export default function InviteUserToWorkspace({ group }: InviteUserToWorkspacePr
           disabled={addInvitationMutation.isPending}
         >
           <Form.Item
-            label="Correo electrónico del usuario"
+            label={labels.miembroEmail}
             name="email"
             rules={[
               { required: true, message: "Por favor ingresa un correo" },

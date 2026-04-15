@@ -17,6 +17,13 @@ vi.mock("@react-keycloak/web", () => ({
   })),
 }));
 
+vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({
+    data: { id: 1, email: "test@test.com", userType: "CONSUMER" },
+    isLoading: false,
+  }),
+}));
+
 // ── MSW server ─────────────────────────────────────────────────────────────
 
 const mockCategories: Category[] = [

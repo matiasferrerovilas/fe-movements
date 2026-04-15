@@ -21,6 +21,8 @@ import {
 } from "../../apis/hooks/useCategory";
 import type { Category } from "../../models/Category";
 import { SettingCategoryMigrate } from "./SettingCategoryMigrate";
+import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../utils/entityLabels";
 
 const { Title, Text } = Typography;
 
@@ -32,9 +34,10 @@ interface CategoryCardProps {
   category: Category;
   onDelete: (id: number) => void;
   isDeleting?: boolean;
+  categoriasQuitar: string;
 }
 
-function CategoryCard({ category, onDelete, isDeleting }: CategoryCardProps) {
+function CategoryCard({ category, onDelete, isDeleting, categoriasQuitar }: CategoryCardProps) {
   const { token } = theme.useToken();
 
   return (
@@ -89,7 +92,7 @@ function CategoryCard({ category, onDelete, isDeleting }: CategoryCardProps) {
           >
             <Popconfirm
               title="¿Eliminar esta categoría?"
-              description="Se quitará de tu lista personal."
+              description={categoriasQuitar}
               onConfirm={() => onDelete(category.id)}
               okText="Eliminar"
               cancelText="Cancelar"
@@ -127,6 +130,8 @@ export function SettingCategory() {
   const deleteCategoryMutation = useDeleteCategory();
   const [form] = Form.useForm<AddCategoryForm>();
   const { token } = theme.useToken();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   const onFinish = (values: AddCategoryForm) => {
     addCategoryMutation.mutate(
@@ -163,7 +168,7 @@ export function SettingCategory() {
               Mis Categorías
             </Title>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              Agregá y gestioná tus categorías personales.
+              {labels.categoriasSubtitle}
             </Text>
           </div>
         </Flex>
@@ -242,6 +247,7 @@ export function SettingCategory() {
                 category={category}
                 onDelete={(categoryId) => handleDelete(categoryId)}
                 isDeleting={deleteCategoryMutation.isPending}
+                categoriasQuitar={labels.categoriasQuitar}
               />
             </div>
           ))}

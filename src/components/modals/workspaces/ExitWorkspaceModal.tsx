@@ -3,12 +3,16 @@ import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { WorkspaceDetail } from "../../../models/UserWorkspace";
 import { exitWorkspaceApi } from "../../../apis/WorkspaceApi";
+import { useCurrentUser } from "../../../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "../../utils/entityLabels";
 
 interface ExitWorkspaceModalProps {
   group: WorkspaceDetail;
 }
 export default function ExitWorkspaceModal({ group }: ExitWorkspaceModalProps) {
   const queryClient = useQueryClient();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
   const exitWorkspaceMutation = useMutation({
     mutationFn: () => exitWorkspaceApi(group.id),
     onError: (err) => {
@@ -23,7 +27,7 @@ export default function ExitWorkspaceModal({ group }: ExitWorkspaceModalProps) {
 
   return (
     <Popconfirm
-      title="¿Estás seguro de que quieres salir del grupo?"
+      title={labels.workspaceSalir}
       onConfirm={() => exitWorkspaceMutation.mutate()}
       okText="Sí"
       cancelText="No"

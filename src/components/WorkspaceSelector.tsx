@@ -3,6 +3,8 @@ import SwapOutlined from "@ant-design/icons/SwapOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import { useCurrentWorkspace } from "../apis/workspace/WorkspaceContext";
 import CreateWorkspaceModal from "./modals/workspaces/CreateWorkspaceModal";
+import { useCurrentUser } from "../apis/hooks/useCurrentUser";
+import { getEntityLabels } from "./utils/entityLabels";
 
 const { Text } = Typography;
 
@@ -14,6 +16,8 @@ interface WorkspaceSelectorProps {
 export default function WorkspaceSelector({ compact = false }: WorkspaceSelectorProps) {
   const { currentWorkspace, workspaces, setCurrentWorkspace, isLoading } =
     useCurrentWorkspace();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
 
   if (isLoading || workspaces.length === 0) {
     return null;
@@ -30,7 +34,7 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
         {(openModal) => (
           <div style={{ padding: "0 16px", marginBottom: 12 }}>
             <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 4 }}>
-              Workspace activo
+              {labels.workspaceActivo}
             </Text>
             <Select
               value={currentWorkspace?.workspaceId}
@@ -49,7 +53,7 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
                   >
                     <Space>
                       <PlusOutlined />
-                      <span>Crear workspace</span>
+                      <span>{labels.workspaceCrear}</span>
                     </Space>
                   </div>
                 </>
@@ -84,7 +88,7 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
                 >
                   <Space>
                     <PlusOutlined />
-                    <span>Crear workspace</span>
+                    <span>{labels.workspaceCrear}</span>
                   </Space>
                 </div>
               </>
