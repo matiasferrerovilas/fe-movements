@@ -14,7 +14,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   useAddCategory,
   useCategory,
@@ -45,7 +45,13 @@ function CategoryCard({ category, onDelete, onEdit, isDeleting, categoriasQuitar
   const { token } = theme.useToken();
   
   // Usar iconName e iconColor de la categoría, o defaults si no están definidos
-  const IconComponent = getIconComponent(category.iconName ?? "TagOutlined");
+  const iconElement = useMemo(() => {
+    const IconComponent = getIconComponent(category.iconName ?? "TagOutlined");
+    return React.createElement(IconComponent, {
+      style: { color: "#fff", fontSize: 20 },
+    });
+  }, [category.iconName]);
+
   const iconColor = category.iconColor ?? token.colorPrimary;
 
   return (
@@ -76,7 +82,7 @@ function CategoryCard({ category, onDelete, onEdit, isDeleting, categoriasQuitar
               transition: "all 0.25s ease",
             }}
           >
-            <IconComponent style={{ color: "#fff", fontSize: 20 }} />
+            {iconElement}
           </div>
           <Text
             strong

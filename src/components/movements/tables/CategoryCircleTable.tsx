@@ -1,4 +1,5 @@
 import { Popover } from "antd";
+import React, { useMemo } from "react";
 import { capitalizeFirst } from "../../utils/stringFunctions";
 import type { Category } from "../../../models/Category";
 import { getIconComponent } from "../../../utils/getIconComponent";
@@ -9,7 +10,13 @@ export default function CategoryCircleTable({
   category?: Category;
 }) {
   // Usar iconName e iconColor de la categoría, o defaults si no están definidos
-  const IconComponent = getIconComponent(category?.iconName ?? "QuestionOutlined");
+  const iconElement = useMemo(() => {
+    const IconComponent = getIconComponent(category?.iconName ?? "QuestionOutlined");
+    return React.createElement(IconComponent, {
+      style: { fontSize: 16, color: "#fff" },
+    });
+  }, [category?.iconName]);
+
   const color = category?.iconColor ?? "#d9d9d9";
   const displayName = category?.description ?? "Sin categoría";
 
@@ -29,7 +36,7 @@ export default function CategoryCircleTable({
         }}
         title={capitalizeFirst(displayName)}
       >
-        <IconComponent style={{ fontSize: 16, color: "#fff" }} />
+        {iconElement}
       </div>
     </Popover>
   );

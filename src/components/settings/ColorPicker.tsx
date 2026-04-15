@@ -7,7 +7,7 @@ const { Text } = Typography;
  * Paleta de colores predefinidos para categorías.
  * Basado en la paleta de colores de Ant Design.
  */
-export const PRESET_COLORS = [
+const PRESET_COLORS = [
   { name: "Rojo", value: "#f5222d" },
   { name: "Naranja Oscuro", value: "#fa541c" },
   { name: "Naranja", value: "#fa8c16" },
@@ -24,6 +24,9 @@ export const PRESET_COLORS = [
   { name: "Gris", value: "#8c8c8c" },
   { name: "Gris Claro", value: "#d9d9d9" },
 ];
+
+// Exportar para uso en CategoryEditModal
+export { PRESET_COLORS };
 
 interface ColorPickerProps {
   value?: string | null;

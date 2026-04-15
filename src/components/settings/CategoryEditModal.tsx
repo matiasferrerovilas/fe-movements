@@ -1,5 +1,5 @@
 import { Button, Divider, Flex, Form, Input, message, Modal, theme, Typography } from "antd";
-import { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import type { Category } from "../../models/Category";
 import { useUpdateCategory } from "../../apis/hooks/useCategory";
 import { ColorPicker, PRESET_COLORS } from "./ColorPicker";
@@ -20,38 +20,34 @@ interface CategoryEditForm {
   iconColor: string;
 }
 
-export function CategoryEditModal({
+function CategoryEditModalContent({
   category,
-  open,
   onClose,
-}: CategoryEditModalProps) {
+}: {
+  category: Category;
+  onClose: () => void;
+}) {
   const { token } = theme.useToken();
-  const [form] = Form.useForm<CategoryEditForm>();
   const updateCategoryMutation = useUpdateCategory();
 
-  // Estado local para vista previa
-  const [previewIcon, setPreviewIcon] = useState<string | null>(null);
-  const [previewColor, setPreviewColor] = useState<string | null>(null);
+  // Valores iniciales derivados de category
+  const initialValues = useMemo(
+    () => ({
+      description: category.description,
+      iconName: category.iconName ?? "QuestionOutlined",
+      iconColor: category.iconColor ?? PRESET_COLORS[0].value,
+    }),
+    [category.description, category.iconName, category.iconColor],
+  );
 
-  // Inicializar valores del formulario cuando se abre el modal
-  useEffect(() => {
-    if (open && category) {
-      const initialIcon = category.iconName ?? "QuestionOutlined";
-      const initialColor = category.iconColor ?? PRESET_COLORS[0].value;
+  const [form] = Form.useForm<CategoryEditForm>();
 
-      form.setFieldsValue({
-        description: category.description,
-        iconName: initialIcon,
-        iconColor: initialColor,
-      });
-      setPreviewIcon(initialIcon);
-      setPreviewColor(initialColor);
-    }
-  }, [open, category, form]);
+  // Obtener valores actuales del form para vista previa
+  const formValues = Form.useWatch([], form);
+  const previewIcon = formValues?.iconName ?? initialValues.iconName;
+  const previewColor = formValues?.iconColor ?? initialValues.iconColor;
 
   const handleSubmit = async (values: CategoryEditForm) => {
-    if (!category) return;
-
     try {
       await updateCategoryMutation.mutateAsync({
         categoryId: category.id,
@@ -71,37 +67,24 @@ export function CategoryEditModal({
 
   const handleCancel = () => {
     form.resetFields();
-    setPreviewIcon(null);
-    setPreviewColor(null);
     onClose();
   };
 
-  const PreviewIconComponent = getIconComponent(previewIcon);
+  const previewIconElement = useMemo(() => {
+    const IconComponent = getIconComponent(previewIcon);
+    return React.createElement(IconComponent, {
+      style: {
+        fontSize: 32,
+        color: "#fff",
+      },
+    });
+  }, [previewIcon]);
 
   return (
-    <Modal
-      title="Editar Categoría"
-      open={open}
-      onCancel={handleCancel}
-      footer={null}
-      width={600}
-      destroyOnClose
-    >
+    <>
       <Divider style={{ margin: "12px 0 20px 0" }} />
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        onValuesChange={(changedValues) => {
-          if ("iconName" in changedValues && changedValues.iconName) {
-            setPreviewIcon(changedValues.iconName);
-          }
-          if ("iconColor" in changedValues && changedValues.iconColor) {
-            setPreviewColor(changedValues.iconColor);
-          }
-        }}
-      >
+      <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={initialValues}>
         {/* Vista previa */}
         <div
           style={{
@@ -135,12 +118,7 @@ export function CategoryEditModal({
               boxShadow: `0 4px 16px ${previewColor ?? PRESET_COLORS[0].value}60`,
             }}
           >
-            <PreviewIconComponent
-              style={{
-                fontSize: 32,
-                color: "#fff",
-              }}
-            />
+            {previewIconElement}
           </div>
         </div>
 
@@ -170,7 +148,6 @@ export function CategoryEditModal({
             value={previewColor}
             onChange={(color) => {
               form.setFieldValue("iconColor", color);
-              setPreviewColor(color);
             }}
           />
         </Form.Item>
@@ -181,7 +158,6 @@ export function CategoryEditModal({
             value={previewIcon}
             onChange={(iconName) => {
               form.setFieldValue("iconName", iconName);
-              setPreviewIcon(iconName);
             }}
             selectedColor={previewColor}
           />
@@ -201,6 +177,28 @@ export function CategoryEditModal({
           </Button>
         </Flex>
       </Form>
+    </>
+  );
+}
+
+export function CategoryEditModal({
+  category,
+  open,
+  onClose,
+}: CategoryEditModalProps) {
+  return (
+    <Modal
+      title="Editar Categoría"
+      open={open}
+      onCancel={onClose}
+      footer={null}
+      width={600}
+      destroyOnClose
+      key={category?.id} // Force re-mount cuando cambia la categoría
+    >
+      {category && (
+        <CategoryEditModalContent category={category} onClose={onClose} />
+      )}
     </Modal>
   );
 }
