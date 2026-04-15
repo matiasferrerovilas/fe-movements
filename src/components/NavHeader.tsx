@@ -19,6 +19,7 @@ import LineChartOutlined from "@ant-design/icons/LineChartOutlined";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
 import MoonOutlined from "@ant-design/icons/MoonOutlined";
+import QuestionCircleOutlined from "@ant-design/icons/QuestionCircleOutlined";
 import SafetyOutlined from "@ant-design/icons/SafetyOutlined";
 import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import SunOutlined from "@ant-design/icons/SunOutlined";
@@ -87,6 +88,13 @@ const USER_MENU_ITEMS: SideBarItem[] = [
     icon: <SettingOutlined />,
     label: "Ajustes",
     path: "/settings",
+    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+  },
+  {
+    key: "help",
+    icon: <QuestionCircleOutlined />,
+    label: "Ayuda",
+    path: "/help",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
   {

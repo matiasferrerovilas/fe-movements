@@ -134,7 +134,9 @@ function RouteComponent() {
       </Title>
 
       {/* 2. KPIs mensuales (MonthlySummary incluye: KPIs, Mayor categoría, Total USD, BudgetAlert) */}
-      <MonthlySummary />
+      <div style={{ marginBottom: 24 }}>
+        <MonthlySummary />
+      </div>
 
       {/* 3. Top 5 Categorías */}
       <TopCategorias />

@@ -13,6 +13,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MovementRouteImport } from './routes/movement'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as BudgetsRouteImport } from './routes/budgets'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -37,6 +38,11 @@ const MovementRoute = MovementRouteImport.update({
   path: '/movement',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BudgetsRoute = BudgetsRouteImport.update({
   id: '/budgets',
   path: '/budgets',
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/budgets': typeof BudgetsRoute
+  '/help': typeof HelpRoute
   '/movement': typeof MovementRoute
   '/onboarding': typeof OnboardingRoute
   '/services': typeof ServicesRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/budgets': typeof BudgetsRoute
+  '/help': typeof HelpRoute
   '/movement': typeof MovementRoute
   '/onboarding': typeof OnboardingRoute
   '/services': typeof ServicesRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/budgets': typeof BudgetsRoute
+  '/help': typeof HelpRoute
   '/movement': typeof MovementRoute
   '/onboarding': typeof OnboardingRoute
   '/services': typeof ServicesRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/budgets'
+    | '/help'
     | '/movement'
     | '/onboarding'
     | '/services'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/budgets'
+    | '/help'
     | '/movement'
     | '/onboarding'
     | '/services'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/budgets'
+    | '/help'
     | '/movement'
     | '/onboarding'
     | '/services'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   BudgetsRoute: typeof BudgetsRoute
+  HelpRoute: typeof HelpRoute
   MovementRoute: typeof MovementRoute
   OnboardingRoute: typeof OnboardingRoute
   ServicesRoute: typeof ServicesRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MovementRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/budgets': {
       id: '/budgets'
       path: '/budgets'
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   BudgetsRoute: BudgetsRoute,
+  HelpRoute: HelpRoute,
   MovementRoute: MovementRoute,
   OnboardingRoute: OnboardingRoute,
   ServicesRoute: ServicesRoute,
