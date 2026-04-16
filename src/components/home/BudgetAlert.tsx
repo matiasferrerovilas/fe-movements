@@ -3,8 +3,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button, Col, Divider, Flex, Row, theme, Typography } from "antd";
 import { ArrowRightOutlined, WarningOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { useUserDefault } from "../../apis/hooks/useSettings";
-import { useCurrency } from "../../apis/hooks/useCurrency";
 import { useBudgets, useDeleteBudget } from "../../apis/hooks/useBudget";
 import { BudgetCard } from "../budgets/BudgetCard";
 import { EditBudgetModal } from "../budgets/BudgetFormModal";
@@ -18,31 +16,15 @@ export default function BudgetAlert() {
   const { token } = theme.useToken();
   const navigate = useNavigate();
 
-  const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
-  const { data: currencies } = useCurrency();
-
-  const currencyId = defaultCurrency?.value ?? null;
-  const currencySymbol =
-    currencyId !== null
-      ? (currencies?.find((c) => c.id === currencyId)?.symbol ?? null)
-      : null;
-
   const now = dayjs();
   const year = now.year();
   const month = now.month() + 1;
 
-  // El backend usa el workspace activo del usuario (DEFAULT_WORKSPACE)
-  const { data: budgets } = useBudgets({
-    currency: currencySymbol ?? "",
-    year,
-    month,
-  });
+  // Trae todos los presupuestos del mes (sin filtrar por moneda)
+  const { data: budgets } = useBudgets({ year, month });
 
   const deleteBudget = useDeleteBudget();
   const [editingBudget, setEditingBudget] = useState<BudgetRecord | null>(null);
-
-  // Don't render anything if the user has no currency configured
-  if (!currencySymbol) return null;
 
   const alertBudgets = (budgets ?? []).filter(
     (b) => b.percentage >= ALERT_THRESHOLD,

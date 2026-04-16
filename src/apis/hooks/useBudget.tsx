@@ -14,7 +14,6 @@ export const useBudgets = (params: BudgetQueryParams) =>
     queryKey: [BUDGETS_QUERY_KEY, params],
     queryFn: () => getBudgetsApi(params),
     staleTime: 1000 * 60,
-    enabled: !!params.currency,
   });
 
 export const useAddBudget = () => {

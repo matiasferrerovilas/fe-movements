@@ -30,7 +30,7 @@ export interface BudgetToUpdate {
 }
 
 export interface BudgetQueryParams {
-  currency: string;
+  currency?: string;
   year: number;
   month: number;
 }

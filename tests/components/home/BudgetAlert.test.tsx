@@ -67,15 +67,6 @@ const mockBudgets: BudgetRecord[] = [
 // ── MSW server ────────────────────────────────────────────────────────────────
 
 const server = setupServer(
-  http.get("http://localhost:8080/settings/defaults/DEFAULT_WORKSPACE", () =>
-    HttpResponse.json({ key: "DEFAULT_WORKSPACE", value: ACCOUNT_ID }),
-  ),
-  http.get("http://localhost:8080/settings/defaults/DEFAULT_CURRENCY", () =>
-    HttpResponse.json({ key: "DEFAULT_CURRENCY", value: CURRENCY_ID }),
-  ),
-  http.get("http://localhost:8080/currency", () =>
-    HttpResponse.json([{ id: CURRENCY_ID, symbol: CURRENCY_SYMBOL, description: "Peso argentino", code: "ARS" }]),
-  ),
   http.get("http://localhost:8080/budgets", () =>
     HttpResponse.json(mockBudgets),
   ),
@@ -112,37 +103,6 @@ function renderAlert() {
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe("BudgetAlert", () => {
-  describe("no renderiza nada cuando faltan defaults", () => {
-    it("retorna null cuando DEFAULT_WORKSPACE no tiene valor", async () => {
-      server.use(
-        http.get("http://localhost:8080/settings/defaults/DEFAULT_WORKSPACE", () =>
-          HttpResponse.json({ key: "DEFAULT_WORKSPACE", value: null }),
-        ),
-      );
-
-      const { container } = renderAlert();
-
-      // Wait for all queries to settle (no pending state)
-      await waitFor(() => {
-        expect(container.firstChild).toBeNull();
-      });
-    });
-
-    it("retorna null cuando DEFAULT_CURRENCY no tiene valor", async () => {
-      server.use(
-        http.get("http://localhost:8080/settings/defaults/DEFAULT_CURRENCY", () =>
-          HttpResponse.json({ key: "DEFAULT_CURRENCY", value: null }),
-        ),
-      );
-
-      const { container } = renderAlert();
-
-      await waitFor(() => {
-        expect(container.firstChild).toBeNull();
-      });
-    });
-  });
-
   describe("no renderiza nada cuando todos los presupuestos están bajo el 50%", () => {
     it("retorna null cuando ningún presupuesto supera el umbral", async () => {
       const allBelowThreshold: BudgetRecord[] = mockBudgets.map((b) => ({

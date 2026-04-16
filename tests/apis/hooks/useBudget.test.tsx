@@ -159,17 +159,15 @@ describe("useBudgets", () => {
     expect(BUDGETS_QUERY_KEY).toBe("budgets");
   });
 
-  it("does not fetch when currency is empty string", async () => {
+  it("fetches budgets without currency filter (all currencies)", async () => {
     const { wrapper } = makeWrapper();
     const { result } = renderHook(
-      () => useBudgets({ currency: "", year: 2026, month: 4 }),
+      () => useBudgets({ year: 2026, month: 4 }),
       { wrapper },
     );
 
-    // The query should stay in pending state without fetching
-    expect(result.current.isPending).toBe(true);
-    expect(result.current.fetchStatus).toBe("idle");
-    expect(result.current.data).toBeUndefined();
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toHaveLength(mockBudgets.length);
   });
 });
 
