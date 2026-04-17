@@ -5,10 +5,12 @@ import PlusCircleOutlined from "@ant-design/icons/PlusCircleOutlined";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import ImportMovementTab from "./ImportMovementTab";
+import ImportMovementExcelTab from "./ImportMovementExcelTab";
 import AddMovementExpenseTab from "./AddMovementExpenseTab";
 
 const TAB_INDIVIDUAL = "1";
-const TAB_ARCHIVO = "2";
+const TAB_PDF = "2";
+const TAB_EXCEL = "3";
 
 export default function AddMovementModal({ block }: { block?: boolean }) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -17,13 +19,17 @@ export default function AddMovementModal({ block }: { block?: boolean }) {
   };
   const [activeTab, setActiveTab] = useState<string>(TAB_INDIVIDUAL);
 
-  const uploadRef = useRef<{ handleConfirm: () => void } | null>(null);
+  const pdfRef = useRef<{ handleConfirm: () => void } | null>(null);
+  const excelRef = useRef<{ handleConfirm: () => void } | null>(null);
   const expenseRef = useRef<{ handleConfirm: () => void } | null>(null);
 
   const handleConfirm = () => {
     switch (activeTab) {
-      case TAB_ARCHIVO:
-        uploadRef.current?.handleConfirm();
+      case TAB_PDF:
+        pdfRef.current?.handleConfirm();
+        break;
+      case TAB_EXCEL:
+        excelRef.current?.handleConfirm();
         break;
       case TAB_INDIVIDUAL:
         expenseRef.current?.handleConfirm();
@@ -31,9 +37,14 @@ export default function AddMovementModal({ block }: { block?: boolean }) {
     }
   };
 
-  const confirmLabel = activeTab === TAB_ARCHIVO ? "Importar" : "Agregar";
+  const confirmLabel =
+    activeTab === TAB_PDF || activeTab === TAB_EXCEL ? "Importar" : "Agregar";
   const confirmIcon =
-    activeTab === TAB_ARCHIVO ? <UploadOutlined /> : <PlusOutlined />;
+    activeTab === TAB_PDF || activeTab === TAB_EXCEL ? (
+      <UploadOutlined />
+    ) : (
+      <PlusOutlined />
+    );
 
   return (
     <>
@@ -72,10 +83,20 @@ export default function AddMovementModal({ block }: { block?: boolean }) {
               ),
             },
             {
-              key: TAB_ARCHIVO,
+              key: TAB_PDF,
               label: "Importar PDF",
               children: (
-                <ImportMovementTab ref={uploadRef} onSuccess={handleCloseModal} />
+                <ImportMovementTab ref={pdfRef} onSuccess={handleCloseModal} />
+              ),
+            },
+            {
+              key: TAB_EXCEL,
+              label: "Importar Excel/CSV",
+              children: (
+                <ImportMovementExcelTab
+                  ref={excelRef}
+                  onSuccess={handleCloseModal}
+                />
               ),
             },
           ]}

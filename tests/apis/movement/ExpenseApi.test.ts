@@ -2,8 +2,13 @@ import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import dayjs from "dayjs";
-import { uploadExpense, updateExpense } from "../../../src/apis/movement/ExpenseApi";
+import {
+  uploadExpense,
+  updateExpense,
+  uploadExpenseApi,
+} from "../../../src/apis/movement/ExpenseApi";
 import type { CreateMovementForm } from "../../../src/models/Movement";
+import type { UploadPayload } from "../../../src/components/modals/movements/ImportMovementTab";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -19,7 +24,6 @@ function makeForm(date: Date): CreateMovementForm {
     currency: "ARS",
     amount: 1000,
     type: "DEBITO",
-    workspaceId: 10,
     category: "Supermercado",
   };
 }
@@ -112,6 +116,133 @@ describe("ExpenseApi — serialización de fechas", () => {
       await updateExpense(99, form);
 
       expect(capturedUpdateBody.date).toBe(expectedDate);
+    });
+  });
+
+  describe("uploadExpenseApi (importar archivo)", () => {
+    it("envía FormData con file y bank correctamente", async () => {
+      const mockFile = new File(["test content"], "test.pdf", {
+        type: "application/pdf",
+      });
+
+      const payload: UploadPayload = {
+        file: mockFile,
+        bank: "SANTANDER",
+      };
+
+      let requestReceived = false;
+      let receivedBank = "";
+
+      server.use(
+        http.post("http://localhost:8080/expenses/import-file", async ({ request }) => {
+          const formData = await request.formData();
+          const file = formData.get("file");
+          const bank = formData.get("bank");
+
+          requestReceived = true;
+          receivedBank = bank as string;
+
+          // Verificar que file y bank están presentes
+          expect(file).not.toBeNull();
+          expect(bank).toBe("SANTANDER");
+
+          return HttpResponse.json({}, { status: 201 });
+        }),
+      );
+
+      await uploadExpenseApi(payload);
+
+      // Verificar que la request fue interceptada y procesada
+      expect(requestReceived).toBe(true);
+      expect(receivedBank).toBe("SANTANDER");
+    });
+
+    it("lanza error con mensaje específico cuando el backend retorna 400", async () => {
+      const mockFile = new File(["test"], "test.txt", { type: "text/plain" });
+
+      const payload: UploadPayload = {
+        file: mockFile,
+        bank: "BBVA",
+      };
+
+      server.use(
+        http.post("http://localhost:8080/expenses/import-file", () => {
+          return HttpResponse.json(
+            { message: "Formato de archivo no soportado: txt. Formatos válidos: PDF, XLS, XLSX, CSV" },
+            { status: 400 },
+          );
+        }),
+      );
+
+      await expect(uploadExpenseApi(payload)).rejects.toThrow(
+        "Formato de archivo no soportado: txt. Formatos válidos: PDF, XLS, XLSX, CSV",
+      );
+    });
+
+    it("lanza error genérico cuando el backend retorna 400 sin mensaje", async () => {
+      const mockFile = new File(["test"], "test.pdf", {
+        type: "application/pdf",
+      });
+
+      const payload: UploadPayload = {
+        file: mockFile,
+        bank: "INVALID_BANK",
+      };
+
+      server.use(
+        http.post("http://localhost:8080/expenses/import-file", () => {
+          return HttpResponse.json({}, { status: 400 });
+        }),
+      );
+
+      await expect(uploadExpenseApi(payload)).rejects.toThrow(
+        "Error al importar archivo",
+      );
+    });
+
+    it("lanza error cuando falta el archivo", async () => {
+      const payload: UploadPayload = {
+        file: null,
+        bank: "SANTANDER",
+      };
+
+      await expect(uploadExpenseApi(payload)).rejects.toThrow(
+        "Missing required fields: file or bank",
+      );
+    });
+
+    it("lanza error cuando falta el banco", async () => {
+      const mockFile = new File(["test"], "test.pdf", {
+        type: "application/pdf",
+      });
+
+      const payload: UploadPayload = {
+        file: mockFile,
+        bank: null,
+      };
+
+      await expect(uploadExpenseApi(payload)).rejects.toThrow(
+        "Missing required fields: file or bank",
+      );
+    });
+
+    it("retorna respuesta exitosa cuando el backend responde 201", async () => {
+      const mockFile = new File(["test"], "test.xlsx", {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const payload: UploadPayload = {
+        file: mockFile,
+        bank: "SANTANDER",
+      };
+
+      server.use(
+        http.post("http://localhost:8080/expenses/import-file", () => {
+          return HttpResponse.json({}, { status: 201 });
+        }),
+      );
+
+      await expect(uploadExpenseApi(payload)).resolves.toEqual({});
     });
   });
 });

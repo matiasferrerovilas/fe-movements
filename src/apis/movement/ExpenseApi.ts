@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import axios from "axios";
 import type { MovementFilters } from "../../routes/movement";
 import type { PageResponse } from "../../models/BaseMode";
 import type { CreateMovementForm, Movement } from "../../models/Movement";
@@ -54,13 +55,22 @@ export const uploadExpenseApi = async (form: UploadPayload) => {
   formData.append("file", form.file);
   formData.append("bank", form.bank);
 
-  const response = await api.post("/expenses/import-file", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  try {
+    const response = await api.post("/expenses/import-file", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 400) {
+      const message =
+        error.response.data?.message || "Error al importar archivo";
+      throw new Error(message);
+    }
+    throw error;
+  }
 };
 
 export const updateExpense = (id: number, movement: CreateMovementForm) => {

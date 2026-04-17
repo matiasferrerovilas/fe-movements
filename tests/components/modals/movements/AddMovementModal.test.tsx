@@ -127,6 +127,27 @@ describe("AddMovementModal", () => {
     expect(allButtons.find((b) => b.textContent?.trim() === "Agregar")).toBeUndefined();
   });
 
+  it("shows 'Importar' button after switching to the 'Importar Excel/CSV' tab", async () => {
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+
+    await waitFor(() =>
+      expect(screen.getByText("Agregar Movimiento")).toBeInTheDocument(),
+    );
+
+    // Switch to "Importar Excel/CSV" tab
+    await userEvent.click(screen.getByRole("tab", { name: /importar excel\/csv/i }));
+
+    await waitFor(() => {
+      const buttons = screen.getAllByRole("button");
+      const importarBtn = buttons.find((b) => b.textContent?.trim() === "Importar");
+      expect(importarBtn).toBeDefined();
+    });
+    // "Agregar" button should not be visible
+    const allButtons = screen.getAllByRole("button");
+    expect(allButtons.find((b) => b.textContent?.trim() === "Agregar")).toBeUndefined();
+  });
+
   it("shows 'Agregar' button after switching back to the 'Manual' tab", async () => {
     render(<AddMovementModal />, { wrapper: makeWrapper() });
     await openModal();
@@ -142,6 +163,17 @@ describe("AddMovementModal", () => {
     await waitFor(() => {
       const buttons = screen.getAllByRole("button");
       expect(buttons.find((b) => b.textContent?.trim() === "Agregar")).toBeDefined();
+    });
+  });
+
+  it("shows correct tabs: Manual, Importar PDF, and Importar Excel/CSV", async () => {
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: /manual/i })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /importar pdf/i })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /importar excel\/csv/i })).toBeInTheDocument();
     });
   });
 });

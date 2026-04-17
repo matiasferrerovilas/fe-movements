@@ -6,23 +6,15 @@ import { useBanks } from "../../../apis/hooks/useBank";
 import { useUserDefault } from "../../../apis/hooks/useSettings";
 import type { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { uploadExpenseApi } from "../../../apis/movement/ExpenseApi";
+import type { UploadForm, UploadPayload } from "./ImportMovementTab";
+
 const { Text } = Typography;
 
-export interface UploadForm {
-  fileList: UploadFile<File>[] | null;
-  bank: string | null;
-}
-
-export interface UploadPayload {
-  file: File | null;
-  bank: string | null;
-}
-
-interface ImportMovementTabProps {
+interface ImportMovementExcelTabProps {
   onSuccess?: () => void;
 }
 
-const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
+const ImportMovementExcelTab = forwardRef<unknown, ImportMovementExcelTabProps>(
   ({ onSuccess }, ref) => {
     const { data: banks = [] } = useBanks();
     const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
@@ -31,12 +23,12 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
     const uploadMutation = useMutation({
       mutationFn: (form: UploadPayload) => uploadExpenseApi(form),
       onSuccess: () => {
-        console.debug("✅ Archivo subido correctamente");
+        console.debug("✅ Archivo Excel/CSV subido correctamente");
         message.success("Movimientos importados correctamente");
         onSuccess?.();
       },
       onError: (err: Error) => {
-        console.error("❌ Error subiendo archivo:", err);
+        console.error("❌ Error subiendo archivo Excel/CSV:", err);
         message.error(err.message || "Error al importar archivo");
       },
     });
@@ -69,6 +61,7 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
       }
       return e?.fileList;
     };
+
     return (
       <Form
         form={form}
@@ -80,14 +73,12 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
         <div style={{ marginBottom: 10 }}>
           <Text type="secondary">
             Podés importar tu resumen bancario en formato{" "}
-            <strong>PDF</strong>.
+            <strong>Excel o CSV</strong>.
             <br />
-            Bancos soportados: BBVA, Galicia.
+            Banco soportado: Santander.
             <br />
-            Solo se admiten <strong>
-              resúmenes de tarjeta de crédito
-            </strong>{" "}
-            por el momento.
+            El archivo debe contener las columnas:{" "}
+            <strong>FECHA, CONCEPTO, IMPORTE, SALDO</strong>.
           </Text>
         </div>
         <Form.Item
@@ -111,7 +102,11 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
           getValueFromEvent={normFile}
           rules={[{ required: true, message: "Seleccione un archivo" }]}
         >
-          <Upload beforeUpload={() => false} maxCount={1} accept=".pdf">
+          <Upload
+            beforeUpload={() => false}
+            maxCount={1}
+            accept=".xls,.xlsx,.csv"
+          >
             <Button icon={<UploadOutlined />}>Seleccionar archivo</Button>
           </Upload>
         </Form.Item>
@@ -120,4 +115,4 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
   },
 );
 
-export default ImportMovementTab;
+export default ImportMovementExcelTab;
