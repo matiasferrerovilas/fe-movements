@@ -1,6 +1,6 @@
 import { Card, Empty, Flex, Spin, theme } from "antd";
 import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { useBalanceMonthlyEvolution } from "../../apis/hooks/useBalance";
+import EvolucionAnualFilters from "./EvolucionAnualFilters";
 
 const CHART_COLORS = [
   "#6366f1",
@@ -53,6 +54,12 @@ export default function EvolucionAnual({ year }: Props) {
     [data],
   );
 
+  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
+
+  useEffect(() => {
+    setSelectedCurrencies(currencies);
+  }, [currencies]);
+
   const chartData = useMemo(() => {
     const byMonth = data.reduce(
       (acc, item) => {
@@ -86,35 +93,44 @@ export default function EvolucionAnual({ year }: Props) {
           <Empty description="Sin datos para el año seleccionado" />
         </Flex>
       ) : (
-        <ResponsiveContainer width="100%" height={340}>
-          <LineChart
-            data={chartData}
-            margin={{ top: 4, right: 8, left: 0, bottom: 4 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={token.colorBorderSecondary}
-            />
-            <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} width={70} />
-            <Tooltip
-              formatter={(val) => `$${(val ?? 0).toLocaleString("es-AR")}`}
-            />
-            <Legend />
-            {currencies.map((currency, idx) => (
-              <Line
-                key={currency}
-                type="monotone"
-                dataKey={currency}
-                name={currency}
-                stroke={CHART_COLORS[idx % CHART_COLORS.length]}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 6 }}
+        <>
+          <EvolucionAnualFilters
+            currencies={currencies}
+            selected={selectedCurrencies}
+            onChange={setSelectedCurrencies}
+          />
+          <ResponsiveContainer width="100%" height={340}>
+            <LineChart
+              data={chartData}
+              margin={{ top: 4, right: 8, left: 0, bottom: 4 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={token.colorBorderSecondary}
               />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+              <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} width={70} />
+              <Tooltip
+                formatter={(val) => `$${(val ?? 0).toLocaleString("es-AR")}`}
+              />
+              <Legend />
+              {currencies.map((currency, idx) =>
+                selectedCurrencies.includes(currency) ? (
+                  <Line
+                    key={currency}
+                    type="monotone"
+                    dataKey={currency}
+                    name={currency}
+                    stroke={CHART_COLORS[idx % CHART_COLORS.length]}
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 6 }}
+                  />
+                ) : null,
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        </>
       )}
     </Card>
   );
