@@ -1,3 +1,10 @@
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/es";
+
+dayjs.extend(relativeTime);
+dayjs.locale("es");
+
 import "@testing-library/jest-dom";
 
 // Mock window.env for all tests

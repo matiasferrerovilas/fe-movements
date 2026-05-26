@@ -2,10 +2,16 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import Keycloak from "keycloak-js";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/es";
 
 import { ReactKeycloakProvider } from "@react-keycloak/web";
 import App from "./App";
 import { AuthProvider } from "./apis/auth/AuthProvider";
+
+dayjs.extend(relativeTime);
+dayjs.locale("es");
 
 const keycloak = new Keycloak(window.env.keycloak);
 
