@@ -39,8 +39,7 @@ export function InvestmentDashboard({
       <Col xs={12} sm={12} md={6}>
         <Card size="small">
           <div data-testid="total-invertido">
-            <Statisticcrea
-              en
+            <Statistic
               title="Total invertido"
               value={totalInvertido}
               precision={2}
