@@ -28,7 +28,6 @@ export const useMovementSubscription = () => {
   const callbackRef = useRef<((event: EventWrapper<Movement | number>) => void) | null>(null);
   useLayoutEffect(() => {
     callbackRef.current = (event: EventWrapper<Movement | number>) => {
-      console.debug("📨 Nuevo movimiento recibido:", event);
 
       const queries = queryClient.getQueriesData<PageResponse<Movement>>({
         queryKey: [EXPENSES_QUERY_KEY],

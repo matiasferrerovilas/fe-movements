@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { App, Button, Flex, Select, Typography } from "antd";
+import { App, Button, Flex, Typography } from "antd";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import { createFileRoute } from "@tanstack/react-router";
 import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
-import { useWorkspaces } from "../apis/hooks/useWorkspaces";
+import { useCurrentWorkspace } from "../apis/workspace/WorkspaceContext";
 import {
   useInvestments,
   useCreateInvestment,
@@ -30,13 +30,8 @@ export const Route = createFileRoute("/inversiones")({
 
 function RouteComponent() {
   const { message } = App.useApp();
-  const { data: workspaces = [] } = useWorkspaces();
-
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<number | undefined>(
-    () => workspaces[0]?.workspaceId,
-  );
-
-  const accountId = selectedWorkspaceId ?? workspaces[0]?.workspaceId;
+  const { currentWorkspace } = useCurrentWorkspace();
+  const accountId = currentWorkspace?.workspaceId;
 
   const { data: investments = [], isFetching } = useInvestments(accountId);
   const { data: investmentTypes = [] } = useInvestmentTypes();
@@ -99,27 +94,14 @@ function RouteComponent() {
         <Title level={3} style={{ margin: 0 }}>
           Inversiones
         </Title>
-        <Flex gap={8} align="center">
-          {workspaces.length > 1 && (
-            <Select
-              value={accountId}
-              onChange={setSelectedWorkspaceId}
-              style={{ minWidth: 160 }}
-              options={workspaces.map((w) => ({
-                value: w.workspaceId,
-                label: w.workspaceName,
-              }))}
-            />
-          )}
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleOpenCreate}
-            disabled={accountId == null}
-          >
-            Agregar inversión
-          </Button>
-        </Flex>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={handleOpenCreate}
+          disabled={accountId == null}
+        >
+          Agregar inversión
+        </Button>
       </Flex>
 
       <InvestmentDashboard investments={investments} isFetching={isFetching} />

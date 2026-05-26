@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { DatePicker, Form, Input, InputNumber, Modal, Select } from "antd";
+import { Col, DatePicker, Form, Input, InputNumber, Modal, Row, Select } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import type { InvestmentType } from "../../models/InvestmentType";
@@ -69,52 +69,59 @@ export function InvestmentForm({
       destroyOnHide
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
-        <Form.Item
-          name="instrumento"
-          label="Instrumento"
-          rules={[{ required: true, message: "Ingresá el instrumento" }]}
-        >
-          <Input placeholder="Ej: AAPL, ES0113040035, BTC" />
-        </Form.Item>
+        <Row gutter={12}>
+          <Col span={14}>
+            <Form.Item
+              name="instrumento"
+              label="Instrumento / descripción"
+              rules={[{ required: true, message: "Ingresá el instrumento" }]}
+            >
+              <Input placeholder="Ej: AAPL, ES0113040035, BTC" />
+            </Form.Item>
+          </Col>
+          <Col span={10}>
+            <Form.Item
+              name="tipoId"
+              label="Tipo"
+              rules={[{ required: true, message: "Seleccioná un tipo" }]}
+            >
+              <Select placeholder="Seleccioná un tipo" aria-label="tipo">
+                {investmentTypes.map((t) => (
+                  <Select.Option key={t.id} value={t.id}>
+                    {t.description}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Form.Item
-          name="tipoId"
-          label="Tipo"
-          rules={[{ required: true, message: "Seleccioná un tipo" }]}
-        >
-          <Select
-            placeholder="Seleccioná un tipo"
-            aria-label="tipo"
-          >
-            {investmentTypes.map((t) => (
-              <Select.Option key={t.id} value={t.id}>
-                {t.description}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          name="montoInvertido"
-          label="Monto invertido"
-          rules={[{ required: true, message: "Ingresá el monto" }]}
-        >
-          <InputNumber min={0} style={{ width: "100%" }} />
-        </Form.Item>
-
-        <Form.Item
-          name="currency"
-          label="Moneda"
-          rules={[{ required: true, message: "Seleccioná la moneda" }]}
-        >
-          <Select placeholder="Seleccioná la moneda">
-            {currencies.map((c) => (
-              <Select.Option key={c.id} value={c.symbol}>
-                {c.symbol}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+        <Row gutter={12}>
+          <Col span={14}>
+            <Form.Item
+              name="montoInvertido"
+              label="Monto invertido"
+              rules={[{ required: true, message: "Ingresá el monto" }]}
+            >
+              <InputNumber min={0} style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+          <Col span={10}>
+            <Form.Item
+              name="currency"
+              label="Moneda"
+              rules={[{ required: true, message: "Seleccioná la moneda" }]}
+            >
+              <Select placeholder="Seleccioná la moneda">
+                {currencies.map((c) => (
+                  <Select.Option key={c.id} value={c.symbol}>
+                    {c.symbol}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
 
         <Form.Item
           name="fechaInversion"

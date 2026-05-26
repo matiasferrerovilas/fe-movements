@@ -67,7 +67,7 @@ describe("InvestmentTable", () => {
     expect(onEdit).toHaveBeenCalledWith(investment);
   });
 
-  it("calls onDelete with the correct id when delete is clicked", async () => {
+  it("calls onDelete with the correct id after confirming in popconfirm", async () => {
     const user = userEvent.setup();
     const onDelete = vi.fn();
 
@@ -82,6 +82,7 @@ describe("InvestmentTable", () => {
     );
 
     await user.click(screen.getByRole("button", { name: /eliminar/i }));
+    await user.click(screen.getByRole("button", { name: /sí/i }));
     expect(onDelete).toHaveBeenCalledWith(5);
   });
 
