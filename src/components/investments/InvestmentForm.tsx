@@ -66,7 +66,7 @@ export function InvestmentForm({
       okText={isEdit ? "Guardar" : "Agregar"}
       cancelText="Cancelar"
       confirmLoading={isLoading}
-      destroyOnHide
+      destroyOnHidden
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Row gutter={12}>
