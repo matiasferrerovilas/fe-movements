@@ -1,4 +1,15 @@
-import { Button, Card, Col, Empty, Grid, Popconfirm, Row, Tag, Tooltip, Typography } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Empty,
+  Grid,
+  Popconfirm,
+  Row,
+  Tag,
+  Tooltip,
+  Typography,
+} from "antd";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
 import ArrowDownOutlined from "@ant-design/icons/ArrowDownOutlined";
@@ -92,14 +103,18 @@ function DesktopRow({
   isDeleting: boolean;
 }) {
   const gp = investment.valorActual - investment.montoInvertido;
-  const pct = investment.montoInvertido > 0 ? (gp / investment.montoInvertido) * 100 : 0;
+  const pct =
+    investment.montoInvertido > 0 ? (gp / investment.montoInvertido) * 100 : 0;
   const isPositive = pct >= 0;
 
   return (
     <Card
       hoverable
       className="step-enter-right"
-      style={{ marginBottom: 4, animationDelay: `${Math.min(index, 9) * 40}ms` }}
+      style={{
+        marginBottom: 4,
+        animationDelay: `${Math.min(index, 9) * 40}ms`,
+      }}
       styles={{ body: { padding: COL_PADDING } }}
     >
       <Row justify="center" align="middle">
@@ -114,12 +129,14 @@ function DesktopRow({
         </Col>
         <Col span={4}>
           <Text>
-            {investment.moneda.symbol} {investment.montoInvertido.toLocaleString("es-AR")}
+            {investment.moneda.symbol}{" "}
+            {investment.montoInvertido.toLocaleString("es-AR")}
           </Text>
         </Col>
         <Col span={4}>
           <Text>
-            {investment.moneda.symbol} {investment.valorActual.toLocaleString("es-AR")}
+            {investment.moneda.symbol}{" "}
+            {investment.valorActual.toLocaleString("es-AR")}
           </Text>
         </Col>
         <Col span={4}>
@@ -173,7 +190,10 @@ function MobileRow({
     <Card
       hoverable
       className="step-enter-right"
-      style={{ marginBottom: 8, animationDelay: `${Math.min(index, 9) * 40}ms` }}
+      style={{
+        marginBottom: 8,
+        animationDelay: `${Math.min(index, 9) * 40}ms`,
+      }}
       styles={{ body: { padding: "10px 12px" } }}
     >
       <Row justify="space-between" align="middle" style={{ marginBottom: 6 }}>
@@ -182,7 +202,10 @@ function MobileRow({
         </Text>
         <Text
           data-testid={`gp-${investment.id}`}
-          style={{ color: isPositive ? GP_POSITIVE : GP_NEGATIVE, fontSize: 14 }}
+          style={{
+            color: isPositive ? GP_POSITIVE : GP_NEGATIVE,
+            fontSize: 14,
+          }}
         >
           {isPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}{" "}
           {isPositive ? "+" : ""}
@@ -192,7 +215,9 @@ function MobileRow({
 
       <Row gutter={[8, 4]} style={{ marginBottom: 6 }}>
         <Col>
-          <Tag color={investment.tipo.iconColor ?? undefined}>{investment.tipo.description}</Tag>
+          <Tag color={investment.tipo.iconColor ?? undefined}>
+            {investment.tipo.description}
+          </Tag>
         </Col>
         <Col>
           <Text type="secondary" style={{ fontSize: 11 }}>
@@ -206,14 +231,16 @@ function MobileRow({
           <Text type="secondary" style={{ fontSize: 12 }}>
             Invertido:{" "}
             <Text>
-              {investment.moneda.symbol} {investment.montoInvertido.toLocaleString("es-AR")}
+              {investment.moneda.symbol}{" "}
+              {investment.montoInvertido.toLocaleString("es-AR")}
             </Text>
           </Text>
           <br />
           <Text type="secondary" style={{ fontSize: 12 }}>
             Actual:{" "}
             <Text>
-              {investment.moneda.symbol} {investment.valorActual.toLocaleString("es-AR")}
+              {investment.moneda.symbol}{" "}
+              {investment.valorActual.toLocaleString("es-AR")}
             </Text>
           </Text>
         </Col>
@@ -232,7 +259,6 @@ function MobileRow({
 
 export function InvestmentTable({
   investments,
-  isFetching: _isFetching,
   onEdit,
   onDelete,
   isDeleting,
@@ -241,7 +267,12 @@ export function InvestmentTable({
   const isMobile = !screens.md;
 
   if (investments.length === 0) {
-    return <Empty description="Sin inversiones registradas" style={{ padding: "40px 0" }} />;
+    return (
+      <Empty
+        description="Sin inversiones registradas"
+        style={{ padding: "40px 0" }}
+      />
+    );
   }
 
   if (isMobile) {
