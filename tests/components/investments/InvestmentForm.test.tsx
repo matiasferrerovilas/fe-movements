@@ -3,11 +3,12 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { InvestmentType } from "../../../src/models/InvestmentType";
 import type { Currency } from "../../../src/models/Currency";
+import type { Investment } from "../../../src/models/Investment";
 import { InvestmentForm } from "../../../src/components/investments/InvestmentForm";
 
 const mockTypes: InvestmentType[] = [
-  { id: 1, description: "Acciones" },
-  { id: 2, description: "FCI" },
+  { id: 1, name: "Acciones", workspaceId: 1 },
+  { id: 2, name: "FCI", workspaceId: 1 },
 ];
 
 const mockCurrencies: Currency[] = [
@@ -28,11 +29,11 @@ describe("InvestmentForm", () => {
   it("renders the form fields when open", () => {
     render(<InvestmentForm {...defaultProps} />);
 
-    expect(screen.getByLabelText(/instrumento/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/descripción/i)).toBeInTheDocument();
     expect(screen.getByText("Tipo")).toBeInTheDocument();
     expect(screen.getByText("Monto invertido")).toBeInTheDocument();
     expect(screen.getByText("Moneda")).toBeInTheDocument();
-    expect(screen.getByText("Fecha de inversión")).toBeInTheDocument();
+    expect(screen.getByText("Fecha de inicio")).toBeInTheDocument();
   });
 
   it("shows 'Nueva inversión' title in create mode", () => {
@@ -42,15 +43,16 @@ describe("InvestmentForm", () => {
   });
 
   it("shows 'Editar inversión' title when investment prop is provided", () => {
-    const investment = {
+    const investment: Investment = {
       id: 1,
-      instrumento: "AAPL",
-      tipo: { id: 1, description: "Acciones" },
-      montoInvertido: 1000,
-      valorActual: 1200,
-      fechaInversion: "2025-01-01",
-      moneda: { id: 1, symbol: "USD", description: "Dólar" },
-      account: { id: 10, name: "Familia" },
+      description: "AAPL",
+      investmentType: { id: 1, name: "Acciones", workspaceId: 1 },
+      amount: 1000,
+      startDate: "2025-01-01",
+      endDate: null,
+      currency: { id: 1, symbol: "USD", description: "Dólar" },
+      workspaceName: "Familia",
+      owner: "Test User",
     };
     render(<InvestmentForm {...defaultProps} investment={investment} />);
 
@@ -77,14 +79,14 @@ describe("InvestmentForm", () => {
     expect(await screen.findByText("FCI")).toBeInTheDocument();
   });
 
-  it("shows validation error when instrumento is empty and form is submitted", async () => {
+  it("shows validation error when required fields are empty and form is submitted", async () => {
     const user = userEvent.setup();
     render(<InvestmentForm {...defaultProps} />);
 
     await user.click(screen.getByRole("button", { name: /agregar/i }));
 
     expect(
-      await screen.findByText("Ingresá el instrumento"),
+      await screen.findByText("Ingresá el monto"),
     ).toBeInTheDocument();
   });
 });

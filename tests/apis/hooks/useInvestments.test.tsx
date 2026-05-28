@@ -15,13 +15,14 @@ import {
 function makeInvestment(id: number): Investment {
   return {
     id,
-    instrumento: `TICKER${id}`,
-    tipo: { id: 1, description: "Acciones" },
-    montoInvertido: 1000,
-    valorActual: 1200,
-    fechaInversion: "2025-01-01",
-    moneda: { id: 1, symbol: "USD", description: "Dólar" },
-    account: { id: 10, name: "Familia" },
+    description: `TICKER${id}`,
+    investmentType: { id: 1, name: "Acciones", workspaceId: 1 },
+    amount: 1000,
+    startDate: "2025-01-01",
+    endDate: null,
+    currency: { id: 1, symbol: "USD", description: "Dólar" },
+    workspaceName: "Familia",
+    owner: "Test User",
   };
 }
 
@@ -122,21 +123,21 @@ describe("useCreateInvestment", () => {
 
     await act(async () => {
       result.current.mutate({
-        instrumento: "AAPL",
-        tipoId: 1,
-        montoInvertido: 500,
-        currency: "USD",
-        fechaInversion: new Date("2025-06-01"),
+        description: "AAPL",
+        investmentTypeId: 1,
+        amount: 500,
+        currencySymbol: "USD",
+        startDate: new Date("2025-06-01"),
       });
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(capturedBody).toMatchObject({
-      instrumento: "AAPL",
-      tipoId: 1,
-      montoInvertido: 500,
-      currency: "USD",
-      fechaInversion: "2025-06-01",
+      description: "AAPL",
+      investmentTypeId: 1,
+      amount: 500,
+      currencySymbol: "USD",
+      startDate: "2025-06-01",
       accountId: 10,
     });
   });
@@ -149,11 +150,11 @@ describe("useCreateInvestment", () => {
 
     await act(async () => {
       result.current.mutate({
-        instrumento: "AAPL",
-        tipoId: 1,
-        montoInvertido: 500,
-        currency: "USD",
-        fechaInversion: new Date("2025-06-01"),
+        description: "AAPL",
+        investmentTypeId: 1,
+        amount: 500,
+        currencySymbol: "USD",
+        startDate: new Date("2025-06-01"),
       });
     });
 
@@ -178,12 +179,12 @@ describe("useUpdateInvestment", () => {
     const { result } = renderHook(() => useUpdateInvestment(), { wrapper });
 
     await act(async () => {
-      result.current.mutate({ id: 1, form: { instrumento: "MSFT", montoInvertido: 800 } });
+      result.current.mutate({ id: 1, form: { description: "MSFT", amount: 800 } });
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(capturedId).toBe("1");
-    expect(capturedBody).toMatchObject({ instrumento: "MSFT", montoInvertido: 800 });
+    expect(capturedBody).toMatchObject({ description: "MSFT", amount: 800 });
   });
 
   it("invalidates investments query on success", async () => {
@@ -193,7 +194,7 @@ describe("useUpdateInvestment", () => {
     const { result } = renderHook(() => useUpdateInvestment(), { wrapper });
 
     await act(async () => {
-      result.current.mutate({ id: 1, form: { instrumento: "MSFT" } });
+      result.current.mutate({ id: 1, form: { description: "MSFT" } });
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));

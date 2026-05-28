@@ -7,13 +7,14 @@ import { InvestmentTable } from "../../../src/components/investments/InvestmentT
 function makeInvestment(id: number): Investment {
   return {
     id,
-    instrumento: `TICKER${id}`,
-    tipo: { id: 1, description: "Acciones", iconColor: "#52c41a" },
-    montoInvertido: 1000,
-    valorActual: 1200,
-    fechaInversion: "2025-01-15",
-    moneda: { id: 1, symbol: "USD", description: "Dólar" },
-    account: { id: 10, name: "Familia" },
+    description: `TICKER${id}`,
+    investmentType: { id: 1, name: "Acciones", iconColor: "#52c41a", workspaceId: 1 },
+    amount: 1000,
+    startDate: "2025-01-15",
+    endDate: null,
+    currency: { id: 1, symbol: "USD", description: "Dólar" },
+    workspaceName: "Familia",
+    owner: "Test User",
   };
 }
 
@@ -34,7 +35,7 @@ describe("InvestmentTable", () => {
     expect(screen.getByText("TICKER2")).toBeInTheDocument();
   });
 
-  it("shows tipo description for each row", () => {
+  it("shows investment type name for each row", () => {
     render(
       <InvestmentTable
         investments={[makeInvestment(1)]}
@@ -86,6 +87,20 @@ describe("InvestmentTable", () => {
     expect(onDelete).toHaveBeenCalledWith(5);
   });
 
+  it("shows the currency symbol for each row", () => {
+    render(
+      <InvestmentTable
+        investments={[makeInvestment(1)]}
+        isFetching={false}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        isDeleting={false}
+      />,
+    );
+
+    expect(screen.getByText(/USD/)).toBeInTheDocument();
+  });
+
   it("renders empty state when investments list is empty", () => {
     render(
       <InvestmentTable
@@ -98,20 +113,5 @@ describe("InvestmentTable", () => {
     );
 
     expect(screen.getByText(/sin inversiones/i)).toBeInTheDocument();
-  });
-
-  it("shows positive gain in green color class", () => {
-    render(
-      <InvestmentTable
-        investments={[makeInvestment(1)]}
-        isFetching={false}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        isDeleting={false}
-      />,
-    );
-
-    const gainCell = screen.getByTestId("gp-1");
-    expect(gainCell).toHaveStyle({ color: "#3f8600" });
   });
 });

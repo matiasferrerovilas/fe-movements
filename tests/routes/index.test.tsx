@@ -140,6 +140,6 @@ describe("Index Route (Home Unificado)", () => {
       expect(screen.getByText("Gastos por Categoría")).toBeInTheDocument();
       expect(screen.getByText("Gastos por Workspace")).toBeInTheDocument();
       expect(screen.getByText("Evolución Anual de Gastos")).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
   });
 });

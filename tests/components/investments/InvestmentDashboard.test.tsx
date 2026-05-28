@@ -3,75 +3,56 @@ import { render, screen } from "@testing-library/react";
 import type { Investment } from "../../../src/models/Investment";
 import { InvestmentDashboard } from "../../../src/components/investments/InvestmentDashboard";
 
-function makeInvestment(id: number, montoInvertido: number, valorActual: number): Investment {
+function makeInvestment(id: number, amount: number): Investment {
   return {
     id,
-    instrumento: `TICKER${id}`,
-    tipo: { id: 1, description: "Acciones" },
-    montoInvertido,
-    valorActual,
-    fechaInversion: "2025-01-01",
-    moneda: { id: 1, symbol: "USD", description: "Dólar" },
-    account: { id: 10, name: "Familia" },
+    description: `TICKER${id}`,
+    investmentType: { id: 1, name: "Acciones", workspaceId: 1 },
+    amount,
+    startDate: "2025-01-01",
+    endDate: null,
+    currency: { id: 1, symbol: "USD", description: "Dólar" },
+    workspaceName: "Familia",
+    owner: "Test User",
   };
 }
 
 describe("InvestmentDashboard", () => {
-  it("renders all four KPI card labels", () => {
+  it("renders Total invertido label", () => {
     render(<InvestmentDashboard investments={[]} isFetching={false} />);
-
     expect(screen.getByText("Total invertido")).toBeInTheDocument();
-    expect(screen.getByText("Valor actual")).toBeInTheDocument();
-    expect(screen.getByText("Ganancia / Pérdida")).toBeInTheDocument();
-    expect(screen.getByText("Rendimiento")).toBeInTheDocument();
   });
 
-  it("shows zero totals when investments list is empty", () => {
+  it("renders data-testid total-invertido", () => {
     render(<InvestmentDashboard investments={[]} isFetching={false} />);
+    expect(screen.getByTestId("total-invertido")).toBeInTheDocument();
+  });
 
+  it("shows 0 when investments list is empty", () => {
+    render(<InvestmentDashboard investments={[]} isFetching={false} />);
     expect(screen.getByTestId("total-invertido")).toHaveTextContent("0");
-    expect(screen.getByTestId("valor-actual")).toHaveTextContent("0");
   });
 
-  it("calculates total invertido as sum of montoInvertido", () => {
-    const investments = [
-      makeInvestment(1, 1000, 1200),
-      makeInvestment(2, 500, 600),
-    ];
+  it("calculates total invertido as sum of amounts", () => {
+    const investments = [makeInvestment(1, 100), makeInvestment(2, 200)];
     render(<InvestmentDashboard investments={investments} isFetching={false} />);
-
-    expect(screen.getByTestId("total-invertido")).toHaveTextContent("1");
-    expect(screen.getByTestId("total-invertido")).toHaveTextContent("500");
+    expect(screen.getByTestId("total-invertido").textContent).toMatch(/300/);
   });
 
-  it("calculates valor actual as sum of valorActual", () => {
-    const investments = [
-      makeInvestment(1, 1000, 1200),
-      makeInvestment(2, 500, 600),
-    ];
+  it("shows loading skeleton when isFetching is true", () => {
+    render(<InvestmentDashboard investments={[]} isFetching={true} />);
+    expect(screen.queryByTestId("total-invertido")).not.toBeInTheDocument();
+  });
+
+  it("handles single investment amount", () => {
+    const investments = [makeInvestment(1, 750)];
     render(<InvestmentDashboard investments={investments} isFetching={false} />);
-
-    expect(screen.getByTestId("valor-actual")).toHaveTextContent("1");
-    expect(screen.getByTestId("valor-actual")).toHaveTextContent("800");
+    expect(screen.getByTestId("total-invertido").textContent).toMatch(/750/);
   });
 
-  it("calculates ganancia as valorActual - montoInvertido", () => {
-    const investments = [makeInvestment(1, 1000, 1200)];
+  it("uses amount field for total calculation", () => {
+    const investments = [makeInvestment(1, 0)];
     render(<InvestmentDashboard investments={investments} isFetching={false} />);
-
-    expect(screen.getByTestId("ganancia")).toHaveTextContent("200");
-  });
-
-  it("calculates rendimiento as percentage", () => {
-    const investments = [makeInvestment(1, 1000, 1200)];
-    render(<InvestmentDashboard investments={investments} isFetching={false} />);
-
-    expect(screen.getByTestId("rendimiento")).toHaveTextContent("20");
-  });
-
-  it("shows rendimiento as 0 when no investments", () => {
-    render(<InvestmentDashboard investments={[]} isFetching={false} />);
-
-    expect(screen.getByTestId("rendimiento")).toHaveTextContent("0");
+    expect(screen.getByTestId("total-invertido")).toHaveTextContent("0");
   });
 });
