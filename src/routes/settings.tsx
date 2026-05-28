@@ -8,9 +8,10 @@ import { RoleEnum } from "../enums/RoleEnum";
 import SettingAccount from "../components/settings/SettingAccount";
 import { SettingBank } from "../components/settings/SettingBank";
 import { SettingCurrency } from "../components/settings/SettingCurrency";
-import { UserOutlined, TeamOutlined, WalletOutlined, BellOutlined } from "@ant-design/icons";
+import { UserOutlined, TeamOutlined, WalletOutlined, BellOutlined, LineChartOutlined } from "@ant-design/icons";
 import { SettingCategory } from "../components/settings/SettingCategory";
 import { SettingPreferences } from "../components/settings/SettingPreferences";
+import { SettingInvestmentType } from "../components/settings/SettingInvestmentType";
 import { useCurrentUser } from "../apis/hooks/useCurrentUser";
 import { getEntityLabels } from "../components/utils/entityLabels";
 
@@ -58,6 +59,12 @@ function RouteComponent() {
           <SettingIngreso />
         </Flex>
       ),
+    },
+    {
+      key: "inversiones",
+      label: "Inversiones",
+      icon: <LineChartOutlined />,
+      children: <SettingInvestmentType />,
     },
     {
       key: "preferencias",

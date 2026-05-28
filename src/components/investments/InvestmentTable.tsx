@@ -12,8 +12,6 @@ import {
 } from "antd";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
-import ArrowDownOutlined from "@ant-design/icons/ArrowDownOutlined";
-import ArrowUpOutlined from "@ant-design/icons/ArrowUpOutlined";
 import dayjs from "dayjs";
 import type { Investment } from "../../models/Investment";
 
@@ -21,8 +19,6 @@ const { Text } = Typography;
 const { useBreakpoint } = Grid;
 
 const COL_PADDING = "8px 16px";
-const GP_POSITIVE = "#3f8600";
-const GP_NEGATIVE = "#cf1322";
 
 interface InvestmentTableProps {
   investments: Investment[];
@@ -74,21 +70,6 @@ function ActionButtons({
   );
 }
 
-function GpText({ investment }: { investment: Investment }) {
-  const gp = investment.valorActual - investment.montoInvertido;
-  const isPositive = gp >= 0;
-  return (
-    <Text
-      data-testid={`gp-${investment.id}`}
-      style={{ color: isPositive ? GP_POSITIVE : GP_NEGATIVE }}
-    >
-      {isPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}{" "}
-      {isPositive ? "+" : ""}
-      {investment.moneda.symbol} {Math.abs(gp).toLocaleString("es-AR")}
-    </Text>
-  );
-}
-
 function DesktopRow({
   investment,
   index,
@@ -102,11 +83,6 @@ function DesktopRow({
   onDelete: (id: number) => void;
   isDeleting: boolean;
 }) {
-  const gp = investment.valorActual - investment.montoInvertido;
-  const pct =
-    investment.montoInvertido > 0 ? (gp / investment.montoInvertido) * 100 : 0;
-  const isPositive = pct >= 0;
-
   return (
     <Card
       hoverable
@@ -118,43 +94,34 @@ function DesktopRow({
       styles={{ body: { padding: COL_PADDING } }}
     >
       <Row justify="center" align="middle">
-        <Col span={5}>
-          <Text strong>{investment.instrumento}</Text>
+        <Col span={6}>
+          <Text strong>{investment.description ?? "—"}</Text>
           <Tag
-            color={investment.tipo.iconColor ?? undefined}
+            color={investment.investmentType.iconColor ?? undefined}
             style={{ marginLeft: 8 }}
           >
-            {investment.tipo.description}
+            {investment.investmentType.name}
           </Tag>
         </Col>
-        <Col span={4}>
+        <Col span={5}>
           <Text>
-            {investment.moneda.symbol}{" "}
-            {investment.montoInvertido.toLocaleString("es-AR")}
+            {investment.currency.symbol}{" "}
+            {investment.amount.toLocaleString("es-AR")}
           </Text>
         </Col>
         <Col span={4}>
-          <Text>
-            {investment.moneda.symbol}{" "}
-            {investment.valorActual.toLocaleString("es-AR")}
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            {dayjs(investment.startDate).format("DD/MM/YY")}
           </Text>
         </Col>
         <Col span={4}>
-          <GpText investment={investment} />
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            {investment.endDate ? dayjs(investment.endDate).format("DD/MM/YY") : "—"}
+          </Text>
         </Col>
         <Col span={3}>
-          <Text style={{ color: isPositive ? GP_POSITIVE : GP_NEGATIVE }}>
-            {isPositive ? "+" : ""}
-            {pct.toFixed(2)}%
-          </Text>
-        </Col>
-        <Col span={2}>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {dayjs(investment.fechaInversion).format("DD/MM/YY")}
-          </Text>
-          <br />
-          <Text type="secondary" style={{ fontSize: 11 }}>
-            {dayjs(investment.fechaInversion).fromNow()}
+            {investment.owner}
           </Text>
         </Col>
         <Col span={2} style={{ textAlign: "right" }}>
@@ -183,9 +150,6 @@ function MobileRow({
   onDelete: (id: number) => void;
   isDeleting: boolean;
 }) {
-  const gp = investment.valorActual - investment.montoInvertido;
-  const isPositive = gp >= 0;
-
   return (
     <Card
       hoverable
@@ -198,30 +162,23 @@ function MobileRow({
     >
       <Row justify="space-between" align="middle" style={{ marginBottom: 6 }}>
         <Text strong style={{ fontSize: 15 }}>
-          {investment.instrumento}
+          {investment.description ?? "—"}
         </Text>
-        <Text
-          data-testid={`gp-${investment.id}`}
-          style={{
-            color: isPositive ? GP_POSITIVE : GP_NEGATIVE,
-            fontSize: 14,
-          }}
-        >
-          {isPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}{" "}
-          {isPositive ? "+" : ""}
-          {investment.moneda.symbol} {Math.abs(gp).toLocaleString("es-AR")}
+        <Text>
+          {investment.currency.symbol}{" "}
+          {investment.amount.toLocaleString("es-AR")}
         </Text>
       </Row>
 
       <Row gutter={[8, 4]} style={{ marginBottom: 6 }}>
         <Col>
-          <Tag color={investment.tipo.iconColor ?? undefined}>
-            {investment.tipo.description}
+          <Tag color={investment.investmentType.iconColor ?? undefined}>
+            {investment.investmentType.name}
           </Tag>
         </Col>
         <Col>
           <Text type="secondary" style={{ fontSize: 11 }}>
-            {dayjs(investment.fechaInversion).fromNow()}
+            {dayjs(investment.startDate).fromNow()}
           </Text>
         </Col>
       </Row>
@@ -229,20 +186,16 @@ function MobileRow({
       <Row justify="space-between" align="middle">
         <Col>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Invertido:{" "}
-            <Text>
-              {investment.moneda.symbol}{" "}
-              {investment.montoInvertido.toLocaleString("es-AR")}
-            </Text>
+            Inicio: {dayjs(investment.startDate).format("DD/MM/YY")}
           </Text>
-          <br />
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            Actual:{" "}
-            <Text>
-              {investment.moneda.symbol}{" "}
-              {investment.valorActual.toLocaleString("es-AR")}
-            </Text>
-          </Text>
+          {investment.endDate && (
+            <>
+              <br />
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                Fin: {dayjs(investment.endDate).format("DD/MM/YY")}
+              </Text>
+            </>
+          )}
         </Col>
         <Col>
           <ActionButtons
@@ -299,12 +252,11 @@ export function InvestmentTable({
         styles={{ body: { padding: COL_PADDING } }}
       >
         <Row justify="center" align="middle">
-          <Col span={5}>Instrumento / Tipo</Col>
-          <Col span={4}>Monto invertido</Col>
-          <Col span={4}>Valor actual</Col>
-          <Col span={4}>G / P</Col>
-          <Col span={3}>Rendimiento</Col>
-          <Col span={2}>Fecha</Col>
+          <Col span={6}>Descripción / Tipo</Col>
+          <Col span={5}>Monto</Col>
+          <Col span={4}>Fecha inicio</Col>
+          <Col span={4}>Fecha fin</Col>
+          <Col span={3}>Propietario</Col>
           <Col span={2} style={{ textAlign: "right" }}>
             Acciones
           </Col>

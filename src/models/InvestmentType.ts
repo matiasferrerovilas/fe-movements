@@ -1,6 +1,7 @@
 export interface InvestmentType {
   id: number;
-  description: string;
+  name: string;
   iconName?: string | null;
   iconColor?: string | null;
+  workspaceId: number;
 }

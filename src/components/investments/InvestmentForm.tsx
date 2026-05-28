@@ -7,11 +7,12 @@ import type { Investment, CreateInvestmentForm } from "../../models/Investment";
 import type { Currency } from "../../models/Currency";
 
 interface InvestmentFormValues {
-  instrumento: string;
-  tipoId: number;
-  montoInvertido: number;
-  currency: string;
-  fechaInversion: Dayjs;
+  description?: string;
+  investmentTypeId: number;
+  amount: number;
+  currencySymbol: string;
+  startDate: Dayjs;
+  endDate?: Dayjs;
 }
 
 interface InvestmentFormProps {
@@ -39,11 +40,12 @@ export function InvestmentForm({
   useEffect(() => {
     if (open && investment) {
       form.setFieldsValue({
-        instrumento: investment.instrumento,
-        tipoId: investment.tipo.id,
-        montoInvertido: investment.montoInvertido,
-        currency: investment.moneda.symbol,
-        fechaInversion: dayjs(investment.fechaInversion),
+        description: investment.description ?? undefined,
+        investmentTypeId: investment.investmentType.id,
+        amount: investment.amount,
+        currencySymbol: investment.currency.symbol,
+        startDate: dayjs(investment.startDate),
+        endDate: investment.endDate ? dayjs(investment.endDate) : undefined,
       });
     } else if (open) {
       form.resetFields();
@@ -53,7 +55,8 @@ export function InvestmentForm({
   const handleFinish = (values: InvestmentFormValues) => {
     onSubmit({
       ...values,
-      fechaInversion: values.fechaInversion.toDate(),
+      startDate: values.startDate.toDate(),
+      endDate: values.endDate?.toDate(),
     });
   };
 
@@ -71,24 +74,20 @@ export function InvestmentForm({
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Row gutter={12}>
           <Col span={14}>
-            <Form.Item
-              name="instrumento"
-              label="Instrumento / descripción"
-              rules={[{ required: true, message: "Ingresá el instrumento" }]}
-            >
-              <Input placeholder="Ej: AAPL, ES0113040035, BTC" />
+            <Form.Item name="description" label="Descripción">
+              <Input placeholder="Ej: AAPL, BTC, plazo fijo..." />
             </Form.Item>
           </Col>
           <Col span={10}>
             <Form.Item
-              name="tipoId"
+              name="investmentTypeId"
               label="Tipo"
               rules={[{ required: true, message: "Seleccioná un tipo" }]}
             >
               <Select placeholder="Seleccioná un tipo" aria-label="tipo">
                 {investmentTypes.map((t) => (
                   <Select.Option key={t.id} value={t.id}>
-                    {t.description}
+                    {t.name}
                   </Select.Option>
                 ))}
               </Select>
@@ -99,7 +98,7 @@ export function InvestmentForm({
         <Row gutter={12}>
           <Col span={14}>
             <Form.Item
-              name="montoInvertido"
+              name="amount"
               label="Monto invertido"
               rules={[{ required: true, message: "Ingresá el monto" }]}
             >
@@ -108,7 +107,7 @@ export function InvestmentForm({
           </Col>
           <Col span={10}>
             <Form.Item
-              name="currency"
+              name="currencySymbol"
               label="Moneda"
               rules={[{ required: true, message: "Seleccioná la moneda" }]}
             >
@@ -123,13 +122,22 @@ export function InvestmentForm({
           </Col>
         </Row>
 
-        <Form.Item
-          name="fechaInversion"
-          label="Fecha de inversión"
-          rules={[{ required: true, message: "Seleccioná la fecha" }]}
-        >
-          <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
-        </Form.Item>
+        <Row gutter={12}>
+          <Col span={12}>
+            <Form.Item
+              name="startDate"
+              label="Fecha de inicio"
+              rules={[{ required: true, message: "Seleccioná la fecha" }]}
+            >
+              <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name="endDate" label="Fecha de fin">
+              <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </Modal>
   );
