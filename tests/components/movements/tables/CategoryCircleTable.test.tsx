@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import userEvent from "@testing-library/user-event";
-import CategoryCircleTable from "../../../../src/components/movements/tables/CategoryCircleTable";
-import type { Category } from "../../../../src/models/Category";
+import CategoryCircleTable from "@/components/movements/tables/CategoryCircleTable";
+import type { Category } from "@/models/Category";
 
 describe("CategoryCircleTable", () => {
   const createMockCategory = (overrides?: Partial<Category>): Category => ({

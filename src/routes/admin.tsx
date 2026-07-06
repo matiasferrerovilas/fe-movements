@@ -3,9 +3,9 @@ import { Col, Flex, Grid, Row, Tabs, Typography, theme } from "antd";
 import ToolOutlined from "@ant-design/icons/ToolOutlined";
 import SafetyOutlined from "@ant-design/icons/SafetyOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
-import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
-import { RoleEnum } from "../enums/RoleEnum";
-import AdminUserType from "../components/admin/AdminUserType";
+import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
+import { RoleEnum } from "@/enums/RoleEnum";
+import AdminUserType from "@/components/admin/AdminUserType";
 
 const { useBreakpoint } = Grid;
 const { Title, Text } = Typography;

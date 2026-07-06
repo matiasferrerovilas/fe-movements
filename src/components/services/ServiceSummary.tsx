@@ -1,12 +1,10 @@
 import { Card, Col, Flex, Row, Statistic, theme, Typography } from "antd";
-import {
-  AppstoreOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
-import type { Service } from "../../models/Service";
-import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
-import { getServiceLabels } from "../utils/serviceLabels";
+import AppstoreOutlined from "@ant-design/icons/AppstoreOutlined";
+import CheckCircleOutlined from "@ant-design/icons/CheckCircleOutlined";
+import ClockCircleOutlined from "@ant-design/icons/ClockCircleOutlined";
+import type { Service } from "@/models/Service";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getServiceLabels } from "@/utils/serviceLabels";
 
 const { Text } = Typography;
 

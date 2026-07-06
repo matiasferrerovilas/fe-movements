@@ -1,11 +1,11 @@
 import Card from "antd/es/card/Card";
-import type { ConfirmInvitations, Invitations } from "../../models/UserWorkspace";
+import type { ConfirmInvitations, Invitations } from "@/models/UserWorkspace";
 import { Button, Col, Flex, Row, theme, Typography } from "antd";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { acceptRejectWorkspaceInvitationApi } from "../../apis/WorkspaceApi";
+import { acceptRejectWorkspaceInvitationApi } from "@/apis/WorkspaceApi";
 
 const { Text } = Typography;
 

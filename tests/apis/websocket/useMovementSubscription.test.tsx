@@ -2,25 +2,25 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import type { Movement } from "../../../src/models/Movement";
-import type { PageResponse } from "../../../src/models/BaseMode";
-import type { Membership } from "../../../src/models/UserWorkspace";
-import type { EventWrapper } from "../../../src/apis/websocket/EventWrapper";
-import { EventType } from "../../../src/apis/websocket/EventWrapper";
-import { useMovementSubscription } from "../../../src/apis/websocket/useMovementSubscription";
+import type { Movement } from "@/models/Movement";
+import type { PageResponse } from "@/models/BaseMode";
+import type { Membership } from "@/models/UserWorkspace";
+import type { EventWrapper } from "@/apis/websocket/EventWrapper";
+import { EventType } from "@/apis/websocket/EventWrapper";
+import { useMovementSubscription } from "@/apis/websocket/useMovementSubscription";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../../src/apis/hooks/useWorkspaces", () => ({
+vi.mock("@/apis/hooks/useWorkspaces", () => ({
   useWorkspaces: vi.fn(),
 }));
 
-vi.mock("../../../src/apis/websocket/WebSocketProvider", () => ({
+vi.mock("@/apis/websocket/WebSocketProvider", () => ({
   useWebSocket: vi.fn(),
 }));
 
-import { useWorkspaces } from "../../../src/apis/hooks/useWorkspaces";
-import { useWebSocket } from "../../../src/apis/websocket/WebSocketProvider";
+import { useWorkspaces } from "@/apis/hooks/useWorkspaces";
+import { useWebSocket } from "@/apis/websocket/WebSocketProvider";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 

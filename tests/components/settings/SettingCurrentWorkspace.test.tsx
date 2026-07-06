@@ -4,12 +4,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { WorkspaceDetail, Membership } from "../../../src/models/UserWorkspace";
-import { SettingCurrentWorkspace } from "../../../src/components/settings/SettingCurrentWorkspace";
+import type { WorkspaceDetail, Membership } from "@/models/UserWorkspace";
+import { SettingCurrentWorkspace } from "@/components/settings/SettingCurrentWorkspace";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
     data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
     isLoading: false,
@@ -31,11 +31,11 @@ const mockMembers: string[] = ["usuario1@email.com", "usuario2@email.com"];
 const mockSetCurrentWorkspace = vi.fn();
 const mockUseCurrentWorkspace = vi.fn();
 
-vi.mock("../../../src/apis/workspace/WorkspaceContext", () => ({
+vi.mock("@/apis/workspace/WorkspaceContext", () => ({
   useCurrentWorkspace: () => mockUseCurrentWorkspace(),
 }));
 
-vi.mock("../../../src/apis/websocket/useWorkspacesSubscription", () => ({
+vi.mock("@/apis/websocket/useWorkspacesSubscription", () => ({
   useWorkspacesSubscription: vi.fn(),
 }));
 

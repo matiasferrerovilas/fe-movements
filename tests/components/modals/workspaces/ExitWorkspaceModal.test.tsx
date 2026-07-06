@@ -5,12 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { WorkspaceDetail } from "../../../../src/models/UserWorkspace";
-import ExitWorkspaceModal from "../../../../src/components/modals/workspaces/ExitWorkspaceModal";
+import type { WorkspaceDetail } from "@/models/UserWorkspace";
+import ExitWorkspaceModal from "@/components/modals/workspaces/ExitWorkspaceModal";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
     data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
     isLoading: false,

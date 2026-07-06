@@ -4,13 +4,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { Investment } from "../../../src/models/Investment";
+import type { Investment } from "@/models/Investment";
 import {
   useInvestments,
   useCreateInvestment,
   useUpdateInvestment,
   useDeleteInvestment,
-} from "../../../src/apis/hooks/useInvestments";
+} from "@/apis/hooks/useInvestments";
 
 function makeInvestment(id: number): Investment {
   return {

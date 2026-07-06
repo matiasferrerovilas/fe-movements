@@ -1,17 +1,17 @@
 import { useMemo } from "react";
 import { Grid, Pagination, Row, Tag } from "antd";
-import type { Movement } from "../../../models/Movement";
-import type { MovementFilters } from "../../../routes/movement";
-import type { FormattedMovement } from "./types";
-import { useDeleteMovement, useMovement } from "../../../apis/hooks/useMovement";
-import { usePagination } from "../../../apis/hooks/usePagination";
+import type { Movement } from "@/models/Movement";
+import type { MovementFilters } from "@/routes/movement";
+import type { FormattedMovement } from "@/components/movements/tables/types";
+import { useDeleteMovement, useMovement } from "@/apis/hooks/useMovement";
+import { usePagination } from "@/apis/hooks/usePagination";
 import dayjs from "dayjs";
-import { TypeEnum } from "../../../enums/TypeExpense";
-import { useMovementSubscription } from "../../../apis/websocket/useMovementSubscription";
-import { ColorEnum } from "../../../enums/ColorEnum";
-import MovementTableDesktop from "./MovementTableDesktop";
-import MovementTableTablet from "./MovementTableTablet";
-import MovementTableMobile from "./MovementTableMobile";
+import { TypeEnum } from "@/enums/TypeEnum";
+import { useMovementSubscription } from "@/apis/websocket/useMovementSubscription";
+import { ColorEnum } from "@/enums/ColorEnum";
+import MovementTableDesktop from "@/components/movements/tables/MovementTableDesktop";
+import MovementTableTablet from "@/components/movements/tables/MovementTableTablet";
+import MovementTableMobile from "@/components/movements/tables/MovementTableMobile";
 
 const { useBreakpoint } = Grid;
 

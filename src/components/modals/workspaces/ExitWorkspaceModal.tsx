@@ -1,10 +1,10 @@
 import { Button, Popconfirm } from "antd";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { WorkspaceDetail } from "../../../models/UserWorkspace";
-import { exitWorkspaceApi } from "../../../apis/WorkspaceApi";
-import { useCurrentUser } from "../../../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "../../utils/entityLabels";
+import type { WorkspaceDetail } from "@/models/UserWorkspace";
+import { exitWorkspaceApi } from "@/apis/WorkspaceApi";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 interface ExitWorkspaceModalProps {
   group: WorkspaceDetail;

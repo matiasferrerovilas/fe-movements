@@ -3,12 +3,12 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import WorkspaceSelector from "../../src/components/WorkspaceSelector";
-import type { Membership } from "../../src/models/UserWorkspace";
+import WorkspaceSelector from "@/components/WorkspaceSelector";
+import type { Membership } from "@/models/UserWorkspace";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
     data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
     isLoading: false,
@@ -24,7 +24,7 @@ const mockWorkspaces: Membership[] = [
 const mockSetCurrentWorkspace = vi.fn();
 const mockUseCurrentWorkspace = vi.fn();
 
-vi.mock("../../src/apis/workspace/WorkspaceContext", () => ({
+vi.mock("@/apis/workspace/WorkspaceContext", () => ({
   useCurrentWorkspace: () => mockUseCurrentWorkspace(),
 }));
 

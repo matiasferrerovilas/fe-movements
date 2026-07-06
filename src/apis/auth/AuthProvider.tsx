@@ -1,5 +1,5 @@
 import { useKeycloak } from "@react-keycloak/web";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "@/apis/auth/AuthContext";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { keycloak, initialized } = useKeycloak();

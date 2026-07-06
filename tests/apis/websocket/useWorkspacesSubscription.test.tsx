@@ -2,10 +2,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import type { WorkspaceDetail, Membership } from "../../../src/models/UserWorkspace";
-import type { EventWrapper } from "../../../src/apis/websocket/EventWrapper";
-import { EventType } from "../../../src/apis/websocket/EventWrapper";
-import { useWorkspacesSubscription } from "../../../src/apis/websocket/useWorkspacesSubscription";
+import type { WorkspaceDetail, Membership } from "@/models/UserWorkspace";
+import type { EventWrapper } from "@/apis/websocket/EventWrapper";
+import { EventType } from "@/apis/websocket/EventWrapper";
+import { useWorkspacesSubscription } from "@/apis/websocket/useWorkspacesSubscription";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -13,17 +13,17 @@ vi.mock("@react-keycloak/web", () => ({
   useKeycloak: vi.fn(),
 }));
 
-vi.mock("../../../src/apis/hooks/useWorkspaces", () => ({
+vi.mock("@/apis/hooks/useWorkspaces", () => ({
   useWorkspaces: vi.fn(),
 }));
 
-vi.mock("../../../src/apis/websocket/WebSocketProvider", () => ({
+vi.mock("@/apis/websocket/WebSocketProvider", () => ({
   useWebSocket: vi.fn(),
 }));
 
 import { useKeycloak } from "@react-keycloak/web";
-import { useWorkspaces } from "../../../src/apis/hooks/useWorkspaces";
-import { useWebSocket } from "../../../src/apis/websocket/WebSocketProvider";
+import { useWorkspaces } from "@/apis/hooks/useWorkspaces";
+import { useWebSocket } from "@/apis/websocket/WebSocketProvider";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 

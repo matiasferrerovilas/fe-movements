@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Investment } from "../../../src/models/Investment";
-import { InvestmentTable } from "../../../src/components/investments/InvestmentTable";
+import type { Investment } from "@/models/Investment";
+import { InvestmentTable } from "@/components/investments/InvestmentTable";
 
 function makeInvestment(id: number): Investment {
   return {

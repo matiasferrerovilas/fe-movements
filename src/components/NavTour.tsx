@@ -1,10 +1,10 @@
 import { Tour } from "antd";
 import type { TourProps } from "antd";
 import type { MutableRefObject } from "react";
-import { useMarkTourSeen } from "../apis/hooks/useTour";
-import { useCurrentUser } from "../apis/hooks/useCurrentUser";
-import { getServiceLabels } from "./utils/serviceLabels";
-import type { UserTypeEnum } from "../enums/UserTypeEnum";
+import { useMarkTourSeen } from "@/apis/hooks/useTour";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getServiceLabels } from "@/utils/serviceLabels";
+import type { UserTypeEnum } from "@/enums/UserTypeEnum";
 
 type NavRefsMap = MutableRefObject<Record<string, HTMLButtonElement | null>>;
 

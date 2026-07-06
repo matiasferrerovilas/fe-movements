@@ -1,19 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AxiosInterceptorProvider } from "./apis/AxiosInterceptorProvider";
+import { AxiosInterceptorProvider } from "@/apis/AxiosInterceptorProvider";
 import "./App.css";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
-import { routeTree } from "./routeTree.gen";
+import { routeTree } from "@/routeTree.gen";
 import { ConfigProvider, theme, App as AntdApp } from "antd";
-import { WebSocketProvider } from "./apis/websocket/WebSocketProvider";
-import type { RootRouteContext } from "./routes/__root";
+import { WebSocketProvider } from "@/apis/websocket/WebSocketProvider";
+import type { RootRouteContext } from "@/routes/__root";
 import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import { AuthContext } from "./apis/auth/AuthContext";
+import { AuthContext } from "@/apis/auth/AuthContext";
 import { useKeycloak } from "@react-keycloak/web";
 import esES from "antd/locale/es_ES";
-import { ThemeProvider } from "./apis/theme/ThemeProvider";
-import { useTheme } from "./apis/theme/ThemeContext";
-import { useCurrentUser } from "./apis/hooks/useCurrentUser";
-import { WorkspaceProvider } from "./apis/workspace/WorkspaceProvider";
+import { ThemeProvider } from "@/apis/theme/ThemeProvider";
+import { useTheme } from "@/apis/theme/ThemeContext";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { WorkspaceProvider } from "@/apis/workspace/WorkspaceProvider";
 
 declare module "@tanstack/react-router" {
   interface Register {

@@ -1,7 +1,7 @@
-import type { Category } from "./Category";
-import type { Currency } from "./Currency";
-import type { AccountWithoutMembers } from "./UserWorkspace";
-import type { User } from "./User";
+import type { Category } from "@/models/Category";
+import type { Currency } from "@/models/Currency";
+import type { AccountWithoutMembers } from "@/models/UserWorkspace";
+import type { User } from "@/models/User";
 
 export interface Movement {
   id: number;

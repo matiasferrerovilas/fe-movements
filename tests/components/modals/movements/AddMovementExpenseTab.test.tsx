@@ -4,13 +4,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { Membership } from "../../../../src/models/UserWorkspace";
-import type { Category } from "../../../../src/models/Category";
-import type { UserSetting } from "../../../../src/models/UserSetting";
-import type { Movement } from "../../../../src/models/Movement";
-import type { BankRecord } from "../../../../src/models/Bank";
-import type { Currency } from "../../../../src/apis/currencies/CurrencyApi";
-import AddMovementExpenseTab from "../../../../src/components/modals/movements/AddMovementExpenseTab";
+import type { Membership } from "@/models/UserWorkspace";
+import type { Category } from "@/models/Category";
+import type { UserSetting } from "@/models/UserSetting";
+import type { Movement } from "@/models/Movement";
+import type { BankRecord } from "@/models/Bank";
+import type { Currency } from "@/apis/currency/CurrencyApi";
+import AddMovementExpenseTab from "@/components/modals/movements/AddMovementExpenseTab";
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ThemeProvider } from "../../../src/apis/theme/ThemeProvider";
-import { useTheme } from "../../../src/apis/theme/ThemeContext";
+import { ThemeProvider } from "@/apis/theme/ThemeProvider";
+import { useTheme } from "@/apis/theme/ThemeContext";
 
 // ── Consumer component ──────────────────────────────────────────────────────
 

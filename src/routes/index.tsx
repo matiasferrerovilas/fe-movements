@@ -1,27 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Col, Divider, Grid, Row, Skeleton, Typography } from "antd";
-import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
-import { useCurrentUser } from "../apis/hooks/useCurrentUser";
-import { RoleEnum } from "../enums/RoleEnum";
-import MonthlySummary from "../components/home/MonthlySummary";
-import TopCategorias from "../components/home/TopCategorias";
-import BalanceFiltersCollapsible from "../components/home/BalanceFiltersCollapsible";
-import { getUserDisplayName } from "../components/utils/userDisplayName";
+import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { RoleEnum } from "@/enums/RoleEnum";
+import MonthlySummary from "@/components/home/MonthlySummary";
+import TopCategories from "@/components/home/TopCategories";
+import BalanceFiltersCollapsible from "@/components/home/BalanceFiltersCollapsible";
+import { getUserDisplayName } from "@/utils/userDisplayName";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CurrencyEnum } from "../enums/CurrencyEnum";
+import { CurrencyEnum } from "@/enums/CurrencyEnum";
 import dayjs from "dayjs";
-import { useCurrency } from "../apis/hooks/useCurrency";
-import { useUserDefault } from "../apis/hooks/useSettings";
+import { useCurrency } from "@/apis/hooks/useCurrency";
+import { useUserDefault } from "@/apis/hooks/useSettings";
 import {
   useBalanceSeparateByCategory,
   useBalanceSeparateByGroup,
-} from "../apis/hooks/useBalance";
-import type { BalanceFilters } from "../models/BalanceFilters";
+} from "@/apis/hooks/useBalance";
+import type { BalanceFilters } from "@/models/BalanceFilters";
 
 // Lazy load de componentes con Recharts para reducir bundle inicial
-const CategoryPieChart = lazy(() => import("../components/home/CategoryPieChart"));
-const GroupBarChart = lazy(() => import("../components/home/GroupBarChart"));
-const EvolucionAnual = lazy(() => import("../components/home/EvolucionAnual"));
+const CategoryPieChart = lazy(() => import("@/components/home/CategoryPieChart"));
+const GroupBarChart = lazy(() => import("@/components/home/GroupBarChart"));
+const AnnualEvolution = lazy(() => import("@/components/home/AnnualEvolution"));
 
 // Componente de loading para gráficos
 function ChartSkeleton() {
@@ -150,7 +150,7 @@ function RouteComponent() {
       </div>
 
       {/* 3. Top 5 Categorías */}
-      <TopCategorias />
+      <TopCategories />
 
       {/* 4. Divider visual */}
       <Divider style={{ margin: "8px 0 24px" }} />
@@ -179,7 +179,7 @@ function RouteComponent() {
 
         {/* 7. Evolución temporal */}
         <div style={{ marginTop: 20 }}>
-          <EvolucionAnual year={dayjs(filters.dates[0]).year()} />
+          <AnnualEvolution year={dayjs(filters.dates[0]).year()} />
         </div>
       </Suspense>
     </div>

@@ -1,4 +1,5 @@
-import { SwapRightOutlined, RetweetOutlined } from "@ant-design/icons";
+import SwapRightOutlined from "@ant-design/icons/SwapRightOutlined";
+import RetweetOutlined from "@ant-design/icons/RetweetOutlined";
 import {
   Button,
   Card,
@@ -14,7 +15,7 @@ import {
   App,
 } from "antd";
 import { useKeycloak } from "@react-keycloak/web";
-import { useCategory, useMigrateCategory } from "../../apis/hooks/useCategory";
+import { useCategory, useMigrateCategory } from "@/apis/hooks/useCategory";
 
 const { Title, Text } = Typography;
 

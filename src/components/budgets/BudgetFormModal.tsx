@@ -11,11 +11,11 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
-import ModalComponent from "../modals/Modal";
-import { useAddBudget, useUpdateBudget } from "../../apis/hooks/useBudget";
-import { useCategory } from "../../apis/hooks/useCategory";
-import { useCurrency } from "../../apis/hooks/useCurrency";
-import type { BudgetRecord, BudgetToAdd } from "../../models/Budget";
+import ModalComponent from "@/components/modals/Modal";
+import { useAddBudget, useUpdateBudget } from "@/apis/hooks/useBudget";
+import { useCategory } from "@/apis/hooks/useCategory";
+import { useCurrency } from "@/apis/hooks/useCurrency";
+import type { BudgetRecord, BudgetToAdd } from "@/models/Budget";
 
 const { Text } = Typography;
 

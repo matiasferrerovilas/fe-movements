@@ -16,10 +16,10 @@ import {
   theme,
   Typography,
 } from "antd";
-import { useUserDefault } from "../../apis/hooks/useSettings";
-import { useWorkspaceSummary } from "../../apis/hooks/useWorkspaceSummary";
-import type { WorkspaceSummaryPorMoneda } from "../../models/WorkspaceSummary";
-import BudgetAlert from "./BudgetAlert";
+import { useUserDefault } from "@/apis/hooks/useSettings";
+import { useWorkspaceSummary } from "@/apis/hooks/useWorkspaceSummary";
+import type { WorkspaceSummaryPorMoneda } from "@/models/WorkspaceSummary";
+import BudgetAlert from "@/components/home/BudgetAlert";
 
 dayjs.locale("es");
 

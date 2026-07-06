@@ -1,4 +1,4 @@
-import type { Currency, CurrencyRecord } from "./Currency";
+import type { Currency, CurrencyRecord } from "@/models/Currency";
 
 export interface Income {
   id: number;

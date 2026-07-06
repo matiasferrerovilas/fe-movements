@@ -1,4 +1,7 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined, TagOutlined } from "@ant-design/icons";
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import EditOutlined from "@ant-design/icons/EditOutlined";
+import PlusOutlined from "@ant-design/icons/PlusOutlined";
+import TagOutlined from "@ant-design/icons/TagOutlined";
 import {
   Button,
   Card,
@@ -19,13 +22,13 @@ import {
   useAddCategory,
   useCategory,
   useDeleteCategory,
-} from "../../apis/hooks/useCategory";
-import type { Category } from "../../models/Category";
-import { SettingCategoryMigrate } from "./SettingCategoryMigrate";
-import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "../utils/entityLabels";
-import { CategoryEditModal } from "./CategoryEditModal";
-import { getIconComponent } from "../../utils/getIconComponent";
+} from "@/apis/hooks/useCategory";
+import type { Category } from "@/models/Category";
+import { SettingCategoryMigrate } from "@/components/settings/SettingCategoryMigrate";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
+import { CategoryEditModal } from "@/components/settings/CategoryEditModal";
+import { getIconComponent } from "@/utils/getIconComponent";
 
 const { Title, Text } = Typography;
 

@@ -28,15 +28,15 @@ import UserOutlined from "@ant-design/icons/UserOutlined";
 import { useKeycloak } from "@react-keycloak/web";
 import { useRouter, useRouterState } from "@tanstack/react-router";
 import { Header } from "antd/es/layout/layout";
-import { useCurrentUser } from "../apis/hooks/useCurrentUser";
-import { useUserRoles } from "../apis/hooks/useUserRole";
-import { RoleEnum } from "../enums/RoleEnum";
-import { UserTypeEnum } from "../enums/UserTypeEnum";
-import { useTheme } from "../apis/theme/ThemeContext";
-import NavTour from "./NavTour";
-import WorkspaceSelector from "./WorkspaceSelector";
-import { getUserDisplayName } from "./utils/userDisplayName";
-import { getServiceLabels } from "./utils/serviceLabels";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { useUserRoles } from "@/apis/hooks/useUserRoles";
+import { RoleEnum } from "@/enums/RoleEnum";
+import { UserTypeEnum } from "@/enums/UserTypeEnum";
+import { useTheme } from "@/apis/theme/ThemeContext";
+import NavTour from "@/components/NavTour";
+import WorkspaceSelector from "@/components/WorkspaceSelector";
+import { getUserDisplayName } from "@/utils/userDisplayName";
+import { getServiceLabels } from "@/utils/serviceLabels";
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -73,10 +73,10 @@ const getNavItems = (userType: UserTypeEnum | null): SideBarItem[] => {
       roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
     },
     {
-      key: "inversiones",
+      key: "investments",
       icon: <RiseOutlined />,
       label: "Inversiones",
-      path: "/inversiones",
+      path: "/investments",
       roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
     },
     {

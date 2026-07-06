@@ -1,18 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { App, Col, Row } from "antd";
-import type { ServiceToAdd } from "../apis/SubscriptionApi";
-import { ServiceCard } from "../components/services/ServiceCard";
-import { ServiceCardForm } from "../components/services/ServiceCardForm";
+import type { ServiceToAdd } from "@/apis/SubscriptionApi";
+import { ServiceCard } from "@/components/services/ServiceCard";
+import { ServiceCardForm } from "@/components/services/ServiceCardForm";
 import {
   useAddService,
   usePayService,
   useSubscription,
   useUpdateService,
-} from "../apis/hooks/useService";
-import { useServiceSubscription } from "../apis/websocket/useServiceSubscription";
-import { ServiceSummary } from "../components/services/ServiceSummary";
-import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
-import { RoleEnum } from "../enums/RoleEnum";
+} from "@/apis/hooks/useService";
+import { useServiceSubscription } from "@/apis/websocket/useServiceSubscription";
+import { ServiceSummary } from "@/components/services/ServiceSummary";
+import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
+import { RoleEnum } from "@/enums/RoleEnum";
 
 export const Route = createFileRoute("/services")({
   beforeLoad: protectedRouteGuard({

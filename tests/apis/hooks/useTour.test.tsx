@@ -4,9 +4,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import { useMarkTourSeen } from "../../../src/apis/hooks/useTour";
-import { CURRENT_USER_QUERY_KEY } from "../../../src/apis/hooks/useCurrentUser";
-import type { CurrentUser } from "../../../src/models/CurrentUser";
+import { useMarkTourSeen } from "@/apis/hooks/useTour";
+import { CURRENT_USER_QUERY_KEY } from "@/apis/hooks/useCurrentUser";
+import type { CurrentUser } from "@/models/CurrentUser";
 
 const server = setupServer(
   http.put("http://localhost:8080/users/me/tour", () =>

@@ -4,8 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import type { ReactNode } from "react";
-import { useChangeUserType } from "../../../src/apis/hooks/useUserType";
-import { UserTypeEnum } from "../../../src/enums/UserTypeEnum";
+import { useChangeUserType } from "@/apis/hooks/useUserType";
+import { UserTypeEnum } from "@/enums/UserTypeEnum";
 
 const server = setupServer();
 

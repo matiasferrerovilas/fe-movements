@@ -5,13 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { Category } from "../../../src/models/Category";
-import type { Currency } from "../../../src/models/Currency";
-import type { BudgetRecord } from "../../../src/models/Budget";
+import type { Category } from "@/models/Category";
+import type { Currency } from "@/models/Currency";
+import type { BudgetRecord } from "@/models/Budget";
 import {
   AddBudgetModal,
   EditBudgetModal,
-} from "../../../src/components/budgets/BudgetFormModal";
+} from "@/components/budgets/BudgetFormModal";
 
 // ── Mock Keycloak ─────────────────────────────────────────────────────────
 

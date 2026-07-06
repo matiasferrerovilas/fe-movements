@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { Membership } from "../../models/UserWorkspace";
+import type { Membership } from "@/models/UserWorkspace";
 
 export interface WorkspaceContextValue {
   /** Workspace actualmente seleccionado */

@@ -1,5 +1,5 @@
-import type { BudgetRecord, BudgetToAdd, BudgetToUpdate, BudgetQueryParams } from "../models/Budget";
-import { api } from "./axios";
+import type { BudgetRecord, BudgetToAdd, BudgetToUpdate, BudgetQueryParams } from "@/models/Budget";
+import { api } from "@/apis/axios";
 
 const BASE_PATH = "budgets";
 

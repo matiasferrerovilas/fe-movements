@@ -1,4 +1,4 @@
-import { api } from "../axios";
+import { api } from "@/apis/axios";
 
 const BASE_PATH = "users/me/tour";
 

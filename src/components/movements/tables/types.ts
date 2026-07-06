@@ -1,5 +1,5 @@
 import type React from "react";
-import type { Movement } from "../../../models/Movement";
+import type { Movement } from "@/models/Movement";
 
 export interface FormattedMovement extends Movement {
   formattedDate: string;

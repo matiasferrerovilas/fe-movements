@@ -1,8 +1,8 @@
-import { SearchOutlined } from "@ant-design/icons";
+import SearchOutlined from "@ant-design/icons/SearchOutlined";
 import { Flex, Input, theme, Typography } from "antd";
 import { useMemo, useState } from "react";
-import { AVAILABLE_ICONS, searchIcons } from "../../utils/availableIcons";
-import { getIconComponent } from "../../utils/getIconComponent";
+import { AVAILABLE_ICONS, searchIcons } from "@/utils/availableIcons";
+import { getIconComponent } from "@/utils/getIconComponent";
 
 const { Text } = Typography;
 

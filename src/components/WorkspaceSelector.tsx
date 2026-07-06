@@ -2,10 +2,10 @@ import { Badge, Divider, Select, Space, Typography, theme } from "antd";
 import SwapOutlined from "@ant-design/icons/SwapOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import AppstoreOutlined from "@ant-design/icons/AppstoreOutlined";
-import { useCurrentWorkspace } from "../apis/workspace/WorkspaceContext";
-import CreateWorkspaceModal from "./modals/workspaces/CreateWorkspaceModal";
-import { useCurrentUser } from "../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "./utils/entityLabels";
+import { useCurrentWorkspace } from "@/apis/workspace/WorkspaceContext";
+import CreateWorkspaceModal from "@/components/modals/workspaces/CreateWorkspaceModal";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Text } = Typography;
 

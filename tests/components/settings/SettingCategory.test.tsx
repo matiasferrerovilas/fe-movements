@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { Category } from "../../../src/models/Category";
-import { SettingCategory } from "../../../src/components/settings/SettingCategory";
+import type { Category } from "@/models/Category";
+import { SettingCategory } from "@/components/settings/SettingCategory";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -17,7 +17,7 @@ vi.mock("@react-keycloak/web", () => ({
   })),
 }));
 
-vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
     data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
     isLoading: false,

@@ -1,4 +1,4 @@
-import type { User } from "./User";
+import type { User } from "@/models/User";
 
 export interface AccountWithoutMembers {
   id: number;

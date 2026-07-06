@@ -1,10 +1,10 @@
 import { Button, Divider, Flex, Form, Input, message, Modal, theme, Typography } from "antd";
 import React, { useMemo } from "react";
-import type { InvestmentType } from "../../models/InvestmentType";
-import { useUpdateInvestmentType } from "../../apis/hooks/useInvestmentTypes";
-import { ColorPicker, PRESET_COLORS } from "./ColorPicker";
-import { IconPicker } from "./IconPicker";
-import { getIconComponent } from "../../utils/getIconComponent";
+import type { InvestmentType } from "@/models/InvestmentType";
+import { useUpdateInvestmentType } from "@/apis/hooks/useInvestmentTypes";
+import { ColorPicker, PRESET_COLORS } from "@/components/settings/ColorPicker";
+import { IconPicker } from "@/components/settings/IconPicker";
+import { getIconComponent } from "@/utils/getIconComponent";
 
 const { Text } = Typography;
 

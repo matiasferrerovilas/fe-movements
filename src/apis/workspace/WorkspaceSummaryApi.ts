@@ -1,5 +1,5 @@
-import type { WorkspaceSummary } from "../../models/WorkspaceSummary";
-import { api } from "../axios";
+import type { WorkspaceSummary } from "@/models/WorkspaceSummary";
+import { api } from "@/apis/axios";
 
 export const getWorkspaceMonthlySummary = (
   workspaceId: number,

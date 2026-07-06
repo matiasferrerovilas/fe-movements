@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { WorkspaceSummary } from "../../../src/models/WorkspaceSummary";
-import MonthlySummary from "../../../src/components/home/MonthlySummary";
+import type { WorkspaceSummary } from "@/models/WorkspaceSummary";
+import MonthlySummary from "@/components/home/MonthlySummary";
 import dayjs from "dayjs";
 
 import "dayjs/locale/es";

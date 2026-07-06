@@ -1,8 +1,6 @@
-import {
-  DeleteOutlined,
-  EditOutlined,
-  FundOutlined,
-} from "@ant-design/icons";
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import EditOutlined from "@ant-design/icons/EditOutlined";
+import FundOutlined from "@ant-design/icons/FundOutlined";
 import {
   Button,
   Card,
@@ -14,7 +12,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import type { BudgetRecord } from "../../models/Budget";
+import type { BudgetRecord } from "@/models/Budget";
 
 const { Text } = Typography;
 

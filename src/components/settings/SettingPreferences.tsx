@@ -1,6 +1,7 @@
-import { BellOutlined, DollarOutlined } from "@ant-design/icons";
+import BellOutlined from "@ant-design/icons/BellOutlined";
+import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import { Card, Divider, Flex, Switch, theme, Typography } from "antd";
-import { useUserDefault, useSetUserDefault } from "../../apis/hooks/useSettings";
+import { useUserDefault, useSetUserDefault } from "@/apis/hooks/useSettings";
 
 const { Title, Text } = Typography;
 

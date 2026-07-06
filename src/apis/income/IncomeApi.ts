@@ -1,5 +1,5 @@
-import type { Income, IncomeAddPayload } from "../../models/Income";
-import { api } from "../axios";
+import type { Income, IncomeAddPayload } from "@/models/Income";
+import { api } from "@/apis/axios";
 
 export const getAllIncomes = () =>
   api.get<Income[]>("/income").then((response) => response.data);

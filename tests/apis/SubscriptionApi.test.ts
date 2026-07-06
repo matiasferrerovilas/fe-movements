@@ -5,9 +5,9 @@ import dayjs from "dayjs";
 import {
   addSubscriptionApi,
   updateSubscriptionApi,
-} from "../../src/apis/SubscriptionApi";
-import type { ServiceToAdd } from "../../src/apis/SubscriptionApi";
-import type { ServiceToUpdate } from "../../src/models/Service";
+} from "@/apis/SubscriptionApi";
+import type { ServiceToAdd } from "@/apis/SubscriptionApi";
+import type { ServiceToUpdate } from "@/models/Service";
 
 // ── Captura del payload enviado al backend ───────────────────────────────────
 

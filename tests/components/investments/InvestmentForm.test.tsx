@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { InvestmentType } from "../../../src/models/InvestmentType";
-import type { Currency } from "../../../src/models/Currency";
-import type { Investment } from "../../../src/models/Investment";
-import { InvestmentForm } from "../../../src/components/investments/InvestmentForm";
+import type { InvestmentType } from "@/models/InvestmentType";
+import type { Currency } from "@/models/Currency";
+import type { Investment } from "@/models/Investment";
+import { InvestmentForm } from "@/components/investments/InvestmentForm";
 
 const mockTypes: InvestmentType[] = [
   { id: 1, name: "Acciones", workspaceId: 1 },

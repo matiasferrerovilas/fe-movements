@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { useContext } from "react";
-import { AuthProvider } from "../../../src/apis/auth/AuthProvider";
-import { AuthContext } from "../../../src/apis/auth/AuthContext";
+import { AuthProvider } from "@/apis/auth/AuthProvider";
+import { AuthContext } from "@/apis/auth/AuthContext";
 
 // Mock @react-keycloak/web
 vi.mock("@react-keycloak/web", () => ({

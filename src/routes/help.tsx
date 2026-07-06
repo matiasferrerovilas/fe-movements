@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
-import { RoleEnum } from "../enums/RoleEnum";
-import { HelpPage } from "../components/help/HelpPage";
+import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
+import { RoleEnum } from "@/enums/RoleEnum";
+import { HelpPage } from "@/components/help/HelpPage";
 
 export const Route = createFileRoute("/help")({
   beforeLoad: protectedRouteGuard({

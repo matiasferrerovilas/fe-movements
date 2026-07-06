@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { CHART_COLORS } from "./constants";
+import { CHART_COLORS } from "@/components/home/constants";
 
 type GroupBarChartProps = {
   data: Record<string, unknown>[];

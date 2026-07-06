@@ -1,5 +1,5 @@
-import type { Currency } from "./Currency";
-import type { InvestmentType } from "./InvestmentType";
+import type { Currency } from "@/models/Currency";
+import type { InvestmentType } from "@/models/InvestmentType";
 
 export interface Investment {
   id: number;

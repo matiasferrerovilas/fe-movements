@@ -2,10 +2,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import type { Invitations } from "../../../src/models/UserWorkspace";
-import type { EventWrapper } from "../../../src/apis/websocket/EventWrapper";
-import { EventType } from "../../../src/apis/websocket/EventWrapper";
-import { useInvitationSubscription } from "../../../src/apis/websocket/useInvitationSubscription";
+import type { Invitations } from "@/models/UserWorkspace";
+import type { EventWrapper } from "@/apis/websocket/EventWrapper";
+import { EventType } from "@/apis/websocket/EventWrapper";
+import { useInvitationSubscription } from "@/apis/websocket/useInvitationSubscription";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -13,18 +13,18 @@ vi.mock("@react-keycloak/web", () => ({
   useKeycloak: vi.fn(),
 }));
 
-vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: vi.fn(),
   CURRENT_USER_QUERY_KEY: ["current-user"],
 }));
 
-vi.mock("../../../src/apis/websocket/WebSocketProvider", () => ({
+vi.mock("@/apis/websocket/WebSocketProvider", () => ({
   useWebSocket: vi.fn(),
 }));
 
 import { useKeycloak } from "@react-keycloak/web";
-import { useCurrentUser } from "../../../src/apis/hooks/useCurrentUser";
-import { useWebSocket } from "../../../src/apis/websocket/WebSocketProvider";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { useWebSocket } from "@/apis/websocket/WebSocketProvider";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 

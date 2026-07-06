@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Button, Form, Input } from "antd";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { CreateWorkspaceForm } from "../../../models/UserWorkspace";
-import { addWorkspaceApi } from "../../../apis/WorkspaceApi";
-import ModalComponent from "../Modal";
-import { useCurrentUser } from "../../../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "../../utils/entityLabels";
+import type { CreateWorkspaceForm } from "@/models/UserWorkspace";
+import { addWorkspaceApi } from "@/apis/WorkspaceApi";
+import ModalComponent from "@/components/modals/Modal";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 interface CreateWorkspaceModalProps {
   /** Render prop for the trigger element */

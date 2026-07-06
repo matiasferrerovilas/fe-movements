@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
-import type { CurrencyRecord } from "../models/Currency";
-import type { Service, ServiceToUpdate } from "../models/Service";
-import { api } from "./axios";
+import type { CurrencyRecord } from "@/models/Currency";
+import type { Service, ServiceToUpdate } from "@/models/Service";
+import { api } from "@/apis/axios";
 
 const BASE_PATH = "/subscriptions";
 

@@ -1,9 +1,9 @@
 import MailOutlined from "@ant-design/icons/MailOutlined";
 import { Badge, Card, Space, theme, Typography } from "antd";
-import { useWorkspaceInvitations } from "../../apis/hooks/useWorkspaces";
-import type { Invitations } from "../../models/UserWorkspace";
-import SettingInviteWorkspaceCard from "./SettingInviteWorkspaceCard";
-import { useInvitationSubscription } from "../../apis/websocket/useInvitationSubscription";
+import { useWorkspaceInvitations } from "@/apis/hooks/useWorkspaces";
+import type { Invitations } from "@/models/UserWorkspace";
+import SettingInviteWorkspaceCard from "@/components/settings/SettingInviteWorkspaceCard";
+import { useInvitationSubscription } from "@/apis/websocket/useInvitationSubscription";
 
 const { Text } = Typography;
 
