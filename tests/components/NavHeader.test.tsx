@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { ConfigProvider } from "antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import { ThemeContext } from "../../src/apis/theme/ThemeContext";
+import { ThemeContext } from "@/apis/theme/ThemeContext";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -17,17 +17,17 @@ vi.mock("@tanstack/react-router", () => ({
   useRouterState: vi.fn(),
 }));
 
-vi.mock("../../src/apis/hooks/useUserRole", () => ({
+vi.mock("@/apis/hooks/useUserRoles", () => ({
   useUserRoles: vi.fn(),
 }));
 
-vi.mock("../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: vi.fn().mockReturnValue({ data: null, isLoading: false }),
 }));
 
 import { useKeycloak } from "@react-keycloak/web";
 import { useRouter, useRouterState } from "@tanstack/react-router";
-import { useUserRoles } from "../../src/apis/hooks/useUserRole";
+import { useUserRoles } from "@/apis/hooks/useUserRoles";
 
 // ── Setup helpers ──────────────────────────────────────────────────────────
 
@@ -71,7 +71,7 @@ function makeWrapper(isDark: boolean, toggleTheme = vi.fn()) {
 
 // Lazy import after mock setup
 const { default: NavHeader } = await import(
-  "../../src/components/NavHeader"
+  "@/components/NavHeader"
 );
 
 function renderNavHeader(isDark = false, toggleTheme = vi.fn()) {

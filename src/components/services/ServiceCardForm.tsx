@@ -20,11 +20,11 @@ import CheckCircleOutlined from "@ant-design/icons/CheckCircleOutlined";
 import CloseCircleOutlined from "@ant-design/icons/CloseCircleOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import dayjs from "dayjs";
-import type { ServiceToAdd } from "../../apis/SubscriptionApi";
-import { useCurrency } from "../../apis/hooks/useCurrency";
-import { useUserDefault } from "../../apis/hooks/useSettings";
-import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
-import { getServiceLabels } from "../utils/serviceLabels";
+import type { ServiceToAdd } from "@/apis/SubscriptionApi";
+import { useCurrency } from "@/apis/hooks/useCurrency";
+import { useUserDefault } from "@/apis/hooks/useSettings";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getServiceLabels } from "@/utils/serviceLabels";
 
 const { Text } = Typography;
 

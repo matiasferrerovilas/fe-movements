@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getWorkspaceMonthlySummary } from "../workspace/WorkspaceSummaryApi";
+import { getWorkspaceMonthlySummary } from "@/apis/workspace/WorkspaceSummaryApi";
 
 export const WORKSPACE_SUMMARY_QUERY_KEY = "workspace-monthly-summary" as const;
 

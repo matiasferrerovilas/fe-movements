@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Card, Col, Row, Skeleton, Statistic } from "antd";
-import type { Investment } from "../../models/Investment";
+import type { Investment } from "@/models/Investment";
 
 interface InvestmentDashboardProps {
   investments: Investment[];

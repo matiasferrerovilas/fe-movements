@@ -5,23 +5,23 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { Service, ServiceToUpdate } from "../../../src/models/Service";
-import { ServiceCard } from "../../../src/components/services/ServiceCard";
+import type { Service, ServiceToUpdate } from "@/models/Service";
+import { ServiceCard } from "@/components/services/ServiceCard";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../../src/apis/hooks/useWorkspaces", () => ({
+vi.mock("@/apis/hooks/useWorkspaces", () => ({
   useWorkspaces: vi.fn(),
 }));
 
-vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
     data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
     isLoading: false,
   }),
 }));
 
-import { useWorkspaces } from "../../../src/apis/hooks/useWorkspaces";
+import { useWorkspaces } from "@/apis/hooks/useWorkspaces";
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 

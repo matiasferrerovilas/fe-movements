@@ -2,18 +2,18 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { MutableRefObject, ReactNode } from "react";
-import NavTour from "../../src/components/NavTour";
+import NavTour from "@/components/NavTour";
 
 // Mock the useTour hook
 const mockMutate = vi.fn();
-vi.mock("../../src/apis/hooks/useTour", () => ({
+vi.mock("@/apis/hooks/useTour", () => ({
   useMarkTourSeen: () => ({
     mutate: mockMutate,
   }),
 }));
 
 // Mock useCurrentUser
-vi.mock("../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: vi.fn().mockReturnValue({
     data: {
       id: 1,

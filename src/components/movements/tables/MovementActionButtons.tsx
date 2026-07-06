@@ -1,7 +1,7 @@
 import { Button, Popconfirm } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
-import type { FormattedMovement } from "./types";
-import EditMovementModal from "../../modals/movements/EditMovementModal";
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import type { FormattedMovement } from "@/components/movements/tables/types";
+import EditMovementModal from "@/components/modals/movements/EditMovementModal";
 
 interface MovementActionButtonsProps {
   record: FormattedMovement;

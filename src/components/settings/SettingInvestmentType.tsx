@@ -1,11 +1,9 @@
-import {
-  DeleteOutlined,
-  EditOutlined,
-  LineChartOutlined,
-  PlusOutlined,
-  StarFilled,
-  StarOutlined,
-} from "@ant-design/icons";
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import EditOutlined from "@ant-design/icons/EditOutlined";
+import LineChartOutlined from "@ant-design/icons/LineChartOutlined";
+import PlusOutlined from "@ant-design/icons/PlusOutlined";
+import StarFilled from "@ant-design/icons/StarFilled";
+import StarOutlined from "@ant-design/icons/StarOutlined";
 import {
   Button,
   Card,
@@ -26,12 +24,12 @@ import {
   useAddInvestmentType,
   useDeleteInvestmentType,
   useInvestmentTypes,
-} from "../../apis/hooks/useInvestmentTypes";
-import { useUserDefault, useSetUserDefault } from "../../apis/hooks/useSettings";
-import type { InvestmentType } from "../../models/InvestmentType";
-import { InvestmentTypeEditModal } from "./InvestmentTypeEditModal";
-import { getIconComponent } from "../../utils/getIconComponent";
-import { PRESET_COLORS } from "./ColorPicker";
+} from "@/apis/hooks/useInvestmentTypes";
+import { useUserDefault, useSetUserDefault } from "@/apis/hooks/useSettings";
+import type { InvestmentType } from "@/models/InvestmentType";
+import { InvestmentTypeEditModal } from "@/components/settings/InvestmentTypeEditModal";
+import { getIconComponent } from "@/utils/getIconComponent";
+import { PRESET_COLORS } from "@/components/settings/ColorPicker";
 
 const { Title, Text } = Typography;
 

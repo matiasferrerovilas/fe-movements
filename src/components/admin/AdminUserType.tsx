@@ -1,8 +1,8 @@
 import { Alert, Card, Flex, Segmented, Typography, message, theme } from "antd";
 import UserOutlined from "@ant-design/icons/UserOutlined";
-import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
-import { useChangeUserType } from "../../apis/hooks/useUserType";
-import { UserTypeEnum } from "../../enums/UserTypeEnum";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { useChangeUserType } from "@/apis/hooks/useUserType";
+import { UserTypeEnum } from "@/enums/UserTypeEnum";
 
 const { Title, Text } = Typography;
 

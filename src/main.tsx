@@ -7,8 +7,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/es";
 
 import { ReactKeycloakProvider } from "@react-keycloak/web";
-import App from "./App";
-import { AuthProvider } from "./apis/auth/AuthProvider";
+import App from "@/App";
+import { AuthProvider } from "@/apis/auth/AuthProvider";
 
 dayjs.extend(relativeTime);
 dayjs.locale("es");

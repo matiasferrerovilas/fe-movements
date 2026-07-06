@@ -1,17 +1,15 @@
 import { Card, Col, Collapse, Flex, Row, Select, Typography } from "antd";
 import { DatePicker } from "antd";
-import {
-  DollarOutlined,
-  EuroOutlined,
-  FilterOutlined,
-} from "@ant-design/icons";
+import DollarOutlined from "@ant-design/icons/DollarOutlined";
+import EuroOutlined from "@ant-design/icons/EuroOutlined";
+import FilterOutlined from "@ant-design/icons/FilterOutlined";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import { useMemo } from "react";
-import { CurrencyEnum } from "../../enums/CurrencyEnum";
-import type { BalanceFilters as BalanceFiltersType } from "../../models/BalanceFilters";
-import type { Currency } from "../../models/Currency";
-import { capitalize } from "./constants";
+import { CurrencyEnum } from "@/enums/CurrencyEnum";
+import type { BalanceFilters as BalanceFiltersType } from "@/models/BalanceFilters";
+import type { Currency } from "@/models/Currency";
+import { capitalize } from "@/components/home/constants";
 
 const { Text } = Typography;
 const { RangePicker } = DatePicker;

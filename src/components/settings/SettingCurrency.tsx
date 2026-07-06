@@ -1,8 +1,10 @@
-import { DollarOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
+import DollarOutlined from "@ant-design/icons/DollarOutlined";
+import StarFilled from "@ant-design/icons/StarFilled";
+import StarOutlined from "@ant-design/icons/StarOutlined";
 import { Button, Card, Divider, Flex, Space, theme, Tooltip, Typography } from "antd";
-import { useCurrency } from "../../apis/hooks/useCurrency";
-import { useUserDefault, useSetUserDefault } from "../../apis/hooks/useSettings";
-import type { Currency } from "../../models/Currency";
+import { useCurrency } from "@/apis/hooks/useCurrency";
+import { useUserDefault, useSetUserDefault } from "@/apis/hooks/useSettings";
+import type { Currency } from "@/models/Currency";
 
 const { Title, Text } = Typography;
 

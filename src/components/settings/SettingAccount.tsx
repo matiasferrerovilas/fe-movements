@@ -7,11 +7,12 @@ import {
   theme,
   Typography,
 } from "antd";
-import { deleteAllMovements } from "../../apis/movement/ExpenseApi";
+import { deleteAllMovements } from "@/apis/movement/MovementApi";
 import { useMutation } from "@tanstack/react-query";
-import { DeleteOutlined, SettingOutlined } from "@ant-design/icons";
-import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "../utils/entityLabels";
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import SettingOutlined from "@ant-design/icons/SettingOutlined";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Text } = Typography;
 

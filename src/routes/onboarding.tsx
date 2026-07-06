@@ -1,22 +1,22 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Card, Col, Row, Steps, Typography } from "antd";
-import IngresoOnBoarding from "../components/onboarding/IngresoOnBoarding";
-import WorkspaceOnboarding from "../components/onboarding/WorkspaceOnboarding";
-import CategoriaOnboarding from "../components/onboarding/CategoriaOnboarding";
-import BancoOnboarding from "../components/onboarding/BancoOnboarding";
+import IncomeOnboarding from "@/components/onboarding/IncomeOnboarding";
+import WorkspaceOnboarding from "@/components/onboarding/WorkspaceOnboarding";
+import CategoryOnboarding from "@/components/onboarding/CategoryOnboarding";
+import BankOnboarding from "@/components/onboarding/BankOnboarding";
 import {
   finishOnboarding,
   type OnboardingForm,
   type OnboardingIngresoForm,
-} from "../apis/onboarding/OnBoarding";
+} from "@/apis/onboarding/OnboardingApi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { onBoardingGuard } from "../apis/auth/onBoardingGuard";
+import { onBoardingGuard } from "@/apis/auth/onBoardingGuard";
 import { useKeycloak } from "@react-keycloak/web";
-import TipoOnboarding from "../components/onboarding/TipoOnboarding";
-import { WorkspaceEnum } from "../enums/WorkspaceEnum";
-import { CURRENT_USER_QUERY_KEY, useCurrentUser } from "../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "../components/utils/entityLabels";
+import UserTypeOnboarding from "@/components/onboarding/UserTypeOnboarding";
+import { WorkspaceEnum } from "@/enums/WorkspaceEnum";
+import { CURRENT_USER_QUERY_KEY, useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Title, Text } = Typography;
 
@@ -70,7 +70,7 @@ function RouteComponent() {
       title: "Categorías",
       description: "Clasificá tus gastos",
       content: (
-        <CategoriaOnboarding
+        <CategoryOnboarding
           initialValues={formData}
           onPrev={handlePrev}
           onNext={handleNext}
@@ -81,7 +81,7 @@ function RouteComponent() {
       title: "Bancos",
       description: "Tus entidades bancarias",
       content: (
-        <BancoOnboarding
+        <BankOnboarding
           initialValues={formData}
           onPrev={handlePrev}
           onNext={handleNext}
@@ -92,7 +92,7 @@ function RouteComponent() {
       title: "Perfil",
       description: "Tipo de uso",
       content: (
-        <TipoOnboarding
+        <UserTypeOnboarding
           initialValues={formData}
           onPrev={handlePrev}
           onNext={handleNext}
@@ -103,7 +103,7 @@ function RouteComponent() {
       title: "Ingresos",
       description: "Saldo inicial",
       content: (
-        <IngresoOnBoarding
+        <IncomeOnboarding
           initialValues={formData}
           onPrev={handlePrev}
           onFinish={(values: OnboardingIngresoForm) => {

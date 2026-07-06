@@ -12,22 +12,22 @@ import {
 import dayjs from "dayjs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
-import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
-import { useBudgets } from "../apis/hooks/useBudget";
-import { useDeleteBudget } from "../apis/hooks/useBudget";
-import { useUserDefault } from "../apis/hooks/useSettings";
-import { useCurrency } from "../apis/hooks/useCurrency";
-import { RoleEnum } from "../enums/RoleEnum";
-import { BudgetCard } from "../components/budgets/BudgetCard";
+import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
+import { useBudgets } from "@/apis/hooks/useBudget";
+import { useDeleteBudget } from "@/apis/hooks/useBudget";
+import { useUserDefault } from "@/apis/hooks/useSettings";
+import { useCurrency } from "@/apis/hooks/useCurrency";
+import { RoleEnum } from "@/enums/RoleEnum";
+import { BudgetCard } from "@/components/budgets/BudgetCard";
 import {
   BudgetFilters,
   type BudgetFilterValues,
-} from "../components/budgets/BudgetFilters";
+} from "@/components/budgets/BudgetFilters";
 import {
   AddBudgetButton,
   EditBudgetModal,
-} from "../components/budgets/BudgetFormModal";
-import type { BudgetRecord } from "../models/Budget";
+} from "@/components/budgets/BudgetFormModal";
+import type { BudgetRecord } from "@/models/Budget";
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;

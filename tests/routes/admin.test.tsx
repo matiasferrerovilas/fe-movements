@@ -7,7 +7,7 @@ import React from "react";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../src/apis/auth/protectedRouteGuard", () => ({
+vi.mock("@/apis/auth/protectedRouteGuard", () => ({
   protectedRouteGuard: () => () => undefined,
 }));
 
@@ -15,13 +15,13 @@ vi.mock("@tanstack/react-router", () => ({
   createFileRoute: () => (opts: { component: ReactNode }) => opts,
 }));
 
-vi.mock("../../src/components/admin/AdminUserType", () => ({
+vi.mock("@/components/admin/AdminUserType", () => ({
   default: () => <div>Mocked AdminUserType Component</div>,
 }));
 
 // ── Import después de mocks ────────────────────────────────────────────────
 
-const { Route } = await import("../../src/routes/admin");
+const { Route } = await import("@/routes/admin");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RouteComponent = (Route as any).component as React.FC;
 

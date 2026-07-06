@@ -5,12 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { BankRecord } from "../../../src/models/Bank";
-import type { UserSetting } from "../../../src/models/UserSetting";
-import { SettingBank } from "../../../src/components/settings/SettingBank";
+import type { BankRecord } from "@/models/Bank";
+import type { UserSetting } from "@/models/UserSetting";
+import { SettingBank } from "@/components/settings/SettingBank";
 
 // ── Mock useCurrentUser ────────────────────────────────────────────────────
-vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
     data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
     isLoading: false,

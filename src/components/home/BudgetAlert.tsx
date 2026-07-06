@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Button, Col, Divider, Flex, Row, theme, Typography } from "antd";
-import { ArrowRightOutlined, WarningOutlined } from "@ant-design/icons";
+import ArrowRightOutlined from "@ant-design/icons/ArrowRightOutlined";
+import WarningOutlined from "@ant-design/icons/WarningOutlined";
 import dayjs from "dayjs";
-import { useBudgets, useDeleteBudget } from "../../apis/hooks/useBudget";
-import { BudgetCard } from "../budgets/BudgetCard";
-import { EditBudgetModal } from "../budgets/BudgetFormModal";
-import type { BudgetRecord } from "../../models/Budget";
+import { useBudgets, useDeleteBudget } from "@/apis/hooks/useBudget";
+import { BudgetCard } from "@/components/budgets/BudgetCard";
+import { EditBudgetModal } from "@/components/budgets/BudgetFormModal";
+import type { BudgetRecord } from "@/models/Budget";
 
 const { Text, Title } = Typography;
 

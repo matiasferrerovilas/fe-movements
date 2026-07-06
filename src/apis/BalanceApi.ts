@@ -2,13 +2,13 @@ import dayjs from "dayjs";
 import type {
   BalanceResponse,
   MonthlyEvolutionRecord,
-} from "../models/Balance";
+} from "@/models/Balance";
 import type {
   BalanceByCategory,
   BalanceByGroup,
-} from "../models/BalanceByCategory";
-import type { BalanceFilters } from "../models/BalanceFilters";
-import { api } from "./axios";
+} from "@/models/BalanceByCategory";
+import type { BalanceFilters } from "@/models/BalanceFilters";
+import { api } from "@/apis/axios";
 
 const formatDate = (date: Date) => dayjs(date).format("YYYY-MM-DD");
 

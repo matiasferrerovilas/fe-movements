@@ -6,14 +6,14 @@ import type { ReactNode } from "react";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
     data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
     isLoading: false,
   }),
 }));
 
-vi.mock("../../src/apis/auth/protectedRouteGuard", () => ({
+vi.mock("@/apis/auth/protectedRouteGuard", () => ({
   protectedRouteGuard: () => () => undefined,
 }));
 
@@ -21,43 +21,43 @@ vi.mock("@tanstack/react-router", () => ({
   createFileRoute: () => (opts: { component: ReactNode }) => opts,
 }));
 
-vi.mock("../../src/components/settings/SettingAccount", () => ({
+vi.mock("@/components/settings/SettingAccount", () => ({
   default: () => <div data-testid="setting-account">SettingAccount</div>,
 }));
 
-vi.mock("../../src/components/settings/SettingCurrentWorkspace", () => ({
+vi.mock("@/components/settings/SettingCurrentWorkspace", () => ({
   SettingCurrentWorkspace: () => <div data-testid="setting-current-workspace">SettingCurrentWorkspace</div>,
 }));
 
-vi.mock("../../src/components/settings/SettingInviteWorkspaces", () => ({
+vi.mock("@/components/settings/SettingInviteWorkspaces", () => ({
   SettingInviteWorkspaces: () => (
     <div data-testid="setting-invite-groups">SettingInviteWorkspaces</div>
   ),
 }));
 
-vi.mock("../../src/components/settings/SettingBank", () => ({
+vi.mock("@/components/settings/SettingBank", () => ({
   SettingBank: () => <div data-testid="setting-bank">SettingBank</div>,
 }));
 
-vi.mock("../../src/components/settings/SettingCurrency", () => ({
+vi.mock("@/components/settings/SettingCurrency", () => ({
   SettingCurrency: () => (
     <div data-testid="setting-currency">SettingCurrency</div>
   ),
 }));
 
-vi.mock("../../src/components/settings/SettingIngreso", () => ({
-  SettingIngreso: () => (
-    <div data-testid="setting-ingreso">SettingIngreso</div>
+vi.mock("@/components/settings/SettingIncome", () => ({
+  SettingIncome: () => (
+    <div data-testid="setting-income">SettingIncome</div>
   ),
 }));
 
-vi.mock("../../src/components/settings/SettingCategory", () => ({
+vi.mock("@/components/settings/SettingCategory", () => ({
   SettingCategory: () => (
     <div data-testid="setting-category">SettingCategory</div>
   ),
 }));
 
-vi.mock("../../src/components/settings/SettingPreferences", () => ({
+vi.mock("@/components/settings/SettingPreferences", () => ({
   SettingPreferences: () => (
     <div data-testid="setting-preferences">SettingPreferences</div>
   ),
@@ -65,7 +65,7 @@ vi.mock("../../src/components/settings/SettingPreferences", () => ({
 
 // ── Import después de mocks ────────────────────────────────────────────────
 
-const { Route } = await import("../../src/routes/settings");
+const { Route } = await import("@/routes/settings");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RouteComponent = (Route as any).component as React.FC;
 
@@ -112,13 +112,13 @@ describe("Settings route — estructura de tabs", () => {
     expect(screen.getByTestId("setting-account")).toBeInTheDocument();
   });
 
-  it("la tab 'Cuenta' no incluye SettingIngreso", () => {
+  it("la tab 'Cuenta' no incluye SettingIncome", () => {
     renderSettings();
 
-    expect(screen.queryByTestId("setting-ingreso")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("setting-income")).not.toBeInTheDocument();
   });
 
-  it("al hacer click en 'Mis finanzas' muestra SettingBank, SettingCurrency y SettingIngreso", async () => {
+  it("al hacer click en 'Mis finanzas' muestra SettingBank, SettingCurrency y SettingIncome", async () => {
     const user = userEvent.setup();
     renderSettings();
 
@@ -126,7 +126,7 @@ describe("Settings route — estructura de tabs", () => {
 
     expect(screen.getByTestId("setting-bank")).toBeInTheDocument();
     expect(screen.getByTestId("setting-currency")).toBeInTheDocument();
-    expect(screen.getByTestId("setting-ingreso")).toBeInTheDocument();
+    expect(screen.getByTestId("setting-income")).toBeInTheDocument();
   });
 
   it("al hacer click en 'Mi Workspace' muestra SettingInviteWorkspaces, SettingCurrentWorkspace y SettingCategory", async () => {

@@ -13,7 +13,7 @@ import {
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
 import dayjs from "dayjs";
-import type { Investment } from "../../models/Investment";
+import type { Investment } from "@/models/Investment";
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;

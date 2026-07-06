@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ModalComponent from "../Modal";
+import ModalComponent from "@/components/modals/Modal";
 import { Button, Form, Input } from "antd";
 import PlusCircleOutlined from "@ant-design/icons/PlusCircleOutlined";
 import UserAddOutlined from "@ant-design/icons/UserAddOutlined";
@@ -7,11 +7,11 @@ import { useMutation } from "@tanstack/react-query";
 import type {
   CreateInvitationForm,
   WorkspaceDetail,
-} from "../../../models/UserWorkspace";
-import { addInvitationWorkspaceApi } from "../../../apis/WorkspaceApi";
-import { ColorEnum } from "../../../enums/ColorEnum";
-import { useCurrentUser } from "../../../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "../../utils/entityLabels";
+} from "@/models/UserWorkspace";
+import { addInvitationWorkspaceApi } from "@/apis/WorkspaceApi";
+import { ColorEnum } from "@/enums/ColorEnum";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 interface InviteUserToWorkspaceProps {
   group: WorkspaceDetail;

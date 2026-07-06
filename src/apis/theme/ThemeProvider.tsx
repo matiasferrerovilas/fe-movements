@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
-import { ThemeContext } from "./ThemeContext";
+import { ThemeContext } from "@/apis/theme/ThemeContext";
 
 const STORAGE_KEY = "theme";
 

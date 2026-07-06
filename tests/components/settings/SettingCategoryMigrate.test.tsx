@@ -6,7 +6,7 @@ import { App } from "antd";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { Category } from "../../../src/models/Category";
+import type { Category } from "@/models/Category";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -67,7 +67,7 @@ function makeWrapper(roles: string[] = ["ROLE_ADMIN"]) {
 
 // Lazy import after mock setup
 const { SettingCategoryMigrate } = await import(
-  "../../../src/components/settings/SettingCategoryMigrate"
+  "@/components/settings/SettingCategoryMigrate"
 );
 
 function renderComponent(roles?: string[]) {

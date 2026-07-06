@@ -7,7 +7,7 @@ import React from "react";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../src/apis/auth/protectedRouteGuard", () => ({
+vi.mock("@/apis/auth/protectedRouteGuard", () => ({
   protectedRouteGuard: () => () => undefined,
 }));
 
@@ -17,7 +17,7 @@ vi.mock("@tanstack/react-router", () => ({
 
 // ── Import después de mocks ────────────────────────────────────────────────
 
-const { Route } = await import("../../src/routes/help");
+const { Route } = await import("@/routes/help");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RouteComponent = (Route as any).component as React.FC;
 

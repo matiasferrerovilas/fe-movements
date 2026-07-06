@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { getIconComponent } from "../../src/utils/getIconComponent";
+import { getIconComponent } from "@/utils/getIconComponent";
 import { HomeOutlined, QuestionOutlined, CarOutlined } from "@ant-design/icons";
 
 describe("getIconComponent", () => {

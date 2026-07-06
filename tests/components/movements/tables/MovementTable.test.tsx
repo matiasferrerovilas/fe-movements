@@ -4,15 +4,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { Movement } from "../../../../src/models/Movement";
-import type { PageResponse } from "../../../../src/models/BaseMode";
-import type { MovementFilters } from "../../../../src/routes/movement";
-import { TypeEnum } from "../../../../src/enums/TypeExpense";
-import MovementTable from "../../../../src/components/movements/tables/MovementTable";
+import type { Movement } from "@/models/Movement";
+import type { PageResponse } from "@/models/BaseMode";
+import type { MovementFilters } from "@/routes/movement";
+import { TypeEnum } from "@/enums/TypeEnum";
+import MovementTable from "@/components/movements/tables/MovementTable";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../../../src/apis/websocket/WebSocketProvider", () => ({
+vi.mock("@/apis/websocket/WebSocketProvider", () => ({
   useWebSocket: vi.fn(() => ({
     isConnected: false,
     subscribe: vi.fn(),
@@ -20,7 +20,7 @@ vi.mock("../../../../src/apis/websocket/WebSocketProvider", () => ({
   })),
 }));
 
-vi.mock("../../../../src/apis/hooks/useWorkspaces", () => ({
+vi.mock("@/apis/hooks/useWorkspaces", () => ({
   useWorkspaces: vi.fn(() => ({ data: [], isSuccess: true })),
 }));
 

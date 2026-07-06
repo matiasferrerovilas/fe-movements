@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "recharts";
 import { useMemo } from "react";
-import { CHART_COLORS } from "./constants";
+import { CHART_COLORS } from "@/components/home/constants";
 
 type CategoryChartItem = {
   name: string;

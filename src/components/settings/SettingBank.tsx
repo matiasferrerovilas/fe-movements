@@ -1,10 +1,8 @@
-import {
-  BankOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-  StarFilled,
-  StarOutlined,
-} from "@ant-design/icons";
+import BankOutlined from "@ant-design/icons/BankOutlined";
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import PlusOutlined from "@ant-design/icons/PlusOutlined";
+import StarFilled from "@ant-design/icons/StarFilled";
+import StarOutlined from "@ant-design/icons/StarOutlined";
 import {
   Button,
   Card,
@@ -20,11 +18,11 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import { useAddBank, useBanks, useDeleteBank } from "../../apis/hooks/useBank";
-import { useUserDefault, useSetUserDefault } from "../../apis/hooks/useSettings";
-import type { BankRecord } from "../../models/Bank";
-import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "../utils/entityLabels";
+import { useAddBank, useBanks, useDeleteBank } from "@/apis/hooks/useBank";
+import { useUserDefault, useSetUserDefault } from "@/apis/hooks/useSettings";
+import type { BankRecord } from "@/models/Bank";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Title, Text } = Typography;
 

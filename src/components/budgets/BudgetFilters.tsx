@@ -1,5 +1,5 @@
 import { Col, Flex, Row, Select, Typography } from "antd";
-import { useCurrency } from "../../apis/hooks/useCurrency";
+import { useCurrency } from "@/apis/hooks/useCurrency";
 
 const { Text } = Typography;
 

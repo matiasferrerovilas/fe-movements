@@ -4,8 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { InvestmentType } from "../../../src/models/InvestmentType";
-import { useInvestmentTypes } from "../../../src/apis/hooks/useInvestmentTypes";
+import type { InvestmentType } from "@/models/InvestmentType";
+import { useInvestmentTypes } from "@/apis/hooks/useInvestmentTypes";
 
 const mockTypes: InvestmentType[] = [
   { id: 1, name: "Acciones", iconName: "RiseOutlined", iconColor: "#52c41a", workspaceId: 1 },

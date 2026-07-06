@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState, type ReactNode } from "react";
-import { WorkspaceContext } from "./WorkspaceContext";
-import { useWorkspaces } from "../hooks/useWorkspaces";
-import { useUserDefault, useSetUserDefault } from "../hooks/useSettings";
-import type { Membership } from "../../models/UserWorkspace";
+import { WorkspaceContext } from "@/apis/workspace/WorkspaceContext";
+import { useWorkspaces } from "@/apis/hooks/useWorkspaces";
+import { useUserDefault, useSetUserDefault } from "@/apis/hooks/useSettings";
+import type { Membership } from "@/models/UserWorkspace";
 
 interface WorkspaceProviderProps {
   children: ReactNode;

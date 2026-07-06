@@ -2,13 +2,13 @@ import { Avatar, Card, Divider, Empty, Flex, List, theme, Typography } from "ant
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import MailOutlined from "@ant-design/icons/MailOutlined";
-import { useCurrentWorkspace } from "../../apis/workspace/WorkspaceContext";
-import { useAllWorkspacesWithUsers, useWorkspaceMembers } from "../../apis/hooks/useWorkspaces";
-import { useWorkspacesSubscription } from "../../apis/websocket/useWorkspacesSubscription";
-import InviteUserToWorkspace from "../modals/workspaces/InviteUserToWorkspace";
-import ExitWorkspaceModal from "../modals/workspaces/ExitWorkspaceModal";
-import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "../utils/entityLabels";
+import { useCurrentWorkspace } from "@/apis/workspace/WorkspaceContext";
+import { useAllWorkspacesWithUsers, useWorkspaceMembers } from "@/apis/hooks/useWorkspaces";
+import { useWorkspacesSubscription } from "@/apis/websocket/useWorkspacesSubscription";
+import InviteUserToWorkspace from "@/components/modals/workspaces/InviteUserToWorkspace";
+import ExitWorkspaceModal from "@/components/modals/workspaces/ExitWorkspaceModal";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Title, Text } = Typography;
 

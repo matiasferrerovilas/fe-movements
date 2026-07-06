@@ -1,9 +1,9 @@
 import { Card, Col, Empty, Row, Tag, Typography } from "antd";
-import type { MovementTableViewProps } from "./types";
-import { TypeEnum, TypeEnumLabel } from "../../../enums/TypeExpense";
-import CategoryCircleTable from "./CategoryCircleTable";
-import { capitalizeFirst } from "../../utils/stringFunctions";
-import MovementActionButtons from "./MovementActionButtons";
+import type { MovementTableViewProps } from "@/components/movements/tables/types";
+import { TypeEnum, TypeEnumLabel } from "@/enums/TypeEnum";
+import CategoryCircleTable from "@/components/movements/tables/CategoryCircleTable";
+import { capitalizeFirst } from "@/utils/stringFunctions";
+import MovementActionButtons from "@/components/movements/tables/MovementActionButtons";
 
 const { Text } = Typography;
 

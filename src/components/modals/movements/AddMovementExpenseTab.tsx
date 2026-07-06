@@ -18,17 +18,17 @@ import CreditCardOutlined from "@ant-design/icons/CreditCardOutlined";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import TagOutlined from "@ant-design/icons/TagOutlined";
 import { useMutation } from "@tanstack/react-query";
-import { TypeEnum, TypeEnumLabel } from "../../../enums/TypeExpense";
-import type { CreateMovementForm, Movement } from "../../../models/Movement";
-import { useCategory } from "../../../apis/hooks/useCategory";
+import { TypeEnum, TypeEnumLabel } from "@/enums/TypeEnum";
+import type { CreateMovementForm, Movement } from "@/models/Movement";
+import { useCategory } from "@/apis/hooks/useCategory";
 import dayjs from "dayjs";
 import {
   updateExpense,
   uploadExpense,
-} from "../../../apis/movement/ExpenseApi";
-import { useCurrency } from "../../../apis/hooks/useCurrency";
-import { useBanks } from "../../../apis/hooks/useBank";
-import { useUserDefault } from "../../../apis/hooks/useSettings";
+} from "@/apis/movement/MovementApi";
+import { useCurrency } from "@/apis/hooks/useCurrency";
+import { useBanks } from "@/apis/hooks/useBank";
+import { useUserDefault } from "@/apis/hooks/useSettings";
 
 const { Text } = Typography;
 

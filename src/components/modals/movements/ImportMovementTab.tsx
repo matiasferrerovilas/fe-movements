@@ -2,10 +2,10 @@ import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { Button, Form, Select, Typography, Upload } from "antd";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import { useMutation } from "@tanstack/react-query";
-import { useBanks } from "../../../apis/hooks/useBank";
-import { useUserDefault } from "../../../apis/hooks/useSettings";
+import { useBanks } from "@/apis/hooks/useBank";
+import { useUserDefault } from "@/apis/hooks/useSettings";
 import type { UploadChangeParam, UploadFile } from "antd/es/upload";
-import { uploadExpenseApi } from "../../../apis/movement/ExpenseApi";
+import { uploadExpenseApi } from "@/apis/movement/MovementApi";
 const { Text } = Typography;
 
 export interface UploadForm {

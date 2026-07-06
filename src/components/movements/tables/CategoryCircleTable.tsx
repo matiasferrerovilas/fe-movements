@@ -1,8 +1,8 @@
 import { Popover } from "antd";
 import React, { useMemo } from "react";
-import { capitalizeFirst } from "../../utils/stringFunctions";
-import type { Category } from "../../../models/Category";
-import { getIconComponent } from "../../../utils/getIconComponent";
+import { capitalizeFirst } from "@/utils/stringFunctions";
+import type { Category } from "@/models/Category";
+import { getIconComponent } from "@/utils/getIconComponent";
 
 export default function CategoryCircleTable({
   category,

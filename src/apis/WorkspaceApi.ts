@@ -5,8 +5,8 @@ import type {
   CreateInvitationForm,
   Invitations,
   Membership,
-} from "../models/UserWorkspace";
-import { api } from "./axios";
+} from "@/models/UserWorkspace";
+import { api } from "@/apis/axios";
 
 const baseUrl = "/workspace";
 

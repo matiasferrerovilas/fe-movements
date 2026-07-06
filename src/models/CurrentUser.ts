@@ -1,4 +1,4 @@
-import type { UserTypeEnum } from "../enums/UserTypeEnum";
+import type { UserTypeEnum } from "@/enums/UserTypeEnum";
 
 export interface CurrentUser {
   id: number | null;

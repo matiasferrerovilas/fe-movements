@@ -4,14 +4,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { BudgetRecord } from "../../../src/models/Budget";
+import type { BudgetRecord } from "@/models/Budget";
 import {
   useBudgets,
   useAddBudget,
   useUpdateBudget,
   useDeleteBudget,
   BUDGETS_QUERY_KEY,
-} from "../../../src/apis/hooks/useBudget";
+} from "@/apis/hooks/useBudget";
 
 // ── Mock data ───────────────────────────────────────────────────────────────
 

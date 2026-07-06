@@ -23,12 +23,12 @@ import EditOutlined from "@ant-design/icons/EditOutlined";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
-import type { Service, ServiceToUpdate } from "../../models/Service";
+import type { Service, ServiceToUpdate } from "@/models/Service";
 import React, { useState } from "react";
 import dayjs from "dayjs";
-import { useDeleteService } from "../../apis/hooks/useService";
-import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
-import { getServiceLabels } from "../utils/serviceLabels";
+import { useDeleteService } from "@/apis/hooks/useService";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getServiceLabels } from "@/utils/serviceLabels";
 
 const { Text, Title } = Typography;
 

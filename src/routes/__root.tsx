@@ -1,12 +1,12 @@
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { Layout, Grid } from "antd"; // 👈 Importar Grid
 import { Content, Footer } from "antd/es/layout/layout";
-import NavHeader from "../components/NavHeader";
+import NavHeader from "@/components/NavHeader";
 import type { QueryClient } from "@tanstack/react-query";
 import { memo } from "react";
-import { QueryLoadingBoundary } from "../components/QueryLoadingBoundary";
-import type { AuthContextState } from "../apis/auth/AuthContext";
-import { ColorEnum } from "../enums/ColorEnum";
+import { QueryLoadingBoundary } from "@/components/QueryLoadingBoundary";
+import type { AuthContextState } from "@/apis/auth/AuthContext";
+import { ColorEnum } from "@/enums/ColorEnum";
 import type Keycloak from "keycloak-js";
 const { useBreakpoint } = Grid;
 import module from "../../package.json";

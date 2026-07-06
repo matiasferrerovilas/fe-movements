@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { BudgetRecord } from "../../../src/models/Budget";
-import BudgetAlert from "../../../src/components/home/BudgetAlert";
+import type { BudgetRecord } from "@/models/Budget";
+import BudgetAlert from "@/components/home/BudgetAlert";
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 

@@ -6,8 +6,8 @@ import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import type { ReactNode } from "react";
 import { ConfigProvider } from "antd";
-import AdminUserType from "../../../src/components/admin/AdminUserType";
-import { UserTypeEnum } from "../../../src/enums/UserTypeEnum";
+import AdminUserType from "@/components/admin/AdminUserType";
+import { UserTypeEnum } from "@/enums/UserTypeEnum";
 
 const server = setupServer();
 
@@ -16,7 +16,7 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 // Mock del hook useCurrentUser
-vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
     data: {
       id: 1,

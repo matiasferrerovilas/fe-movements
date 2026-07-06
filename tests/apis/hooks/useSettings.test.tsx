@@ -8,7 +8,7 @@ import {
   useUserDefaults,
   useUserDefault,
   useSetUserDefault,
-} from "../../../src/apis/hooks/useSettings";
+} from "@/apis/hooks/useSettings";
 
 // ── MSW server ──────────────────────────────────────────────────────────────
 

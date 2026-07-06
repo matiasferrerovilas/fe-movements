@@ -1,5 +1,5 @@
-import { api } from "../axios";
-import type { UserSetting, UserSettingKey } from "../../models/UserSetting";
+import { api } from "@/apis/axios";
+import type { UserSetting, UserSettingKey } from "@/models/UserSetting";
 
 const BASE_URL = "/settings/defaults";
 

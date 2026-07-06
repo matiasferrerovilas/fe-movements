@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Card } from "antd";
 import { useCallback, useRef, useState } from "react";
-import MovementTable from "../components/movements/tables/MovementTable";
-import FiltrosMovement from "../components/movements/FiltrosMovement";
-import { TypeEnum } from "../enums/TypeExpense";
-import AddMovementModal from "../components/modals/movements/AddMovementModal";
-import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
-import { RoleEnum } from "../enums/RoleEnum";
+import MovementTable from "@/components/movements/tables/MovementTable";
+import MovementFilters from "@/components/movements/MovementFilters";
+import { TypeEnum } from "@/enums/TypeEnum";
+import AddMovementModal from "@/components/modals/movements/AddMovementModal";
+import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
+import { RoleEnum } from "@/enums/RoleEnum";
 
 export const Route = createFileRoute("/movement")({
   beforeLoad: protectedRouteGuard({
@@ -43,7 +43,7 @@ function RouteComponent() {
 
   return (
     <div style={{ paddingTop: 30 }}>
-      <FiltrosMovement
+      <MovementFilters
         initialFilters={filters}
         onFiltersChange={handleFiltersChange}
         AddEditMovementModal={AddMovementModal}

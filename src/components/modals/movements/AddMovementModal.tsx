@@ -1,11 +1,11 @@
 import { Button, Tabs } from "antd";
-import ModalComponent from "../Modal";
+import ModalComponent from "@/components/modals/Modal";
 import { useRef, useState } from "react";
 import PlusCircleOutlined from "@ant-design/icons/PlusCircleOutlined";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
-import ImportMovementTab from "./ImportMovementTab";
-import AddMovementExpenseTab from "./AddMovementExpenseTab";
+import ImportMovementTab from "@/components/modals/movements/ImportMovementTab";
+import AddMovementExpenseTab from "@/components/modals/movements/AddMovementExpenseTab";
 
 const TAB_INDIVIDUAL = "1";
 const TAB_ARCHIVO = "2";

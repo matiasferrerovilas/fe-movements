@@ -1,9 +1,9 @@
 import { Button } from "antd";
-import ModalComponent from "../Modal";
+import ModalComponent from "@/components/modals/Modal";
 import { useRef, useState } from "react";
-import AddMovementExpenseTab from "./AddMovementExpenseTab";
-import { EditOutlined } from "@ant-design/icons";
-import type { Movement } from "../../../models/Movement";
+import AddMovementExpenseTab from "@/components/modals/movements/AddMovementExpenseTab";
+import EditOutlined from "@ant-design/icons/EditOutlined";
+import type { Movement } from "@/models/Movement";
 
 interface EditMovementModalProps {
   movement: Movement;

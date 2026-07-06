@@ -1,4 +1,4 @@
-import type { CurrencyEnum } from "../enums/CurrencyEnum";
+import type { CurrencyEnum } from "@/enums/CurrencyEnum";
 
 export type BalanceFilters = {
   currency: CurrencyEnum;

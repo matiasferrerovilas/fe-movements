@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { UserSetting } from "../../../src/models/UserSetting";
-import { SettingPreferences } from "../../../src/components/settings/SettingPreferences";
+import type { UserSetting } from "@/models/UserSetting";
+import { SettingPreferences } from "@/components/settings/SettingPreferences";
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 

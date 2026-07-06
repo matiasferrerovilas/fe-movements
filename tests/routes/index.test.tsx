@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, it, expect, vi, beforeAll, afterEach, afterAll, beforeEach } from "vitest";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { Route as IndexRoute } from "../../src/routes/index";
+import { Route as IndexRoute } from "@/routes/index";
 
 // Mock de Keycloak
 vi.mock("@react-keycloak/web", () => ({
@@ -112,7 +112,7 @@ describe("Index Route (Home Unificado)", () => {
     });
   });
 
-  it("renderiza el componente TopCategorias", async () => {
+  it("renderiza el componente TopCategories", async () => {
     const RouteComponent = IndexRoute.options.component!;
     renderWithRouter(<RouteComponent />);
 

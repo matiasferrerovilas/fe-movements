@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { Col, DatePicker, Form, Input, InputNumber, Modal, Row, Select } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import type { InvestmentType } from "../../models/InvestmentType";
-import type { Investment, CreateInvestmentForm } from "../../models/Investment";
-import type { Currency } from "../../models/Currency";
+import type { InvestmentType } from "@/models/InvestmentType";
+import type { Investment, CreateInvestmentForm } from "@/models/Investment";
+import type { Currency } from "@/models/Currency";
 
 interface InvestmentFormValues {
   description?: string;

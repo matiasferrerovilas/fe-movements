@@ -1,4 +1,4 @@
-import type { Currency } from "./Currency";
+import type { Currency } from "@/models/Currency";
 
 export interface Service {
   id: number;

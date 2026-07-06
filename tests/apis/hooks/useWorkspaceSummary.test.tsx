@@ -4,11 +4,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { WorkspaceSummary } from "../../../src/models/WorkspaceSummary";
+import type { WorkspaceSummary } from "@/models/WorkspaceSummary";
 import {
   useWorkspaceSummary,
   WORKSPACE_SUMMARY_QUERY_KEY,
-} from "../../../src/apis/hooks/useWorkspaceSummary";
+} from "@/apis/hooks/useWorkspaceSummary";
 
 const mockSummary: WorkspaceSummary = {
   year: 2026,

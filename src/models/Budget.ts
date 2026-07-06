@@ -1,4 +1,4 @@
-import type { Category } from "./Category";
+import type { Category } from "@/models/Category";
 
 export interface CurrencySymbol {
   id: number;

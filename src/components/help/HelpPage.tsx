@@ -1,14 +1,12 @@
-import {
-  CalendarOutlined,
-  DollarOutlined,
-  PieChartOutlined,
-  QuestionCircleOutlined,
-  TeamOutlined,
-  UserAddOutlined,
-} from "@ant-design/icons";
+import CalendarOutlined from "@ant-design/icons/CalendarOutlined";
+import DollarOutlined from "@ant-design/icons/DollarOutlined";
+import PieChartOutlined from "@ant-design/icons/PieChartOutlined";
+import QuestionCircleOutlined from "@ant-design/icons/QuestionCircleOutlined";
+import TeamOutlined from "@ant-design/icons/TeamOutlined";
+import UserAddOutlined from "@ant-design/icons/UserAddOutlined";
 import { Col, Collapse, Flex, Row, theme, Typography } from "antd";
 import React, { useMemo } from "react";
-import { HELP_SECTIONS, type HelpParagraph, type HelpSection } from "./helpContent";
+import { HELP_SECTIONS, type HelpParagraph, type HelpSection } from "@/components/help/helpContent";
 
 const { Title, Text, Paragraph } = Typography;
 

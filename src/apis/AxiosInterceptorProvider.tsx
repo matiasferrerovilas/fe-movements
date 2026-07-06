@@ -1,7 +1,7 @@
 // AxiosInterceptorProvider.tsx - Registra interceptor antes de renderizar children
 import { useLayoutEffect, useRef } from "react";
 import { useKeycloak } from "@react-keycloak/web";
-import { api } from "./axios";
+import { api } from "@/apis/axios";
 
 export function AxiosInterceptorProvider({
   children,

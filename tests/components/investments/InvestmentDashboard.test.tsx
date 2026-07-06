@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import type { Investment } from "../../../src/models/Investment";
-import { InvestmentDashboard } from "../../../src/components/investments/InvestmentDashboard";
+import type { Investment } from "@/models/Investment";
+import { InvestmentDashboard } from "@/components/investments/InvestmentDashboard";
 
 function makeInvestment(id: number, amount: number): Investment {
   return {

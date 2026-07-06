@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WorkspaceProvider } from "../../../src/apis/workspace/WorkspaceProvider";
-import { useCurrentWorkspace } from "../../../src/apis/workspace/WorkspaceContext";
-import type { Membership } from "../../../src/models/UserWorkspace";
+import { WorkspaceProvider } from "@/apis/workspace/WorkspaceProvider";
+import { useCurrentWorkspace } from "@/apis/workspace/WorkspaceContext";
+import type { Membership } from "@/models/UserWorkspace";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -18,11 +18,11 @@ const mockSetDefaultWorkspace = vi.fn();
 const mockUseWorkspaces = vi.fn();
 const mockUseUserDefault = vi.fn();
 
-vi.mock("../../../src/apis/hooks/useWorkspaces", () => ({
+vi.mock("@/apis/hooks/useWorkspaces", () => ({
   useWorkspaces: () => mockUseWorkspaces(),
 }));
 
-vi.mock("../../../src/apis/hooks/useSettings", () => ({
+vi.mock("@/apis/hooks/useSettings", () => ({
   useUserDefault: () => mockUseUserDefault(),
   useSetUserDefault: () => ({
     mutate: mockSetDefaultWorkspace,

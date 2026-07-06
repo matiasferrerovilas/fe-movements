@@ -1,9 +1,9 @@
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import { Button, Col, Form, Input, Row, Space, Typography } from "antd";
-import type { OnboardingForm } from "../../apis/onboarding/OnBoarding";
-import { useCurrentUser } from "../../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "../utils/entityLabels";
+import type { OnboardingForm } from "@/apis/onboarding/OnboardingApi";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Text } = Typography;
 

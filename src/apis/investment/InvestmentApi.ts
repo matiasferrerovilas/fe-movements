@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
-import type { Investment, CreateInvestmentForm, UpdateInvestmentForm } from "../../models/Investment";
-import type { InvestmentType } from "../../models/InvestmentType";
-import { api } from "../axios";
+import type { Investment, CreateInvestmentForm, UpdateInvestmentForm } from "@/models/Investment";
+import type { InvestmentType } from "@/models/InvestmentType";
+import { api } from "@/apis/axios";
 
 const BASE_PATH = "/investments";
 const TYPES_PATH = "/workspace/investment-types";

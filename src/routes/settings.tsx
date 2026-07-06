@@ -1,19 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SettingIngreso } from "../components/settings/SettingIngreso";
+import { SettingIncome } from "@/components/settings/SettingIncome";
 import { Col, Flex, Grid, Row, Tabs } from "antd";
-import { SettingCurrentWorkspace } from "../components/settings/SettingCurrentWorkspace";
-import { SettingInviteWorkspaces } from "../components/settings/SettingInviteWorkspaces";
-import { protectedRouteGuard } from "../apis/auth/protectedRouteGuard";
-import { RoleEnum } from "../enums/RoleEnum";
-import SettingAccount from "../components/settings/SettingAccount";
-import { SettingBank } from "../components/settings/SettingBank";
-import { SettingCurrency } from "../components/settings/SettingCurrency";
-import { UserOutlined, TeamOutlined, WalletOutlined, BellOutlined, LineChartOutlined } from "@ant-design/icons";
-import { SettingCategory } from "../components/settings/SettingCategory";
-import { SettingPreferences } from "../components/settings/SettingPreferences";
-import { SettingInvestmentType } from "../components/settings/SettingInvestmentType";
-import { useCurrentUser } from "../apis/hooks/useCurrentUser";
-import { getEntityLabels } from "../components/utils/entityLabels";
+import { SettingCurrentWorkspace } from "@/components/settings/SettingCurrentWorkspace";
+import { SettingInviteWorkspaces } from "@/components/settings/SettingInviteWorkspaces";
+import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
+import { RoleEnum } from "@/enums/RoleEnum";
+import SettingAccount from "@/components/settings/SettingAccount";
+import { SettingBank } from "@/components/settings/SettingBank";
+import { SettingCurrency } from "@/components/settings/SettingCurrency";
+import UserOutlined from "@ant-design/icons/UserOutlined";
+import TeamOutlined from "@ant-design/icons/TeamOutlined";
+import WalletOutlined from "@ant-design/icons/WalletOutlined";
+import BellOutlined from "@ant-design/icons/BellOutlined";
+import LineChartOutlined from "@ant-design/icons/LineChartOutlined";
+import { SettingCategory } from "@/components/settings/SettingCategory";
+import { SettingPreferences } from "@/components/settings/SettingPreferences";
+import { SettingInvestmentType } from "@/components/settings/SettingInvestmentType";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 const { useBreakpoint } = Grid;
 
@@ -56,12 +60,12 @@ function RouteComponent() {
         <Flex vertical gap={16}>
           <SettingBank />
           <SettingCurrency />
-          <SettingIngreso />
+          <SettingIncome />
         </Flex>
       ),
     },
     {
-      key: "inversiones",
+      key: "investments",
       label: "Inversiones",
       icon: <LineChartOutlined />,
       children: <SettingInvestmentType />,

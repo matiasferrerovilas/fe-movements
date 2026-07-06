@@ -44,9 +44,38 @@ window.env.backend.websocketUrl; // URL WebSocket
 window.env.keycloak; // { clientId, realm, url }
 ```
 
+### Imports internos — alias `@/`
+
+Todo import interno (dentro de `src/` o desde `tests/` hacia `src/`) usa el alias `@/` en vez de rutas relativas, sin excepción (incluso imports al mismo nivel de carpeta):
+
+```ts
+// Correcto
+import { useCategory } from "@/apis/hooks/useCategory";
+import { TypeEnum } from "@/enums/TypeEnum";
+
+// Incorrecto — nunca imports relativos hacia src/
+import { useCategory } from "../../apis/hooks/useCategory"; // ❌
+```
+
+El alias está configurado en `tsconfig.app.json` (`paths`), `vite.config.ts` y `vitest.config.ts` (`resolve.alias`), apuntando `@` → `src/`. Los imports a archivos fuera de `src/` (ej. `package.json` desde `__root.tsx`) siguen siendo relativos, ya que el alias solo cubre `src/`.
+
+### Iconos de `@ant-design/icons`
+
+Importar cada ícono por su subpath, no desde el barrel del paquete (mejor tree-shaking):
+
+```ts
+// Correcto
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+
+// Incorrecto
+import { DeleteOutlined } from "@ant-design/icons"; // ❌
+```
+
+Excepción: `src/utils/getIconComponent.ts` importa varios íconos desde el barrel de forma deliberada (registro curado para el selector de íconos) — no aplica esta regla.
+
 ### Axios — paths de API
 
-La instancia de Axios en `src/apis/axios.tsx` usa `window.env.backend.api` como `baseURL`, que ya incluye el prefijo `/v1/`. **Nunca agregar `v1/` en los `BASE_PATH` de los archivos de API** — los paths deben ser relativos sin ese prefijo:
+La instancia de Axios en `src/apis/axios.ts` usa `window.env.backend.api` como `baseURL`, que ya incluye el prefijo `/v1/`. **Nunca agregar `v1/` en los `BASE_PATH` de los archivos de API** — los paths deben ser relativos sin ese prefijo:
 
 ```ts
 // Correcto
@@ -66,45 +95,51 @@ const BASE_PATH = "v1/profiles"; // ❌ genera /v1/v1/profiles
 src/
 ├── apis/
 │   ├── auth/           # AuthContext, AuthProvider, guards de rutas
-│   ├── hooks/          # Hooks de React Query (useCurrentUser, useGroups, useMovement, etc.)
+│   ├── hooks/          # Hooks de React Query (useCurrentUser, useMovement, etc.)
 │   ├── websocket/      # WebSocketProvider + hooks de suscripción por dominio
-│   ├── onboarding/     # API de onboarding
-│   ├── movement/       # API de movimientos
-│   ├── income/         # API de ingresos
-│   ├── settings/       # API de configuración
-│   ├── banks/          # API de bancos
-│   ├── currencies/     # API de monedas
-│   ├── axios.tsx       # Instancia base de Axios
+│   ├── onboarding/     # OnboardingApi.ts
+│   ├── movement/       # MovementApi.ts
+│   ├── income/         # IncomeApi.ts
+│   ├── investment/     # InvestmentApi.ts
+│   ├── settings/       # SettingsApi.ts
+│   ├── bank/           # BankApi.ts
+│   ├── currency/       # CurrencyApi.ts
+│   ├── theme/          # ThemeContext, ThemeProvider
+│   ├── tour/           # TourApi.ts
+│   ├── workspace/      # WorkspaceContext, WorkspaceProvider, WorkspaceApi, WorkspaceSummaryApi
+│   ├── axios.ts        # Instancia base de Axios
 │   ├── AxiosInterceptorProvider.tsx
-│   ├── GroupApi.tsx
-│   ├── ServiceApi.tsx
-│   ├── SubscriptionApi.tsx
-│   └── BalanceApi.ts
+│   ├── BalanceApi.ts
+│   ├── BudgetApi.ts
+│   ├── CategoryApi.ts
+│   └── SubscriptionApi.ts
 ├── components/         # Componentes UI organizados por feature
-│   ├── balance/
+│   ├── admin/
+│   ├── budgets/
+│   ├── help/
+│   ├── home/           # Dashboard principal (/)
+│   ├── investments/
 │   ├── modals/
 │   ├── movements/
 │   ├── onboarding/
 │   ├── services/
 │   ├── settings/
-│   ├── utils/
 │   ├── NavHeader.tsx
 │   └── QueryLoadingBoundary.tsx
-├── routes/             # Rutas file-based de TanStack Router (7 rutas)
+├── routes/             # Rutas file-based de TanStack Router
 │   ├── __root.tsx      # Layout raíz: NavHeader + Content + Footer
 │   ├── index.tsx       # /
-│   ├── balance.tsx     # /balance
 │   ├── movement.tsx    # /movement
+│   ├── investments.tsx # /investments
+│   ├── budgets.tsx     # /budgets
 │   ├── services.tsx    # /services
 │   ├── settings.tsx    # /settings
-│   └── onboarding.tsx  # /onboarding
+│   ├── onboarding.tsx  # /onboarding
+│   ├── admin.tsx       # /admin
+│   └── help.tsx        # /help
 ├── models/             # Interfaces TypeScript de dominio
 ├── enums/              # Enums con patrón `as const`
-├── features/           # } Scaffolding Feature-Sliced Design (FSD)
-├── pages/              # } Vacíos actualmente — dirección futura
-├── widgets/            # } de la arquitectura
-├── entities/           # }
-├── shared/             # }
+├── utils/              # Utilidades puras (labels, formateo de strings, íconos)
 ├── App.tsx             # Root: providers stack + router
 ├── main.tsx            # Entry point: Keycloak init + ReactDOM render
 └── env.ts              # Declaración de tipos de window.env
@@ -114,8 +149,11 @@ tests/                  # Todos los tests — espeja la estructura de src/
 │   ├── hooks/
 │   └── websocket/
 ├── components/
+├── utils/
 └── ...
 ```
+
+Los directorios `src/features/`, `src/pages/`, `src/widgets/`, `src/entities/`, `src/shared/` mencionados en versiones anteriores de este documento no existen en el repositorio — no hay scaffolding FSD activo hoy.
 
 ---
 
@@ -128,9 +166,9 @@ tests/                  # Todos los tests — espeja la estructura de src/
 Los tests viven en `tests/` espejando exactamente la ruta de `src/`:
 
 ```
-src/apis/hooks/useCurrentUser.tsx        → tests/apis/hooks/useCurrentUser.test.tsx
-src/components/settings/SettingGroups.tsx → tests/components/settings/SettingGroups.test.tsx
-src/components/utils/stringFunctions.ts  → tests/components/utils/stringFunctions.test.ts
+src/apis/hooks/useCurrentUser.ts         → tests/apis/hooks/useCurrentUser.test.tsx
+src/components/settings/SettingBank.tsx  → tests/components/settings/SettingBank.test.tsx
+src/utils/stringFunctions.ts             → tests/utils/stringFunctions.test.ts
 ```
 
 ### Stack de testing
@@ -308,9 +346,3 @@ const [form] = Form.useForm<MiFormType>();
   </Form.Item>
 </Form>
 ```
-
----
-
-## Arquitectura futura (FSD)
-
-Los directorios `src/features/`, `src/pages/`, `src/widgets/`, `src/entities/`, `src/shared/` son scaffolding de Feature-Sliced Design y están actualmente vacíos. El código activo vive en `src/apis/`, `src/components/`, `src/routes/`, `src/models/`, `src/enums/`. No mover código a FSD sin coordinar previamente.

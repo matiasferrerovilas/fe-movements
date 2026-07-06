@@ -3,11 +3,11 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ConfigProvider } from "antd";
 import type { ReactNode } from "react";
-import WorkspaceOnboarding from "../../../src/components/onboarding/WorkspaceOnboarding";
+import WorkspaceOnboarding from "@/components/onboarding/WorkspaceOnboarding";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("../../../src/apis/hooks/useCurrentUser", () => ({
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
     data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
     isLoading: false,

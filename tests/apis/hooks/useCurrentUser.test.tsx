@@ -4,8 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { CurrentUser } from "../../../src/models/CurrentUser";
-import { useCurrentUser, CURRENT_USER_QUERY_KEY } from "../../../src/apis/hooks/useCurrentUser";
+import type { CurrentUser } from "@/models/CurrentUser";
+import { useCurrentUser, CURRENT_USER_QUERY_KEY } from "@/apis/hooks/useCurrentUser";
 
 // Mock @react-keycloak/web
 vi.mock("@react-keycloak/web", () => ({

@@ -4,13 +4,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { BankRecord } from "../../../src/models/Bank";
+import type { BankRecord } from "@/models/Bank";
 import {
   useBanks,
   useAddBank,
   useDeleteBank,
-} from "../../../src/apis/hooks/useBank";
-import { BANKS_QUERY_KEY } from "../../../src/apis/hooks/bankQueryKeys";
+} from "@/apis/hooks/useBank";
+import { BANKS_QUERY_KEY } from "@/apis/hooks/bankQueryKeys";
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 

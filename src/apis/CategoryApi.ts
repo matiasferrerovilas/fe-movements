@@ -1,5 +1,5 @@
-import type { Category } from "../models/Category";
-import { api } from "./axios";
+import type { Category } from "@/models/Category";
+import { api } from "@/apis/axios";
 
 const BASE_PATH = "workspace";
 
