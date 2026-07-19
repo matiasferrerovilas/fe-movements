@@ -1,11 +1,16 @@
 import type { UserTypeEnum } from "@/enums/UserTypeEnum";
 
+export interface CurrentUserMetadata {
+  isFirstLogin: boolean;
+  hasSeenTour: boolean;
+  userRole: string[];
+}
+
 export interface CurrentUser {
   id: number | null;
   email: string | null;
   givenName: string | null;
   familyName: string | null;
-  isFirstLogin: boolean;
   userType: UserTypeEnum | null;
-  hasSeenTour: boolean;
+  metadata: CurrentUserMetadata;
 }

@@ -65,8 +65,8 @@ export default function MovementTableMobile({
 
             <Row justify="space-between" align="middle">
               <Text type="secondary" style={{ fontSize: 11 }}>
-                {capitalizeFirst(record.account.name)} ·{" "}
-                {capitalizeFirst(record.owner.givenName ?? "")}
+                {capitalizeFirst(record.metadata.workspace.name)} ·{" "}
+                {capitalizeFirst(record.metadata.owner.givenName ?? "")}
               </Text>
               <div>
                 <MovementActionButtons record={record} onDelete={onDelete} />

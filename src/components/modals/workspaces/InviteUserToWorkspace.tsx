@@ -6,7 +6,7 @@ import UserAddOutlined from "@ant-design/icons/UserAddOutlined";
 import { useMutation } from "@tanstack/react-query";
 import type {
   CreateInvitationForm,
-  WorkspaceDetail,
+  Workspace,
 } from "@/models/UserWorkspace";
 import { addInvitationWorkspaceApi } from "@/apis/WorkspaceApi";
 import { ColorEnum } from "@/enums/ColorEnum";
@@ -14,7 +14,7 @@ import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
 
 interface InviteUserToWorkspaceProps {
-  group: WorkspaceDetail;
+  group: Workspace;
 }
 export default function InviteUserToWorkspace({ group }: InviteUserToWorkspaceProps) {
   const [form] = Form.useForm();
@@ -39,7 +39,7 @@ export default function InviteUserToWorkspace({ group }: InviteUserToWorkspacePr
   const handleSubmit = (values: { email: string }) => {
     addInvitationMutation.mutate({
       emails: [values.email],
-      workspaceId: group.id,
+      workspaceId: group.workspaceId,
     });
   };
 

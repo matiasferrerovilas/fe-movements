@@ -3,7 +3,7 @@ import { renderHook, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import type { Service } from "@/models/Service";
-import type { Membership } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 import type { EventWrapper } from "@/apis/websocket/EventWrapper";
 import { EventType } from "@/apis/websocket/EventWrapper";
 import { useServiceSubscription } from "@/apis/websocket/useServiceSubscription";
@@ -49,9 +49,19 @@ function makeWrapper(queryClient: QueryClient) {
 
 // ── Fixtures ───────────────────────────────────────────────────────────────
 
-const memberships: Membership[] = [
-  { workspaceId: 10, membershipId: 1, workspaceName: "Familia", role: "ADMIN" },
-  { workspaceId: 20, membershipId: 2, workspaceName: "Trabajo", role: "FAMILY" },
+const memberships: Workspace[] = [
+  {
+    id: 1,
+    workspaceId: 10,
+    workspaceName: "Familia",
+    metadata: { members: ["a@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
+  },
+  {
+    id: 2,
+    workspaceId: 20,
+    workspaceName: "Trabajo",
+    metadata: { members: ["a@test.com"], role: "FAMILY", joinedAt: "2026-01-01T00:00:00", isDefault: false },
+  },
 ];
 
 function makeService(id: number, overrides?: Partial<Service>): Service {

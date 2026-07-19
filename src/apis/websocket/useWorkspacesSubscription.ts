@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "@/apis/websocket/WebSocketProvider";
 import { EventType, type EventWrapper } from "@/apis/websocket/EventWrapper";
-import type { WorkspaceDetail } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 import { useKeycloak } from "@react-keycloak/web";
 import { useWorkspaces } from "@/apis/hooks/useWorkspaces";
 
-const USER_WORKSPACES_COUNT_QUERY_KEY = ["workspace-count"] as const;
+const USER_WORKSPACES_QUERY_KEY = ["user-workspaces"] as const;
 
 export const useWorkspacesSubscription = () => {
   const queryClient = useQueryClient();
@@ -29,20 +29,22 @@ export const useWorkspacesSubscription = () => {
   const callbackRef = useRef((event: EventWrapper<unknown>) => {
     switch (event.eventType) {
       case EventType.ACCOUNT_LEFT: {
-        queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
-        queryClient.invalidateQueries({ queryKey: USER_WORKSPACES_COUNT_QUERY_KEY });
+        queryClient.invalidateQueries({ queryKey: USER_WORKSPACES_QUERY_KEY });
         break;
       }
       case EventType.MEMBERSHIP_UPDATED: {
-        const updated = event.message as WorkspaceDetail;
+        const updated = event.message as Workspace;
         queryClient.setQueryData(
-          USER_WORKSPACES_COUNT_QUERY_KEY,
-          (old?: WorkspaceDetail[]) => {
+          USER_WORKSPACES_QUERY_KEY,
+          (old?: Workspace[]) => {
             if (!old) return [updated];
-            const base = old.map((g) => ({ ...g, isDefault: false }));
-            const exists = base.some((g) => g.id === updated.id);
+            const base = old.map((g) => ({
+              ...g,
+              metadata: { ...g.metadata, isDefault: false },
+            }));
+            const exists = base.some((g) => g.workspaceId === updated.workspaceId);
             return exists
-              ? base.map((g) => (g.id === updated.id ? updated : g))
+              ? base.map((g) => (g.workspaceId === updated.workspaceId ? updated : g))
               : [...base, updated];
           },
         );

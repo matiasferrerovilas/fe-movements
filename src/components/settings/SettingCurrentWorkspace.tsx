@@ -3,7 +3,6 @@ import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import MailOutlined from "@ant-design/icons/MailOutlined";
 import { useCurrentWorkspace } from "@/apis/workspace/WorkspaceContext";
-import { useAllWorkspacesWithUsers, useWorkspaceMembers } from "@/apis/hooks/useWorkspaces";
 import { useWorkspacesSubscription } from "@/apis/websocket/useWorkspacesSubscription";
 import InviteUserToWorkspace from "@/components/modals/workspaces/InviteUserToWorkspace";
 import ExitWorkspaceModal from "@/components/modals/workspaces/ExitWorkspaceModal";
@@ -14,24 +13,18 @@ const { Title, Text } = Typography;
 
 export function SettingCurrentWorkspace() {
   const { token } = theme.useToken();
-  const { currentWorkspace, workspaces } = useCurrentWorkspace();
-  const { data: workspaceDetails = [], isLoading } = useAllWorkspacesWithUsers();
-  // Los miembros se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
-  const { data: members = [], isLoading: loadingMembers } = useWorkspaceMembers();
+  const { currentWorkspace, workspaces, isLoading } = useCurrentWorkspace();
+  // Los miembros vienen incluidos en el workspace activo (metadata.members)
+  const members = currentWorkspace?.metadata.members ?? [];
   const { data: currentUser } = useCurrentUser();
   const labels = getEntityLabels(currentUser?.userType ?? null);
 
   useWorkspacesSubscription();
 
-  // Obtener el WorkspaceDetail completo del workspace actual
-  const currentWorkspaceDetail = workspaceDetails.find(
-    (ws) => ws.id === currentWorkspace?.workspaceId
-  );
-
   // Solo mostrar botón de salir si hay más de un workspace
   const canLeave = workspaces.length > 1;
 
-  if (!currentWorkspace || !currentWorkspaceDetail) {
+  if (!currentWorkspace) {
     return (
       <Card loading={isLoading} style={{ borderRadius: 16 }}>
         <Empty description="No hay workspace seleccionado" />
@@ -60,7 +53,7 @@ export function SettingCurrentWorkspace() {
         <div style={{ flex: 1 }}>
           <Flex align="center" gap={8}>
             <Title level={5} style={{ margin: 0 }}>
-              {currentWorkspaceDetail.name}
+              {currentWorkspace.workspaceName}
             </Title>
             <span
               style={{
@@ -72,15 +65,15 @@ export function SettingCurrentWorkspace() {
                 padding: "2px 8px",
               }}
             >
-              {currentWorkspaceDetail.membersCount} miembro
-              {currentWorkspaceDetail.membersCount !== 1 && "s"}
+              {currentWorkspace.metadata.members.length} miembro
+              {currentWorkspace.metadata.members.length !== 1 && "s"}
             </span>
           </Flex>
           <Text type="secondary" style={{ fontSize: 12 }}>
             {labels.workspaceGestionar}
           </Text>
         </div>
-        {canLeave && <ExitWorkspaceModal group={currentWorkspaceDetail} />}
+        {canLeave && <ExitWorkspaceModal group={currentWorkspace} />}
       </Flex>
 
       <Divider style={{ margin: "14px 0" }} />
@@ -94,10 +87,9 @@ export function SettingCurrentWorkspace() {
               {labels.miembros}
             </Text>
           </Flex>
-          <InviteUserToWorkspace group={currentWorkspaceDetail} />
+          <InviteUserToWorkspace group={currentWorkspace} />
         </Flex>
         <List
-          loading={loadingMembers}
           dataSource={members}
           locale={{
             emptyText: (

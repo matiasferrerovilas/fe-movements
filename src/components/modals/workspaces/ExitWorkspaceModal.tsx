@@ -1,27 +1,26 @@
 import { Button, Popconfirm } from "antd";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { WorkspaceDetail } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 import { exitWorkspaceApi } from "@/apis/WorkspaceApi";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
 
 interface ExitWorkspaceModalProps {
-  group: WorkspaceDetail;
+  group: Workspace;
 }
 export default function ExitWorkspaceModal({ group }: ExitWorkspaceModalProps) {
   const queryClient = useQueryClient();
   const { data: currentUser } = useCurrentUser();
   const labels = getEntityLabels(currentUser?.userType ?? null);
   const exitWorkspaceMutation = useMutation({
-    mutationFn: () => exitWorkspaceApi(group.id),
+    mutationFn: () => exitWorkspaceApi(group.workspaceId),
     onError: (err) => {
       console.error("Error saliendo del grupo:", err);
     },
     onSuccess: () => {
       console.debug("✅ Has salido del grupo correctamente");
       queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
-      queryClient.invalidateQueries({ queryKey: ["workspace-count"] });
     },
   });
 

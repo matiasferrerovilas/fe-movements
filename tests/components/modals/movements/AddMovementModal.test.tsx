@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { Membership } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 import type { BankRecord } from "@/models/Bank";
 import type { UserSetting } from "@/models/UserSetting";
 import type { Category } from "@/models/Category";
@@ -14,8 +14,13 @@ import AddMovementModal from "@/components/modals/movements/AddMovementModal";
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
-const mockMemberships: Membership[] = [
-  { workspaceId: 10, membershipId: 1, workspaceName: "Familia", role: "ADMIN" },
+const mockMemberships: Workspace[] = [
+  {
+    id: 1,
+    workspaceId: 10,
+    workspaceName: "Familia",
+    metadata: { members: ["a@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
+  },
 ];
 
 const mockBanks: BankRecord[] = [
@@ -37,7 +42,7 @@ const defaultCurrencySetting: UserSetting = { key: "DEFAULT_CURRENCY", value: 1 
 // ── MSW server ─────────────────────────────────────────────────────────────
 
 const server = setupServer(
-  http.get("http://localhost:8080/workspace/membership", () =>
+  http.get("http://localhost:8080/workspace", () =>
     HttpResponse.json(mockMemberships),
   ),
   http.get("http://localhost:8080/banks", () =>

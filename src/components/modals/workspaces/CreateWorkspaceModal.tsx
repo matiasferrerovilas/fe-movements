@@ -29,7 +29,6 @@ export default function CreateWorkspaceModal({ children }: CreateWorkspaceModalP
   const addWorkspaceMutation = useMutation({
     mutationFn: (workspace: CreateWorkspaceForm) => addWorkspaceApi(workspace),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workspace-count"] });
       queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
       handleCloseModal();
     },

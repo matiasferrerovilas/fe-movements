@@ -265,7 +265,7 @@ export default function NavHeader() {
   );
 
   // Show tour only on desktop when user hasn't seen it
-  const shouldShowTour = !isMobile && currentUser?.hasSeenTour === false;
+  const shouldShowTour = !isMobile && currentUser?.metadata?.hasSeenTour === false;
 
   useEffect(() => {
     if (shouldShowTour && !tourOpen) {

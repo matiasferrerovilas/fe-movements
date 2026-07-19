@@ -25,7 +25,6 @@ export default function SettingInviteWorkspaceCard({
     onSuccess: (_, variables) => {
       if (variables.status) {
         // On accept: user joined a new workspace
-        void queryClient.invalidateQueries({ queryKey: ["workspace-count"] });
         void queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
       }
       // Always: clear the invitations list (both accept and reject)
@@ -85,7 +84,7 @@ export default function SettingInviteWorkspaceCard({
                 display: "block",
               }}
             >
-              {invite.nameAccount}
+              {invite.workspaceName}
             </Text>
             <Flex align="center" gap={6} style={{ minWidth: 0 }}>
               <Text type="secondary" style={{ fontSize: 12, flexShrink: 0 }}>
@@ -101,7 +100,7 @@ export default function SettingInviteWorkspaceCard({
                   whiteSpace: "nowrap",
                 }}
               >
-                {invite.invitedBy}
+                {invite.invitedByEmail}
               </Text>
             </Flex>
           </Flex>

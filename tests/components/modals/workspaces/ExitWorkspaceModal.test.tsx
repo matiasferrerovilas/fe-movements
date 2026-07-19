@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { WorkspaceDetail } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 import ExitWorkspaceModal from "@/components/modals/workspaces/ExitWorkspaceModal";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
@@ -37,7 +37,17 @@ function makeWrapper(queryClient: QueryClient) {
   );
 }
 
-const group: WorkspaceDetail = { id: 5, name: "Familia", membersCount: 3, isDefault: false };
+const group: Workspace = {
+  id: 55,
+  workspaceId: 5,
+  workspaceName: "Familia",
+  metadata: {
+    members: ["a@test.com", "b@test.com", "c@test.com"],
+    role: "ADMIN",
+    joinedAt: "2026-01-01T00:00:00",
+    isDefault: false,
+  },
+};
 
 // ── Tests ──────────────────────────────────────────────────────────────────
 
@@ -82,7 +92,6 @@ describe("ExitWorkspaceModal", () => {
 
     await waitFor(() => {
       expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-workspaces"] });
-      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["workspace-count"] });
     });
   });
 

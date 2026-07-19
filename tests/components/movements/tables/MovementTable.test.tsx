@@ -41,14 +41,20 @@ function makeMovement(id: number): Movement {
     amount: 500,
     description: `Movimiento ${id}`,
     date: "2026-01-15",
-    owner: { id: 1, givenName: "Test" },
+    createdAt: "2026-01-15T10:00:00",
+    updatedAt: "2026-01-15T10:00:00",
     bank: "GALICIA",
     category: null,
-    currency: { id: 1, symbol: "ARS", code: "ARS", name: "Peso argentino" },
+    currency: { id: 1, symbol: "ARS", description: "Peso argentino" },
     type: TypeEnum.DEBITO,
     cuotasTotales: null,
     cuotaActual: null,
-    account: { id: 10, name: "Familia" },
+    metadata: {
+      owner: { id: 1, givenName: "Test" },
+      workspace: { id: 10, name: "Familia" },
+      exchangeRate: 1,
+      amountUsd: null,
+    },
   };
 }
 

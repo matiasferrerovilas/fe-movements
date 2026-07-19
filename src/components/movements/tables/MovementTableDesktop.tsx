@@ -57,8 +57,8 @@ export default function MovementTableDesktop({
                   <CategoryCircleTable category={record.category ?? undefined} />
                 </Col>
                 <Col span={2}>{capitalizeFirst(record.bank)}</Col>
-                <Col span={2}>{capitalizeFirst(record.account.name)}</Col>
-                <Col span={2}>{capitalizeFirst(record.owner.givenName ?? "")}</Col>
+                <Col span={2}>{capitalizeFirst(record.metadata.workspace.name)}</Col>
+                <Col span={2}>{capitalizeFirst(record.metadata.owner.givenName ?? "")}</Col>
                 <Col span={2}>
                   {TypeEnumLabel[record.type as TypeEnum] ?? record.type}
                 </Col>

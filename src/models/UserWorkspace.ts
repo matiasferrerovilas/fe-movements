@@ -1,4 +1,5 @@
 import type { User } from "@/models/User";
+import type { InvitationStatusEnum } from "@/enums/InvitationStatusEnum";
 
 export interface AccountWithoutMembers {
   id: number;
@@ -11,24 +12,24 @@ export interface AccountWithMembers {
   members: AccountMember[];
 }
 
-export interface Membership {
-  workspaceId: number;
-  membershipId: number;
-  workspaceName: string;
+export interface WorkspaceMetadata {
+  members: string[];
   role: string;
+  joinedAt: string;
+  isDefault: boolean;
+}
+
+export interface Workspace {
+  id: number;
+  workspaceId: number;
+  workspaceName: string;
+  metadata: WorkspaceMetadata;
 }
 
 export interface AccountMember {
   id: number;
   user: User;
   role: string;
-}
-
-export interface WorkspaceDetail {
-  id: number;
-  name: string;
-  membersCount: number;
-  isDefault: boolean;
 }
 
 export interface CreateWorkspaceForm {
@@ -42,8 +43,11 @@ export interface CreateInvitationForm {
 
 export interface Invitations {
   id: number;
-  nameAccount: string;
-  invitedBy: string;
+  workspaceId: number;
+  workspaceName: string;
+  invitedByEmail: string;
+  status: InvitationStatusEnum;
+  createdAt: string;
 }
 
 export interface ConfirmInvitations {

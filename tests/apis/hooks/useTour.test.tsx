@@ -9,7 +9,7 @@ import { CURRENT_USER_QUERY_KEY } from "@/apis/hooks/useCurrentUser";
 import type { CurrentUser } from "@/models/CurrentUser";
 
 const server = setupServer(
-  http.put("http://localhost:8080/users/me/tour", () =>
+  http.put("http://localhost:8080/onboarding/tour", () =>
     new HttpResponse(null, { status: 204 }),
   ),
 );
@@ -23,9 +23,12 @@ const mockCurrentUser: CurrentUser = {
   email: "test@example.com",
   givenName: "Test",
   familyName: "User",
-  isFirstLogin: false,
   userType: "ADMIN",
-  hasSeenTour: false,
+  metadata: {
+    isFirstLogin: false,
+    hasSeenTour: false,
+    userRole: ["ROLE_ADMIN"],
+  },
 };
 
 function makeWrapper() {
@@ -52,7 +55,7 @@ describe("useMarkTourSeen", () => {
     server.resetHandlers();
   });
 
-  it("should call PUT /users/me/tour on mutate", async () => {
+  it("should call PUT /onboarding/tour on mutate", async () => {
     const { wrapper } = makeWrapper();
     const { result } = renderHook(() => useMarkTourSeen(), { wrapper });
 
@@ -69,7 +72,7 @@ describe("useMarkTourSeen", () => {
 
     // Verify initial state
     const initialUser = queryClient.getQueryData<CurrentUser>(CURRENT_USER_QUERY_KEY);
-    expect(initialUser?.hasSeenTour).toBe(false);
+    expect(initialUser?.metadata.hasSeenTour).toBe(false);
 
     result.current.mutate();
 
@@ -79,7 +82,7 @@ describe("useMarkTourSeen", () => {
 
     // Verify cache was updated
     const updatedUser = queryClient.getQueryData<CurrentUser>(CURRENT_USER_QUERY_KEY);
-    expect(updatedUser?.hasSeenTour).toBe(true);
+    expect(updatedUser?.metadata.hasSeenTour).toBe(true);
   });
 
   it("should not update cache if currentUser is not in cache", async () => {
@@ -107,7 +110,7 @@ describe("useMarkTourSeen", () => {
 
   it("should handle error when request fails", async () => {
     server.use(
-      http.put("http://localhost:8080/users/me/tour", () =>
+      http.put("http://localhost:8080/onboarding/tour", () =>
         HttpResponse.json({ message: "Server error" }, { status: 500 }),
       ),
     );

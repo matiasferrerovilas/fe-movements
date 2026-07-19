@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
-import type { Membership } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 
 export interface WorkspaceContextValue {
   /** Workspace actualmente seleccionado */
-  currentWorkspace: Membership | null;
+  currentWorkspace: Workspace | null;
   /** Lista de workspaces disponibles para el usuario */
-  workspaces: Membership[];
+  workspaces: Workspace[];
   /** Cambiar el workspace actual (persiste en backend) */
   setCurrentWorkspace: (workspaceId: number) => void;
   /** Indica si los datos están cargando */

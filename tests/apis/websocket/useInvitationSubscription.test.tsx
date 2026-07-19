@@ -60,7 +60,14 @@ describe("useInvitationSubscription", () => {
   let wsMock: ReturnType<typeof makeWsMock>;
 
   const userId = 99;
-  const invitation: Invitations = { id: 1, nameAccount: "Familia", invitedBy: "other@test.com" };
+  const invitation: Invitations = {
+    id: 1,
+    workspaceId: 10,
+    workspaceName: "Familia",
+    invitedByEmail: "other@test.com",
+    status: "PENDING",
+    createdAt: "2026-07-16T10:00:00",
+  };
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -78,7 +85,14 @@ describe("useInvitationSubscription", () => {
     });
 
     vi.mocked(useCurrentUser).mockReturnValue({
-      data: { id: userId, email: "me@test.com", givenName: "Test", familyName: "User", isFirstLogin: false, userType: "ADMIN", hasSeenTour: true },
+      data: {
+        id: userId,
+        email: "me@test.com",
+        givenName: "Test",
+        familyName: "User",
+        userType: "ADMIN",
+        metadata: { isFirstLogin: false, hasSeenTour: true, userRole: ["ROLE_ADMIN"] },
+      },
       isSuccess: true,
     } as ReturnType<typeof useCurrentUser>);
 
@@ -195,8 +209,15 @@ describe("useInvitationSubscription", () => {
     expect(queryClient.getQueryData<Invitations[]>(["workspace-invitations"])).toHaveLength(1);
   });
 
-  it("removes invitation from cache and invalidates user-workspaces and workspace-count on INVITATION_CONFIRMED_REJECTED", () => {
-    const inv2: Invitations = { id: 2, nameAccount: "Trabajo", invitedBy: "boss@test.com" };
+  it("removes invitation from cache and invalidates user-workspaces on INVITATION_CONFIRMED_REJECTED", () => {
+    const inv2: Invitations = {
+      id: 2,
+      workspaceId: 20,
+      workspaceName: "Trabajo",
+      invitedByEmail: "boss@test.com",
+      status: "PENDING",
+      createdAt: "2026-07-16T11:00:00",
+    };
     queryClient.setQueryData(["workspace-invitations"], [invitation, inv2]);
 
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
@@ -217,13 +238,12 @@ describe("useInvitationSubscription", () => {
     const remaining = queryClient.getQueryData<Invitations[]>(["workspace-invitations"]);
     expect(remaining).toEqual([inv2]);
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-workspaces"] });
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["workspace-count"] });
   });
 
   it("ignores invitation sent by the current user", () => {
     queryClient.setQueryData(["workspace-invitations"], []);
 
-    // The current user's preferred_username matches invitedBy
+    // The current user's preferred_username matches invitedByEmail
     vi.mocked(useKeycloak).mockReturnValue({
       keycloak: {
         authenticated: true,
@@ -238,7 +258,7 @@ describe("useInvitationSubscription", () => {
 
     const event: EventWrapper<Invitations> = {
       eventType: EventType.INVITATION_ADDED,
-      message: { ...invitation, invitedBy: "me@test.com" },
+      message: { ...invitation, invitedByEmail: "me@test.com" },
     };
 
     act(() => {

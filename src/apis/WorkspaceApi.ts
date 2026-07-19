@@ -1,10 +1,9 @@
 import type {
-  WorkspaceDetail,
   ConfirmInvitations,
   CreateWorkspaceForm,
   CreateInvitationForm,
   Invitations,
-  Membership,
+  Workspace,
 } from "@/models/UserWorkspace";
 import { api } from "@/apis/axios";
 
@@ -15,9 +14,6 @@ export const exitWorkspaceApi = (id: number) =>
 
 export const addWorkspaceApi = (workspace: CreateWorkspaceForm) =>
   api.post(baseUrl, workspace).then((response) => response.data);
-
-export const setDefaultWorkspaceApi = (id: number) =>
-  api.patch(`${baseUrl}/${id}/default`).then((response) => response.data);
 
 export const addInvitationWorkspaceApi = (invitation: CreateInvitationForm) =>
   api
@@ -34,11 +30,5 @@ export const acceptRejectWorkspaceInvitationApi = (
     .patch(`${baseUrl}/invitations/${confirmInvitations.id}`, confirmInvitations)
     .then((response) => response.data);
 
-export const getAllWorkspacesWithUsers = () =>
-  api.get<WorkspaceDetail[]>(`${baseUrl}/count`).then((response) => response.data);
-
 export const getAllUserWorkspaces = () =>
-  api.get<Membership[]>(`${baseUrl}/membership`).then((response) => response.data);
-
-export const getWorkspaceMembers = () =>
-  api.get<string[]>(`${baseUrl}/members`).then((response) => response.data);
+  api.get<Workspace[]>(baseUrl).then((response) => response.data);

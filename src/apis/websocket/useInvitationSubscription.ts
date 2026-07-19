@@ -22,7 +22,7 @@ export const useInvitationSubscription = () => {
     callbackRef.current = (event: EventWrapper<Invitations>) => {
       const payload = event.message;
 
-      if (payload.invitedBy == keycloak.tokenParsed?.preferred_username) {
+      if (payload.invitedByEmail == keycloak.tokenParsed?.preferred_username) {
         return;
       }
 
@@ -49,7 +49,6 @@ export const useInvitationSubscription = () => {
             }
             case EventType.INVITATION_CONFIRMED_REJECTED: {
               queryClient.invalidateQueries({ queryKey: ["user-workspaces"] });
-              queryClient.invalidateQueries({ queryKey: ["workspace-count"] });
               return old.filter((i) => i.id !== payload.id);
             }
             default:

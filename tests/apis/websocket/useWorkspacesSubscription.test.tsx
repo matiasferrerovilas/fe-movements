@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import type { WorkspaceDetail, Membership } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 import type { EventWrapper } from "@/apis/websocket/EventWrapper";
 import { EventType } from "@/apis/websocket/EventWrapper";
 import { useWorkspacesSubscription } from "@/apis/websocket/useWorkspacesSubscription";
@@ -55,15 +55,22 @@ function makeWrapper(queryClient: QueryClient) {
 
 const keycloakSubject = "kc-uuid-123";
 
-const memberships: Membership[] = [
-  { workspaceId: 10, membershipId: 1, workspaceName: "Familia", role: "ADMIN" },
-  { workspaceId: 20, membershipId: 2, workspaceName: "Trabajo", role: "FAMILY" },
+const memberships: Workspace[] = [
+  {
+    id: 1,
+    workspaceId: 10,
+    workspaceName: "Familia",
+    metadata: { members: ["a@test.com", "b@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
+  },
+  {
+    id: 2,
+    workspaceId: 20,
+    workspaceName: "Trabajo",
+    metadata: { members: ["a@test.com", "b@test.com", "c@test.com"], role: "FAMILY", joinedAt: "2026-01-01T00:00:00", isDefault: false },
+  },
 ];
 
-const groups: WorkspaceDetail[] = [
-  { id: 10, name: "Familia", membersCount: 2, isDefault: true },
-  { id: 20, name: "Trabajo", membersCount: 3, isDefault: false },
-];
+const groups = memberships;
 
 // ── Tests ──────────────────────────────────────────────────────────────────
 
@@ -186,7 +193,7 @@ describe("useWorkspacesSubscription", () => {
     );
   });
 
-  it("invalidates user-workspaces and workspace-count queries on ACCOUNT_LEFT", () => {
+  it("invalidates user-workspaces queries on ACCOUNT_LEFT", () => {
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
     renderHook(() => useWorkspacesSubscription(), {
@@ -203,23 +210,22 @@ describe("useWorkspacesSubscription", () => {
     });
 
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-workspaces"] });
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["workspace-count"] });
   });
 
   it("updates an existing group in cache on MEMBERSHIP_UPDATED", () => {
-    queryClient.setQueryData(["workspace-count"], groups);
+    queryClient.setQueryData(["user-workspaces"], groups);
 
     renderHook(() => useWorkspacesSubscription(), {
       wrapper: makeWrapper(queryClient),
     });
 
-    const updatedGroup: WorkspaceDetail = {
-      id: 20,
-      name: "Trabajo",
-      membersCount: 4,
-      isDefault: true,
+    const updatedGroup: Workspace = {
+      id: 2,
+      workspaceId: 20,
+      workspaceName: "Trabajo",
+      metadata: { members: ["a@test.com", "b@test.com", "c@test.com", "d@test.com"], role: "FAMILY", joinedAt: "2026-01-01T00:00:00", isDefault: true },
     };
-    const event: EventWrapper<WorkspaceDetail> = {
+    const event: EventWrapper<Workspace> = {
       eventType: EventType.MEMBERSHIP_UPDATED,
       message: updatedGroup,
     };
@@ -228,32 +234,30 @@ describe("useWorkspacesSubscription", () => {
       wsMock.trigger(`/topic/account/default/${keycloakSubject}`, event);
     });
 
-    const cached = queryClient.getQueryData<WorkspaceDetail[]>(["workspace-count"]);
-    expect(cached?.find((g) => g.id === 20)).toMatchObject({
-      membersCount: 4,
-      isDefault: true,
+    const cached = queryClient.getQueryData<Workspace[]>(["user-workspaces"]);
+    expect(cached?.find((g) => g.workspaceId === 20)).toMatchObject({
+      metadata: expect.objectContaining({ isDefault: true }),
     });
     // el grupo anterior deja de ser default
-    expect(cached?.find((g) => g.id === 10)).toMatchObject({
-      membersCount: 2,
-      isDefault: false,
+    expect(cached?.find((g) => g.workspaceId === 10)).toMatchObject({
+      metadata: expect.objectContaining({ isDefault: false }),
     });
   });
 
   it("adds a new group to cache on MEMBERSHIP_UPDATED when it does not exist", () => {
-    queryClient.setQueryData(["workspace-count"], groups);
+    queryClient.setQueryData(["user-workspaces"], groups);
 
     renderHook(() => useWorkspacesSubscription(), {
       wrapper: makeWrapper(queryClient),
     });
 
-    const newGroup: WorkspaceDetail = {
-      id: 30,
-      name: "Amigos",
-      membersCount: 1,
-      isDefault: false,
+    const newGroup: Workspace = {
+      id: 3,
+      workspaceId: 30,
+      workspaceName: "Amigos",
+      metadata: { members: ["a@test.com"], role: "GUEST", joinedAt: "2026-01-01T00:00:00", isDefault: false },
     };
-    const event: EventWrapper<WorkspaceDetail> = {
+    const event: EventWrapper<Workspace> = {
       eventType: EventType.MEMBERSHIP_UPDATED,
       message: newGroup,
     };
@@ -262,9 +266,9 @@ describe("useWorkspacesSubscription", () => {
       wsMock.trigger(`/topic/account/default/${keycloakSubject}`, event);
     });
 
-    const cached = queryClient.getQueryData<WorkspaceDetail[]>(["workspace-count"]);
+    const cached = queryClient.getQueryData<Workspace[]>(["user-workspaces"]);
     expect(cached).toHaveLength(3);
-    expect(cached?.find((g) => g.id === 30)).toMatchObject(newGroup);
+    expect(cached?.find((g) => g.workspaceId === 30)).toMatchObject(newGroup);
   });
 
   it("initializes cache with new group when cache is empty on MEMBERSHIP_UPDATED", () => {
@@ -272,13 +276,13 @@ describe("useWorkspacesSubscription", () => {
       wrapper: makeWrapper(queryClient),
     });
 
-    const newGroup: WorkspaceDetail = {
-      id: 10,
-      name: "Familia",
-      membersCount: 1,
-      isDefault: true,
+    const newGroup: Workspace = {
+      id: 1,
+      workspaceId: 10,
+      workspaceName: "Familia",
+      metadata: { members: ["a@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
     };
-    const event: EventWrapper<WorkspaceDetail> = {
+    const event: EventWrapper<Workspace> = {
       eventType: EventType.MEMBERSHIP_UPDATED,
       message: newGroup,
     };
@@ -287,24 +291,24 @@ describe("useWorkspacesSubscription", () => {
       wsMock.trigger(`/topic/account/default/${keycloakSubject}`, event);
     });
 
-    const cached = queryClient.getQueryData<WorkspaceDetail[]>(["workspace-count"]);
+    const cached = queryClient.getQueryData<Workspace[]>(["user-workspaces"]);
     expect(cached).toEqual([newGroup]);
   });
 
   it("handles MEMBERSHIP_UPDATED via members/update topic", () => {
-    queryClient.setQueryData(["workspace-count"], groups);
+    queryClient.setQueryData(["user-workspaces"], groups);
 
     renderHook(() => useWorkspacesSubscription(), {
       wrapper: makeWrapper(queryClient),
     });
 
-    const updatedGroup: WorkspaceDetail = {
-      id: 10,
-      name: "Familia",
-      membersCount: 5,
-      isDefault: true,
+    const updatedGroup: Workspace = {
+      id: 1,
+      workspaceId: 10,
+      workspaceName: "Familia",
+      metadata: { members: ["a@test.com", "b@test.com", "c@test.com", "d@test.com", "e@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
     };
-    const event: EventWrapper<WorkspaceDetail> = {
+    const event: EventWrapper<Workspace> = {
       eventType: EventType.MEMBERSHIP_UPDATED,
       message: updatedGroup,
     };
@@ -316,8 +320,10 @@ describe("useWorkspacesSubscription", () => {
       );
     });
 
-    const cached = queryClient.getQueryData<WorkspaceDetail[]>(["workspace-count"]);
-    expect(cached?.find((g) => g.id === 10)).toMatchObject({ membersCount: 5 });
+    const cached = queryClient.getQueryData<Workspace[]>(["user-workspaces"]);
+    expect(cached?.find((g) => g.workspaceId === 10)).toMatchObject({
+      metadata: expect.objectContaining({ members: expect.arrayContaining(["e@test.com"]) }),
+    });
   });
 
   it("subscribes only to default topic when memberships list is empty", () => {

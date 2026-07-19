@@ -3,19 +3,27 @@ import type { Currency } from "@/models/Currency";
 import type { AccountWithoutMembers } from "@/models/UserWorkspace";
 import type { User } from "@/models/User";
 
+export interface MovementMetadata {
+  owner: User;
+  workspace: AccountWithoutMembers;
+  exchangeRate: number;
+  amountUsd: number | null;
+}
+
 export interface Movement {
   id: number;
   amount: number;
   description: string;
   date: string;
-  owner: User;
+  createdAt: string;
+  updatedAt: string;
   bank: string;
   category: Category | null;
   currency: Currency | null;
   type: string;
   cuotasTotales: number | null;
   cuotaActual: number | null;
-  account: AccountWithoutMembers;
+  metadata: MovementMetadata;
 }
 
 export interface CreateMovementForm {

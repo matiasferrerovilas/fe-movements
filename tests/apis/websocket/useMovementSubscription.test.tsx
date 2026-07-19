@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import type { Movement } from "@/models/Movement";
 import type { PageResponse } from "@/models/BaseMode";
-import type { Membership } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 import type { EventWrapper } from "@/apis/websocket/EventWrapper";
 import { EventType } from "@/apis/websocket/EventWrapper";
 import { useMovementSubscription } from "@/apis/websocket/useMovementSubscription";
@@ -50,9 +50,19 @@ function makeWrapper(queryClient: QueryClient) {
 
 // ── Fixtures ───────────────────────────────────────────────────────────────
 
-const memberships: Membership[] = [
-  { workspaceId: 10, membershipId: 1, workspaceName: "Familia", role: "ADMIN" },
-  { workspaceId: 20, membershipId: 2, workspaceName: "Trabajo", role: "FAMILY" },
+const memberships: Workspace[] = [
+  {
+    id: 1,
+    workspaceId: 10,
+    workspaceName: "Familia",
+    metadata: { members: ["a@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
+  },
+  {
+    id: 2,
+    workspaceId: 20,
+    workspaceName: "Trabajo",
+    metadata: { members: ["a@test.com"], role: "FAMILY", joinedAt: "2026-01-01T00:00:00", isDefault: false },
+  },
 ];
 
 function makeMovement(id: number): Movement {
@@ -61,14 +71,20 @@ function makeMovement(id: number): Movement {
     amount: 100,
     description: `Movimiento ${id}`,
     date: "2026-01-01",
-    owner: { id: 1, givenName: "Test" },
+    createdAt: "2026-01-01T10:00:00",
+    updatedAt: "2026-01-01T10:00:00",
     bank: "BANCO_X",
     category: null,
     currency: null,
     type: "EXPENSE",
     cuotasTotales: null,
     cuotaActual: null,
-    account: { id: 10, name: "Familia" },
+    metadata: {
+      owner: { id: 1, givenName: "Test" },
+      workspace: { id: 10, name: "Familia" },
+      exchangeRate: 1,
+      amountUsd: null,
+    },
   };
 }
 

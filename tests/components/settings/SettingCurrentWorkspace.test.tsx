@@ -1,10 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { WorkspaceDetail, Membership } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 import { SettingCurrentWorkspace } from "@/components/settings/SettingCurrentWorkspace";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
@@ -16,17 +14,30 @@ vi.mock("@/apis/hooks/useCurrentUser", () => ({
   }),
 }));
 
-const mockWorkspaces: Membership[] = [
-  { workspaceId: 1, membershipId: 101, workspaceName: "Personal", role: "ADMIN" },
-  { workspaceId: 2, membershipId: 102, workspaceName: "Familia", role: "FAMILY" },
+const mockWorkspaces: Workspace[] = [
+  {
+    id: 101,
+    workspaceId: 1,
+    workspaceName: "Personal",
+    metadata: {
+      members: ["usuario1@email.com", "usuario2@email.com"],
+      role: "ADMIN",
+      joinedAt: "2026-01-01T00:00:00",
+      isDefault: true,
+    },
+  },
+  {
+    id: 102,
+    workspaceId: 2,
+    workspaceName: "Familia",
+    metadata: {
+      members: ["usuario1@email.com", "usuario2@email.com", "usuario3@email.com"],
+      role: "FAMILY",
+      joinedAt: "2026-01-01T00:00:00",
+      isDefault: false,
+    },
+  },
 ];
-
-const mockWorkspaceDetails: WorkspaceDetail[] = [
-  { id: 1, name: "Personal", membersCount: 1, isDefault: true },
-  { id: 2, name: "Familia", membersCount: 3, isDefault: false },
-];
-
-const mockMembers: string[] = ["usuario1@email.com", "usuario2@email.com"];
 
 const mockSetCurrentWorkspace = vi.fn();
 const mockUseCurrentWorkspace = vi.fn();
@@ -38,25 +49,6 @@ vi.mock("@/apis/workspace/WorkspaceContext", () => ({
 vi.mock("@/apis/websocket/useWorkspacesSubscription", () => ({
   useWorkspacesSubscription: vi.fn(),
 }));
-
-// ── MSW server ─────────────────────────────────────────────────────────────
-
-const server = setupServer(
-  http.get("http://localhost:8080/workspace/count", () =>
-    HttpResponse.json(mockWorkspaceDetails),
-  ),
-  // El endpoint de miembros ya no requiere workspaceId - usa el workspace activo del usuario
-  http.get("http://localhost:8080/workspace/members", () =>
-    HttpResponse.json(mockMembers),
-  ),
-);
-
-beforeAll(() => server.listen());
-afterEach(() => {
-  server.resetHandlers();
-  cleanup();
-});
-afterAll(() => server.close());
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -90,6 +82,10 @@ beforeEach(() => {
   });
 });
 
+afterEach(() => {
+  cleanup();
+});
+
 // ── Tests ──────────────────────────────────────────────────────────────────
 
 describe("SettingCurrentWorkspace", () => {
@@ -104,7 +100,7 @@ describe("SettingCurrentWorkspace", () => {
     it("muestra el contador de miembros", async () => {
       renderComponent();
       await waitFor(() =>
-        expect(screen.getByText("1 miembro")).toBeInTheDocument(),
+        expect(screen.getByText("2 miembros")).toBeInTheDocument(),
       );
     });
 
@@ -133,11 +129,15 @@ describe("SettingCurrentWorkspace", () => {
     });
 
     it("muestra mensaje vacío cuando no hay miembros", async () => {
-      server.use(
-        http.get("http://localhost:8080/workspace/members", () =>
-          HttpResponse.json([]),
-        ),
-      );
+      mockUseCurrentWorkspace.mockReturnValue({
+        currentWorkspace: {
+          ...mockWorkspaces[0],
+          metadata: { ...mockWorkspaces[0].metadata, members: [] },
+        },
+        workspaces: mockWorkspaces,
+        setCurrentWorkspace: mockSetCurrentWorkspace,
+        isLoading: false,
+      });
 
       renderComponent();
       await waitFor(() =>
@@ -219,15 +219,6 @@ describe("SettingCurrentWorkspace", () => {
         setCurrentWorkspace: mockSetCurrentWorkspace,
         isLoading: true,
       });
-
-      // El componente usa Card loading={isLoading}, pero verificamos que el endpoint se llama
-      server.use(
-        http.get("http://localhost:8080/workspace/count", async () => {
-          // Simular delay
-          await new Promise((resolve) => setTimeout(resolve, 100));
-          return HttpResponse.json(mockWorkspaceDetails);
-        }),
-      );
 
       renderComponent();
       // El Card de Ant Design muestra un skeleton cuando loading=true

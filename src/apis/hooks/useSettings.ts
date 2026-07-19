@@ -12,7 +12,6 @@ const USER_DEFAULTS_QUERY_KEY = "user-defaults" as const;
 const WORKSPACE_DEPENDENT_QUERY_KEYS = [
   "categories",
   "budgets",
-  "workspace-members",
   "movement-history",
   "service-history",
 ] as const;

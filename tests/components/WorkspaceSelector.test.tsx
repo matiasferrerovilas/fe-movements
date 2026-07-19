@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import WorkspaceSelector from "@/components/WorkspaceSelector";
-import type { Membership } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -15,10 +15,25 @@ vi.mock("@/apis/hooks/useCurrentUser", () => ({
   }),
 }));
 
-const mockWorkspaces: Membership[] = [
-  { workspaceId: 1, membershipId: 101, workspaceName: "Personal", role: "ADMIN" },
-  { workspaceId: 2, membershipId: 102, workspaceName: "Familia", role: "FAMILY" },
-  { workspaceId: 3, membershipId: 103, workspaceName: "Trabajo", role: "GUEST" },
+const mockWorkspaces: Workspace[] = [
+  {
+    id: 101,
+    workspaceId: 1,
+    workspaceName: "Personal",
+    metadata: { members: ["a@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
+  },
+  {
+    id: 102,
+    workspaceId: 2,
+    workspaceName: "Familia",
+    metadata: { members: ["a@test.com"], role: "FAMILY", joinedAt: "2026-01-01T00:00:00", isDefault: false },
+  },
+  {
+    id: 103,
+    workspaceId: 3,
+    workspaceName: "Trabajo",
+    metadata: { members: ["a@test.com"], role: "GUEST", joinedAt: "2026-01-01T00:00:00", isDefault: false },
+  },
 ];
 
 const mockSetCurrentWorkspace = vi.fn();

@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { WorkspaceContext } from "@/apis/workspace/WorkspaceContext";
 import { useWorkspaces } from "@/apis/hooks/useWorkspaces";
 import { useUserDefault, useSetUserDefault } from "@/apis/hooks/useSettings";
-import type { Membership } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 
 interface WorkspaceProviderProps {
   children: ReactNode;
@@ -31,7 +31,7 @@ export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
     return null;
   }, [manualWorkspaceId, defaultWorkspaceSetting?.value, workspaces]);
 
-  const currentWorkspace = useMemo((): Membership | null => {
+  const currentWorkspace = useMemo((): Workspace | null => {
     if (!effectiveWorkspaceId) return null;
     return workspaces.find((w) => w.workspaceId === effectiveWorkspaceId) ?? null;
   }, [workspaces, effectiveWorkspaceId]);

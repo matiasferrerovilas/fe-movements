@@ -10,7 +10,7 @@ export const useMarkTourSeen = () => {
     mutationFn: markTourAsSeen,
     onSuccess: () => {
       queryClient.setQueryData<CurrentUser>(CURRENT_USER_QUERY_KEY, (old) =>
-        old ? { ...old, hasSeenTour: true } : old,
+        old ? { ...old, metadata: { ...old.metadata, hasSeenTour: true } } : old,
       );
     },
   });

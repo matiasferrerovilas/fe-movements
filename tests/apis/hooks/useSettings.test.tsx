@@ -117,7 +117,6 @@ describe("useSetUserDefault", () => {
     // Debe invalidar las queries dependientes del workspace
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["categories"] });
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["budgets"] });
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["workspace-members"] });
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["movement-history"] });
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["service-history"] });
   });
@@ -137,7 +136,6 @@ describe("useSetUserDefault", () => {
     // NO debe invalidar las queries dependientes del workspace cuando cambia otra setting
     expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["categories"] });
     expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["budgets"] });
-    expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["workspace-members"] });
     expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["movement-history"] });
     expect(invalidateSpy).not.toHaveBeenCalledWith({ queryKey: ["service-history"] });
   });

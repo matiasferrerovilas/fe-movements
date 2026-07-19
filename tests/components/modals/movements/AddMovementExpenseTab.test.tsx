@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
-import type { Membership } from "@/models/UserWorkspace";
+import type { Workspace } from "@/models/UserWorkspace";
 import type { Category } from "@/models/Category";
 import type { UserSetting } from "@/models/UserSetting";
 import type { Movement } from "@/models/Movement";
@@ -14,9 +14,19 @@ import AddMovementExpenseTab from "@/components/modals/movements/AddMovementExpe
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
-const mockMemberships: Membership[] = [
-  { workspaceId: 10, membershipId: 1, workspaceName: "Familia", role: "ADMIN" },
-  { workspaceId: 20, membershipId: 2, workspaceName: "Personal", role: "FAMILY" },
+const mockMemberships: Workspace[] = [
+  {
+    id: 1,
+    workspaceId: 10,
+    workspaceName: "Familia",
+    metadata: { members: ["a@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
+  },
+  {
+    id: 2,
+    workspaceId: 20,
+    workspaceName: "Personal",
+    metadata: { members: ["a@test.com"], role: "FAMILY", joinedAt: "2026-01-01T00:00:00", isDefault: false },
+  },
 ];
 
 const mockCategories: Category[] = [
@@ -43,20 +53,26 @@ const mockMovementToEdit: Movement = {
   amount: 1500,
   description: "Supermercado Dia",
   date: "2024-03-15",
-  owner: { id: 1, givenName: "Test" },
+  createdAt: "2024-03-15T10:00:00",
+  updatedAt: "2024-03-15T10:00:00",
   bank: "GALICIA",
   category: { id: 1, description: "Supermercado", isActive: true, isDeletable: false },
-  currency: { id: 1, symbol: "ARS", code: "ARS", name: "Peso argentino" },
+  currency: { id: 1, symbol: "ARS", description: "Peso argentino" },
   type: "DEBITO",
   cuotasTotales: null,
   cuotaActual: null,
-  account: { id: 10, name: "Familia" },
+  metadata: {
+    owner: { id: 1, givenName: "Test" },
+    workspace: { id: 10, name: "Familia" },
+    exchangeRate: 1,
+    amountUsd: null,
+  },
 };
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 
 const server = setupServer(
-  http.get("http://localhost:8080/workspace/membership", () =>
+  http.get("http://localhost:8080/workspace", () =>
     HttpResponse.json(mockMemberships),
   ),
   http.get("http://localhost:8080/categories", () =>
