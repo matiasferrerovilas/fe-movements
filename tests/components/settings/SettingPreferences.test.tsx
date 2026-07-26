@@ -10,20 +10,12 @@ import { SettingPreferences } from "@/components/settings/SettingPreferences";
 
 // ── MSW server ─────────────────────────────────────────────────────────────
 
-const monthlySummaryEnabled: UserSetting = { key: "MONTHLY_SUMMARY_ENABLED", value: 1 };
-const monthlySummaryDisabled: UserSetting = { key: "MONTHLY_SUMMARY_ENABLED", value: 0 };
 const autoIncomeEnabled: UserSetting = { key: "AUTO_INCOME_ENABLED", value: 1 };
 const autoIncomeDisabled: UserSetting = { key: "AUTO_INCOME_ENABLED", value: 0 };
 
 const server = setupServer(
-  http.get("http://localhost:8080/settings/defaults/MONTHLY_SUMMARY_ENABLED", () =>
-    HttpResponse.json(monthlySummaryDisabled),
-  ),
   http.get("http://localhost:8080/settings/defaults/AUTO_INCOME_ENABLED", () =>
     HttpResponse.json(autoIncomeDisabled),
-  ),
-  http.put("http://localhost:8080/settings/defaults/MONTHLY_SUMMARY_ENABLED", () =>
-    HttpResponse.json(monthlySummaryEnabled),
   ),
   http.put("http://localhost:8080/settings/defaults/AUTO_INCOME_ENABLED", () =>
     HttpResponse.json(autoIncomeEnabled),
@@ -54,43 +46,19 @@ function renderSettingPreferences() {
   return { ...result, queryClient };
 }
 
-// Helper para obtener los toggles por orden (0 = resumen mensual, 1 = ingresos automáticos)
-async function getToggles() {
-  const toggles = await screen.findAllByRole("switch");
-  return {
-    monthlySummaryToggle: toggles[0],
-    autoIncomeToggle: toggles[1],
-  };
+async function getAutoIncomeToggle() {
+  return screen.findByRole("switch");
 }
 
 // ── Tests ──────────────────────────────────────────────────────────────────
 
 describe("SettingPreferences", () => {
   describe("render inicial", () => {
-    it("muestra el título Notificaciones", async () => {
-      renderSettingPreferences();
-      await waitFor(() =>
-        expect(screen.getByText("Notificaciones")).toBeInTheDocument(),
-      );
-    });
-
     it("muestra el título Automatización", async () => {
       renderSettingPreferences();
       await waitFor(() =>
         expect(screen.getByText("Automatización")).toBeInTheDocument(),
       );
-    });
-
-    it("muestra la opción Resumen mensual con su descripción", async () => {
-      renderSettingPreferences();
-      await waitFor(() => {
-        expect(screen.getByText("Resumen mensual")).toBeInTheDocument();
-        expect(
-          screen.getByText(
-            "Recibirás un resumen de tus gastos al final de cada mes.",
-          ),
-        ).toBeInTheDocument();
-      });
     });
 
     it("muestra la opción Ingresos automáticos con su descripción", async () => {
@@ -105,84 +73,12 @@ describe("SettingPreferences", () => {
       });
     });
 
-    it("muestra ambos toggles desactivados cuando ambos values son 0", async () => {
+    it("muestra el toggle desactivado cuando value es 0", async () => {
       renderSettingPreferences();
-      const { monthlySummaryToggle, autoIncomeToggle } = await getToggles();
+      const autoIncomeToggle = await getAutoIncomeToggle();
       await waitFor(() => {
-        expect(monthlySummaryToggle).not.toBeChecked();
         expect(autoIncomeToggle).not.toBeChecked();
       });
-    });
-  });
-
-  describe("Resumen mensual - interacción", () => {
-    it("muestra el toggle activado cuando value es 1", async () => {
-      server.use(
-        http.get(
-          "http://localhost:8080/settings/defaults/MONTHLY_SUMMARY_ENABLED",
-          () => HttpResponse.json(monthlySummaryEnabled),
-        ),
-      );
-      renderSettingPreferences();
-      
-      const { monthlySummaryToggle } = await getToggles();
-      await waitFor(() => expect(monthlySummaryToggle).toBeChecked());
-    });
-
-    it("llama PUT con value:1 al activar el toggle de resumen mensual", async () => {
-      const user = userEvent.setup();
-      let capturedBody: unknown;
-
-      server.use(
-        http.put(
-          "http://localhost:8080/settings/defaults/MONTHLY_SUMMARY_ENABLED",
-          async ({ request }) => {
-            capturedBody = await request.json();
-            return HttpResponse.json(monthlySummaryEnabled);
-          },
-        ),
-      );
-
-      renderSettingPreferences();
-      
-      const { monthlySummaryToggle } = await getToggles();
-      await waitFor(() => expect(monthlySummaryToggle).not.toBeChecked());
-
-      await user.click(monthlySummaryToggle);
-
-      await waitFor(() =>
-        expect(capturedBody).toEqual({ value: 1 }),
-      );
-    });
-
-    it("llama PUT con value:0 al desactivar el toggle de resumen mensual", async () => {
-      const user = userEvent.setup();
-      let capturedBody: unknown;
-
-      server.use(
-        http.get(
-          "http://localhost:8080/settings/defaults/MONTHLY_SUMMARY_ENABLED",
-          () => HttpResponse.json(monthlySummaryEnabled),
-        ),
-        http.put(
-          "http://localhost:8080/settings/defaults/MONTHLY_SUMMARY_ENABLED",
-          async ({ request }) => {
-            capturedBody = await request.json();
-            return HttpResponse.json(monthlySummaryDisabled);
-          },
-        ),
-      );
-
-      renderSettingPreferences();
-      
-      const { monthlySummaryToggle } = await getToggles();
-      await waitFor(() => expect(monthlySummaryToggle).toBeChecked());
-
-      await user.click(monthlySummaryToggle);
-
-      await waitFor(() =>
-        expect(capturedBody).toEqual({ value: 0 }),
-      );
     });
   });
 
@@ -195,8 +91,8 @@ describe("SettingPreferences", () => {
         ),
       );
       renderSettingPreferences();
-      
-      const { autoIncomeToggle } = await getToggles();
+
+      const autoIncomeToggle = await getAutoIncomeToggle();
       await waitFor(() => expect(autoIncomeToggle).toBeChecked());
     });
 
@@ -215,8 +111,8 @@ describe("SettingPreferences", () => {
       );
 
       renderSettingPreferences();
-      
-      const { autoIncomeToggle } = await getToggles();
+
+      const autoIncomeToggle = await getAutoIncomeToggle();
       await waitFor(() => expect(autoIncomeToggle).not.toBeChecked());
 
       await user.click(autoIncomeToggle);
@@ -245,8 +141,8 @@ describe("SettingPreferences", () => {
       );
 
       renderSettingPreferences();
-      
-      const { autoIncomeToggle } = await getToggles();
+
+      const autoIncomeToggle = await getAutoIncomeToggle();
       await waitFor(() => expect(autoIncomeToggle).toBeChecked());
 
       await user.click(autoIncomeToggle);
