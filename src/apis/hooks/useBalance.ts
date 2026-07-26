@@ -2,14 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getBalance,
   getBalanceWithCategoryByYear,
-  getBalanceWithGroupByYearAndMonth,
   getMonthlyEvolution,
 } from "@/apis/BalanceApi";
 import type { BalanceFilters } from "@/models/BalanceFilters";
 
 const BALANCE_QUERY_KEY = "balance" as const;
 const BALANCE_CATEGORY_QUERY_KEY = "balance-category" as const;
-const BALANCE_GROUP_QUERY_KEY = "balance-group" as const;
 
 export const useBalance = (filters: BalanceFilters) =>
   useQuery({
@@ -23,15 +21,6 @@ export const useBalanceSeparateByCategory = (filters: BalanceFilters) =>
   useQuery({
     queryKey: [BALANCE_CATEGORY_QUERY_KEY, filters],
     queryFn: () => getBalanceWithCategoryByYear(filters),
-    staleTime: 5 * 60 * 1000,
-    refetchOnMount: "always",
-  });
-
-export const useBalanceSeparateByGroup = (year: number, month: number) =>
-  useQuery({
-    queryKey: [BALANCE_GROUP_QUERY_KEY, year, month],
-    queryFn: () =>
-      getBalanceWithGroupByYearAndMonth({ year: year, month: month }),
     staleTime: 5 * 60 * 1000,
     refetchOnMount: "always",
   });

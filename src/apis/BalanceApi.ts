@@ -3,10 +3,7 @@ import type {
   BalanceResponse,
   MonthlyEvolutionRecord,
 } from "@/models/Balance";
-import type {
-  BalanceByCategory,
-  BalanceByGroup,
-} from "@/models/BalanceByCategory";
+import type { BalanceByCategory } from "@/models/BalanceByCategory";
 import type { BalanceFilters } from "@/models/BalanceFilters";
 import { api } from "@/apis/axios";
 
@@ -46,19 +43,6 @@ export const getBalanceWithCategoryByYear = (filters: BalanceFilters) => {
     .get<BalanceByCategory[]>("/balance/category", { params })
     .then((response) => response.data);
 };
-
-export const getBalanceWithGroupByYearAndMonth = ({
-  year,
-  month,
-}: {
-  year: number;
-  month: number;
-}) =>
-  api
-    .get<BalanceByGroup[]>("/balance/group", {
-      params: { year, month },
-    })
-    .then((response) => response.data);
 
 export const getMonthlyEvolution = (
   year: number,

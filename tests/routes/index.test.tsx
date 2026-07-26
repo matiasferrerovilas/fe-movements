@@ -88,7 +88,6 @@ describe("Index Route (Home Unificado)", () => {
         HttpResponse.json(mockWorkspaceSummary),
       ),
       http.get("*/balance/category", () => HttpResponse.json([])),
-      http.get("*/balance/group", () => HttpResponse.json([])),
       http.get("*/balance/monthly-evolution", () => HttpResponse.json([])),
       http.get("*/budgets/user/*", () => HttpResponse.json([])),
     );
@@ -138,7 +137,6 @@ describe("Index Route (Home Unificado)", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Gastos por Categoría")).toBeInTheDocument();
-      expect(screen.getByText("Gastos por Workspace")).toBeInTheDocument();
       expect(screen.getByText("Evolución Anual de Gastos")).toBeInTheDocument();
     }, { timeout: 5000 });
   });
