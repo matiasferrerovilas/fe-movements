@@ -91,7 +91,7 @@ describe("MovementFilters", () => {
     expect(screen.getByTestId("add-modal-trigger")).toBeInTheDocument();
   });
 
-  it("renders the filter card with all filter fields", () => {
+  it("renders the filters collapsed by default, and expands to show all filter fields", async () => {
     render(
       <MovementFilters
         initialFilters={defaultFilters}
@@ -102,7 +102,11 @@ describe("MovementFilters", () => {
     );
 
     expect(screen.getByText("Filtros")).toBeInTheDocument();
-    expect(screen.getByText("Descripción")).toBeInTheDocument();
+    expect(screen.queryByText("Descripción")).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByText("Filtros"));
+
+    expect(await screen.findByText("Descripción")).toBeInTheDocument();
     expect(screen.getByText("Tipo")).toBeInTheDocument();
     expect(screen.getByText("Banco")).toBeInTheDocument();
     expect(screen.getByText("Moneda")).toBeInTheDocument();
@@ -120,7 +124,8 @@ describe("MovementFilters", () => {
       { wrapper: makeWrapper() },
     );
 
-    const input = screen.getByPlaceholderText("Buscar...");
+    await userEvent.click(screen.getByText("Filtros"));
+    const input = await screen.findByPlaceholderText("Buscar...");
     await userEvent.type(input, "café");
 
     await waitFor(() => {
