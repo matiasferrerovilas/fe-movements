@@ -6,7 +6,7 @@ import {
   Form,
   InputNumber,
   Select,
-  Switch,
+  Tabs,
   Typography,
 } from "antd";
 import dayjs from "dayjs";
@@ -21,12 +21,20 @@ const { Text } = Typography;
 
 // ── Add form ────────────────────────────────────────────────────────────────
 
+type BudgetType = "RECURRING" | "ONE_TIME" | "ANNUAL";
+
+const BUDGET_TYPE_TABS = [
+  { key: "RECURRING", label: "Recurrente" },
+  { key: "ONE_TIME", label: "Único" },
+  { key: "ANNUAL", label: "Anual" },
+];
+
 interface AddBudgetForm {
   category: string | null;
   currency: string;
   amount: number;
-  isRecurring: boolean;
   monthYear?: Dayjs;
+  year?: Dayjs;
 }
 
 interface AddBudgetModalProps {
@@ -36,27 +44,32 @@ interface AddBudgetModalProps {
 
 export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
   const [form] = Form.useForm<AddBudgetForm>();
-  const isRecurring = Form.useWatch("isRecurring", form);
+  const [budgetType, setBudgetType] = useState<BudgetType>("RECURRING");
 
   const addBudget = useAddBudget();
-  
+
   // Las categorías se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
   const { data: categories = [] } = useCategory();
-  
+
   const { data: currencies = [] } = useCurrency();
 
   const handleClose = () => {
     form.resetFields();
+    setBudgetType("RECURRING");
     onClose();
   };
 
   const onFinish = (values: AddBudgetForm) => {
-    const year = values.isRecurring ? null : (values.monthYear?.year() ?? null);
-    const month = values.isRecurring
-      ? null
-      : (values.monthYear?.month() != null
-          ? values.monthYear!.month() + 1
-          : null);
+    const year =
+      budgetType === "ONE_TIME"
+        ? (values.monthYear?.year() ?? null)
+        : budgetType === "ANNUAL"
+          ? (values.year?.year() ?? null)
+          : null;
+    const month =
+      budgetType === "ONE_TIME" && values.monthYear
+        ? values.monthYear.month() + 1
+        : null;
 
     const payload: BudgetToAdd = {
       category: values.category ?? null,
@@ -97,7 +110,7 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ isRecurring: true, monthYear: dayjs() }}
+        initialValues={{ monthYear: dayjs(), year: dayjs() }}
         style={{ marginTop: 8 }}
       >
         <Form.Item
@@ -145,11 +158,15 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
           />
         </Form.Item>
 
-        <Form.Item name="isRecurring" label="Recurrente" valuePropName="checked">
-          <Switch />
+        <Form.Item label="Tipo de presupuesto">
+          <Tabs
+            activeKey={budgetType}
+            onChange={(key) => setBudgetType(key as BudgetType)}
+            items={BUDGET_TYPE_TABS}
+          />
         </Form.Item>
 
-        {!isRecurring && (
+        {budgetType === "ONE_TIME" && (
           <Form.Item
             name="monthYear"
             label="Mes y año"
@@ -160,6 +177,21 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
               style={{ width: "100%" }}
               format="MM/YYYY"
               placeholder="Seleccioná el mes"
+            />
+          </Form.Item>
+        )}
+
+        {budgetType === "ANNUAL" && (
+          <Form.Item
+            name="year"
+            label="Año"
+            rules={[{ required: true, message: "Seleccioná el año" }]}
+          >
+            <DatePicker
+              picker="year"
+              style={{ width: "100%" }}
+              format="YYYY"
+              placeholder="Seleccioná el año"
             />
           </Form.Item>
         )}

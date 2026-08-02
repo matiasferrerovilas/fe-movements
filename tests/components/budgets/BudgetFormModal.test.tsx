@@ -94,31 +94,51 @@ describe("AddBudgetModal", () => {
     );
   });
 
-  it("muestra el switch 'Recurrente' activado por defecto", async () => {
+  it("muestra la pestaña 'Recurrente' activa por defecto, sin selector de fecha", async () => {
     const { wrapper } = makeWrapper();
     render(<AddBudgetModal open={true} onClose={vi.fn()} />, { wrapper });
 
     await waitFor(() =>
-      expect(screen.getByText("Recurrente")).toBeInTheDocument(),
+      expect(
+        screen.getByRole("tab", { name: "Recurrente" }),
+      ).toHaveAttribute("aria-selected", "true"),
     );
-    // Switch checked by default — no DatePicker visible
     expect(screen.queryByPlaceholderText("Seleccioná el mes")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Seleccioná el año")).not.toBeInTheDocument();
   });
 
-  it("muestra el DatePicker de mes cuando se desactiva el switch Recurrente", async () => {
+  it("muestra el DatePicker de mes al seleccionar la pestaña Único", async () => {
     const user = userEvent.setup();
     const { wrapper } = makeWrapper();
     render(<AddBudgetModal open={true} onClose={vi.fn()} />, { wrapper });
 
     await waitFor(() =>
-      expect(screen.getByRole("switch")).toBeInTheDocument(),
+      expect(screen.getByRole("tab", { name: "Único" })).toBeInTheDocument(),
     );
 
-    await user.click(screen.getByRole("switch"));
+    await user.click(screen.getByRole("tab", { name: "Único" }));
 
     await waitFor(() =>
       expect(
         screen.getByPlaceholderText("Seleccioná el mes"),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it("muestra el DatePicker de año al seleccionar la pestaña Anual", async () => {
+    const user = userEvent.setup();
+    const { wrapper } = makeWrapper();
+    render(<AddBudgetModal open={true} onClose={vi.fn()} />, { wrapper });
+
+    await waitFor(() =>
+      expect(screen.getByRole("tab", { name: "Anual" })).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByRole("tab", { name: "Anual" }));
+
+    await waitFor(() =>
+      expect(
+        screen.getByPlaceholderText("Seleccioná el año"),
       ).toBeInTheDocument(),
     );
   });
@@ -201,6 +221,44 @@ describe("AddBudgetModal", () => {
 
     await user.click(screen.getByText("Cancelar"));
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it("llama POST /v1/budgets con year seteado y month null para un presupuesto Anual", async () => {
+    const user = userEvent.setup();
+    let capturedBody: unknown;
+
+    server.use(
+      http.post("http://localhost:8080/budgets", async ({ request }) => {
+        capturedBody = await request.json();
+        return new HttpResponse(null, { status: 201 });
+      }),
+    );
+
+    const { wrapper } = makeWrapper();
+    render(<AddBudgetModal open={true} onClose={vi.fn()} />, { wrapper });
+
+    await waitFor(() =>
+      expect(screen.getByText("Agregar presupuesto")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByRole("tab", { name: "Anual" }));
+
+    const monedaSelect = screen.getAllByRole("combobox")[0];
+    await user.click(monedaSelect);
+    const arsOption = await screen.findAllByText("ARS");
+    await user.click(arsOption[arsOption.length - 1]);
+
+    const amountInput = screen.getByPlaceholderText("0.00");
+    await user.click(amountInput);
+    await user.type(amountInput, "8000");
+
+    await user.click(screen.getByText("Agregar"));
+
+    await waitFor(() => {
+      const body = capturedBody as { year: number | null; month: number | null };
+      expect(body.month).toBeNull();
+      expect(body.year).not.toBeNull();
+    });
   });
 });
 

@@ -37,6 +37,13 @@ const nullCategoryBudget: BudgetRecord = {
   month: 4,
 };
 
+const annualBudget: BudgetRecord = {
+  ...baseBudget,
+  id: 5,
+  year: 2026,
+  month: null,
+};
+
 const exceededBudget: BudgetRecord = {
   ...baseBudget,
   id: 3,
@@ -104,6 +111,12 @@ describe("BudgetCard", () => {
 
     it("no muestra etiqueta 'Recurrente' para presupuestos puntuales", () => {
       renderCard(nullCategoryBudget);
+      expect(screen.queryByText("Recurrente")).not.toBeInTheDocument();
+    });
+
+    it("muestra etiqueta 'Anual' para presupuestos con year seteado y month null", () => {
+      renderCard(annualBudget);
+      expect(screen.getByText("Anual")).toBeInTheDocument();
       expect(screen.queryByText("Recurrente")).not.toBeInTheDocument();
     });
 

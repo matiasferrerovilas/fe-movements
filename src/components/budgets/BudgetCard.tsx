@@ -45,7 +45,12 @@ export function BudgetCard({
   const { token } = theme.useToken();
   const progressColor = getProgressColor(budget.percentage);
   const categoryName = budget.category?.description ?? "Sin categoría";
-  const isRecurring = budget.year === null && budget.month === null;
+  const budgetTypeLabel =
+    budget.year === null && budget.month === null
+      ? "Recurrente"
+      : budget.month === null
+        ? "Anual"
+        : null;
 
   return (
     <Card
@@ -82,7 +87,7 @@ export function BudgetCard({
               >
                 {categoryName}
               </Text>
-              {isRecurring && (
+              {budgetTypeLabel && (
                 <Text
                   type="secondary"
                   style={{
@@ -93,7 +98,7 @@ export function BudgetCard({
                     whiteSpace: "nowrap",
                   }}
                 >
-                  Recurrente
+                  {budgetTypeLabel}
                 </Text>
               )}
             </Flex>
