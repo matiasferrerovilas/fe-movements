@@ -13,7 +13,7 @@ const devBackend = {
 window.env = {
   environment: "local",
   keycloak: {
-    clientId: "fe-expenses",
+    clientId: "fe-movements",
     realm: "m2",
     url: "https://auth.eva-core.com"
   },
