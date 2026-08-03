@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   Avatar,
   Button,
+  Divider,
   Drawer,
-  Dropdown,
   Flex,
   Grid,
   Menu,
-  type MenuProps,
+  Popover,
   Segmented,
   Tag,
   theme,
@@ -33,6 +33,7 @@ import { useUserRoles } from "@/apis/hooks/useUserRoles";
 import { RoleEnum } from "@/enums/RoleEnum";
 import { UserTypeEnum } from "@/enums/UserTypeEnum";
 import { useTheme } from "@/apis/theme/ThemeContext";
+import { AppsGrid } from "@/components/AppsGrid";
 import NavTour from "@/components/NavTour";
 import WorkspaceSelector from "@/components/WorkspaceSelector";
 import { getUserDisplayName } from "@/utils/userDisplayName";
@@ -113,6 +114,71 @@ const USER_MENU_ITEMS: SideBarItem[] = [
     roles: [RoleEnum.ADMIN],
   },
 ];
+
+interface ProfileMenuItemProps {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  danger?: boolean;
+}
+
+function ProfileMenuItem({ icon, label, onClick, danger }: ProfileMenuItemProps) {
+  const { token } = theme.useToken();
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "8px 16px",
+        cursor: "pointer",
+        color: danger ? token.colorError : token.colorText,
+        transition: "background 0.15s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = token.colorFillTertiary;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "transparent";
+      }}
+    >
+      <span style={{ fontSize: 15, display: "flex" }}>{icon}</span>
+      <Text style={{ fontSize: 13, color: "inherit" }}>{label}</Text>
+    </div>
+  );
+}
+
+function ProfileTile({ icon, label, onClick }: Omit<ProfileMenuItemProps, "danger">) {
+  const { token } = theme.useToken();
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 6,
+        width: 72,
+        padding: 8,
+        borderRadius: token.borderRadiusLG,
+        cursor: "pointer",
+        color: token.colorText,
+        textAlign: "center",
+        transition: "background 0.15s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = token.colorFillTertiary;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "transparent";
+      }}
+    >
+      <span style={{ fontSize: 20, display: "flex" }}>{icon}</span>
+      <Text style={{ fontSize: 11 }}>{label}</Text>
+    </div>
+  );
+}
 
 // ── NavSlider ──────────────────────────────────────────────────────────────
 
@@ -242,6 +308,8 @@ export default function NavHeader() {
   const { hasAnyRole } = useUserRoles();
   const { data: currentUser } = useCurrentUser();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const closeProfile = () => setProfileOpen(false);
 
   // Nombre y email del usuario - usa currentUser con fallback
   const displayName = currentUser ? getUserDisplayName(currentUser) : null;
@@ -291,30 +359,6 @@ export default function NavHeader() {
     router.navigate({ to: item.path });
   };
 
-  const dropdownItems: MenuProps["items"] = [
-    ...userMenuVisible.map((item) => ({
-      key: item.key,
-      label: item.label,
-      icon: item.icon,
-      onClick: () => router.navigate({ to: item.path }),
-    })),
-    { type: "divider" as const },
-    {
-      key: "theme",
-      label: isDark ? "Modo claro" : "Modo oscuro",
-      icon: isDark ? <SunOutlined /> : <MoonOutlined />,
-      onClick: toggleTheme,
-    },
-    { type: "divider" as const },
-    {
-      key: "logout",
-      label: "Cerrar sesión",
-      icon: <LogoutOutlined />,
-      danger: true,
-      onClick: () => keycloak.logout(),
-    },
-  ];
-
   const ThemeToggle = (
     <Segmented
       value={isDark ? "dark" : "light"}
@@ -329,36 +373,82 @@ export default function NavHeader() {
     />
   );
 
-  const UserAvatar = (
-    <Dropdown
-      menu={{ items: dropdownItems }}
-      placement="bottomRight"
-      styles={{ root: { marginTop: 8 } }}
-      trigger={["click"]}
-    >
-      <Flex align="center" gap={10} style={{ cursor: "pointer" }}>
-        {!isMobile && (
-          <Flex vertical align="flex-end">
-            <Text style={{ fontSize: 12, fontWeight: 500 }}>
-              {displayName || email}
-            </Text>
-            {currentUser?.userType && (
-              <Tag
-                color={USER_TYPE_COLOR[currentUser.userType] ?? "default"}
-                style={{ marginTop: 2, marginInlineEnd: 0, fontSize: 10, lineHeight: "16px", padding: "0 5px" }}
-              >
-                {currentUser.userType}
-              </Tag>
-            )}
-          </Flex>
+  const ProfilePopoverContent = (
+    <div style={{ width: 220 }}>
+      <div style={{ padding: "12px 16px" }}>
+        <Text strong style={{ display: "block" }}>
+          {displayName || email}
+        </Text>
+        {currentUser?.userType && (
+          <Tag
+            color={USER_TYPE_COLOR[currentUser.userType] ?? "default"}
+            style={{ marginTop: 4, marginInlineEnd: 0 }}
+          >
+            {currentUser.userType}
+          </Tag>
         )}
-        <Avatar
-          size={36}
-          icon={<UserOutlined />}
-          style={{ backgroundColor: token.colorPrimary, flexShrink: 0 }}
+      </div>
+      <Divider style={{ margin: 0 }} />
+      <Flex gap={8} wrap style={{ padding: "8px 16px" }}>
+        {userMenuVisible.map((item) => (
+          <ProfileTile
+            key={item.key}
+            icon={item.icon}
+            label={item.label}
+            onClick={() => {
+              router.navigate({ to: item.path });
+              closeProfile();
+            }}
+          />
+        ))}
+        <ProfileTile
+          icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+          label={isDark ? "Modo claro" : "Modo oscuro"}
+          onClick={() => {
+            toggleTheme();
+            closeProfile();
+          }}
         />
       </Flex>
-    </Dropdown>
+      <Divider style={{ margin: 0 }} />
+      <div style={{ padding: "12px 16px" }}>
+        <Text type="secondary" style={{ fontSize: 11 }}>
+          Apps
+        </Text>
+        <div style={{ marginTop: 8 }}>
+          <AppsGrid />
+        </div>
+      </div>
+      <Divider style={{ margin: 0 }} />
+      <div style={{ padding: "4px 0" }}>
+        <ProfileMenuItem
+          icon={<LogoutOutlined />}
+          label="Cerrar sesión"
+          danger
+          onClick={() => {
+            closeProfile();
+            keycloak.logout();
+          }}
+        />
+      </div>
+    </div>
+  );
+
+  const UserAvatar = (
+    <Popover
+      content={ProfilePopoverContent}
+      placement="bottomRight"
+      trigger="click"
+      open={profileOpen}
+      onOpenChange={setProfileOpen}
+      styles={{ root: { marginTop: 8 }, content: { padding: 0 } }}
+    >
+      <Avatar
+        size={36}
+        icon={<UserOutlined />}
+        style={{ backgroundColor: token.colorPrimary, flexShrink: 0, cursor: "pointer" }}
+      />
+    </Popover>
   );
 
   return (
