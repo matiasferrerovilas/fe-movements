@@ -28,7 +28,7 @@ const mockCategories: Category[] = [
   { id: 1, description: "Supermercado", isActive: true, isDeletable: false },
 ];
 const mockCurrencies: Currency[] = [
-  { id: 1, symbol: "ARS", description: "Peso argentino" },
+  { id: 1, symbol: "ARS", description: "Peso argentino", workspaceId: null, isDeletable: false },
 ];
 
 const defaultFilters: MovementFilters = {
@@ -47,7 +47,7 @@ const server = setupServer(
   http.get("http://localhost:8080/categories", () =>
     HttpResponse.json(mockCategories),
   ),
-  http.get("http://localhost:8080/currency", () =>
+  http.get("http://localhost:8080/workspace/currencies", () =>
     HttpResponse.json(mockCurrencies),
   ),
 );

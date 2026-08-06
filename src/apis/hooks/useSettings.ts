@@ -11,6 +11,7 @@ const USER_DEFAULTS_QUERY_KEY = "user-defaults" as const;
 // Query keys de datos que dependen del workspace activo
 const WORKSPACE_DEPENDENT_QUERY_KEYS = [
   "categories",
+  "currencies",
   "budgets",
   "movement-history",
   "service-history",

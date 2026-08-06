@@ -1,18 +1,48 @@
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
+import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import StarFilled from "@ant-design/icons/StarFilled";
 import StarOutlined from "@ant-design/icons/StarOutlined";
-import { Button, Card, Divider, Flex, Space, theme, Tooltip, Typography } from "antd";
-import { useCurrency } from "@/apis/hooks/useCurrency";
+import {
+  Button,
+  Card,
+  Col,
+  Divider,
+  Flex,
+  Form,
+  Input,
+  Popconfirm,
+  Row,
+  Space,
+  theme,
+  Tooltip,
+  Typography,
+} from "antd";
+import {
+  useAddCurrency,
+  useCurrency,
+  useDeleteCurrency,
+} from "@/apis/hooks/useCurrency";
 import { useUserDefault, useSetUserDefault } from "@/apis/hooks/useSettings";
 import type { Currency } from "@/models/Currency";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Title, Text } = Typography;
+
+interface AddCurrencyForm {
+  symbol: string;
+  description: string;
+}
 
 interface CurrencyCardProps {
   currency: Currency;
   defaultCurrencyId?: number | null;
   onSetDefault: (id: number) => void;
   isSettingDefault?: boolean;
+  onDelete: (id: number) => void;
+  isDeleting?: boolean;
+  monedasQuitar: string;
 }
 
 function CurrencyCard({
@@ -20,9 +50,13 @@ function CurrencyCard({
   defaultCurrencyId,
   onSetDefault,
   isSettingDefault,
+  onDelete,
+  isDeleting,
+  monedasQuitar,
 }: CurrencyCardProps) {
   const { token } = theme.useToken();
   const isDefault = currency.id === defaultCurrencyId;
+  const canDelete = currency.isDeletable && !isDefault;
 
   return (
     <Card
@@ -114,6 +148,7 @@ function CurrencyCard({
           >
             <Button
               type="text"
+              aria-label={`Estrella moneda ${currency.description}`}
               style={{
                 borderRadius: "50%",
                 width: 34,
@@ -134,6 +169,42 @@ function CurrencyCard({
               }
             />
           </Tooltip>
+          <Tooltip
+            title={
+              isDefault
+                ? "No se puede eliminar la moneda por defecto"
+                : !currency.isDeletable
+                  ? "Esta moneda no se puede eliminar"
+                  : "Eliminar moneda"
+            }
+          >
+            <Popconfirm
+              title="¿Eliminar esta moneda?"
+              description={monedasQuitar}
+              onConfirm={() => onDelete(currency.id)}
+              okText="Eliminar"
+              cancelText="Cancelar"
+              okButtonProps={{ danger: true }}
+              disabled={!canDelete}
+            >
+              <Button
+                type="text"
+                danger
+                aria-label={`Eliminar moneda ${currency.description}`}
+                style={{
+                  borderRadius: "50%",
+                  width: 34,
+                  height: 34,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 0,
+                }}
+                disabled={!canDelete || isDeleting}
+                icon={<DeleteOutlined style={{ fontSize: 16 }} />}
+              />
+            </Popconfirm>
+          </Tooltip>
         </Space>
       </Flex>
     </Card>
@@ -144,7 +215,19 @@ export function SettingCurrency() {
   const { data: currencies = [], isLoading } = useCurrency();
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const setDefaultMutation = useSetUserDefault();
+  const addCurrencyMutation = useAddCurrency();
+  const deleteCurrencyMutation = useDeleteCurrency();
+  const [form] = Form.useForm<AddCurrencyForm>();
   const { token } = theme.useToken();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getEntityLabels(currentUser?.userType ?? null);
+
+  const onFinish = (values: AddCurrencyForm) => {
+    addCurrencyMutation.mutate(
+      { symbol: values.symbol, description: values.description },
+      { onSuccess: () => form.resetFields() },
+    );
+  };
 
   return (
     <Card loading={isLoading} style={{ borderRadius: 16 }}>
@@ -166,28 +249,104 @@ export function SettingCurrency() {
         </div>
         <div>
           <Title level={5} style={{ margin: 0 }}>
-            Moneda por defecto
+            Mis Monedas
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Seleccioná la moneda que se pre-completa en los formularios.
+            {labels.monedasSubtitle}
           </Text>
         </div>
       </Flex>
 
       <Divider style={{ margin: "14px 0" }} />
 
+      {/* Agregar moneda */}
+      <Card
+        styles={{ body: { padding: "14px 16px" } }}
+        style={{
+          borderRadius: 14,
+          border: `1.5px dashed ${token.colorPrimaryBorder}`,
+          background: token.colorPrimaryBg,
+          marginBottom: 20,
+        }}
+      >
+        <Text
+          strong
+          style={{
+            fontSize: 13,
+            color: token.colorText,
+            display: "block",
+            marginBottom: 10,
+          }}
+        >
+          Nueva Moneda
+        </Text>
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Row gutter={[12, 0]} align="middle">
+            <Col xs={24} sm={6} md={5}>
+              <Form.Item
+                name="symbol"
+                style={{ margin: 0 }}
+                rules={[
+                  { required: true, message: "Ingresá el símbolo" },
+                ]}
+              >
+                <Input
+                  style={{ borderRadius: 10, height: 40, fontSize: 14 }}
+                  placeholder="Símbolo..."
+                  maxLength={10}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={13}>
+              <Form.Item
+                name="description"
+                style={{ margin: 0 }}
+                rules={[
+                  { required: true, message: "Ingresá el nombre de la moneda" },
+                ]}
+              >
+                <Input
+                  style={{ borderRadius: 10, height: 40, fontSize: 14 }}
+                  placeholder="Nombre de la moneda..."
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={6} md={6}>
+              <Button
+                icon={<PlusOutlined />}
+                type="primary"
+                block
+                htmlType="submit"
+                style={{ height: 40, borderRadius: 10, fontWeight: 600 }}
+                loading={addCurrencyMutation.isPending}
+              >
+                Agregar
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+
       {/* Lista de monedas */}
       <Flex vertical gap={10}>
-        {currencies.map((currency: Currency) => (
-          <CurrencyCard
+        {currencies.map((currency: Currency, index: number) => (
+          <div
             key={currency.id}
-            currency={currency}
-            defaultCurrencyId={defaultCurrency?.value}
-            onSetDefault={(id) =>
-              setDefaultMutation.mutate({ key: "DEFAULT_CURRENCY", value: id })
-            }
-            isSettingDefault={setDefaultMutation.isPending}
-          />
+            className="step-enter-right"
+            style={{ animationDelay: `${Math.min(index, 7) * 55}ms` }}
+          >
+            <CurrencyCard
+              currency={currency}
+              defaultCurrencyId={defaultCurrency?.value}
+              onSetDefault={(id) =>
+                setDefaultMutation.mutate({ key: "DEFAULT_CURRENCY", value: id })
+              }
+              isSettingDefault={setDefaultMutation.isPending}
+              onDelete={(id) => deleteCurrencyMutation.mutate(id)}
+              isDeleting={deleteCurrencyMutation.isPending}
+              monedasQuitar={labels.monedasQuitar}
+            />
+          </div>
         ))}
       </Flex>
     </Card>

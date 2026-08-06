@@ -14,6 +14,7 @@ import {
   Typography,
 } from "antd";
 import BookOutlined from "@ant-design/icons/BookOutlined";
+import CalculatorOutlined from "@ant-design/icons/CalculatorOutlined";
 import FundOutlined from "@ant-design/icons/FundOutlined";
 import LineChartOutlined from "@ant-design/icons/LineChartOutlined";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
@@ -81,10 +82,10 @@ const getNavItems = (userType: UserTypeEnum | null): SideBarItem[] => {
       roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
     },
     {
-      key: "expenses",
+      key: "movements",
       icon: <LineChartOutlined />,
-      label: "Gastos",
-      path: "/movement",
+      label: "Movimientos",
+      path: "/movements",
       roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
     },
   ];
@@ -104,6 +105,13 @@ const USER_MENU_ITEMS: SideBarItem[] = [
     icon: <QuestionCircleOutlined />,
     label: "Ayuda",
     path: "/help",
+    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+  },
+  {
+    key: "utilities",
+    icon: <CalculatorOutlined />,
+    label: "Utilidades",
+    path: "/utilities",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
   {

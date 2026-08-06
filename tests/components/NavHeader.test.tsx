@@ -178,4 +178,19 @@ describe("NavHeader", () => {
       });
     });
   });
+
+  describe("navegación", () => {
+    it("muestra el ítem 'Utilidades' junto a Ajustes/Ayuda/Admin", async () => {
+      const user = userEvent.setup();
+      renderNavHeader(false);
+
+      // En jsdom matchMedia siempre matchea false → NavHeader renderiza el layout mobile
+      const hamburger = document.querySelector(".anticon-menu")?.closest("button");
+      await user.click(hamburger as HTMLElement);
+
+      await waitFor(() => {
+        expect(screen.getByText("Utilidades")).toBeInTheDocument();
+      });
+    });
+  });
 });

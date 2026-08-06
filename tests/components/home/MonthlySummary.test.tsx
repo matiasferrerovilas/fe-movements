@@ -89,7 +89,7 @@ const server = setupServer(
   http.get("http://localhost:8080/settings/defaults/DEFAULT_CURRENCY", () =>
     HttpResponse.json({ key: "DEFAULT_CURRENCY", value: null }),
   ),
-  http.get("http://localhost:8080/currency", () =>
+  http.get("http://localhost:8080/workspace/currencies", () =>
     HttpResponse.json([]),
   ),
   http.get("http://localhost:8080/budgets", () =>

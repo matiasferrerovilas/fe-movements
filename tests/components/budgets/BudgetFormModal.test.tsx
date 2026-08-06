@@ -30,8 +30,8 @@ const mockCategories: Category[] = [
 ];
 
 const mockCurrencies: Currency[] = [
-  { id: 1, symbol: "ARS", description: "Peso Argentino" },
-  { id: 2, symbol: "USD", description: "Dólar" },
+  { id: 1, symbol: "ARS", description: "Peso Argentino", workspaceId: null, isDeletable: false },
+  { id: 2, symbol: "USD", description: "Dólar", workspaceId: null, isDeletable: false },
 ];
 
 // ── MSW server ────────────────────────────────────────────────────────────
@@ -41,7 +41,7 @@ const server = setupServer(
   http.get("http://localhost:8080/workspace/categories", () =>
     HttpResponse.json(mockCategories),
   ),
-  http.get("http://localhost:8080/currency", () =>
+  http.get("http://localhost:8080/workspace/currencies", () =>
     HttpResponse.json(mockCurrencies),
   ),
   http.post("http://localhost:8080/budgets", () =>

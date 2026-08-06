@@ -1,6 +1,6 @@
 import { Card, Empty, Flex, Spin, theme } from "antd";
 import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -13,6 +13,9 @@ import {
 } from "recharts";
 import { useBalanceMonthlyEvolution } from "@/apis/hooks/useBalance";
 import AnnualEvolutionFilters from "@/components/home/AnnualEvolutionFilters";
+import { useLocalStorage } from "@/utils/useLocalStorage";
+
+const SELECTED_CURRENCIES_STORAGE_KEY = "annualEvolution.selectedCurrencies";
 
 const CHART_COLORS = [
   "#6366f1",
@@ -54,11 +57,18 @@ export default function AnnualEvolution({ year }: Props) {
     [data],
   );
 
-  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
+  const [selectedCurrencies, setSelectedCurrencies] = useLocalStorage<string[]>(
+    SELECTED_CURRENCIES_STORAGE_KEY,
+    [],
+  );
 
   useEffect(() => {
-    setSelectedCurrencies(currencies);
-  }, [currencies]);
+    if (currencies.length === 0) return;
+    setSelectedCurrencies((prev) => {
+      const stillValid = prev.filter((c) => currencies.includes(c));
+      return stillValid.length > 0 ? stillValid : currencies;
+    });
+  }, [currencies, setSelectedCurrencies]);
 
   const chartData = useMemo(() => {
     const byMonth = data.reduce(

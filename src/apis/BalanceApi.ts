@@ -5,6 +5,10 @@ import type {
 } from "@/models/Balance";
 import type { BalanceByCategory } from "@/models/BalanceByCategory";
 import type { BalanceFilters } from "@/models/BalanceFilters";
+import type {
+  RecoveryTimeParams,
+  RecoveryTimeRecord,
+} from "@/models/RecoveryTime";
 import { api } from "@/apis/axios";
 
 const formatDate = (date: Date) => dayjs(date).format("YYYY-MM-DD");
@@ -50,5 +54,18 @@ export const getMonthlyEvolution = (
   api
     .get<MonthlyEvolutionRecord[]>("/balance/monthly-evolution", {
       params: { year },
+    })
+    .then((res) => res.data);
+
+export const getRecoveryTime = (
+  params: RecoveryTimeParams,
+): Promise<RecoveryTimeRecord> =>
+  api
+    .get<RecoveryTimeRecord>("/balance/recovery-time", {
+      params: {
+        amount: params.amount,
+        currency: params.currency,
+        months: params.months,
+      },
     })
     .then((res) => res.data);

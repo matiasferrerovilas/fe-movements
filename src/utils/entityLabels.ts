@@ -104,6 +104,14 @@ export const getEntityLabels = (userType: UserTypeEnum | null) => {
       ? "Se quitará de la lista de categorías."
       : "Se quitará de tu lista personal.",
 
+    // === MONEDAS ===
+    monedasSubtitle: isCompany
+      ? "Agregá y gestioná las monedas que usa la empresa."
+      : "Agregá y gestioná las monedas de tu lista personal.",
+    monedasQuitar: isCompany
+      ? "Se quitará de la lista de monedas."
+      : "Se quitará de tu lista personal.",
+
     // === SETTINGS ===
     settingsTabWorkspace: isCompany
       ? "Mi Espacio de Trabajo"

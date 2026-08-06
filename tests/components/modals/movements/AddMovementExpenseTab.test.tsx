@@ -35,8 +35,8 @@ const mockCategories: Category[] = [
 ];
 
 const mockCurrencies: Currency[] = [
-  { id: 1, symbol: "ARS", description: "Peso argentino" },
-  { id: 2, symbol: "USD", description: "Dólar" },
+  { id: 1, symbol: "ARS", description: "Peso argentino", workspaceId: null, isDeletable: false },
+  { id: 2, symbol: "USD", description: "Dólar", workspaceId: null, isDeletable: false },
 ];
 
 const mockBanks: BankRecord[] = [
@@ -78,7 +78,7 @@ const server = setupServer(
   http.get("http://localhost:8080/categories", () =>
     HttpResponse.json(mockCategories),
   ),
-  http.get("http://localhost:8080/currency", () =>
+  http.get("http://localhost:8080/workspace/currencies", () =>
     HttpResponse.json(mockCurrencies),
   ),
   http.get("http://localhost:8080/banks", () =>
