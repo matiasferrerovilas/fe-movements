@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Grid, Pagination, Row, Tag } from "antd";
 import type { Movement } from "@/models/Movement";
-import type { MovementFilters } from "@/routes/movement";
+import type { MovementFilters } from "@/routes/movements";
 import type { FormattedMovement } from "@/components/movements/tables/types";
 import { useDeleteMovement, useMovement } from "@/apis/hooks/useMovement";
 import { usePagination } from "@/apis/hooks/usePagination";

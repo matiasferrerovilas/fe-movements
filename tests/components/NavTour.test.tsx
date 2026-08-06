@@ -51,17 +51,22 @@ describe("NavTour", () => {
     budgets.textContent = "Presupuestos";
     document.body.appendChild(budgets);
 
-    const expenses = document.createElement("button");
-    expenses.textContent = "Gastos";
-    document.body.appendChild(expenses);
+    const movements = document.createElement("button");
+    movements.textContent = "Movimientos";
+    document.body.appendChild(movements);
 
-    const elements = { servicios, budgets, expenses };
+    const profile = document.createElement("button");
+    profile.textContent = "Perfil";
+    document.body.appendChild(profile);
+
+    const elements = { servicios, budgets, movements, profile };
 
     const navRefsMap: MutableRefObject<Record<string, HTMLButtonElement | null>> = {
       current: {
         servicios,
         budgets,
-        expenses,
+        movements,
+        profile,
       },
     };
 
@@ -132,17 +137,17 @@ describe("NavTour", () => {
       wrapper: makeWrapper(),
     });
 
-    // Should show "1 / 3" for first step (3 items: servicios, presupuestos, gastos)
-    expect(screen.getByText("1 / 3")).toBeInTheDocument();
+    // Should show "1 / 4" for first step (4 items: servicios, presupuestos, movimientos, perfil)
+    expect(screen.getByText("1 / 4")).toBeInTheDocument();
   });
 
-  it("should have 3 steps total", () => {
+  it("should have 4 steps total", () => {
     render(<NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} />, {
       wrapper: makeWrapper(),
     });
 
-    // Tour should have 3 steps: Servicios/Gastos Recurrentes, Presupuestos, Gastos
-    expect(screen.getByText("1 / 3")).toBeInTheDocument();
+    // Tour should have 4 steps: Servicios, Presupuestos, Movimientos, Perfil
+    expect(screen.getByText("1 / 4")).toBeInTheDocument();
   });
 
   it("should navigate through steps when clicking next", async () => {
@@ -151,7 +156,7 @@ describe("NavTour", () => {
     });
 
     // First step
-    expect(screen.getByText("1 / 3")).toBeInTheDocument();
+    expect(screen.getByText("1 / 4")).toBeInTheDocument();
 
     // Click next button
     const nextButton = screen.getByRole("button", { name: /next/i });
@@ -159,7 +164,42 @@ describe("NavTour", () => {
 
     // Should be on second step
     await waitFor(() => {
-      expect(screen.getByText("2 / 3")).toBeInTheDocument();
+      expect(screen.getByText("2 / 4")).toBeInTheDocument();
     });
+  });
+
+  it("should show the Movimientos step with the updated title", async () => {
+    render(<NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} />, {
+      wrapper: makeWrapper(),
+    });
+
+    const nextButton = screen.getByRole("button", { name: /next/i });
+    fireEvent.click(nextButton); // → presupuestos
+    fireEvent.click(nextButton); // → movimientos
+
+    await waitFor(() => {
+      expect(document.querySelector(".ant-tour-title")).toHaveTextContent("Movimientos");
+    });
+    expect(
+      screen.getByText(/Registra y consulta todos tus movimientos/),
+    ).toBeInTheDocument();
+  });
+
+  it("should show the final 'Tu perfil' step pointing at the profile menu", async () => {
+    render(<NavTour open={true} onClose={vi.fn()} navRefsMap={mockNavRefsMap} />, {
+      wrapper: makeWrapper(),
+    });
+
+    const nextButton = screen.getByRole("button", { name: /next/i });
+    fireEvent.click(nextButton); // → presupuestos
+    fireEvent.click(nextButton); // → movimientos
+    fireEvent.click(nextButton); // → perfil
+
+    await waitFor(() => {
+      expect(document.querySelector(".ant-tour-title")).toHaveTextContent("Tu perfil");
+    });
+    expect(
+      screen.getByText(/Ajustes, Ayuda, Inversiones, Utilidades/),
+    ).toBeInTheDocument();
   });
 });

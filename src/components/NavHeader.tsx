@@ -75,13 +75,6 @@ const getNavItems = (userType: UserTypeEnum | null): SideBarItem[] => {
       roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
     },
     {
-      key: "investments",
-      icon: <RiseOutlined />,
-      label: "Inversiones",
-      path: "/investments",
-      roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
-    },
-    {
       key: "movements",
       icon: <LineChartOutlined />,
       label: "Movimientos",
@@ -105,6 +98,13 @@ const USER_MENU_ITEMS: SideBarItem[] = [
     icon: <QuestionCircleOutlined />,
     label: "Ayuda",
     path: "/help",
+    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+  },
+  {
+    key: "investments",
+    icon: <RiseOutlined />,
+    label: "Inversiones",
+    path: "/investments",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
   {
@@ -451,11 +451,16 @@ export default function NavHeader() {
       onOpenChange={setProfileOpen}
       styles={{ root: { marginTop: 8 }, content: { padding: 0 } }}
     >
-      <Avatar
-        size={36}
-        icon={<UserOutlined />}
-        style={{ backgroundColor: token.colorPrimary, flexShrink: 0, cursor: "pointer" }}
-      />
+      <span
+        ref={(el) => handleRefRegister("profile", el as unknown as HTMLButtonElement)}
+        style={{ display: "inline-flex" }}
+      >
+        <Avatar
+          size={36}
+          icon={<UserOutlined />}
+          style={{ backgroundColor: token.colorPrimary, flexShrink: 0, cursor: "pointer" }}
+        />
+      </span>
     </Popover>
   );
 

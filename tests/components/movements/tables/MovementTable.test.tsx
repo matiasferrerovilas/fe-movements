@@ -6,7 +6,7 @@ import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
 import type { Movement } from "@/models/Movement";
 import type { PageResponse } from "@/models/BaseMode";
-import type { MovementFilters } from "@/routes/movement";
+import type { MovementFilters } from "@/routes/movements";
 import { TypeEnum } from "@/enums/TypeEnum";
 import MovementTable from "@/components/movements/tables/MovementTable";
 

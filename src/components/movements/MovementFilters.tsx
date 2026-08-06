@@ -1,6 +1,6 @@
 import { Card, Col, Collapse, Flex, Grid, Input, Row, Segmented, Select, Typography } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { MovementFilters } from "@/routes/movement";
+import type { MovementFilters } from "@/routes/movements";
 import { TypeEnum, TypeEnumLabel } from "@/enums/TypeEnum";
 import { CurrencyEnum } from "@/enums/CurrencyEnum";
 import { useCategory } from "@/apis/hooks/useCategory";

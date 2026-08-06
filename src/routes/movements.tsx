@@ -8,7 +8,7 @@ import AddMovementModal from "@/components/modals/movements/AddMovementModal";
 import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
 import { RoleEnum } from "@/enums/RoleEnum";
 
-export const Route = createFileRoute("/movement")({
+export const Route = createFileRoute("/movements")({
   beforeLoad: protectedRouteGuard({
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   }),

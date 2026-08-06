@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { MovementFilters } from "@/routes/movement";
+import type { MovementFilters } from "@/routes/movements";
 import { deleteExpenseApi, getExpenseApi } from "@/apis/movement/MovementApi";
 
 const MOVEMENT_QUERY_KEY = "movement-history" as const;

@@ -180,7 +180,20 @@ describe("NavHeader", () => {
   });
 
   describe("navegación", () => {
-    it("muestra el ítem 'Utilidades' junto a Ajustes/Ayuda/Admin", async () => {
+    it("muestra 'Movimientos' como ítem principal del navbar", async () => {
+      const user = userEvent.setup();
+      renderNavHeader(false);
+
+      // En jsdom matchMedia siempre matchea false → NavHeader renderiza el layout mobile
+      const hamburger = document.querySelector(".anticon-menu")?.closest("button");
+      await user.click(hamburger as HTMLElement);
+
+      await waitFor(() => {
+        expect(screen.getByText("Movimientos")).toBeInTheDocument();
+      });
+    });
+
+    it("muestra 'Utilidades' e 'Inversiones' junto a Ajustes/Ayuda/Admin", async () => {
       const user = userEvent.setup();
       renderNavHeader(false);
 
@@ -191,6 +204,9 @@ describe("NavHeader", () => {
       await waitFor(() => {
         expect(screen.getByText("Utilidades")).toBeInTheDocument();
       });
+      expect(screen.getByText("Inversiones")).toBeInTheDocument();
+      expect(screen.getByText("Ajustes")).toBeInTheDocument();
+      expect(screen.getByText("Ayuda")).toBeInTheDocument();
     });
   });
 });

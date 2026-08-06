@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 import type { BankRecord } from "@/models/Bank";
 import type { Category } from "@/models/Category";
 import type { Currency } from "@/apis/currency/CurrencyApi";
-import type { MovementFilters } from "@/routes/movement";
+import type { MovementFilters } from "@/routes/movements";
 import MovementFilters from "@/components/movements/MovementFilters";
 
 // ── Mocks ───────────────────────────────────────────────────────────────────

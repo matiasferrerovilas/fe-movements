@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import type { MovementFilters } from "@/routes/movement";
+import type { MovementFilters } from "@/routes/movements";
 import type { PageResponse } from "@/models/BaseMode";
 import type { CreateMovementForm, Movement } from "@/models/Movement";
 import type { UploadPayload } from "@/components/modals/movements/ImportMovementTab";

@@ -29,10 +29,15 @@ const getTourSteps = (
       description:
         "Define presupuestos mensuales por categoría y monitorea tu progreso de gastos.",
     },
-    gastos: {
-      title: "Gastos",
+    movimientos: {
+      title: "Movimientos",
       description:
         "Registra y consulta todos tus movimientos. Filtra por tipo, banco, categoría y más.",
+    },
+    perfil: {
+      title: "Tu perfil",
+      description:
+        "Acá encontrás Ajustes, Ayuda, Inversiones, Utilidades y más — todo lo que no usás todos los días quedó agrupado en un solo lugar.",
     },
   };
 };
@@ -61,8 +66,12 @@ export default function NavTour({ open, onClose, navRefsMap }: NavTourProps) {
       ...tourSteps.presupuestos,
     },
     {
-      target: () => navRefsMap.current.expenses as HTMLElement,
-      ...tourSteps.gastos,
+      target: () => navRefsMap.current.movements as HTMLElement,
+      ...tourSteps.movimientos,
+    },
+    {
+      target: () => navRefsMap.current.profile as HTMLElement,
+      ...tourSteps.perfil,
     },
   ];
 
