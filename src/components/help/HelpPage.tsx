@@ -1,9 +1,15 @@
+import CalculatorOutlined from "@ant-design/icons/CalculatorOutlined";
 import CalendarOutlined from "@ant-design/icons/CalendarOutlined";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
+import FundOutlined from "@ant-design/icons/FundOutlined";
+import LineChartOutlined from "@ant-design/icons/LineChartOutlined";
 import PieChartOutlined from "@ant-design/icons/PieChartOutlined";
 import QuestionCircleOutlined from "@ant-design/icons/QuestionCircleOutlined";
+import SafetyOutlined from "@ant-design/icons/SafetyOutlined";
+import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import UserAddOutlined from "@ant-design/icons/UserAddOutlined";
+import WalletOutlined from "@ant-design/icons/WalletOutlined";
 import { Col, Collapse, Flex, Row, theme, Typography } from "antd";
 import React, { useMemo } from "react";
 import { HELP_SECTIONS, type HelpParagraph, type HelpSection } from "@/components/help/helpContent";
@@ -17,6 +23,12 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   DollarOutlined: <DollarOutlined />,
   CalendarOutlined: <CalendarOutlined />,
   PieChartOutlined: <PieChartOutlined />,
+  FundOutlined: <FundOutlined />,
+  LineChartOutlined: <LineChartOutlined />,
+  WalletOutlined: <WalletOutlined />,
+  CalculatorOutlined: <CalculatorOutlined />,
+  SettingOutlined: <SettingOutlined />,
+  SafetyOutlined: <SafetyOutlined />,
 };
 
 function HelpParagraphRenderer({ paragraph }: { paragraph: HelpParagraph }) {
