@@ -75,7 +75,8 @@ export default function AnnualEvolution({ year }: Props) {
       (acc, item) => {
         const label = MONTH_LABELS[item.month - 1];
         if (!acc[label]) acc[label] = { month: label };
-        acc[label][item.currencySymbol] = item.total;
+        acc[label][`${item.currencySymbol}_spent`] = item.spent;
+        acc[label][`${item.currencySymbol}_savings`] = item.savings;
         return acc;
       },
       {} as Record<string, Record<string, unknown>>,
@@ -86,7 +87,7 @@ export default function AnnualEvolution({ year }: Props) {
 
   return (
     <Card
-      title="Evolución Anual de Gastos"
+      title="Evolución Anual de Gastos y Ahorro"
       className="fade-in-up"
       style={{
         borderRadius: token.borderRadiusLG,
@@ -124,19 +125,32 @@ export default function AnnualEvolution({ year }: Props) {
                 formatter={(val) => `$${(val ?? 0).toLocaleString("es-AR")}`}
               />
               <Legend />
-              {currencies.map((currency, idx) =>
-                selectedCurrencies.includes(currency) ? (
-                  <Line
-                    key={currency}
-                    type="monotone"
-                    dataKey={currency}
-                    name={currency}
-                    stroke={CHART_COLORS[idx % CHART_COLORS.length]}
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 6 }}
-                  />
-                ) : null,
+              {currencies.flatMap((currency, idx) =>
+                selectedCurrencies.includes(currency)
+                  ? [
+                      <Line
+                        key={`${currency}_spent`}
+                        type="monotone"
+                        dataKey={`${currency}_spent`}
+                        name={`${currency} - Gasto`}
+                        stroke={CHART_COLORS[idx % CHART_COLORS.length]}
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 6 }}
+                      />,
+                      <Line
+                        key={`${currency}_savings`}
+                        type="monotone"
+                        dataKey={`${currency}_savings`}
+                        name={`${currency} - Ahorro`}
+                        stroke={CHART_COLORS[idx % CHART_COLORS.length]}
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 6 }}
+                      />,
+                    ]
+                  : [],
               )}
             </LineChart>
           </ResponsiveContainer>

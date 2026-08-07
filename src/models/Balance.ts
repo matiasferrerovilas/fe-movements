@@ -14,5 +14,6 @@ export interface BalanceResponse {
 export type MonthlyEvolutionRecord = {
   month: number;
   currencySymbol: string;
-  total: number;
+  spent: number;
+  savings: number;
 };

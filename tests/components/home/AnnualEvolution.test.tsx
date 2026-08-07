@@ -19,9 +19,9 @@ import type { MonthlyEvolutionRecord } from "@/models/Balance";
 const STORAGE_KEY = "annualEvolution.selectedCurrencies";
 
 const mockData: MonthlyEvolutionRecord[] = [
-  { month: 1, currencySymbol: "ARS", total: 1000 },
-  { month: 2, currencySymbol: "ARS", total: 2000 },
-  { month: 1, currencySymbol: "USD", total: 100 },
+  { month: 1, currencySymbol: "ARS", spent: 1000, savings: 200 },
+  { month: 2, currencySymbol: "ARS", spent: 2000, savings: 300 },
+  { month: 1, currencySymbol: "USD", spent: 100, savings: 20 },
 ];
 
 const server = setupServer(

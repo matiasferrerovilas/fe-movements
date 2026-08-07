@@ -137,7 +137,9 @@ describe("Index Route (Home Unificado)", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Gastos por Categoría")).toBeInTheDocument();
-      expect(screen.getByText("Evolución Anual de Gastos")).toBeInTheDocument();
+      expect(
+        screen.getByText("Evolución Anual de Gastos y Ahorro"),
+      ).toBeInTheDocument();
     }, { timeout: 5000 });
   });
 });
