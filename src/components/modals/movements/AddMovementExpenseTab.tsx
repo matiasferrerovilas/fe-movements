@@ -19,7 +19,11 @@ import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import TagOutlined from "@ant-design/icons/TagOutlined";
 import { useMutation } from "@tanstack/react-query";
 import { TypeEnum, TypeEnumLabel } from "@/enums/TypeEnum";
-import type { CreateMovementForm, Movement } from "@/models/Movement";
+import {
+  MAX_MOVEMENT_CATEGORIES,
+  type CreateMovementForm,
+  type Movement,
+} from "@/models/Movement";
 import { useCategory } from "@/apis/hooks/useCategory";
 import dayjs from "dayjs";
 import {
@@ -63,7 +67,7 @@ const AddMovementExpenseTab = forwardRef<
       type: movementToEdit.type,
       cuotaActual: movementToEdit.cuotaActual ?? undefined,
       cuotasTotales: movementToEdit.cuotasTotales ?? undefined,
-      category: movementToEdit.category?.description,
+      categories: movementToEdit.categories.map((c) => c.description),
       currency: movementToEdit.currency?.symbol,
       date: dayjs(movementToEdit.date),
     });
@@ -316,13 +320,17 @@ const AddMovementExpenseTab = forwardRef<
         </Col>
         <Col xs={24} sm={12}>
           <Form.Item
-            name="category"
+            name="categories"
             label="Categoría"
-            rules={[{ required: true, message: "Seleccione una categoría" }]}
+            rules={[
+              { required: true, message: "Seleccione al menos una categoría" },
+            ]}
           >
             <Select
+              mode="multiple"
               placeholder="Seleccionar categoría"
               showSearch
+              maxCount={MAX_MOVEMENT_CATEGORIES}
               options={categories.map((type) => ({
                 label: type.description,
                 value: type.description,

@@ -19,8 +19,7 @@ function makeForm(date: Date): CreateMovementForm {
     currency: "ARS",
     amount: 1000,
     type: "DEBITO",
-    workspaceId: 10,
-    category: "Supermercado",
+    categories: ["Supermercado"],
   };
 }
 
@@ -113,5 +112,42 @@ describe("ExpenseApi — serialización de fechas", () => {
 
       expect(capturedUpdateBody.date).toBe(expectedDate);
     });
+  });
+});
+
+describe("ExpenseApi — serialización de categorías", () => {
+  it("uploadExpense envía la lista de categorías como objetos { description }", async () => {
+    const form = makeForm(new Date(2026, 0, 1));
+
+    await uploadExpense(form);
+
+    expect(capturedCreateBody.categories).toEqual([
+      { description: "Supermercado" },
+    ]);
+  });
+
+  it("updateExpense envía la lista de categorías como objetos { description }", async () => {
+    const form: CreateMovementForm = {
+      ...makeForm(new Date(2026, 0, 1)),
+      categories: ["Supermercado", "Nafta"],
+    };
+
+    await updateExpense(99, form);
+
+    expect(capturedUpdateBody.categories).toEqual([
+      { description: "Supermercado" },
+      { description: "Nafta" },
+    ]);
+  });
+
+  it("no envía categories cuando no hay categorías seleccionadas", async () => {
+    const form: CreateMovementForm = {
+      ...makeForm(new Date(2026, 0, 1)),
+      categories: undefined,
+    };
+
+    await uploadExpense(form);
+
+    expect(capturedCreateBody.categories).toBeUndefined();
   });
 });

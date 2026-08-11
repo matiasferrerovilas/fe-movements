@@ -18,13 +18,15 @@ export interface Movement {
   createdAt: string;
   updatedAt: string;
   bank: string;
-  category: Category | null;
+  categories: Category[];
   currency: Currency | null;
   type: string;
   cuotasTotales: number | null;
   cuotaActual: number | null;
   metadata: MovementMetadata;
 }
+
+export const MAX_MOVEMENT_CATEGORIES = 2;
 
 export interface CreateMovementForm {
   bank: string;
@@ -35,5 +37,5 @@ export interface CreateMovementForm {
   type: string;
   cuotaActual?: number;
   cuotasTotales?: number;
-  category?: string;
+  categories?: string[];
 }

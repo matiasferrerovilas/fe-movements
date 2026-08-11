@@ -1,14 +1,10 @@
-import { Popover } from "antd";
+import { Flex, Popover } from "antd";
 import React, { useMemo } from "react";
 import { capitalizeFirst } from "@/utils/stringFunctions";
 import type { Category } from "@/models/Category";
 import { getIconComponent } from "@/utils/getIconComponent";
 
-export default function CategoryCircleTable({
-  category,
-}: {
-  category?: Category;
-}) {
+function CategoryCircle({ category }: { category?: Category }) {
   // Usar iconName e iconColor de la categoría, o defaults si no están definidos
   const iconElement = useMemo(() => {
     const IconComponent = getIconComponent(category?.iconName ?? "QuestionOutlined");
@@ -39,5 +35,23 @@ export default function CategoryCircleTable({
         {iconElement}
       </div>
     </Popover>
+  );
+}
+
+export default function CategoryCircleTable({
+  categories,
+}: {
+  categories?: Category[];
+}) {
+  if (!categories || categories.length === 0) {
+    return <CategoryCircle />;
+  }
+
+  return (
+    <Flex gap={4}>
+      {categories.map((category) => (
+        <CategoryCircle key={category.id} category={category} />
+      ))}
+    </Flex>
   );
 }

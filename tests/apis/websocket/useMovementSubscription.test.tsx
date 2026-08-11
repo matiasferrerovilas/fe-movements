@@ -74,7 +74,7 @@ function makeMovement(id: number): Movement {
     createdAt: "2026-01-01T10:00:00",
     updatedAt: "2026-01-01T10:00:00",
     bank: "BANCO_X",
-    category: null,
+    categories: [],
     currency: null,
     type: "EXPENSE",
     cuotasTotales: null,

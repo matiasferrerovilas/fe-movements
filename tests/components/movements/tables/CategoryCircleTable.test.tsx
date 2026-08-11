@@ -22,8 +22,10 @@ describe("CategoryCircleTable", () => {
       iconName: "HomeOutlined",
       iconColor: "#faad14",
     });
-    const { container } = render(<CategoryCircleTable category={category} />);
-    
+    const { container } = render(
+      <CategoryCircleTable categories={[category]} />,
+    );
+
     // Verifica que existe el div circular con el ícono
     const circle = container.querySelector("div[style*='border-radius']") as HTMLElement;
     expect(circle).toBeTruthy();
@@ -37,8 +39,10 @@ describe("CategoryCircleTable", () => {
       iconName: "CarOutlined",
       iconColor: "#9254de",
     });
-    const { container } = render(<CategoryCircleTable category={category} />);
-    
+    const { container } = render(
+      <CategoryCircleTable categories={[category]} />,
+    );
+
     const circle = container.querySelector("div[style*='border-radius']") as HTMLElement;
     expect(circle).toBeTruthy();
     // Verifica que el color es el correcto
@@ -51,8 +55,10 @@ describe("CategoryCircleTable", () => {
       iconName: null,
       iconColor: null,
     });
-    const { container } = render(<CategoryCircleTable category={category} />);
-    
+    const { container } = render(
+      <CategoryCircleTable categories={[category]} />,
+    );
+
     const circle = container.querySelector("div[style*='border-radius']") as HTMLElement;
     expect(circle).toBeTruthy();
     // Verifica que usa el color por defecto #d9d9d9
@@ -64,7 +70,9 @@ describe("CategoryCircleTable", () => {
     const category = createMockCategory({
       description: "HOGAR",
     });
-    const { container } = render(<CategoryCircleTable category={category} />);
+    const { container } = render(
+      <CategoryCircleTable categories={[category]} />,
+    );
 
     const circle = container.querySelector("div[style*='border-radius']");
     expect(circle).toBeTruthy();
@@ -81,7 +89,9 @@ describe("CategoryCircleTable", () => {
     const category = createMockCategory({
       description: "Sin Categoria",
     });
-    const { container } = render(<CategoryCircleTable category={category} />);
+    const { container } = render(
+      <CategoryCircleTable categories={[category]} />,
+    );
 
     const circle = container.querySelector("div[style*='border-radius']");
     expect(circle).toBeTruthy();
@@ -97,7 +107,9 @@ describe("CategoryCircleTable", () => {
     const category = createMockCategory({
       description: "supermercado",
     });
-    const { container } = render(<CategoryCircleTable category={category} />);
+    const { container } = render(
+      <CategoryCircleTable categories={[category]} />,
+    );
 
     const circle = container.querySelector("div[style*='border-radius']");
     expect(circle).toBeTruthy();
@@ -108,16 +120,28 @@ describe("CategoryCircleTable", () => {
     await screen.findByText("Supermercado");
   });
 
-  it("muestra 'Sin categoría' cuando la categoría es undefined", async () => {
+  it("muestra 'Sin categoría' cuando no hay categorías", async () => {
     const user = userEvent.setup();
-    const { container } = render(<CategoryCircleTable category={undefined} />);
+    const { container } = render(<CategoryCircleTable categories={[]} />);
 
     const circle = container.querySelector("div[style*='border-radius']");
     expect(circle).toBeTruthy();
 
     await user.hover(circle!);
 
-    // Debe mostrar "Sin categoría" para categoría undefined
+    // Debe mostrar "Sin categoría" cuando la lista está vacía
+    await screen.findByText("Sin categoría");
+  });
+
+  it("muestra 'Sin categoría' cuando categories es undefined", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<CategoryCircleTable categories={undefined} />);
+
+    const circle = container.querySelector("div[style*='border-radius']");
+    expect(circle).toBeTruthy();
+
+    await user.hover(circle!);
+
     await screen.findByText("Sin categoría");
   });
 
@@ -125,9 +149,11 @@ describe("CategoryCircleTable", () => {
     const category = createMockCategory({
       description: "TECNOLOGIA",
     });
-    const { container } = render(<CategoryCircleTable category={category} />);
+    const { container } = render(
+      <CategoryCircleTable categories={[category]} />,
+    );
     const circle = container.querySelector("div[title]") as HTMLElement;
-    
+
     expect(circle.getAttribute("title")).toBe("Tecnologia");
   });
 
@@ -141,9 +167,24 @@ describe("CategoryCircleTable", () => {
 
     customCategories.forEach((props) => {
       const category = createMockCategory(props);
-      const { container } = render(<CategoryCircleTable category={category} />);
+      const { container } = render(
+        <CategoryCircleTable categories={[category]} />,
+      );
       const circle = container.querySelector("div[style*='border-radius']");
       expect(circle).toBeTruthy();
     });
+  });
+
+  it("renderiza un círculo por cada categoría cuando hay varias (hasta 2)", () => {
+    const categories = [
+      createMockCategory({ id: 1, description: "Supermercado" }),
+      createMockCategory({ id: 2, description: "Transporte" }),
+    ];
+    const { container } = render(
+      <CategoryCircleTable categories={categories} />,
+    );
+
+    const circles = container.querySelectorAll("div[style*='border-radius']");
+    expect(circles).toHaveLength(2);
   });
 });

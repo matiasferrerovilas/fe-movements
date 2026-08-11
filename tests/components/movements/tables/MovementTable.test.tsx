@@ -44,7 +44,7 @@ function makeMovement(id: number): Movement {
     createdAt: "2026-01-15T10:00:00",
     updatedAt: "2026-01-15T10:00:00",
     bank: "GALICIA",
-    category: null,
+    categories: [],
     currency: { id: 1, symbol: "ARS", description: "Peso argentino" },
     type: TypeEnum.DEBITO,
     cuotasTotales: null,

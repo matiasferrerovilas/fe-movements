@@ -63,12 +63,13 @@ export const uploadExpenseApi = async (form: UploadPayload) => {
   return response.data;
 };
 
+const toCategoriesPayload = (categories?: string[]) =>
+  categories?.map((description) => ({ description }));
+
 export const updateExpense = (id: number, movement: CreateMovementForm) => {
   const payload = {
     ...movement,
-    category: movement.category
-      ? { description: movement.category }
-      : undefined,
+    categories: toCategoriesPayload(movement.categories),
     date: dayjs(movement.date).format("YYYY-MM-DD"),
   };
   return api.patch(`/expenses/${id}`, payload).then((response) => response.data);
@@ -77,6 +78,7 @@ export const updateExpense = (id: number, movement: CreateMovementForm) => {
 export const uploadExpense = (movement: CreateMovementForm) => {
   const payload = {
     ...movement,
+    categories: toCategoriesPayload(movement.categories),
     date: dayjs(movement.date).format("YYYY-MM-DD"),
   };
   return api.post("/expenses", payload).then((response) => response.data);

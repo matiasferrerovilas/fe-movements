@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -32,6 +33,7 @@ const mockMemberships: Workspace[] = [
 const mockCategories: Category[] = [
   { id: 1, description: "Supermercado", isActive: true, isDeletable: false },
   { id: 2, description: "Transporte", isActive: true, isDeletable: true },
+  { id: 3, description: "Ocio", isActive: true, isDeletable: true },
 ];
 
 const mockCurrencies: Currency[] = [
@@ -56,7 +58,9 @@ const mockMovementToEdit: Movement = {
   createdAt: "2024-03-15T10:00:00",
   updatedAt: "2024-03-15T10:00:00",
   bank: "GALICIA",
-  category: { id: 1, description: "Supermercado", isActive: true, isDeletable: false },
+  categories: [
+    { id: 1, description: "Supermercado", isActive: true, isDeletable: false },
+  ],
   currency: { id: 1, symbol: "ARS", description: "Peso argentino" },
   type: "DEBITO",
   cuotasTotales: null,
@@ -75,7 +79,7 @@ const server = setupServer(
   http.get("http://localhost:8080/workspace", () =>
     HttpResponse.json(mockMemberships),
   ),
-  http.get("http://localhost:8080/categories", () =>
+  http.get("http://localhost:8080/workspace/categories", () =>
     HttpResponse.json(mockCategories),
   ),
   http.get("http://localhost:8080/workspace/currencies", () =>
@@ -231,6 +235,71 @@ describe("AddMovementExpenseTab", () => {
         );
         expect(dateInput?.value).toBe("15/03/2024");
       });
+    });
+
+    it("precarga las categorías del movimiento a editar", async () => {
+      renderTab({ movementToEdit: mockMovementToEdit });
+      await waitFor(() =>
+        expect(screen.getByText("Supermercado")).toBeInTheDocument(),
+      );
+    });
+  });
+
+  describe("categorías (selección múltiple, máximo 2)", () => {
+    const openCategorySelect = async () => {
+      const user = userEvent.setup();
+      renderTab();
+      await waitFor(() =>
+        expect(screen.getAllByRole("combobox")).toHaveLength(4),
+      );
+      const comboboxes = screen.getAllByRole("combobox");
+      // Orden de los Select en el form: Moneda, Banco, Tipo, Categoría
+      const categoryCombobox = comboboxes[3];
+      await user.click(categoryCombobox.parentElement!);
+      return categoryCombobox;
+    };
+
+    const getOption = (text: string) => {
+      const opts = Array.from(document.querySelectorAll(".ant-select-item"));
+      const found = opts.find((el) => el.textContent === text);
+      if (!found) throw new Error(`Opción "${text}" no encontrada`);
+      return found as HTMLElement;
+    };
+
+    it("permite seleccionar más de una categoría", async () => {
+      const categoryCombobox = await openCategorySelect();
+
+      await waitFor(() => getOption("Supermercado"));
+      fireEvent.click(getOption("Supermercado"));
+      await waitFor(() => getOption("Transporte"));
+      fireEvent.click(getOption("Transporte"));
+
+      const container = categoryCombobox.closest(".ant-select") as HTMLElement;
+      await waitFor(() =>
+        expect(
+          container.querySelectorAll(".ant-select-selection-item"),
+        ).toHaveLength(2),
+      );
+    });
+
+    it("bloquea la selección de una tercera categoría", async () => {
+      const categoryCombobox = await openCategorySelect();
+
+      await waitFor(() => getOption("Supermercado"));
+      fireEvent.click(getOption("Supermercado"));
+      await waitFor(() => getOption("Transporte"));
+      fireEvent.click(getOption("Transporte"));
+
+      await waitFor(() =>
+        expect(getOption("Ocio").getAttribute("aria-disabled")).toBe("true"),
+      );
+
+      fireEvent.click(getOption("Ocio"));
+
+      const container = categoryCombobox.closest(".ant-select") as HTMLElement;
+      expect(
+        container.querySelectorAll(".ant-select-selection-item"),
+      ).toHaveLength(2);
     });
   });
 
