@@ -175,7 +175,7 @@ describe("CategoryCircleTable", () => {
     });
   });
 
-  it("renderiza un círculo por cada categoría cuando hay varias (hasta 2)", () => {
+  it("renderiza un único círculo dividido en dos mitades cuando hay 2 categorías", () => {
     const categories = [
       createMockCategory({ id: 1, description: "Supermercado" }),
       createMockCategory({ id: 2, description: "Transporte" }),
@@ -184,7 +184,30 @@ describe("CategoryCircleTable", () => {
       <CategoryCircleTable categories={categories} />,
     );
 
-    const circles = container.querySelectorAll("div[style*='border-radius']");
-    expect(circles).toHaveLength(2);
+    // Solo un círculo exterior (border-radius 50%)
+    const circles = container.querySelectorAll("div[style*='border-radius: 50%']");
+    expect(circles).toHaveLength(1);
+    expect(circles[0].getAttribute("title")).toBe("Supermercado / Transporte");
+  });
+
+  it("muestra ambos íconos completos en el Popover al hacer hover sobre el círculo dividido", async () => {
+    const user = userEvent.setup();
+    const categories = [
+      createMockCategory({ id: 1, description: "Supermercado" }),
+      createMockCategory({ id: 2, description: "Transporte" }),
+    ];
+    const { container } = render(
+      <CategoryCircleTable categories={categories} />,
+    );
+
+    const splitCircle = container.querySelector(
+      "div[style*='border-radius: 50%']",
+    ) as HTMLElement;
+    expect(splitCircle).toBeTruthy();
+
+    await user.hover(splitCircle);
+
+    await screen.findByText("Supermercado");
+    await screen.findByText("Transporte");
   });
 });
