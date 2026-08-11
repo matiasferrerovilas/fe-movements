@@ -55,7 +55,13 @@ function CategoryHalfIcon({
   category?: Category;
   side: "left" | "right";
 }) {
-  const IconComponent = getIconComponent(category?.iconName ?? "QuestionOutlined");
+  const iconElement = useMemo(() => {
+    const IconComponent = getIconComponent(category?.iconName ?? "QuestionOutlined");
+    return React.createElement(IconComponent, {
+      style: { fontSize: 16, color: "#fff" },
+    });
+  }, [category?.iconName]);
+
   const color = category?.iconColor ?? "#d9d9d9";
 
   return (
@@ -80,7 +86,7 @@ function CategoryHalfIcon({
           justifyContent: "center",
         }}
       >
-        <IconComponent style={{ fontSize: 16, color: "#fff" }} />
+        {iconElement}
       </div>
     </div>
   );
