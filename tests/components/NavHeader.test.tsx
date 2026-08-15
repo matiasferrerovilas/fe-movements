@@ -25,9 +25,14 @@ vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: vi.fn().mockReturnValue({ data: null, isLoading: false }),
 }));
 
+vi.mock("@/apis/websocket/WebSocketProvider", () => ({
+  useWebSocket: vi.fn(),
+}));
+
 import { useKeycloak } from "@react-keycloak/web";
 import { useRouter, useRouterState } from "@tanstack/react-router";
 import { useUserRoles } from "@/apis/hooks/useUserRoles";
+import { useWebSocket } from "@/apis/websocket/WebSocketProvider";
 
 // ── Setup helpers ──────────────────────────────────────────────────────────
 
@@ -54,6 +59,12 @@ function mockDefaults() {
     hasAnyRole: () => true,
     roles: [],
   } as unknown as ReturnType<typeof useUserRoles>);
+
+  vi.mocked(useWebSocket).mockReturnValue({
+    subscribe: vi.fn(),
+    unsubscribe: vi.fn(),
+    isConnected: false,
+  });
 }
 
 function makeWrapper(isDark: boolean, toggleTheme = vi.fn()) {

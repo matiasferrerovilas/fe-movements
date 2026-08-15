@@ -14,5 +14,6 @@ export const EventType = {
   MEMBERSHIP_UPDATED: "MEMBERSHIP_UPDATED",
   ACCOUNT_LEFT: "ACCOUNT_LEFT",
   INVESTMENT_UPDATED: "INVESTMENT_UPDATED",
+  NOTIFICATION_NEW: "NOTIFICATION_NEW",
 } as const;
 export type EventType = (typeof EventType)[keyof typeof EventType];

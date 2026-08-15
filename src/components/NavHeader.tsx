@@ -34,8 +34,10 @@ import { useUserRoles } from "@/apis/hooks/useUserRoles";
 import { RoleEnum } from "@/enums/RoleEnum";
 import { UserTypeEnum } from "@/enums/UserTypeEnum";
 import { useTheme } from "@/apis/theme/ThemeContext";
+import { useNotificationSubscription } from "@/apis/websocket/useNotificationSubscription";
 import { AppsGrid } from "@/components/AppsGrid";
 import NavTour from "@/components/NavTour";
+import NotificationBell from "@/components/NotificationBell";
 import WorkspaceSelector from "@/components/WorkspaceSelector";
 import { getUserDisplayName } from "@/utils/userDisplayName";
 import { getServiceLabels } from "@/utils/serviceLabels";
@@ -319,6 +321,8 @@ export default function NavHeader() {
   const [profileOpen, setProfileOpen] = useState(false);
   const closeProfile = () => setProfileOpen(false);
 
+  useNotificationSubscription();
+
   // Nombre y email del usuario - usa currentUser con fallback
   const displayName = currentUser ? getUserDisplayName(currentUser) : null;
   const email = currentUser?.email;
@@ -510,6 +514,7 @@ export default function NavHeader() {
               <img src="/favicon.png" alt="Movements" style={{ height: 40, width: 40 }} />
             </button>
             <Flex align="center" gap={4}>
+              <NotificationBell />
               {UserAvatar}
             </Flex>
           </>
@@ -544,6 +549,7 @@ export default function NavHeader() {
               onRefRegister={handleRefRegister}
             />
             <Flex style={{ flex: 1 }} justify="flex-end" align="center" gap={8}>
+              <NotificationBell />
               {UserAvatar}
             </Flex>
           </>
