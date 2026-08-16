@@ -66,37 +66,54 @@ const BASE_PATH = "v1/profiles";   // ❌ genera /v1/v1/profiles
 src/
 ├── apis/
 │   ├── auth/           # AuthContext, AuthProvider, guards de rutas
-│   ├── hooks/          # Hooks de React Query (useCurrentUser, useGroups, useMovement, etc.)
-│   ├── websocket/      # WebSocketProvider + hooks de suscripción por dominio
-│   ├── onboarding/     # API de onboarding
-│   ├── movement/       # API de movimientos
+│   ├── bank/           # API de bancos
+│   ├── currency/       # API de monedas
+│   ├── hooks/          # Hooks de React Query (useCurrentUser, useWorkspaces, etc.)
 │   ├── income/         # API de ingresos
+│   ├── investment/     # API de inversiones
+│   ├── movement/       # API de movimientos
+│   ├── onboarding/     # API de onboarding
 │   ├── settings/       # API de configuración
-│   ├── banks/          # API de bancos
-│   ├── currencies/     # API de monedas
-│   ├── axios.tsx       # Instancia base de Axios
+│   ├── theme/          # Preferencia de tema
+│   ├── tour/           # Estado del tour guiado (NavTour)
+│   ├── websocket/      # WebSocketProvider + hooks de suscripción por dominio
+│   ├── axios.ts        # Instancia base de Axios
 │   ├── AxiosInterceptorProvider.tsx
-│   ├── GroupApi.tsx
-│   ├── ServiceApi.tsx
-│   ├── SubscriptionApi.tsx
-│   └── BalanceApi.ts
+│   ├── BalanceApi.ts
+│   ├── BudgetApi.ts
+│   ├── CategoryApi.ts
+│   ├── SubscriptionApi.ts
+│   └── WorkspaceApi.ts
 ├── components/         # Componentes UI organizados por feature
-│   ├── balance/
+│   ├── admin/
+│   ├── budgets/
+│   ├── help/
+│   ├── home/
+│   ├── investments/
 │   ├── modals/
 │   ├── movements/
 │   ├── onboarding/
 │   ├── services/
 │   ├── settings/
-│   ├── utils/
+│   ├── utilities/
+│   ├── AppsGrid.tsx
+│   ├── Forbidden.tsx
 │   ├── NavHeader.tsx
-│   └── QueryLoadingBoundary.tsx
-├── routes/             # Rutas file-based de TanStack Router (7 rutas)
+│   ├── NavTour.tsx
+│   ├── NotificationBell.tsx
+│   ├── QueryLoadingBoundary.tsx
+│   └── WorkspaceSelector.tsx
+├── routes/             # Rutas file-based de TanStack Router
 │   ├── __root.tsx      # Layout raíz: NavHeader + Content + Footer
-│   ├── index.tsx       # /
-│   ├── balance.tsx     # /balance
-│   ├── movement.tsx    # /movement
+│   ├── index.tsx       # / — home/balance
+│   ├── movements.tsx   # /movements
+│   ├── budgets.tsx     # /budgets
+│   ├── investments.tsx # /investments
 │   ├── services.tsx    # /services
 │   ├── settings.tsx    # /settings
+│   ├── admin.tsx       # /admin — solo rol ADMIN
+│   ├── utilities.tsx   # /utilities — calculadora de recuperación
+│   ├── help.tsx        # /help
 │   └── onboarding.tsx  # /onboarding
 ├── models/             # Interfaces TypeScript de dominio
 ├── enums/              # Enums con patrón `as const`
@@ -116,6 +133,8 @@ tests/                  # Todos los tests — espeja la estructura de src/
 ├── components/
 └── ...
 ```
+
+> Esta lista ya se desactualizó una vez (rutas y carpetas nuevas — Inversiones, Admin, Utilidades, Ayuda, Presupuestos — se agregaron sin tocar este archivo). Antes de confiar en ella para una tarea grande, un `ls src/routes src/apis src/components` rápido no está de más.
 
 ---
 
