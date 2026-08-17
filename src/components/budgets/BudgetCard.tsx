@@ -12,6 +12,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
+import { useTranslation } from "react-i18next";
 import type { BudgetRecord } from "@/models/Budget";
 
 const { Text } = Typography;
@@ -43,13 +44,15 @@ export function BudgetCard({
   isDeleting,
 }: BudgetCardProps) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const progressColor = getProgressColor(budget.percentage);
-  const categoryName = budget.category?.description ?? "Sin categoría";
+  const categoryName =
+    budget.category?.description ?? t("budgets.noCategoryOption");
   const budgetTypeLabel =
     budget.year === null && budget.month === null
-      ? "Recurrente"
+      ? t("budgets.typeRecurring")
       : budget.month === null
-        ? "Anual"
+        ? t("budgets.typeAnnual")
         : null;
 
   return (
@@ -106,7 +109,7 @@ export function BudgetCard({
             <Flex gap={16} style={{ marginBottom: 10 }}>
               <Flex vertical>
                 <Text type="secondary" style={{ fontSize: 11 }}>
-                  Presupuestado
+                  {t("budgets.card.budgeted")}
                 </Text>
                 <Text strong style={{ fontSize: 14 }}>
                   {budget.currency.symbol} {formatAmount(budget.amount)}
@@ -114,7 +117,7 @@ export function BudgetCard({
               </Flex>
               <Flex vertical>
                 <Text type="secondary" style={{ fontSize: 11 }}>
-                  Gastado
+                  {t("budgets.card.spent")}
                 </Text>
                 <Text
                   strong
@@ -136,7 +139,7 @@ export function BudgetCard({
             <Text
               style={{ fontSize: 12, color: progressColor, fontWeight: 600 }}
             >
-              {budget.percentage.toFixed(1)}% utilizado
+              {budget.percentage.toFixed(1)}% {t("budgets.card.utilizedSuffix")}
               {budget.percentage > 100 && (
                 <Text
                   style={{
@@ -146,7 +149,7 @@ export function BudgetCard({
                     fontWeight: 400,
                   }}
                 >
-                  (excedido)
+                  {t("budgets.card.exceeded")}
                 </Text>
               )}
             </Text>
@@ -155,10 +158,12 @@ export function BudgetCard({
 
         {/* Actions */}
         <Space size={4} style={{ flexShrink: 0 }}>
-          <Tooltip title="Editar monto">
+          <Tooltip title={t("budgets.card.editAmountTooltip")}>
             <Button
               type="text"
-              aria-label={`Editar presupuesto ${categoryName}`}
+              aria-label={t("budgets.card.editAriaLabel", {
+                category: categoryName,
+              })}
               icon={<EditOutlined style={{ fontSize: 15 }} />}
               style={{
                 borderRadius: "50%",
@@ -172,19 +177,21 @@ export function BudgetCard({
               onClick={() => onEdit(budget)}
             />
           </Tooltip>
-          <Tooltip title="Eliminar presupuesto">
+          <Tooltip title={t("budgets.card.deleteTooltip")}>
             <Popconfirm
-              title="¿Eliminar este presupuesto?"
-              description="Esta acción no se puede deshacer."
+              title={t("budgets.card.deleteConfirmTitle")}
+              description={t("budgets.card.deleteConfirmDescription")}
               onConfirm={() => onDelete(budget.id)}
-              okText="Eliminar"
-              cancelText="Cancelar"
+              okText={t("budgets.card.deleteConfirmOk")}
+              cancelText={t("budgets.cancel")}
               okButtonProps={{ danger: true }}
             >
               <Button
                 type="text"
                 danger
-                aria-label={`Eliminar presupuesto ${categoryName}`}
+                aria-label={t("budgets.card.deleteAriaLabel", {
+                  category: categoryName,
+                })}
                 icon={<DeleteOutlined style={{ fontSize: 15 }} />}
                 style={{
                   borderRadius: "50%",

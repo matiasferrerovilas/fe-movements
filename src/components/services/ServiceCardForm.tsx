@@ -111,7 +111,9 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
               {labels.nuevo}
             </Text>
             <Text type="secondary" style={{ fontSize: 12, display: "block" }}>
-              {isPaid ? "Marcado como pagado" : "Pendiente de pago"}
+              {isPaid
+                ? t("services.form.markedAsPaid")
+                : t("services.form.pendingPayment")}
             </Text>
           </div>
         </Flex>
@@ -142,33 +144,35 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
           <Col xs={24} sm={12}>
             <Form.Item
               name="description"
-              label="Descripción"
-              rules={[{ required: true, message: "Ingrese una descripción" }]}
+              label={t("services.form.descriptionLabel")}
+              rules={[
+                { required: true, message: t("services.form.descriptionRequired") },
+              ]}
             >
-              <Input placeholder="Ej: Internet, Luz, Netflix..." />
+              <Input placeholder={t("services.form.descriptionPlaceholder")} />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
               name="amount"
-              label="Monto"
-              rules={[{ required: true, message: "Ingrese el monto" }]}
+              label={t("services.form.amountLabel")}
+              rules={[{ required: true, message: t("services.form.amountRequired") }]}
             >
               <InputNumber
                 precision={2}
                 style={{ width: "100%" }}
                 controls={false}
-                placeholder="0.00"
+                placeholder={t("services.form.amountPlaceholder")}
               />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
               name="currency"
-              label="Moneda"
-              rules={[{ required: true, message: "Ingrese Moneda" }]}
+              label={t("services.form.currencyLabel")}
+              rules={[{ required: true, message: t("services.form.currencyRequired") }]}
             >
-              <Select placeholder="Seleccionar moneda">
+              <Select placeholder={t("services.form.currencyPlaceholder")}>
                 {currencies.map((currency) => (
                   <Select.Option key={currency.id} value={currency.symbol}>
                     {currency.symbol}
@@ -178,10 +182,14 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
-            <Form.Item name="isPaid" label="Estado" valuePropName="checked">
+            <Form.Item
+              name="isPaid"
+              label={t("services.form.statusLabel")}
+              valuePropName="checked"
+            >
               <Switch
-                checkedChildren="Pagado"
-                unCheckedChildren="Pendiente"
+                checkedChildren={t("services.form.statusPaidSwitch")}
+                unCheckedChildren={t("services.form.statusPendingSwitch")}
                 onChange={(checked) => setIsPaid(checked)}
                 style={{ width: "100%" }}
               />
@@ -191,9 +199,12 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
             <Col xs={24} sm={12}>
               <Form.Item
                 name="lastPayment"
-                label="Fecha de pago"
+                label={t("services.form.paymentDateLabel")}
                 rules={[
-                  { required: true, message: "Seleccione la fecha de pago" },
+                  {
+                    required: true,
+                    message: t("services.form.paymentDateRequired"),
+                  },
                 ]}
               >
                 <DatePicker

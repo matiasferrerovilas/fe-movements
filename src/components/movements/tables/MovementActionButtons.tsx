@@ -1,5 +1,6 @@
 import { Button, Popconfirm } from "antd";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import { useTranslation } from "react-i18next";
 import type { FormattedMovement } from "@/components/movements/tables/types";
 import EditMovementModal from "@/components/modals/movements/EditMovementModal";
 
@@ -12,13 +13,14 @@ export default function MovementActionButtons({
   record,
   onDelete,
 }: MovementActionButtonsProps) {
+  const { t } = useTranslation();
   return (
     <>
       <Popconfirm
-        title="¿Estás seguro de que quieres eliminar el movimiento?"
+        title={t("movements.deleteConfirmTitle")}
         onConfirm={() => onDelete(record.id)}
-        okText="Sí"
-        cancelText="No"
+        okText={t("movements.yes")}
+        cancelText={t("movements.no")}
         placement="topRight"
       >
         <Button
@@ -34,8 +36,8 @@ export default function MovementActionButtons({
             padding: "4px 8px",
             fontSize: 18,
           }}
-          title="Eliminar el movimiento"
-          aria-label="Eliminar el movimiento"
+          title={t("movements.deleteTooltip")}
+          aria-label={t("movements.deleteTooltip")}
         />
       </Popconfirm>
       <EditMovementModal movement={record} />

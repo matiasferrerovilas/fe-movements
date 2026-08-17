@@ -6,6 +6,7 @@ import FilterOutlined from "@ant-design/icons/FilterOutlined";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { CurrencyEnum } from "@/enums/CurrencyEnum";
 import type { BalanceFilters as BalanceFiltersType } from "@/models/BalanceFilters";
 import type { Currency } from "@/models/Currency";
@@ -31,6 +32,7 @@ export default function BalanceFiltersCollapsible({
   currencies,
   onFilterChange,
 }: BalanceFiltersCollapsibleProps) {
+  const { t } = useTranslation();
   const rangePickerValue = useMemo(
     () =>
       filters.dates
@@ -57,7 +59,7 @@ export default function BalanceFiltersCollapsible({
           label: (
             <Flex align="center" gap={8}>
               <FilterOutlined />
-              <span>Filtros de Análisis Avanzado</span>
+              <span>{t("home.filtersAdvanced")}</span>
             </Flex>
           ),
           children: (
@@ -66,7 +68,7 @@ export default function BalanceFiltersCollapsible({
                 <Col xs={24} sm={12} md={8}>
                   <Flex vertical gap={4}>
                     <Text type="secondary" style={{ fontSize: 12 }}>
-                      Moneda
+                      {t("home.currencyLabel")}
                     </Text>
                     <Select
                       value={filters.currency}
@@ -91,7 +93,7 @@ export default function BalanceFiltersCollapsible({
                 <Col xs={24} sm={12} md={16}>
                   <Flex vertical gap={4}>
                     <Text type="secondary" style={{ fontSize: 12 }}>
-                      Período
+                      {t("home.periodLabel")}
                     </Text>
                     <RangePicker
                       style={{ width: "100%" }}

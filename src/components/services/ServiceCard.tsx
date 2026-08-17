@@ -73,7 +73,7 @@ export const ServiceCard = React.memo(function ServiceCard({
       .validateFields()
       .then((values) => {
         if (values.amount <= 0) {
-          void message.warning("El monto debe ser mayor que 0");
+          void message.warning(t("services.card.amountMustBePositive"));
           return;
         }
         handleUpdateServiceMutation({
@@ -149,7 +149,10 @@ export const ServiceCard = React.memo(function ServiceCard({
                 name="description"
                 style={{ margin: 0, flex: 1 }}
                 rules={[
-                  { required: true, message: "La descripción es obligatoria" },
+                  {
+                    required: true,
+                    message: t("services.card.descriptionRequired"),
+                  },
                 ]}
               >
                 <Input />
@@ -173,7 +176,7 @@ export const ServiceCard = React.memo(function ServiceCard({
             color={isPaid ? "success" : "error"}
             style={{ borderRadius: 16, fontWeight: 600, flexShrink: 0 }}
           >
-            {isPaid ? "Pagado" : "Pendiente"}
+            {isPaid ? t("services.card.statusPaid") : t("services.card.statusPending")}
           </Tag>
         </Flex>
 
@@ -183,13 +186,15 @@ export const ServiceCard = React.memo(function ServiceCard({
         <Flex align="center" justify="space-between" gap={8}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-              Monto
+              {t("services.card.amountLabel")}
             </Text>
             {isEditing ? (
               <Form.Item
                 name="amount"
                 style={{ margin: 0 }}
-                rules={[{ required: true, message: "El monto es obligatorio" }]}
+                rules={[
+                  { required: true, message: t("services.card.amountRequired") },
+                ]}
               >
                 <InputNumber
                   min={0}
@@ -213,27 +218,31 @@ export const ServiceCard = React.memo(function ServiceCard({
           {/* Action buttons */}
           {!isEditing && (
             <Flex gap={4}>
-              <Tooltip title="Editar">
+              <Tooltip title={t("services.card.editTooltip")}>
                 <Button
                   type="text"
                   icon={<EditOutlined style={{ fontSize: 18 }} />}
                   onClick={() => setIsEditing(true)}
-                  aria-label={`Editar servicio ${service.description}`}
+                  aria-label={t("services.card.editAriaLabel", {
+                    description: service.description,
+                  })}
                 />
               </Tooltip>
               <Popconfirm
                 title={labels.eliminar}
-                description="Esta acción no se puede deshacer."
+                description={t("services.card.deleteConfirmDescription")}
                 onConfirm={() => deleteServiceMutation.mutate(service)}
-                okText="Sí"
-                cancelText="No"
+                okText={t("services.card.yes")}
+                cancelText={t("services.card.no")}
                 placement="topRight"
               >
                 <Button
                   type="text"
                   danger
                   icon={<DeleteOutlined style={{ fontSize: 18 }} />}
-                  aria-label={`Eliminar servicio ${service.description}`}
+                  aria-label={t("services.card.deleteAriaLabel", {
+                    description: service.description,
+                  })}
                 />
               </Popconfirm>
             </Flex>
@@ -257,14 +266,14 @@ export const ServiceCard = React.memo(function ServiceCard({
           {isEditing ? (
             <Form.Item
               name="lastPayment"
-              label="Último pago"
+              label={t("services.card.lastPaymentLabel")}
               style={{ marginBottom: 8 }}
             >
               <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
             </Form.Item>
           ) : (
             <Text style={{ fontSize: 13 }}>
-              <Text strong>Último pago: </Text>
+              <Text strong>{t("services.card.lastPaymentPrefix")} </Text>
               <Text type="secondary">
                 {service.lastPayment?.toString() ?? "—"}
               </Text>
@@ -285,7 +294,7 @@ export const ServiceCard = React.memo(function ServiceCard({
                   variant="outlined"
                   onClick={handleSaveAmount}
                 >
-                  Guardar
+                  {t("services.card.saveButton")}
                 </Button>
               </Col>
               <Col xs={24} sm={12}>
@@ -294,7 +303,7 @@ export const ServiceCard = React.memo(function ServiceCard({
                   icon={<CloseOutlined />}
                   onClick={handleCancelEdit}
                 >
-                  Cancelar
+                  {t("services.card.cancelButton")}
                 </Button>
               </Col>
             </Row>
@@ -310,7 +319,7 @@ export const ServiceCard = React.memo(function ServiceCard({
               style={{ borderColor: statusColor, color: statusColor }}
               onClick={handlePay}
             >
-              Marcar como pagado
+              {t("services.card.markAsPaidButton")}
             </Button>
           </>
         )}

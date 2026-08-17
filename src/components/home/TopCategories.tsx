@@ -1,6 +1,7 @@
 import { Card, Empty, Flex, List, Skeleton, theme, Typography } from "antd";
 import TagOutlined from "@ant-design/icons/TagOutlined";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { useBalanceSeparateByCategory } from "@/apis/hooks/useBalance";
 import { useUserDefault } from "@/apis/hooks/useSettings";
@@ -17,6 +18,7 @@ const DEFAULT_DATES: [Date, Date] = [
 
 export default function TopCategories() {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
 
   // Obtener moneda por defecto del usuario
   const { data: currencies = [] } = useCurrency();
@@ -57,7 +59,7 @@ export default function TopCategories() {
         title={
           <Flex align="center" gap={8}>
             <TagOutlined style={{ fontSize: 16 }} />
-            <span>Top Categorías del Mes</span>
+            <span>{t("home.topCategoriesTitle")}</span>
           </Flex>
         }
         className="fade-in-up"
@@ -79,7 +81,7 @@ export default function TopCategories() {
         title={
           <Flex align="center" gap={8}>
             <TagOutlined style={{ fontSize: 16 }} />
-            <span>Top Categorías del Mes</span>
+            <span>{t("home.topCategoriesTitle")}</span>
           </Flex>
         }
         className="fade-in-up"
@@ -90,7 +92,7 @@ export default function TopCategories() {
           animationDelay: "240ms",
         }}
       >
-        <Empty description="Sin gastos registrados este mes" />
+        <Empty description={t("home.topCategoriesEmpty")} />
       </Card>
     );
   }
@@ -100,7 +102,7 @@ export default function TopCategories() {
       title={
         <Flex align="center" gap={8}>
           <TagOutlined style={{ fontSize: 16 }} />
-          <span>Top Categorías del Mes</span>
+          <span>{t("home.topCategoriesTitle")}</span>
         </Flex>
       }
       className="fade-in-up"

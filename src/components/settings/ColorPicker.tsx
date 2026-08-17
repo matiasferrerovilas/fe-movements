@@ -10,21 +10,21 @@ const { Text } = Typography;
  * Los nombres se traducen en el componente vía settings.colorPicker.colors.*
  */
 const PRESET_COLORS = [
-  { name: "Rojo", key: "red", value: "#f5222d" },
-  { name: "Naranja Oscuro", key: "darkOrange", value: "#fa541c" },
-  { name: "Naranja", key: "orange", value: "#fa8c16" },
-  { name: "Dorado", key: "gold", value: "#faad14" },
-  { name: "Amarillo", key: "yellow", value: "#fadb14" },
-  { name: "Lima", key: "lime", value: "#a0d911" },
-  { name: "Verde", key: "green", value: "#52c41a" },
-  { name: "Cian", key: "cyan", value: "#13c2c2" },
-  { name: "Azul", key: "blue", value: "#1890ff" },
-  { name: "Azul Profundo", key: "deepBlue", value: "#2f54eb" },
-  { name: "Púrpura", key: "purple", value: "#722ed1" },
-  { name: "Magenta", key: "magenta", value: "#eb2f96" },
-  { name: "Violeta", key: "violet", value: "#9254de" },
-  { name: "Gris", key: "gray", value: "#8c8c8c" },
-  { name: "Gris Claro", key: "lightGray", value: "#d9d9d9" },
+  { key: "red", value: "#f5222d" },
+  { key: "darkOrange", value: "#fa541c" },
+  { key: "orange", value: "#fa8c16" },
+  { key: "gold", value: "#faad14" },
+  { key: "yellow", value: "#fadb14" },
+  { key: "lime", value: "#a0d911" },
+  { key: "green", value: "#52c41a" },
+  { key: "cyan", value: "#13c2c2" },
+  { key: "blue", value: "#1890ff" },
+  { key: "deepBlue", value: "#2f54eb" },
+  { key: "purple", value: "#722ed1" },
+  { key: "magenta", value: "#eb2f96" },
+  { key: "violet", value: "#9254de" },
+  { key: "gray", value: "#8c8c8c" },
+  { key: "lightGray", value: "#d9d9d9" },
 ];
 
 // Exportar para uso en CategoryEditModal

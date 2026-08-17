@@ -2,6 +2,7 @@ import { useState } from "react";
 import { App, Button, Flex, Typography } from "antd";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
 import { RoleEnum } from "@/enums/RoleEnum";
 import { useCurrentWorkspace } from "@/apis/workspace/WorkspaceContext";
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/investments")({
 });
 
 function RouteComponent() {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const { currentWorkspace } = useCurrentWorkspace();
   const accountId = currentWorkspace?.workspaceId;
@@ -44,14 +46,14 @@ function RouteComponent() {
 
   const createMutation = useCreateInvestment(accountId ?? 0, {
     onSuccess: () => {
-      void message.success("Inversión agregada");
+      void message.success(t("investments.addedSuccess"));
       setFormOpen(false);
     },
   });
 
   const updateMutation = useUpdateInvestment({
     onSuccess: () => {
-      void message.success("Inversión actualizada");
+      void message.success(t("investments.updatedSuccess"));
       setFormOpen(false);
       setEditingInvestment(undefined);
     },
@@ -59,7 +61,7 @@ function RouteComponent() {
 
   const deleteMutation = useDeleteInvestment({
     onSuccess: () => {
-      void message.success("Inversión eliminada");
+      void message.success(t("investments.deletedSuccess"));
     },
   });
 
@@ -92,7 +94,7 @@ function RouteComponent() {
     <div style={{ paddingTop: 30 }}>
       <Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
         <Title level={3} style={{ margin: 0 }}>
-          Inversiones
+          {t("nav.investments")}
         </Title>
         <Button
           type="primary"
@@ -100,7 +102,7 @@ function RouteComponent() {
           onClick={handleOpenCreate}
           disabled={accountId == null}
         >
-          Agregar inversión
+          {t("investments.addButton")}
         </Button>
       </Flex>
 

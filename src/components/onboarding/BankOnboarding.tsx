@@ -17,6 +17,7 @@ import {
   theme,
 } from "antd";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { OnboardingBankEntry } from "@/apis/onboarding/OnboardingApi";
 
 const { Text } = Typography;
@@ -29,6 +30,7 @@ interface Props {
 
 export default function BankOnboarding({ initialValues, onNext, onPrev }: Props) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const [form] = Form.useForm<{ description: string }>();
   const [banks, setBanks] = useState<OnboardingBankEntry[]>(
     initialValues.banksToAdd ?? [],
@@ -69,10 +71,10 @@ export default function BankOnboarding({ initialValues, onNext, onPrev }: Props)
     <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
-          Agregá los bancos que usás y elegí cuál es tu default.
+          {t("onboarding.bank.description1")}
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
-          El banco default se selecciona automáticamente al registrar ingresos.
+          {t("onboarding.bank.description2")}
         </Text>
       </div>
 
@@ -83,11 +85,11 @@ export default function BankOnboarding({ initialValues, onNext, onPrev }: Props)
               name="description"
               style={{ margin: 0 }}
               rules={[
-                { required: true, message: "Ingresá el nombre del banco" },
+                { required: true, message: t("onboarding.bank.nameRequired") },
               ]}
             >
               <Input
-                placeholder="Nombre del banco..."
+                placeholder={t("onboarding.bank.namePlaceholder")}
                 style={{ borderRadius: 10, height: 40 }}
               />
             </Form.Item>
@@ -99,7 +101,7 @@ export default function BankOnboarding({ initialValues, onNext, onPrev }: Props)
               htmlType="submit"
               style={{ height: 40, borderRadius: 10, fontWeight: 600 }}
             >
-              Agregar
+              {t("onboarding.bank.addButton")}
             </Button>
           </Col>
         </Row>
@@ -120,7 +122,7 @@ export default function BankOnboarding({ initialValues, onNext, onPrev }: Props)
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
               <Text type="secondary" style={{ fontSize: 12 }}>
-                No agregaste bancos aún. Podés continuar sin agregar.
+                {t("onboarding.bank.emptyDescription")}
               </Text>
             }
             style={{ margin: "8px 0" }}
@@ -171,12 +173,18 @@ export default function BankOnboarding({ initialValues, onNext, onPrev }: Props)
                 </Flex>
                 <Flex gap={4}>
                   <Tooltip
-                    title={bank.isDefault ? "Ya es el banco por defecto" : "Establecer como default"}
+                    title={
+                      bank.isDefault
+                        ? t("onboarding.bank.starTooltipDefault")
+                        : t("onboarding.bank.starTooltipSetDefault")
+                    }
                   >
                     <Button
                       type="text"
                       size="small"
-                      aria-label={`Estrella banco ${bank.description}`}
+                      aria-label={t("onboarding.bank.starAriaLabel", {
+                        name: bank.description,
+                      })}
                       disabled={bank.isDefault}
                       onClick={() => handleSetDefault(bank.description)}
                       icon={
@@ -186,12 +194,14 @@ export default function BankOnboarding({ initialValues, onNext, onPrev }: Props)
                       }
                     />
                   </Tooltip>
-                  <Tooltip title="Eliminar banco">
+                  <Tooltip title={t("onboarding.bank.deleteTooltip")}>
                     <Button
                       type="text"
                       size="small"
                       danger
-                      aria-label={`Eliminar banco ${bank.description}`}
+                      aria-label={t("onboarding.bank.deleteAriaLabel", {
+                        name: bank.description,
+                      })}
                       onClick={() => handleRemove(bank.description)}
                       icon={<DeleteOutlined />}
                     />
@@ -207,13 +217,13 @@ export default function BankOnboarding({ initialValues, onNext, onPrev }: Props)
         type="secondary"
         style={{ fontSize: 12, display: "block", textAlign: "center" }}
       >
-        Podés agregar más bancos desde Configuración en cualquier momento.
+        {t("onboarding.bank.footerNote")}
       </Text>
 
       <Row gutter={[16, 10]}>
         <Col xs={12}>
           <Button block type="default" onClick={onPrev}>
-            Volver
+            {t("onboarding.backButton")}
           </Button>
         </Col>
         <Col xs={12}>
@@ -223,7 +233,7 @@ export default function BankOnboarding({ initialValues, onNext, onPrev }: Props)
             variant="filled"
             onClick={() => onNext({ banksToAdd: banks })}
           >
-            Siguiente
+            {t("onboarding.nextButton")}
           </Button>
         </Col>
       </Row>

@@ -1,6 +1,7 @@
 import ShopOutlined from "@ant-design/icons/ShopOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import { Button, Card, Col, Form, Row, Space, Typography, theme } from "antd";
+import { useTranslation } from "react-i18next";
 import type { OnboardingForm } from "@/apis/onboarding/OnboardingApi";
 
 const { Text } = Typography;
@@ -17,6 +18,7 @@ export default function UserTypeOnboarding({
   onPrev,
 }: Props) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const [form] = Form.useForm<{ userType: string }>();
 
   // Derivamos el tipo seleccionado directamente del Form — único source of truth.
@@ -37,7 +39,7 @@ export default function UserTypeOnboarding({
     <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
-          ¿Cuál será el uso de la cuenta?
+          {t("onboarding.userType.question")}
         </Text>
       </div>
 
@@ -48,8 +50,8 @@ export default function UserTypeOnboarding({
       >
         <Form.Item
           name="userType"
-          label={<Text strong>Tipo de usuario</Text>}
-          rules={[{ required: true, message: "Seleccioná una opción" }]}
+          label={<Text strong>{t("onboarding.userType.label")}</Text>}
+          rules={[{ required: true, message: t("onboarding.userType.selectRequired") }]}
         >
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12}>
@@ -67,7 +69,7 @@ export default function UserTypeOnboarding({
               >
                  <Space orientation="vertical" align="center">
                   <UserOutlined style={{ fontSize: 40 }} />
-                  <Text strong>Usuario</Text>
+                  <Text strong>{t("onboarding.userType.personalCard")}</Text>
                 </Space>
               </Card>
             </Col>
@@ -86,7 +88,7 @@ export default function UserTypeOnboarding({
               >
                  <Space orientation="vertical" align="center">
                   <ShopOutlined style={{ fontSize: 40 }} />
-                  <Text strong>Emprendedor</Text>
+                  <Text strong>{t("onboarding.userType.enterpriseCard")}</Text>
                 </Space>
               </Card>
             </Col>
@@ -96,12 +98,12 @@ export default function UserTypeOnboarding({
         <Row gutter={16} justify="space-between">
           <Col xs={12} md={12}>
             <Button block type="default" onClick={onPrev}>
-              Volver
+              {t("onboarding.backButton")}
             </Button>
           </Col>
           <Col xs={12} md={12}>
             <Button block color="geekblue" variant="filled" onClick={handleSubmit}>
-              Siguiente
+              {t("onboarding.nextButton")}
             </Button>
           </Col>
         </Row>

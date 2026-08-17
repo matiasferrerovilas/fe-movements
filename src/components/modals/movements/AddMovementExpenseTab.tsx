@@ -139,7 +139,7 @@ const AddMovementExpenseTab = forwardRef<
         style={{ marginTop: 4, marginBottom: 16, borderColor: token.colorBorderSecondary }}
       >
         <Text type="secondary" style={{ fontSize: 12, fontWeight: 500 }}>
-          Pago
+          {t("movements.form.sectionPayment")}
         </Text>
       </Divider>
 
@@ -147,15 +147,15 @@ const AddMovementExpenseTab = forwardRef<
         {/* Monto + Moneda */}
         <Col xs={24} sm={14}>
           <Form.Item
-            label="Monto"
+            label={t("movements.form.amountLabel")}
             name="amount"
-            rules={[{ required: true, message: "Ingresar Monto" }]}
+            rules={[{ required: true, message: t("movements.form.amountRequired") }]}
           >
             <InputNumber
               style={{ width: "100%" }}
               controls={false}
               precision={2}
-              placeholder="0.00"
+              placeholder={t("movements.form.amountPlaceholder")}
               prefix={<DollarOutlined style={{ color: token.colorTextTertiary }} />}
             />
           </Form.Item>
@@ -163,10 +163,10 @@ const AddMovementExpenseTab = forwardRef<
         <Col xs={24} sm={10}>
           <Form.Item
             name="currency"
-            label="Moneda"
-            rules={[{ required: true, message: "Ingrese Moneda" }]}
+            label={t("movements.form.currencyLabel")}
+            rules={[{ required: true, message: t("movements.form.currencyRequired") }]}
           >
-            <Select placeholder="Moneda">
+            <Select placeholder={t("movements.form.currencyPlaceholder")}>
               {currencies.map((currency) => (
                 <Select.Option key={currency.id} value={currency.symbol}>
                   {currency.symbol}
@@ -180,11 +180,11 @@ const AddMovementExpenseTab = forwardRef<
         <Col xs={24} sm={12}>
           <Form.Item
             name="bank"
-            label="Banco"
-            rules={[{ required: true, message: "Seleccione un banco" }]}
+            label={t("movements.form.bankLabel")}
+            rules={[{ required: true, message: t("movements.form.bankRequired") }]}
           >
             <Select
-              placeholder="Seleccionar banco"
+              placeholder={t("movements.form.bankPlaceholder")}
               suffixIcon={<BankOutlined style={{ color: token.colorTextTertiary }} />}
             >
               {banks.map((bank) => (
@@ -198,11 +198,11 @@ const AddMovementExpenseTab = forwardRef<
         <Col xs={24} sm={12}>
           <Form.Item
             name="type"
-            label="Tipo"
-            rules={[{ required: true, message: "Seleccione un tipo" }]}
+            label={t("movements.form.typeLabel")}
+            rules={[{ required: true, message: t("movements.form.typeRequired") }]}
           >
             <Select
-              placeholder="Seleccionar tipo"
+              placeholder={t("movements.form.typePlaceholder")}
               suffixIcon={<CreditCardOutlined style={{ color: token.colorTextTertiary }} />}
             >
               {Object.values(TypeEnum).map((type) => (
@@ -224,11 +224,14 @@ const AddMovementExpenseTab = forwardRef<
                 <Row gutter={[12, 0]} style={{ marginTop: 8 }}>
                   <Col xs={24} sm={12}>
                     <Form.Item
-                      label="Cuota Actual"
+                      label={t("movements.form.currentInstallmentLabel")}
                       name="cuotaActual"
                       style={{ marginBottom: 0 }}
                       rules={[
-                        { required: true, message: "Ingresar cuota actual" },
+                        {
+                          required: true,
+                          message: t("movements.form.currentInstallmentRequired"),
+                        },
                         ({ getFieldValue }) => ({
                           validator(_, value) {
                             const total = getFieldValue("cuotasTotales");
@@ -236,7 +239,9 @@ const AddMovementExpenseTab = forwardRef<
                               return Promise.resolve();
                             return Promise.reject(
                               new Error(
-                                "La cuota actual no puede ser mayor que el total",
+                                t(
+                                  "movements.form.currentInstallmentExceedsTotal",
+                                ),
                               ),
                             );
                           },
@@ -246,26 +251,32 @@ const AddMovementExpenseTab = forwardRef<
                       <InputNumber
                         style={{ width: "100%" }}
                         controls={false}
-                        placeholder="Ej: 3"
+                        placeholder={t(
+                          "movements.form.currentInstallmentPlaceholder",
+                        )}
                       />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
                     <Form.Item
-                      label="Cuotas Totales"
+                      label={t("movements.form.totalInstallmentsLabel")}
                       name="cuotasTotales"
                       style={{ marginBottom: 0 }}
                       rules={[
                         {
                           required: true,
-                          message: "Ingresar cantidad de cuotas",
+                          message: t(
+                            "movements.form.totalInstallmentsRequired",
+                          ),
                         },
                       ]}
                     >
                       <InputNumber
                         style={{ width: "100%" }}
                         controls={false}
-                        placeholder="Ej: 12"
+                        placeholder={t(
+                          "movements.form.totalInstallmentsPlaceholder",
+                        )}
                       />
                     </Form.Item>
                   </Col>
@@ -284,9 +295,9 @@ const AddMovementExpenseTab = forwardRef<
         {/* Fecha */}
         <Col xs={24}>
           <Form.Item
-            label="Fecha"
+            label={t("movements.form.dateLabel")}
             name="date"
-            rules={[{ required: true, message: "Seleccione una fecha" }]}
+            rules={[{ required: true, message: t("movements.form.dateRequired") }]}
           >
             <DatePicker
               style={{ width: "100%" }}
@@ -303,7 +314,7 @@ const AddMovementExpenseTab = forwardRef<
         style={{ marginTop: 4, marginBottom: 16, borderColor: token.colorBorderSecondary }}
       >
         <Text type="secondary" style={{ fontSize: 12, fontWeight: 500 }}>
-          Clasificación
+          {t("movements.form.sectionClassification")}
         </Text>
       </Divider>
 
@@ -311,12 +322,14 @@ const AddMovementExpenseTab = forwardRef<
         {/* Descripción + Categoría */}
         <Col xs={24} sm={12}>
           <Form.Item
-            label="Descripción"
+            label={t("movements.form.descriptionLabel")}
             name="description"
-            rules={[{ required: true, message: "Ingrese una descripción" }]}
+            rules={[
+              { required: true, message: t("movements.form.descriptionRequired") },
+            ]}
           >
             <Input
-              placeholder="Ej: Supermercado, Nafta..."
+              placeholder={t("movements.form.descriptionPlaceholder")}
               prefix={<TagOutlined style={{ color: token.colorTextTertiary }} />}
             />
           </Form.Item>
@@ -324,14 +337,14 @@ const AddMovementExpenseTab = forwardRef<
         <Col xs={24} sm={12}>
           <Form.Item
             name="categories"
-            label="Categoría"
+            label={t("movements.form.categoryLabel")}
             rules={[
-              { required: true, message: "Seleccione al menos una categoría" },
+              { required: true, message: t("movements.form.categoryRequired") },
             ]}
           >
             <Select
               mode="multiple"
-              placeholder="Seleccionar categoría"
+              placeholder={t("movements.form.categoryPlaceholder")}
               showSearch
               maxCount={MAX_MOVEMENT_CATEGORIES}
               options={categories.map((type) => ({

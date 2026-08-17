@@ -89,6 +89,15 @@
       "tuCuenta_company": "the company",
       "userTypeDisplay_personal": "Personal",
       "userTypeDisplay_company": "Company"
+    },
+    "forbidden": {
+      "subtitle": "You don't have permission to access this application.",
+      "retryButton": "Retry"
+    },
+    "errorBoundary": {
+      "title": "Something went wrong",
+      "subtitle": "An unexpected error occurred. You can try reloading the page.",
+      "reloadButton": "Reload page"
     }
   },
   "nav": {
@@ -105,7 +114,81 @@
     "logout": "Log out",
     "language": "Language",
     "openMenu": "Open menu",
-    "profile": "User profile"
+    "profile": "User profile",
+    "tour": {
+      "budgetsDescription": "Set monthly budgets by category and monitor your spending progress.",
+      "movementsDescription": "Record and view all your movements. Filter by type, bank, category and more.",
+      "profileTitle": "Your profile",
+      "profileDescription": "Here you'll find Settings, Help, Investments, Utilities and more — everything you don't use every day is grouped in one place."
+    }
+  },
+  "onboarding": {
+    "backButton": "Back",
+    "nextButton": "Next",
+    "bank": {
+      "description1": "Add the banks you use and choose which one is your default.",
+      "description2": "The default bank is automatically selected when recording income.",
+      "nameRequired": "Enter the bank name",
+      "namePlaceholder": "Bank name...",
+      "addButton": "Add",
+      "emptyDescription": "You haven't added any banks yet. You can continue without adding any.",
+      "starTooltipDefault": "Already the default bank",
+      "starTooltipSetDefault": "Set as default",
+      "starAriaLabel": "Star bank {{name}}",
+      "deleteTooltip": "Delete bank",
+      "deleteAriaLabel": "Delete bank {{name}}",
+      "footerNote": "You can add more banks from Settings at any time."
+    },
+    "category": {
+      "alreadyDefault": "There are already some defaults — you can add your own.",
+      "nameRequired": "Enter the category name",
+      "onlyLettersError": "Only letters and spaces",
+      "addButton": "Add",
+      "emptyDescription": "You haven't added any categories yet. You can continue without adding any.",
+      "removeAriaLabel": "Remove category {{name}}",
+      "footerNote": "You can add more categories from Settings at any time."
+    },
+    "income": {
+      "bankLabel": "Bank",
+      "bankPlaceholder": "Bank where you receive the income",
+      "currencyLabel": "Currency",
+      "currencyPlaceholder": "Which currency you receive your income in",
+      "workspacePlaceholder": "Select a workspace",
+      "footerNote": "You can complete this later from Settings.",
+      "finishButton": "Finish"
+    },
+    "userType": {
+      "question": "What will the account be used for?",
+      "label": "User type",
+      "selectRequired": "Select an option",
+      "personalCard": "User",
+      "enterpriseCard": "Entrepreneur"
+    },
+    "steps": {
+      "workspacesTitle": "Workspaces",
+      "workspacesDescription": "Organize your accounts",
+      "categoriesTitle": "Categories",
+      "categoriesDescription": "Classify your expenses",
+      "banksTitle": "Banks",
+      "banksDescription": "Your banking entities",
+      "profileTitle": "Profile",
+      "profileDescription": "Type of use",
+      "incomeTitle": "Income",
+      "incomeDescription": "Initial balance",
+      "welcomeTitle": "Welcome"
+    }
+  },
+  "home": {
+    "filtersAdvanced": "Advanced Analysis Filters",
+    "currencyLabel": "Currency",
+    "periodLabel": "Period",
+    "topCategoriesTitle": "Top Categories This Month",
+    "topCategoriesEmpty": "No expenses recorded this month",
+    "annualEvolutionTitle": "Annual Expense and Savings Evolution",
+    "annualEvolutionEmpty": "No data for the selected year",
+    "categoryPieTitle": "Expenses by Category",
+    "categoryPieEmpty": "No data for the period",
+    "categoryPieTotal": "Total"
   },
   "movements": {
     "current": "Current",
@@ -120,6 +203,8 @@
     "allFeminine": "All",
     "categoryLabel": "Category",
     "exportCsv": "Export CSV",
+    "exportPdf": "Export PDF",
+    "pdfTitle": "Movements",
     "exportNothingToExport": "No movements to export",
     "exportFailed": "Couldn't export. Try again.",
     "type": {
@@ -138,6 +223,11 @@
     "columnAmount": "Amount",
     "columnActions": "Actions",
     "noMovements": "No movements",
+    "noCategoryOption": "No category",
+    "deleteConfirmTitle": "Are you sure you want to delete the movement?",
+    "yes": "Yes",
+    "no": "No",
+    "deleteTooltip": "Delete the movement",
     "installmentsTag": "{{installments}} installments",
     "csvHeaders": {
       "date": "Date",
@@ -148,6 +238,37 @@
       "currency": "Currency",
       "amount": "Amount",
       "installment": "Installment"
+    },
+    "form": {
+      "sectionPayment": "Payment",
+      "amountLabel": "Amount",
+      "amountRequired": "Enter Amount",
+      "amountPlaceholder": "0.00",
+      "currencyLabel": "Currency",
+      "currencyRequired": "Enter Currency",
+      "currencyPlaceholder": "Currency",
+      "bankLabel": "Bank",
+      "bankRequired": "Select a bank",
+      "bankPlaceholder": "Select bank",
+      "typeLabel": "Type",
+      "typeRequired": "Select a type",
+      "typePlaceholder": "Select type",
+      "currentInstallmentLabel": "Current Installment",
+      "currentInstallmentRequired": "Enter current installment",
+      "currentInstallmentExceedsTotal": "The current installment can't be greater than the total",
+      "currentInstallmentPlaceholder": "E.g: 3",
+      "totalInstallmentsLabel": "Total Installments",
+      "totalInstallmentsRequired": "Enter the number of installments",
+      "totalInstallmentsPlaceholder": "E.g: 12",
+      "dateLabel": "Date",
+      "dateRequired": "Select a date",
+      "sectionClassification": "Classification",
+      "descriptionLabel": "Description",
+      "descriptionRequired": "Enter a description",
+      "descriptionPlaceholder": "E.g: Supermarket, Gas...",
+      "categoryLabel": "Category",
+      "categoryRequired": "Select at least one category",
+      "categoryPlaceholder": "Select category"
     }
   },
   "budgets": {
@@ -169,7 +290,28 @@
     "monthYearLabel": "Month and year",
     "selectMonthMessage": "Select the month",
     "yearLabel": "Year",
-    "selectYearMessage": "Select the year"
+    "selectYearMessage": "Select the year",
+    "addButton": "+ Add budget",
+    "selectGroupCurrencyEmpty": "Select a group and a currency to view budgets",
+    "noBudgetsForPeriod": "No budgets for {{currency}} in {{month}}",
+    "edit": {
+      "title": "Edit budget — {{category}}",
+      "save": "Save",
+      "newAmountLabel": "New amount"
+    },
+    "card": {
+      "budgeted": "Budgeted",
+      "spent": "Spent",
+      "utilizedSuffix": "used",
+      "exceeded": "(exceeded)",
+      "editAmountTooltip": "Edit amount",
+      "editAriaLabel": "Edit budget {{category}}",
+      "deleteTooltip": "Delete budget",
+      "deleteConfirmTitle": "Delete this budget?",
+      "deleteConfirmDescription": "This action cannot be undone.",
+      "deleteConfirmOk": "Delete",
+      "deleteAriaLabel": "Delete budget {{category}}"
+    }
   },
   "investments": {
     "totalInvested": "Total invested",
@@ -198,7 +340,20 @@
     "yes": "Yes",
     "no": "No",
     "delete": "Delete",
-    "deleteAriaLabel": "Delete investment"
+    "deleteAriaLabel": "Delete investment",
+    "columnDescriptionType": "Description / Type",
+    "columnAmount": "Amount",
+    "columnStartDate": "Start date",
+    "columnEndDate": "End date",
+    "columnOwner": "Owner",
+    "columnActions": "Actions",
+    "emptyState": "No investments recorded",
+    "mobileStartLabel": "Start:",
+    "mobileEndLabel": "End:",
+    "addButton": "Add investment",
+    "addedSuccess": "Investment added",
+    "updatedSuccess": "Investment updated",
+    "deletedSuccess": "Investment deleted"
   },
   "settings": {
     "account": {
@@ -379,6 +534,11 @@
       "resultsCount": "{{filtered}} of {{total}} icons"
     },
     "bank": {
+      "title": "My Banks",
+      "newBankLabel": "New Bank",
+      "nameRequired": "Enter the bank name",
+      "namePlaceholder": "Bank name...",
+      "addButton": "Add",
       "starTooltipDefault": "Default bank",
       "starTooltipSetDefault": "Set as default bank",
       "starAriaLabel": "Star bank {{name}}",
@@ -418,6 +578,43 @@
       "tourTitle_company": "Recurring Expenses",
       "tourDescription_personal": "Manage your subscriptions and recurring services. Keep track of monthly payments.",
       "tourDescription_company": "Manage your recurring operating expenses. Keep track of the business's monthly payments."
+    },
+    "card": {
+      "amountMustBePositive": "The amount must be greater than 0",
+      "descriptionRequired": "Description is required",
+      "statusPaid": "Paid",
+      "statusPending": "Pending",
+      "amountLabel": "Amount",
+      "amountRequired": "Amount is required",
+      "editTooltip": "Edit",
+      "editAriaLabel": "Edit service {{description}}",
+      "deleteConfirmDescription": "This action cannot be undone.",
+      "yes": "Yes",
+      "no": "No",
+      "deleteAriaLabel": "Delete service {{description}}",
+      "lastPaymentLabel": "Last payment",
+      "lastPaymentPrefix": "Last payment:",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "markAsPaidButton": "Mark as paid"
+    },
+    "form": {
+      "markedAsPaid": "Marked as paid",
+      "pendingPayment": "Pending payment",
+      "descriptionLabel": "Description",
+      "descriptionRequired": "Enter a description",
+      "descriptionPlaceholder": "E.g: Internet, Electricity, Netflix...",
+      "amountLabel": "Amount",
+      "amountRequired": "Enter the amount",
+      "amountPlaceholder": "0.00",
+      "currencyLabel": "Currency",
+      "currencyRequired": "Enter Currency",
+      "currencyPlaceholder": "Select currency",
+      "statusLabel": "Status",
+      "statusPaidSwitch": "Paid",
+      "statusPendingSwitch": "Pending",
+      "paymentDateLabel": "Payment date",
+      "paymentDateRequired": "Select the payment date"
     }
   },
   "admin": {

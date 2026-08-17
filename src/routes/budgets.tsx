@@ -12,6 +12,7 @@ import {
 import dayjs from "dayjs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
+import { useTranslation } from "react-i18next";
 import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
 import { useBudgets } from "@/apis/hooks/useBudget";
 import { useDeleteBudget } from "@/apis/hooks/useBudget";
@@ -46,6 +47,7 @@ export const Route = createFileRoute("/budgets")({
 });
 
 function RouteComponent() {
+  const { t } = useTranslation();
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
@@ -101,7 +103,7 @@ function RouteComponent() {
         style={{ marginBottom: 20, animationDelay: "0ms" }}
       >
         <Title level={isMobile ? 3 : 2} style={{ margin: 0 }}>
-          Presupuestos
+          {t("nav.budgets")}
         </Title>
         <Text type="secondary">{monthLabel}</Text>
       </div>
@@ -133,7 +135,7 @@ function RouteComponent() {
           className="fade-in-up"
           style={{ animationDelay: "120ms", textAlign: "center" }}
         >
-          <Empty description="Seleccioná un grupo y una moneda para ver los presupuestos" />
+          <Empty description={t("budgets.selectGroupCurrencyEmpty")} />
         </Card>
       ) : isFetching ? (
         <Flex justify="center" style={{ padding: 60 }}>
@@ -145,7 +147,10 @@ function RouteComponent() {
           style={{ animationDelay: "120ms", textAlign: "center" }}
         >
           <Empty
-            description={`No hay presupuestos para ${filters.currency} en ${monthLabel}`}
+            description={t("budgets.noBudgetsForPeriod", {
+              currency: filters.currency,
+              month: monthLabel,
+            })}
           />
         </Card>
       ) : (

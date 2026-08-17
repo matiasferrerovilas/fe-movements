@@ -28,19 +28,16 @@ const getTourSteps = (
       description: labels.tourDescription,
     },
     presupuestos: {
-      title: "Presupuestos",
-      description:
-        "Define presupuestos mensuales por categoría y monitorea tu progreso de gastos.",
+      title: t("nav.budgets"),
+      description: t("nav.tour.budgetsDescription"),
     },
     movimientos: {
-      title: "Movimientos",
-      description:
-        "Registra y consulta todos tus movimientos. Filtra por tipo, banco, categoría y más.",
+      title: t("nav.movements"),
+      description: t("nav.tour.movementsDescription"),
     },
     perfil: {
-      title: "Tu perfil",
-      description:
-        "Acá encontrás Ajustes, Ayuda, Inversiones, Utilidades y más — todo lo que no usás todos los días quedó agrupado en un solo lugar.",
+      title: t("nav.tour.profileTitle"),
+      description: t("nav.tour.profileDescription"),
     },
   };
 };

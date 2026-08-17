@@ -64,13 +64,13 @@ function RouteComponent() {
 
   const steps = [
     {
-      title: "Workspaces",
-      description: "Organizá tus cuentas",
+      title: t("onboarding.steps.workspacesTitle"),
+      description: t("onboarding.steps.workspacesDescription"),
       content: <WorkspaceOnboarding initialValues={formData} onNext={handleNext} />,
     },
     {
-      title: "Categorías",
-      description: "Clasificá tus gastos",
+      title: t("onboarding.steps.categoriesTitle"),
+      description: t("onboarding.steps.categoriesDescription"),
       content: (
         <CategoryOnboarding
           initialValues={formData}
@@ -80,8 +80,8 @@ function RouteComponent() {
       ),
     },
     {
-      title: "Bancos",
-      description: "Tus entidades bancarias",
+      title: t("onboarding.steps.banksTitle"),
+      description: t("onboarding.steps.banksDescription"),
       content: (
         <BankOnboarding
           initialValues={formData}
@@ -91,8 +91,8 @@ function RouteComponent() {
       ),
     },
     {
-      title: "Perfil",
-      description: "Tipo de uso",
+      title: t("onboarding.steps.profileTitle"),
+      description: t("onboarding.steps.profileDescription"),
       content: (
         <UserTypeOnboarding
           initialValues={formData}
@@ -102,8 +102,8 @@ function RouteComponent() {
       ),
     },
     {
-      title: "Ingresos",
-      description: "Saldo inicial",
+      title: t("onboarding.steps.incomeTitle"),
+      description: t("onboarding.steps.incomeDescription"),
       content: (
         <IncomeOnboarding
           initialValues={formData}
@@ -150,7 +150,7 @@ function RouteComponent() {
           }}
         >
           <div style={{ textAlign: "center", marginBottom: 30 }}>
-            <Title level={2} style={{ margin: 0 }}>Bienvenido</Title>
+            <Title level={2} style={{ margin: 0 }}>{t("onboarding.steps.welcomeTitle")}</Title>
             <Text type="secondary">
               {labels.onboardingBienvenida}
             </Text>

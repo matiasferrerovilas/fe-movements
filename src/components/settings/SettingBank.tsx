@@ -230,7 +230,7 @@ export function SettingBank() {
         </div>
         <div>
           <Title level={5} style={{ margin: 0 }}>
-            Mis Bancos
+            {t("settings.bank.title")}
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
             {labels.bancosSubtitle}
@@ -259,7 +259,7 @@ export function SettingBank() {
             marginBottom: 10,
           }}
         >
-          Nuevo Banco
+          {t("settings.bank.newBankLabel")}
         </Text>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Row gutter={[12, 0]} align="middle">
@@ -268,12 +268,12 @@ export function SettingBank() {
                 name="description"
                 style={{ margin: 0 }}
                 rules={[
-                  { required: true, message: "Ingresá el nombre del banco" },
+                  { required: true, message: t("settings.bank.nameRequired") },
                 ]}
               >
                 <Input
                   style={{ borderRadius: 10, height: 40, fontSize: 14 }}
-                  placeholder="Nombre del banco..."
+                  placeholder={t("settings.bank.namePlaceholder")}
                 />
               </Form.Item>
             </Col>
@@ -286,7 +286,7 @@ export function SettingBank() {
                 style={{ height: 40, borderRadius: 10, fontWeight: 600 }}
                 loading={addBankMutation.isPending}
               >
-                Agregar
+                {t("settings.bank.addButton")}
               </Button>
             </Col>
           </Row>

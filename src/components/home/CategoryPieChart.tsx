@@ -9,6 +9,7 @@ import {
   Tooltip,
 } from "recharts";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { CHART_COLORS } from "@/components/home/constants";
 
 type CategoryChartItem = {
@@ -26,6 +27,7 @@ export default function CategoryPieChart({
   isFetching,
 }: CategoryPieChartProps) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
 
   const total = useMemo(
     () => data.reduce((sum, item) => sum + item.value, 0),
@@ -35,7 +37,7 @@ export default function CategoryPieChart({
   if (isFetching) {
     return (
       <Card
-        title="Gastos por Categoría"
+        title={t("home.categoryPieTitle")}
         className="fade-in-up"
         style={{
           borderRadius: token.borderRadiusLG,
@@ -54,7 +56,7 @@ export default function CategoryPieChart({
   if (data.length === 0) {
     return (
       <Card
-        title="Gastos por Categoría"
+        title={t("home.categoryPieTitle")}
         className="fade-in-up"
         style={{
           borderRadius: token.borderRadiusLG,
@@ -64,7 +66,7 @@ export default function CategoryPieChart({
         }}
       >
         <Flex justify="center" style={{ padding: 40 }}>
-          <Empty description="Sin datos para el período" />
+          <Empty description={t("home.categoryPieEmpty")} />
         </Flex>
       </Card>
     );
@@ -72,7 +74,7 @@ export default function CategoryPieChart({
 
   return (
     <Card
-      title="Gastos por Categoría"
+      title={t("home.categoryPieTitle")}
       className="fade-in-up"
       style={{
         borderRadius: token.borderRadiusLG,
@@ -110,7 +112,7 @@ export default function CategoryPieChart({
               fontFamily: "inherit",
             }}
           >
-            Total
+            {t("home.categoryPieTotal")}
           </text>
           <text
             x="50%"

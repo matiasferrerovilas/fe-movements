@@ -57,7 +57,7 @@ export default function CategoryOnboarding({ initialValues, onNext, onPrev }: Pr
           {labels.categoriasOnboarding}
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
-          Ya hay algunas por defecto — podés agregar las tuyas.
+          {t("onboarding.category.alreadyDefault")}
         </Text>
       </div>
 
@@ -68,12 +68,17 @@ export default function CategoryOnboarding({ initialValues, onNext, onPrev }: Pr
               name="description"
               style={{ margin: 0 }}
               rules={[
-                { required: true, message: "Ingresá el nombre de la categoría" },
+                {
+                  required: true,
+                  message: t("onboarding.category.nameRequired"),
+                },
                 {
                   validator: (_, value) => {
                     if (!value || !value.trim()) return Promise.resolve();
                     if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(value)) {
-                      return Promise.reject(new Error("Solo letras y espacios"));
+                      return Promise.reject(
+                        new Error(t("onboarding.category.onlyLettersError")),
+                      );
                     }
                     return Promise.resolve();
                   },
@@ -93,7 +98,7 @@ export default function CategoryOnboarding({ initialValues, onNext, onPrev }: Pr
               htmlType="submit"
               style={{ height: 40, borderRadius: 10, fontWeight: 600 }}
             >
-              Agregar
+              {t("onboarding.category.addButton")}
             </Button>
           </Col>
         </Row>
@@ -114,7 +119,7 @@ export default function CategoryOnboarding({ initialValues, onNext, onPrev }: Pr
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
               <Text type="secondary" style={{ fontSize: 12 }}>
-                No agregaste categorías aún. Podés continuar sin agregar.
+                {t("onboarding.category.emptyDescription")}
               </Text>
             }
             style={{ margin: "8px 0" }}
@@ -125,7 +130,11 @@ export default function CategoryOnboarding({ initialValues, onNext, onPrev }: Pr
               <Tag
                 key={cat}
                 closeIcon={
-                  <DeleteOutlined aria-label={`Quitar categoría ${cat}`} />
+                  <DeleteOutlined
+                    aria-label={t("onboarding.category.removeAriaLabel", {
+                      name: cat,
+                    })}
+                  />
                 }
                 onClose={() => handleRemove(cat)}
                 icon={<TagOutlined />}
@@ -143,13 +152,13 @@ export default function CategoryOnboarding({ initialValues, onNext, onPrev }: Pr
         type="secondary"
         style={{ fontSize: 12, display: "block", textAlign: "center" }}
       >
-        Podés agregar más categorías desde Configuración en cualquier momento.
+        {t("onboarding.category.footerNote")}
       </Text>
 
       <Row gutter={[16, 10]}>
         <Col xs={12}>
           <Button block type="default" onClick={onPrev}>
-            Volver
+            {t("onboarding.backButton")}
           </Button>
         </Col>
         <Col xs={12}>
@@ -159,7 +168,7 @@ export default function CategoryOnboarding({ initialValues, onNext, onPrev }: Pr
             variant="filled"
             onClick={() => onNext({ categoriesToAdd: categories })}
           >
-            Siguiente
+            {t("onboarding.nextButton")}
           </Button>
         </Col>
       </Row>

@@ -152,6 +152,7 @@ function MobileRow({
   onDelete: (id: number) => void;
   isDeleting: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <Card
       hoverable
@@ -188,13 +189,15 @@ function MobileRow({
       <Row justify="space-between" align="middle">
         <Col>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Inicio: {dayjs(investment.startDate).format("DD/MM/YY")}
+            {t("investments.mobileStartLabel")}{" "}
+            {dayjs(investment.startDate).format("DD/MM/YY")}
           </Text>
           {investment.endDate && (
             <>
               <br />
               <Text type="secondary" style={{ fontSize: 12 }}>
-                Fin: {dayjs(investment.endDate).format("DD/MM/YY")}
+                {t("investments.mobileEndLabel")}{" "}
+                {dayjs(investment.endDate).format("DD/MM/YY")}
               </Text>
             </>
           )}
@@ -218,13 +221,14 @@ export function InvestmentTable({
   onDelete,
   isDeleting,
 }: InvestmentTableProps) {
+  const { t } = useTranslation();
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
   if (investments.length === 0) {
     return (
       <Empty
-        description="Sin inversiones registradas"
+        description={t("investments.emptyState")}
         style={{ padding: "40px 0" }}
       />
     );
@@ -254,13 +258,13 @@ export function InvestmentTable({
         styles={{ body: { padding: COL_PADDING } }}
       >
         <Row justify="center" align="middle">
-          <Col span={6}>Descripción / Tipo</Col>
-          <Col span={5}>Monto</Col>
-          <Col span={4}>Fecha inicio</Col>
-          <Col span={4}>Fecha fin</Col>
-          <Col span={3}>Propietario</Col>
+          <Col span={6}>{t("investments.columnDescriptionType")}</Col>
+          <Col span={5}>{t("investments.columnAmount")}</Col>
+          <Col span={4}>{t("investments.columnStartDate")}</Col>
+          <Col span={4}>{t("investments.columnEndDate")}</Col>
+          <Col span={3}>{t("investments.columnOwner")}</Col>
           <Col span={2} style={{ textAlign: "right" }}>
-            Acciones
+            {t("investments.columnActions")}
           </Col>
         </Row>
       </Card>

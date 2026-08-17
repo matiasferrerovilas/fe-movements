@@ -1,6 +1,7 @@
 import { Card, Empty, Flex, Spin, theme } from "antd";
 import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,
   Legend,
@@ -49,6 +50,7 @@ type Props = {
 
 export default function AnnualEvolution({ year }: Props) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   // Los datos de evolución se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
   const { data = [], isFetching } = useBalanceMonthlyEvolution(year);
 
@@ -87,7 +89,7 @@ export default function AnnualEvolution({ year }: Props) {
 
   return (
     <Card
-      title="Evolución Anual de Gastos y Ahorro"
+      title={t("home.annualEvolutionTitle")}
       className="fade-in-up"
       style={{
         borderRadius: token.borderRadiusLG,
@@ -101,7 +103,7 @@ export default function AnnualEvolution({ year }: Props) {
         </Flex>
       ) : data.length === 0 ? (
         <Flex justify="center" style={{ padding: 40 }}>
-          <Empty description="Sin datos para el año seleccionado" />
+          <Empty description={t("home.annualEvolutionEmpty")} />
         </Flex>
       ) : (
         <>

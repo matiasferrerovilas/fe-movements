@@ -1,10 +1,12 @@
 import { Flex, Popover } from "antd";
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { capitalizeFirst } from "@/utils/stringFunctions";
 import type { Category } from "@/models/Category";
 import { getIconComponent } from "@/utils/getIconComponent";
 
 function CategoryIconCircle({ category }: { category?: Category }) {
+  const { t } = useTranslation();
   // Usar iconName e iconColor de la categoría, o defaults si no están definidos
   const iconElement = useMemo(() => {
     const IconComponent = getIconComponent(category?.iconName ?? "QuestionOutlined");
@@ -14,7 +16,7 @@ function CategoryIconCircle({ category }: { category?: Category }) {
   }, [category?.iconName]);
 
   const color = category?.iconColor ?? "#d9d9d9";
-  const displayName = category?.description ?? "Sin categoría";
+  const displayName = category?.description ?? t("movements.noCategoryOption");
 
   return (
     <div
@@ -37,7 +39,8 @@ function CategoryIconCircle({ category }: { category?: Category }) {
 }
 
 function CategoryCircle({ category }: { category?: Category }) {
-  const displayName = category?.description ?? "Sin categoría";
+  const { t } = useTranslation();
+  const displayName = category?.description ?? t("movements.noCategoryOption");
 
   return (
     <Popover content={capitalizeFirst(displayName)}>
@@ -93,9 +96,12 @@ function CategoryHalfIcon({
 }
 
 function SplitCategoryCircle({ categories }: { categories: Category[] }) {
+  const { t } = useTranslation();
   const [first, second] = categories;
   const names = categories
-    .map((category) => capitalizeFirst(category.description ?? "Sin categoría"))
+    .map((category) =>
+      capitalizeFirst(category.description ?? t("movements.noCategoryOption")),
+    )
     .join(" / ");
 
   return (
@@ -105,7 +111,11 @@ function SplitCategoryCircle({ categories }: { categories: Category[] }) {
           {categories.map((category) => (
             <Flex key={category.id} align="center" gap={8}>
               <CategoryIconCircle category={category} />
-              <span>{capitalizeFirst(category.description ?? "Sin categoría")}</span>
+              <span>
+                {capitalizeFirst(
+                  category.description ?? t("movements.noCategoryOption"),
+                )}
+              </span>
             </Flex>
           ))}
         </Flex>

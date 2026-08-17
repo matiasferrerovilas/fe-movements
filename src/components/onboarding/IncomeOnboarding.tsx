@@ -65,8 +65,11 @@ export default function IncomeOnboarding({
       >
         <Row gutter={[0, 0]}>
           <Col xs={24}>
-            <Form.Item name="bank" label={<Text strong>Banco</Text>}>
-              <Select placeholder="Banco en el cual recibís el ingreso">
+            <Form.Item
+              name="bank"
+              label={<Text strong>{t("onboarding.income.bankLabel")}</Text>}
+            >
+              <Select placeholder={t("onboarding.income.bankPlaceholder")}>
                 {banksToAdd.length > 0
                   ? banksToAdd.map((bank) => (
                       <Select.Option key={bank.description} value={bank.description}>
@@ -79,8 +82,11 @@ export default function IncomeOnboarding({
           </Col>
 
           <Col xs={24}>
-            <Form.Item name="currency" label={<Text strong>Moneda</Text>}>
-              <Select placeholder="En qué moneda recibís tu ingreso">
+            <Form.Item
+              name="currency"
+              label={<Text strong>{t("onboarding.income.currencyLabel")}</Text>}
+            >
+              <Select placeholder={t("onboarding.income.currencyPlaceholder")}>
                 {currencies.map((currency) => (
                   <Select.Option key={currency.id} value={currency.symbol}>
                     {currency.symbol}
@@ -112,7 +118,7 @@ export default function IncomeOnboarding({
                 label={<Text strong>Workspace</Text>}
               >
                 <Select
-                  placeholder="Seleccioná un workspace"
+                  placeholder={t("onboarding.income.workspacePlaceholder")}
                   options={accountsToAddOptions.map((g) => ({ label: g, value: g }))}
                 />
               </Form.Item>
@@ -121,13 +127,13 @@ export default function IncomeOnboarding({
         </Row>
 
         <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 12, textAlign: "center" }}>
-          Podés completar esto más tarde desde Configuración.
+          {t("onboarding.income.footerNote")}
         </Text>
 
         <Row gutter={[16, 10]}>
           <Col xs={12}>
             <Button block type="default" onClick={onPrev}>
-              Volver
+              {t("onboarding.backButton")}
             </Button>
           </Col>
           <Col xs={12}>
@@ -138,7 +144,7 @@ export default function IncomeOnboarding({
               onClick={handleSubmit}
               loading={isLoading}
             >
-              Finalizar
+              {t("onboarding.income.finishButton")}
             </Button>
           </Col>
         </Row>

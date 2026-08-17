@@ -5,6 +5,7 @@ import { ReactKeycloakProvider } from "@react-keycloak/web";
 import App from "@/App";
 import { AuthProvider } from "@/apis/auth/AuthProvider";
 import Forbidden from "@/components/Forbidden";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { logger } from "@/utils/logger";
 
 const keycloak = new Keycloak(window.env.keycloak);
@@ -49,9 +50,11 @@ export default function Root() {
       }}
     >
       <StrictMode>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <ErrorBoundary>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ErrorBoundary>
       </StrictMode>
     </ReactKeycloakProvider>
   );

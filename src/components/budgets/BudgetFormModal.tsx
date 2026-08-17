@@ -219,6 +219,7 @@ export function EditBudgetModal({
   onClose,
   budget,
 }: EditBudgetModalProps) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<EditBudgetForm>();
   const updateBudget = useUpdateBudget();
 
@@ -234,23 +235,24 @@ export function EditBudgetModal({
     );
   };
 
-  const categoryName = budget.category?.description ?? "Sin categoría";
+  const categoryName =
+    budget.category?.description ?? t("budgets.noCategoryOption");
 
   return (
     <ModalComponent
       open={open}
       onClose={handleClose}
-      title={`Editar presupuesto — ${categoryName}`}
+      title={t("budgets.edit.title", { category: categoryName })}
       width={400}
       footer={
         <Flex justify="flex-end" gap={8}>
-          <Button onClick={handleClose}>Cancelar</Button>
+          <Button onClick={handleClose}>{t("budgets.cancel")}</Button>
           <Button
             type="primary"
             loading={updateBudget.isPending}
             onClick={() => form.submit()}
           >
-            Guardar
+            {t("budgets.edit.save")}
           </Button>
         </Flex>
       }
@@ -265,13 +267,13 @@ export function EditBudgetModal({
         <Flex gap={16} style={{ marginBottom: 16 }}>
           <Flex vertical>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              Moneda
+              {t("budgets.currencyLabel")}
             </Text>
             <Text strong>{budget.currency.symbol}</Text>
           </Flex>
           <Flex vertical>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              Categoría
+              {t("budgets.categoryLabel")}
             </Text>
             <Text strong>{categoryName}</Text>
           </Flex>
@@ -279,19 +281,19 @@ export function EditBudgetModal({
 
         <Form.Item
           name="amount"
-          label="Nuevo monto"
+          label={t("budgets.edit.newAmountLabel")}
           rules={[
-            { required: true, message: "Ingresá un monto" },
+            { required: true, message: t("budgets.enterAmountMessage") },
             {
               type: "number",
               min: 0.01,
-              message: "El monto debe ser mayor a 0",
+              message: t("budgets.amountMinMessage"),
             },
           ]}
         >
           <InputNumber
             style={{ width: "100%" }}
-            placeholder="0.00"
+            placeholder={t("budgets.amountPlaceholder")}
             precision={2}
             min={0.01}
             autoFocus
@@ -305,11 +307,12 @@ export function EditBudgetModal({
 // ── Trigger button wrapper ──────────────────────────────────────────────────
 
 export function AddBudgetButton() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
     <>
       <Button type="primary" onClick={() => setOpen(true)}>
-        + Agregar presupuesto
+        {t("budgets.addButton")}
       </Button>
       <AddBudgetModal open={open} onClose={() => setOpen(false)} />
     </>

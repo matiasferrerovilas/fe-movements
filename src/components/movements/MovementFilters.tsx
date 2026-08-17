@@ -1,12 +1,13 @@
-import { App, Button, Card, Col, Collapse, Flex, Grid, Input, Row, Segmented, Select, Typography } from "antd";
+import { App, Card, Col, Collapse, Dropdown, Flex, Grid, Input, Row, Segmented, Select, Typography } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { MovementFilters } from "@/routes/movements";
 import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
 import { CurrencyEnum } from "@/enums/CurrencyEnum";
 import { useCategory } from "@/apis/hooks/useCategory";
-import { exportMovementsToCsv } from "@/apis/movement/exportMovements";
+import { exportMovementsToCsv, exportMovementsToPdf } from "@/apis/movement/exportMovements";
 import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
+import FilePdfOutlined from "@ant-design/icons/FilePdfOutlined";
 import FilterOutlined from "@ant-design/icons/FilterOutlined";
 import HistoryOutlined from "@ant-design/icons/HistoryOutlined";
 import RiseOutlined from "@ant-design/icons/RiseOutlined";
@@ -56,17 +57,20 @@ export default function MovementFilters({
   const { message } = App.useApp();
   const [exporting, setExporting] = useState(false);
 
-  const handleExport = useCallback(async () => {
-    setExporting(true);
-    try {
-      const count = await exportMovementsToCsv(filters, t);
-      if (count === 0) message.info(t("movements.exportNothingToExport"));
-    } catch {
-      message.error(t("movements.exportFailed"));
-    } finally {
-      setExporting(false);
-    }
-  }, [filters, message, t]);
+  const handleExport = useCallback(
+    async (format: "csv" | "pdf") => {
+      setExporting(true);
+      try {
+        const count = await (format === "csv" ? exportMovementsToCsv : exportMovementsToPdf)(filters, t);
+        if (count === 0) message.info(t("movements.exportNothingToExport"));
+      } catch {
+        message.error(t("movements.exportFailed"));
+      } finally {
+        setExporting(false);
+      }
+    },
+    [filters, message, t],
+  );
 
   const handleChange = useCallback(
     (
@@ -131,9 +135,18 @@ export default function MovementFilters({
           block={isMobile}
         />
         <Flex gap={12} vertical={isMobile}>
-          <Button icon={<DownloadOutlined />} loading={exporting} onClick={handleExport} block={isMobile}>
+          <Dropdown.Button
+            icon={<DownloadOutlined />}
+            loading={exporting}
+            onClick={() => handleExport("csv")}
+            style={isMobile ? { width: "100%" } : undefined}
+            menu={{
+              items: [{ key: "pdf", icon: <FilePdfOutlined />, label: t("movements.exportPdf") }],
+              onClick: () => handleExport("pdf"),
+            }}
+          >
             {t("movements.exportCsv")}
-          </Button>
+          </Dropdown.Button>
           {Modal}
         </Flex>
       </div>
