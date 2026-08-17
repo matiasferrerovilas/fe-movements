@@ -1,6 +1,8 @@
 import { Tour } from "antd";
 import type { TourProps } from "antd";
+import type { TFunction } from "i18next";
 import type { MutableRefObject } from "react";
+import { useTranslation } from "react-i18next";
 import { useMarkTourSeen } from "@/apis/hooks/useTour";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getServiceLabels } from "@/utils/serviceLabels";
@@ -16,8 +18,9 @@ type NavTourProps = {
 
 const getTourSteps = (
   userType: UserTypeEnum | null,
+  t: TFunction,
 ): Record<string, { title: string; description: string }> => {
-  const labels = getServiceLabels(userType);
+  const labels = getServiceLabels(userType, t);
 
   return {
     servicios: {
@@ -45,9 +48,10 @@ const getTourSteps = (
 export default function NavTour({ open, onClose, navRefsMap }: NavTourProps) {
   const { mutate: markSeen } = useMarkTourSeen();
   const { data: currentUser } = useCurrentUser();
+  const { t } = useTranslation();
 
   const userType = currentUser?.userType ?? null;
-  const tourSteps = getTourSteps(userType);
+  const tourSteps = getTourSteps(userType, t);
 
   const handleClose = () => {
     markSeen();

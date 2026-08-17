@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Card, Col, Row, Skeleton, Statistic } from "antd";
+import { useTranslation } from "react-i18next";
 import type { Investment } from "@/models/Investment";
 
 interface InvestmentDashboardProps {
@@ -11,6 +12,7 @@ export function InvestmentDashboard({
   investments,
   isFetching,
 }: InvestmentDashboardProps) {
+  const { t } = useTranslation();
   const totalInvertido = useMemo(
     () => investments.reduce((sum, inv) => sum + inv.amount, 0),
     [investments],
@@ -28,7 +30,7 @@ export function InvestmentDashboard({
         <Card size="small">
           <div data-testid="total-invertido">
             <Statistic
-              title="Total invertido"
+              title={t("investments.totalInvested")}
               value={totalInvertido}
               precision={2}
             />

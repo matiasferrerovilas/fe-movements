@@ -15,6 +15,7 @@ import {
   App,
 } from "antd";
 import { useKeycloak } from "@react-keycloak/web";
+import { useTranslation } from "react-i18next";
 import { useCategory, useMigrateCategory } from "@/apis/hooks/useCategory";
 
 const { Title, Text } = Typography;
@@ -25,6 +26,7 @@ interface MigrateCategoryForm {
 }
 
 export function SettingCategoryMigrate() {
+  const { t } = useTranslation();
   const { keycloak } = useKeycloak();
   const roles: string[] =
     (keycloak?.tokenParsed?.realm_access?.roles as string[]) ?? [];
@@ -53,12 +55,15 @@ export function SettingCategoryMigrate() {
         migrateMutation.mutate(values, {
           onSuccess: () => {
             message.success(
-              `Todos los movimientos de "${fromCategory?.description}" fueron migrados a "${toCategory?.description}".`,
+              t("settings.categoryMigrate.successMessage", {
+                from: fromCategory?.description,
+                to: toCategory?.description,
+              }),
             );
             form.resetFields();
           },
           onError: () => {
-            message.error("Ocurrió un error al migrar la categoría.");
+            message.error(t("settings.categoryMigrate.errorMessage"));
           },
         });
       })
@@ -67,11 +72,13 @@ export function SettingCategoryMigrate() {
 
   const confirmTitle =
     fromCategory && toCategory
-      ? `¿Migrar "${fromCategory.description}" → "${toCategory.description}"?`
-      : "¿Confirmar migración?";
+      ? t("settings.categoryMigrate.confirmTitleWithNames", {
+          from: fromCategory.description,
+          to: toCategory.description,
+        })
+      : t("settings.categoryMigrate.confirmTitleDefault");
 
-  const confirmDescription =
-    "Todos tus movimientos de la categoría origen serán reasignados a la categoría destino. Esta acción no se puede deshacer.";
+  const confirmDescription = t("settings.categoryMigrate.confirmDescription");
 
   return (
     <Card
@@ -102,11 +109,10 @@ export function SettingCategoryMigrate() {
         </div>
         <div>
           <Title level={5} style={{ margin: 0, color: token.colorWarningText }}>
-            Migrar Categoría
+            {t("settings.categoryMigrate.title")}
           </Title>
           <Text style={{ fontSize: 12, color: token.colorWarningText }}>
-            Solo administradores. Reasigna todos tus movimientos de una
-            categoría a otra.
+            {t("settings.categoryMigrate.subtitle")}
           </Text>
         </div>
       </Flex>
@@ -120,16 +126,16 @@ export function SettingCategoryMigrate() {
               name="fromCategoryId"
               label={
                 <Text style={{ fontSize: 13, color: token.colorWarningText, fontWeight: 600 }}>
-                  Categoría origen
+                  {t("settings.categoryMigrate.fromLabel")}
                 </Text>
               }
               style={{ marginBottom: 0 }}
               rules={[
-                { required: true, message: "Seleccioná la categoría origen" },
+                { required: true, message: t("settings.categoryMigrate.fromRequired") },
               ]}
             >
               <Select
-                placeholder="Seleccionar origen..."
+                placeholder={t("settings.categoryMigrate.fromPlaceholder")}
                 style={{ width: "100%" }}
                 options={categories
                   .filter((c) => c.id !== toCategoryId)
@@ -158,16 +164,16 @@ export function SettingCategoryMigrate() {
               name="toCategoryId"
               label={
                 <Text style={{ fontSize: 13, color: token.colorWarningText, fontWeight: 600 }}>
-                  Categoría destino
+                  {t("settings.categoryMigrate.toLabel")}
                 </Text>
               }
               style={{ marginBottom: 0 }}
               rules={[
-                { required: true, message: "Seleccioná la categoría destino" },
+                { required: true, message: t("settings.categoryMigrate.toRequired") },
               ]}
             >
               <Select
-                placeholder="Seleccionar destino..."
+                placeholder={t("settings.categoryMigrate.toPlaceholder")}
                 style={{ width: "100%" }}
                 options={categories
                   .filter((c) => c.id !== fromCategoryId)
@@ -182,8 +188,8 @@ export function SettingCategoryMigrate() {
             title={confirmTitle}
             description={confirmDescription}
             onConfirm={onConfirm}
-            okText="Migrar"
-            cancelText="Cancelar"
+            okText={t("settings.categoryMigrate.migrateButton")}
+            cancelText={t("settings.categoryMigrate.cancelButton")}
             okButtonProps={{
               loading: migrateMutation.isPending,
             }}
@@ -199,7 +205,7 @@ export function SettingCategoryMigrate() {
               loading={migrateMutation.isPending}
               disabled={!fromCategoryId || !toCategoryId}
             >
-              Migrar
+              {t("settings.categoryMigrate.migrateButton")}
             </Button>
           </Popconfirm>
         </Flex>

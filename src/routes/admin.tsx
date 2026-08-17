@@ -3,6 +3,8 @@ import { Col, Flex, Grid, Row, Tabs, Typography, theme } from "antd";
 import ToolOutlined from "@ant-design/icons/ToolOutlined";
 import SafetyOutlined from "@ant-design/icons/SafetyOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
 import { RoleEnum } from "@/enums/RoleEnum";
 import AdminUserType from "@/components/admin/AdminUserType";
@@ -21,6 +23,7 @@ export const Route = createFileRoute("/admin")({
 
 function MantenimientoPanel() {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
 
   return (
     <Flex
@@ -45,10 +48,10 @@ function MantenimientoPanel() {
       </div>
       <div style={{ textAlign: "center" }}>
         <Title level={5} style={{ margin: 0, fontWeight: 600 }}>
-          Sin acciones configuradas
+          {t("admin.maintenance.emptyTitle")}
         </Title>
         <Text type="secondary" style={{ fontSize: 13 }}>
-          Agregá acciones de mantenimiento acá.
+          {t("admin.maintenance.emptyDescription")}
         </Text>
       </div>
     </Flex>
@@ -57,20 +60,22 @@ function MantenimientoPanel() {
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
-const ADMIN_TABS = [
-  {
-    key: "perfil",
-    label: "Mi Perfil",
-    icon: <UserOutlined />,
-    children: <AdminUserType />,
-  },
-  {
-    key: "mantenimiento",
-    label: "Mantenimiento",
-    icon: <ToolOutlined />,
-    children: <MantenimientoPanel />,
-  },
-];
+function getAdminTabs(t: TFunction) {
+  return [
+    {
+      key: "perfil",
+      label: t("admin.tabs.profile"),
+      icon: <UserOutlined />,
+      children: <AdminUserType />,
+    },
+    {
+      key: "mantenimiento",
+      label: t("admin.tabs.maintenance"),
+      icon: <ToolOutlined />,
+      children: <MantenimientoPanel />,
+    },
+  ];
+}
 
 // ── RouteComponent ────────────────────────────────────────────────────────────
 
@@ -78,6 +83,8 @@ function RouteComponent() {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
   const { token } = theme.useToken();
+  const { t } = useTranslation();
+  const ADMIN_TABS = getAdminTabs(t);
 
   return (
     <Row justify="center" style={{ paddingTop: 30 }}>
@@ -106,10 +113,10 @@ function RouteComponent() {
           </div>
           <div>
             <Title level={4} style={{ margin: 0, fontWeight: 700, lineHeight: 1.2 }}>
-              Panel de administración
+              {t("admin.title")}
             </Title>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              Solo visible para administradores
+              {t("admin.subtitle")}
             </Text>
           </div>
         </Flex>

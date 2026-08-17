@@ -29,6 +29,8 @@ import UserOutlined from "@ant-design/icons/UserOutlined";
 import { useKeycloak } from "@react-keycloak/web";
 import { useRouter, useRouterState } from "@tanstack/react-router";
 import { Header } from "antd/es/layout/layout";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { useUserRoles } from "@/apis/hooks/useUserRoles";
 import { RoleEnum } from "@/enums/RoleEnum";
@@ -36,6 +38,7 @@ import { UserTypeEnum } from "@/enums/UserTypeEnum";
 import { useTheme } from "@/apis/theme/ThemeContext";
 import { useNotificationSubscription } from "@/apis/websocket/useNotificationSubscription";
 import { AppsGrid } from "@/components/AppsGrid";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import NavTour from "@/components/NavTour";
 import NotificationBell from "@/components/NotificationBell";
 import WorkspaceSelector from "@/components/WorkspaceSelector";
@@ -58,8 +61,8 @@ type SideBarItem = {
   roles?: string[];
 };
 
-const getNavItems = (userType: UserTypeEnum | null): SideBarItem[] => {
-  const labels = getServiceLabels(userType);
+const getNavItems = (userType: UserTypeEnum | null, t: TFunction): SideBarItem[] => {
+  const labels = getServiceLabels(userType, t);
 
   return [
     {
@@ -72,14 +75,14 @@ const getNavItems = (userType: UserTypeEnum | null): SideBarItem[] => {
     {
       key: "budgets",
       icon: <FundOutlined />,
-      label: "Presupuestos",
+      label: t("nav.budgets"),
       path: "/budgets",
       roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
     },
     {
       key: "movements",
       icon: <LineChartOutlined />,
-      label: "Movimientos",
+      label: t("nav.movements"),
       path: "/movements",
       roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
     },
@@ -87,39 +90,39 @@ const getNavItems = (userType: UserTypeEnum | null): SideBarItem[] => {
 };
 
 // Items que van en el dropdown del usuario
-const USER_MENU_ITEMS: SideBarItem[] = [
+const getUserMenuItems = (t: TFunction): SideBarItem[] => [
   {
     key: "settings",
     icon: <SettingOutlined />,
-    label: "Ajustes",
+    label: t("nav.settings"),
     path: "/settings",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
   {
     key: "help",
     icon: <QuestionCircleOutlined />,
-    label: "Ayuda",
+    label: t("nav.help"),
     path: "/help",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
   {
     key: "investments",
     icon: <RiseOutlined />,
-    label: "Inversiones",
+    label: t("nav.investments"),
     path: "/investments",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
   {
     key: "utilities",
     icon: <CalculatorOutlined />,
-    label: "Utilidades",
+    label: t("nav.utilities"),
     path: "/utilities",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
   {
     key: "admin",
     icon: <SafetyOutlined />,
-    label: "Admin",
+    label: t("nav.admin"),
     path: "/admin",
     roles: [RoleEnum.ADMIN],
   },
@@ -307,6 +310,7 @@ function NavSlider({ items, activeKey, onSelect, token, onRefRegister }: NavSlid
 // ── NavHeader ──────────────────────────────────────────────────────────────
 
 export default function NavHeader() {
+  const { t } = useTranslation();
   const screens = useBreakpoint();
   const isMobile = !screens.md;
   const { keycloak } = useKeycloak();
@@ -329,9 +333,10 @@ export default function NavHeader() {
 
   // Generar items de navegación dinámicamente según el tipo de usuario
   const navItems = useMemo(
-    () => getNavItems(currentUser?.userType ?? null),
-    [currentUser?.userType],
+    () => getNavItems(currentUser?.userType ?? null, t),
+    [currentUser?.userType, t],
   );
+  const userMenuItems = useMemo(() => getUserMenuItems(t), [t]);
 
   // Tour state and refs
   const [tourOpen, setTourOpen] = useState(false);
@@ -359,7 +364,7 @@ export default function NavHeader() {
     (item) => !item.roles?.length || hasAnyRole(...(item.roles ?? [])),
   );
 
-  const userMenuVisible = USER_MENU_ITEMS.filter(
+  const userMenuVisible = userMenuItems.filter(
     (item) => !item.roles?.length || hasAnyRole(...(item.roles ?? [])),
   );
 
@@ -379,8 +384,22 @@ export default function NavHeader() {
       }}
       shape="round"
       options={[
-        { label: <SunOutlined />, value: "light" },
-        { label: <MoonOutlined />, value: "dark" },
+        {
+          label: (
+            <span aria-label={t("nav.lightMode")}>
+              <SunOutlined />
+            </span>
+          ),
+          value: "light",
+        },
+        {
+          label: (
+            <span aria-label={t("nav.darkMode")}>
+              <MoonOutlined />
+            </span>
+          ),
+          value: "dark",
+        },
       ]}
     />
   );
@@ -415,7 +434,7 @@ export default function NavHeader() {
         ))}
         <ProfileTile
           icon={isDark ? <SunOutlined /> : <MoonOutlined />}
-          label={isDark ? "Modo claro" : "Modo oscuro"}
+          label={isDark ? t("nav.lightMode") : t("nav.darkMode")}
           onClick={() => {
             toggleTheme();
             closeProfile();
@@ -424,8 +443,17 @@ export default function NavHeader() {
       </Flex>
       <Divider style={{ margin: 0 }} />
       <div style={{ padding: "12px 16px" }}>
+        <Flex justify="space-between" align="center">
+          <Text type="secondary" style={{ fontSize: 11 }}>
+            {t("nav.language")}
+          </Text>
+          <LanguageSwitcher />
+        </Flex>
+      </div>
+      <Divider style={{ margin: 0 }} />
+      <div style={{ padding: "12px 16px" }}>
         <Text type="secondary" style={{ fontSize: 11 }}>
-          Apps
+          {t("nav.apps")}
         </Text>
         <div style={{ marginTop: 8 }}>
           <AppsGrid />
@@ -435,7 +463,7 @@ export default function NavHeader() {
       <div style={{ padding: "4px 0" }}>
         <ProfileMenuItem
           icon={<LogoutOutlined />}
-          label="Cerrar sesión"
+          label={t("nav.logout")}
           danger
           onClick={() => {
             closeProfile();
@@ -458,6 +486,7 @@ export default function NavHeader() {
       <span
         ref={(el) => handleRefRegister("profile", el as unknown as HTMLButtonElement)}
         style={{ display: "inline-flex" }}
+        aria-label={t("nav.profile")}
       >
         <Avatar
           size={36}
@@ -492,6 +521,7 @@ export default function NavHeader() {
               type="text"
               icon={<MenuOutlined style={{ fontSize: 20 }} />}
               onClick={() => setDrawerOpen(true)}
+              aria-label={t("nav.openMenu")}
             />
             <button
               onClick={() => router.navigate({ to: "/" })}
@@ -607,8 +637,11 @@ export default function NavHeader() {
           <Flex gap={8} style={{ marginBottom: 8 }}>
             {ThemeToggle}
             <Text type="secondary" style={{ lineHeight: "32px", fontSize: 13 }}>
-              {isDark ? "Modo oscuro" : "Modo claro"}
+              {isDark ? t("nav.darkMode") : t("nav.lightMode")}
             </Text>
+          </Flex>
+          <Flex gap={8} style={{ marginBottom: 16 }}>
+            <LanguageSwitcher />
           </Flex>
           <Button
             block
@@ -616,7 +649,7 @@ export default function NavHeader() {
             icon={<LogoutOutlined />}
             onClick={() => keycloak.logout()}
           >
-            Cerrar sesión
+            {t("nav.logout")}
           </Button>
         </div>
       </Drawer>

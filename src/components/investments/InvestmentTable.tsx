@@ -13,6 +13,7 @@ import {
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 import type { Investment } from "@/models/Investment";
 
 const { Text } = Typography;
@@ -39,29 +40,30 @@ function ActionButtons({
   onDelete: (id: number) => void;
   isDeleting: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div style={{ display: "flex", gap: 4, justifyContent: "flex-end" }}>
-      <Tooltip title="Editar">
+      <Tooltip title={t("investments.edit")}>
         <Button
           icon={<EditOutlined />}
           size="small"
-          aria-label="editar"
+          aria-label={t("investments.editAriaLabel")}
           onClick={() => onEdit(investment)}
         />
       </Tooltip>
       <Popconfirm
-        title="¿Eliminar esta inversión?"
-        okText="Sí"
-        cancelText="No"
+        title={t("investments.deleteConfirmTitle")}
+        okText={t("investments.yes")}
+        cancelText={t("investments.no")}
         placement="topRight"
         onConfirm={() => onDelete(investment.id)}
       >
-        <Tooltip title="Eliminar">
+        <Tooltip title={t("investments.delete")}>
           <Button
             icon={<DeleteOutlined />}
             size="small"
             danger
-            aria-label="eliminar"
+            aria-label={t("investments.deleteAriaLabel")}
             loading={isDeleting}
           />
         </Tooltip>

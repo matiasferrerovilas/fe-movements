@@ -5,6 +5,7 @@ import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { acceptRejectWorkspaceInvitationApi } from "@/apis/WorkspaceApi";
 
 const { Text } = Typography;
@@ -17,6 +18,7 @@ export default function SettingInviteWorkspaceCard({
   invite,
 }: SettingInviteWorkspaceCardProps) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const respondInvitationMutation = useMutation({
@@ -88,7 +90,7 @@ export default function SettingInviteWorkspaceCard({
             </Text>
             <Flex align="center" gap={6} style={{ minWidth: 0 }}>
               <Text type="secondary" style={{ fontSize: 12, flexShrink: 0 }}>
-                Invitado por
+                {t("settings.inviteWorkspace.invitedByLabel")}
               </Text>
               <Text
                 style={{
@@ -122,7 +124,7 @@ export default function SettingInviteWorkspaceCard({
                 borderColor: token.colorSuccess,
               }}
             >
-              Aceptar
+              {t("settings.inviteWorkspace.acceptButton")}
             </Button>
           </Col>
 
@@ -135,7 +137,7 @@ export default function SettingInviteWorkspaceCard({
               block
               style={{ borderRadius: 20, fontWeight: 600 }}
             >
-              Rechazar
+              {t("settings.inviteWorkspace.rejectButton")}
             </Button>
           </Col>
         </Row>

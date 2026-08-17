@@ -1,6 +1,7 @@
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import { Button, Col, Form, Input, Row, Space, Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import type { OnboardingForm } from "@/apis/onboarding/OnboardingApi";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
@@ -14,8 +15,9 @@ interface Props {
 
 export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
   const [form] = Form.useForm<{ accountsToAdd: string[] }>();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {

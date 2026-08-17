@@ -20,6 +20,7 @@ import CheckCircleOutlined from "@ant-design/icons/CheckCircleOutlined";
 import CloseCircleOutlined from "@ant-design/icons/CloseCircleOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 import type { ServiceToAdd } from "@/apis/SubscriptionApi";
 import { useCurrency } from "@/apis/hooks/useCurrency";
 import { useUserDefault } from "@/apis/hooks/useSettings";
@@ -48,7 +49,8 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const { token } = theme.useToken();
 
   const { data: currentUser } = useCurrentUser();
-  const labels = getServiceLabels(currentUser?.userType ?? null);
+  const { t } = useTranslation();
+  const labels = getServiceLabels(currentUser?.userType ?? null, t);
 
   const onFinish = (values: CreateServiceForm) => {
     const service: ServiceToAdd = {

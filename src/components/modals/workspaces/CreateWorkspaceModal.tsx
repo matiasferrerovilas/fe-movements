@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Form, Input } from "antd";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import type { CreateWorkspaceForm } from "@/models/UserWorkspace";
 import { addWorkspaceApi } from "@/apis/WorkspaceApi";
 import ModalComponent from "@/components/modals/Modal";
@@ -17,8 +18,9 @@ export default function CreateWorkspaceModal({ children }: CreateWorkspaceModalP
   const [form] = Form.useForm<CreateWorkspaceForm>();
   const [modalOpen, setModalOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => {

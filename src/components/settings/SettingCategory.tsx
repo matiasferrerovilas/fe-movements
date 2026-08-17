@@ -18,6 +18,7 @@ import {
   Typography,
 } from "antd";
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   useAddCategory,
   useCategory,
@@ -46,7 +47,8 @@ interface CategoryCardProps {
 
 function CategoryCard({ category, onDelete, onEdit, isDeleting, categoriasQuitar }: CategoryCardProps) {
   const { token } = theme.useToken();
-  
+  const { t } = useTranslation();
+
   // Usar iconName e iconColor de la categoría, o defaults si no están definidos
   const iconElement = useMemo(() => {
     const IconComponent = getIconComponent(category.iconName ?? "TagOutlined");
@@ -100,10 +102,10 @@ function CategoryCard({ category, onDelete, onEdit, isDeleting, categoriasQuitar
           </Text>
         </Flex>
         <Space size={4}>
-          <Tooltip title="Editar categoría">
+          <Tooltip title={t("settings.category.editTooltip")}>
             <Button
               type="text"
-              aria-label={`Editar categoría ${category.description}`}
+              aria-label={t("settings.category.editAriaLabel", { name: category.description })}
               onClick={() => onEdit(category)}
               style={{
                 borderRadius: "50%",
@@ -120,23 +122,23 @@ function CategoryCard({ category, onDelete, onEdit, isDeleting, categoriasQuitar
           <Tooltip
             title={
               !category.isDeletable
-                ? "Esta categoría no se puede eliminar"
-                : "Eliminar categoría"
+                ? t("settings.category.deleteTooltipDisabled")
+                : t("settings.category.deleteTooltipEnabled")
             }
           >
             <Popconfirm
-              title="¿Eliminar esta categoría?"
+              title={t("settings.category.deleteConfirmTitle")}
               description={categoriasQuitar}
               onConfirm={() => onDelete(category.id)}
-              okText="Eliminar"
-              cancelText="Cancelar"
+              okText={t("settings.category.deleteConfirmOk")}
+              cancelText={t("settings.category.deleteConfirmCancel")}
               okButtonProps={{ danger: true }}
               disabled={!category.isDeletable}
             >
               <Button
                 type="text"
                 danger
-                aria-label={`Eliminar categoría ${category.description}`}
+                aria-label={t("settings.category.deleteAriaLabel", { name: category.description })}
                 style={{
                   borderRadius: "50%",
                   width: 34,
@@ -164,8 +166,9 @@ export function SettingCategory() {
   const deleteCategoryMutation = useDeleteCategory();
   const [form] = Form.useForm<AddCategoryForm>();
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   // Estado para el modal de edición
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -213,7 +216,7 @@ export function SettingCategory() {
           </div>
           <div>
             <Title level={5} style={{ margin: 0 }}>
-              Mis Categorías
+              {t("settings.category.title")}
             </Title>
             <Text type="secondary" style={{ fontSize: 12 }}>
               {labels.categoriasSubtitle}
@@ -242,7 +245,7 @@ export function SettingCategory() {
               marginBottom: 10,
             }}
           >
-            Nueva Categoría
+            {t("settings.category.newCategoryLabel")}
           </Text>
           <Form form={form} layout="vertical" onFinish={onFinish}>
             <Row gutter={[12, 0]} align="middle">
@@ -253,7 +256,7 @@ export function SettingCategory() {
                   rules={[
                     {
                       required: true,
-                      message: "Ingresá el nombre de la categoría",
+                      message: t("settings.category.nameRequired"),
                     },
                   ]}
                 >
@@ -263,7 +266,7 @@ export function SettingCategory() {
                       height: 40,
                       fontSize: 14,
                     }}
-                    placeholder="Nombre de la categoría..."
+                    placeholder={t("settings.category.namePlaceholder")}
                   />
                 </Form.Item>
               </Col>
@@ -276,7 +279,7 @@ export function SettingCategory() {
                   style={{ height: 40, borderRadius: 10, fontWeight: 600 }}
                   loading={addCategoryMutation.isPending}
                 >
-                  Agregar
+                  {t("settings.category.addButton")}
                 </Button>
               </Col>
             </Row>

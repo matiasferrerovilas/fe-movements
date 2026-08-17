@@ -1,6 +1,7 @@
 import SearchOutlined from "@ant-design/icons/SearchOutlined";
 import { Flex, Input, theme, Typography } from "antd";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AVAILABLE_ICONS, searchIcons } from "@/utils/availableIcons";
 import { getIconComponent } from "@/utils/getIconComponent";
 
@@ -14,6 +15,7 @@ interface IconPickerProps {
 
 export function IconPicker({ value, onChange, selectedColor }: IconPickerProps) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredIcons = useMemo(
@@ -34,13 +36,13 @@ export function IconPicker({ value, onChange, selectedColor }: IconPickerProps) 
           marginBottom: 8,
         }}
       >
-        Ícono
+        {t("settings.iconPicker.label")}
       </Text>
 
       {/* Buscador */}
       <Input
         prefix={<SearchOutlined />}
-        placeholder="Buscar ícono..."
+        placeholder={t("settings.iconPicker.searchPlaceholder")}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{
@@ -71,7 +73,7 @@ export function IconPicker({ value, onChange, selectedColor }: IconPickerProps) 
               padding: "20px 0",
             }}
           >
-            No se encontraron íconos
+            {t("settings.iconPicker.noResults")}
           </Text>
         ) : (
           <Flex wrap="wrap" gap={6}>
@@ -112,6 +114,7 @@ export function IconPicker({ value, onChange, selectedColor }: IconPickerProps) 
                     }
                   }}
                   title={icon.keywords.join(", ")}
+                  aria-label={t("settings.iconPicker.iconAriaLabel", { name: icon.name })}
                 >
                   <IconComponent
                     style={{
@@ -136,7 +139,7 @@ export function IconPicker({ value, onChange, selectedColor }: IconPickerProps) 
             marginTop: 8,
           }}
         >
-          Seleccionado: {value}
+          {t("settings.iconPicker.selectedLabel", { name: value })}
         </Text>
       )}
 
@@ -149,7 +152,10 @@ export function IconPicker({ value, onChange, selectedColor }: IconPickerProps) 
           marginTop: 4,
         }}
       >
-        {filteredIcons.length} de {AVAILABLE_ICONS.length} íconos
+        {t("settings.iconPicker.resultsCount", {
+          filtered: filteredIcons.length,
+          total: AVAILABLE_ICONS.length,
+        })}
       </Text>
     </div>
   );

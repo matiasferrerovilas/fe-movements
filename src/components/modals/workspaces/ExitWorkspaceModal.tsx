@@ -1,6 +1,7 @@
 import { Button, Popconfirm } from "antd";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import type { Workspace } from "@/models/UserWorkspace";
 import { exitWorkspaceApi } from "@/apis/WorkspaceApi";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
@@ -11,8 +12,9 @@ interface ExitWorkspaceModalProps {
 }
 export default function ExitWorkspaceModal({ group }: ExitWorkspaceModalProps) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
   const exitWorkspaceMutation = useMutation({
     mutationFn: () => exitWorkspaceApi(group.workspaceId),
     onError: (err) => {
@@ -28,8 +30,8 @@ export default function ExitWorkspaceModal({ group }: ExitWorkspaceModalProps) {
     <Popconfirm
       title={labels.workspaceSalir}
       onConfirm={() => exitWorkspaceMutation.mutate()}
-      okText="Sí"
-      cancelText="No"
+      okText={t("settings.currentWorkspace.exitConfirmOk")}
+      cancelText={t("settings.currentWorkspace.exitConfirmCancel")}
       placement="topRight"
     >
       <Button
@@ -41,7 +43,8 @@ export default function ExitWorkspaceModal({ group }: ExitWorkspaceModalProps) {
           padding: "4px 8px",
           fontSize: 18,
         }}
-        title="Salir del grupo"
+        title={t("settings.currentWorkspace.exitButton")}
+        aria-label={t("settings.currentWorkspace.exitButton")}
       />
     </Popconfirm>
   );

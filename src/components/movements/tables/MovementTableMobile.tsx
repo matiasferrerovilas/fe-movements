@@ -1,6 +1,7 @@
 import { Card, Col, Empty, Row, Tag, Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import type { MovementTableViewProps } from "@/components/movements/tables/types";
-import { TypeEnum, TypeEnumLabel } from "@/enums/TypeEnum";
+import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
 import CategoryCircleTable from "@/components/movements/tables/CategoryCircleTable";
 import { capitalizeFirst } from "@/utils/stringFunctions";
 import MovementActionButtons from "@/components/movements/tables/MovementActionButtons";
@@ -12,10 +13,13 @@ export default function MovementTableMobile({
   onDelete,
   getCardStyle,
 }: MovementTableViewProps) {
+  const { t } = useTranslation();
+  const typeEnumLabel = getTypeEnumLabel(t);
+
   return (
     <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
       {movements.length === 0 ? (
-        <Empty description="Sin movimientos" style={{ padding: "40px 0" }} />
+        <Empty description={t("movements.noMovements")} style={{ padding: "40px 0" }} />
       ) : (
         movements.map((record, index) => (
           <Card
@@ -54,11 +58,11 @@ export default function MovementTableMobile({
                 <Tag>{capitalizeFirst(record.bank)}</Tag>
               </Col>
               <Col>
-                <Tag>{TypeEnumLabel[record.type as TypeEnum] ?? record.type}</Tag>
+                <Tag>{typeEnumLabel[record.type as TypeEnum] ?? record.type}</Tag>
               </Col>
               {record.cuotasTotales != null && record.cuotasTotales > 0 && (
                 <Col>
-                  <Tag color="orange">{record.installments} cuotas</Tag>
+                  <Tag color="orange">{t("movements.installmentsTag", { installments: record.installments })}</Tag>
                 </Col>
               )}
             </Row>

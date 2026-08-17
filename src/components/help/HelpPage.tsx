@@ -12,7 +12,8 @@ import UserAddOutlined from "@ant-design/icons/UserAddOutlined";
 import WalletOutlined from "@ant-design/icons/WalletOutlined";
 import { Col, Collapse, Flex, Row, theme, Typography } from "antd";
 import React, { useMemo } from "react";
-import { HELP_SECTIONS, type HelpParagraph, type HelpSection } from "@/components/help/helpContent";
+import { useTranslation } from "react-i18next";
+import { getHelpSections, type HelpParagraph, type HelpSection } from "@/components/help/helpContent";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -33,6 +34,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 
 function HelpParagraphRenderer({ paragraph }: { paragraph: HelpParagraph }) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
 
   if (paragraph.type === "text") {
     return (
@@ -72,7 +74,7 @@ function HelpParagraphRenderer({ paragraph }: { paragraph: HelpParagraph }) {
         }}
       >
         <Text style={{ color: token.colorPrimary, fontWeight: 500 }}>
-          Tip:{" "}
+          {t("help.tipLabel")}{" "}
         </Text>
         <Text style={{ color: token.colorText }}>{paragraph.content as string}</Text>
       </div>
@@ -94,10 +96,13 @@ function HelpSectionContent({ section }: { section: HelpSection }) {
 
 export function HelpPage() {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
+
+  const helpSections = useMemo(() => getHelpSections(t), [t]);
 
   const collapseItems = useMemo(
     () =>
-      HELP_SECTIONS.map((section) => ({
+      helpSections.map((section) => ({
         key: section.key,
         label: (
           <Flex align="center" gap={10}>
@@ -118,7 +123,7 @@ export function HelpPage() {
         ),
         children: <HelpSectionContent section={section} />,
       })),
-    [token.colorPrimary],
+    [helpSections, token.colorPrimary],
   );
 
   return (
@@ -150,10 +155,10 @@ export function HelpPage() {
           </div>
           <div>
             <Title level={3} style={{ margin: 0 }}>
-              Centro de Ayuda
+              {t("help.title")}
             </Title>
             <Text type="secondary">
-              Aprendé a usar todas las funciones de la aplicación
+              {t("help.subtitle")}
             </Text>
           </div>
         </Flex>
@@ -180,7 +185,7 @@ export function HelpPage() {
           }}
         >
           <Text type="secondary" style={{ fontSize: 13 }}>
-            ¿Tenés más dudas? Escribinos a soporte@movements.app
+            {t("help.footerNote")}
           </Text>
         </Flex>
       </Col>

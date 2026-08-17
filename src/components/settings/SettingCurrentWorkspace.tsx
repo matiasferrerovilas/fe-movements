@@ -2,6 +2,7 @@ import { Avatar, Card, Divider, Empty, Flex, List, theme, Typography } from "ant
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import MailOutlined from "@ant-design/icons/MailOutlined";
+import { useTranslation } from "react-i18next";
 import { useCurrentWorkspace } from "@/apis/workspace/WorkspaceContext";
 import { useWorkspacesSubscription } from "@/apis/websocket/useWorkspacesSubscription";
 import InviteUserToWorkspace from "@/components/modals/workspaces/InviteUserToWorkspace";
@@ -13,11 +14,12 @@ const { Title, Text } = Typography;
 
 export function SettingCurrentWorkspace() {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const { currentWorkspace, workspaces, isLoading } = useCurrentWorkspace();
   // Los miembros vienen incluidos en el workspace activo (metadata.members)
   const members = currentWorkspace?.metadata.members ?? [];
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   useWorkspacesSubscription();
 
@@ -27,7 +29,7 @@ export function SettingCurrentWorkspace() {
   if (!currentWorkspace) {
     return (
       <Card loading={isLoading} style={{ borderRadius: 16 }}>
-        <Empty description="No hay workspace seleccionado" />
+        <Empty description={t("settings.currentWorkspace.noWorkspaceSelected")} />
       </Card>
     );
   }
@@ -65,8 +67,9 @@ export function SettingCurrentWorkspace() {
                 padding: "2px 8px",
               }}
             >
-              {currentWorkspace.metadata.members.length} miembro
-              {currentWorkspace.metadata.members.length !== 1 && "s"}
+              {t("settings.currentWorkspace.memberCount", {
+                count: currentWorkspace.metadata.members.length,
+              })}
             </span>
           </Flex>
           <Text type="secondary" style={{ fontSize: 12 }}>

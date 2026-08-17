@@ -3,7 +3,7 @@ import type { MovementFilters } from "@/routes/movements";
 import type { PageResponse } from "@/models/BaseMode";
 import type { CreateMovementForm, Movement } from "@/models/Movement";
 import type { UploadPayload } from "@/components/modals/movements/ImportMovementTab";
-import { api } from "@/apis/axios";
+import { api, LONG_OPERATION_TIMEOUT_MS } from "@/apis/axios";
 
 type ParamsValue = string | number | boolean | undefined | null;
 type ParamsObject = Record<string, ParamsValue | ParamsValue[]>;
@@ -58,6 +58,7 @@ export const uploadExpenseApi = async (form: UploadPayload) => {
     headers: {
       "Content-Type": "multipart/form-data",
     },
+    timeout: LONG_OPERATION_TIMEOUT_MS,
   });
 
   return response.data;

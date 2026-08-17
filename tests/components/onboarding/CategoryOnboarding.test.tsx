@@ -152,8 +152,8 @@ describe("CategoryOnboarding", () => {
       const user = userEvent.setup();
       renderCategoria(vi.fn(), vi.fn(), { categoriesToAdd: ["COMIDA", "TRANSPORTE"] });
 
-      // Ant Design Tag renderiza el closeIcon como un <span role="img" aria-label="Close">
-      const closeIcons = screen.getAllByRole("img", { name: /close/i });
+      // Ant Design Tag renderiza el closeIcon como un <span role="img" aria-label="Quitar categoría ...">
+      const closeIcons = screen.getAllByRole("img", { name: /quitar categoría/i });
       // El primer close pertenece al tag "Comida"
       await user.click(closeIcons[0]);
 

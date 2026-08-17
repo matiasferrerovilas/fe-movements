@@ -15,6 +15,7 @@ import {
   theme,
 } from "antd";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
 
@@ -32,8 +33,9 @@ export default function CategoryOnboarding({ initialValues, onNext, onPrev }: Pr
   const [categories, setCategories] = useState<string[]>(
     initialValues.categoriesToAdd ?? [],
   );
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   const handleAdd = () => {
     form.validateFields().then(({ description }) => {
@@ -122,7 +124,9 @@ export default function CategoryOnboarding({ initialValues, onNext, onPrev }: Pr
             {categories.map((cat) => (
               <Tag
                 key={cat}
-                closeIcon={<DeleteOutlined />}
+                closeIcon={
+                  <DeleteOutlined aria-label={`Quitar categoría ${cat}`} />
+                }
                 onClose={() => handleRemove(cat)}
                 icon={<TagOutlined />}
                 color="blue"

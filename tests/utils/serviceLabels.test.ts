@@ -1,10 +1,13 @@
 import { describe, it, expect } from "vitest";
+import i18n from "@/i18n/config";
 import { getServiceLabels } from "@/utils/serviceLabels";
 import { UserTypeEnum } from "@/enums/UserTypeEnum";
 
+const t = i18n.t.bind(i18n);
+
 describe("getServiceLabels", () => {
   it("retorna labels de 'Servicios' cuando userType es PERSONAL", () => {
-    const labels = getServiceLabels(UserTypeEnum.PERSONAL);
+    const labels = getServiceLabels(UserTypeEnum.PERSONAL, t);
 
     expect(labels.singular).toBe("Servicio");
     expect(labels.singularLower).toBe("servicio");
@@ -22,7 +25,7 @@ describe("getServiceLabels", () => {
   });
 
   it("retorna labels de 'Gastos Recurrentes' cuando userType es ENTERPRISE", () => {
-    const labels = getServiceLabels(UserTypeEnum.ENTERPRISE);
+    const labels = getServiceLabels(UserTypeEnum.ENTERPRISE, t);
 
     expect(labels.singular).toBe("Gasto Recurrente");
     expect(labels.singularLower).toBe("gasto recurrente");
@@ -40,7 +43,7 @@ describe("getServiceLabels", () => {
   });
 
   it("retorna labels de 'Servicios' cuando userType es null (fallback)", () => {
-    const labels = getServiceLabels(null);
+    const labels = getServiceLabels(null, t);
 
     expect(labels.singular).toBe("Servicio");
     expect(labels.plural).toBe("Servicios");
@@ -51,7 +54,7 @@ describe("getServiceLabels", () => {
   });
 
   it("retorna un objeto con todos los campos esperados", () => {
-    const labels = getServiceLabels(UserTypeEnum.PERSONAL);
+    const labels = getServiceLabels(UserTypeEnum.PERSONAL, t);
 
     expect(labels).toHaveProperty("singular");
     expect(labels).toHaveProperty("singularLower");

@@ -11,6 +11,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
+import { useTranslation } from "react-i18next";
 import ModalComponent from "@/components/modals/Modal";
 import { useAddBudget, useUpdateBudget } from "@/apis/hooks/useBudget";
 import { useCategory } from "@/apis/hooks/useCategory";
@@ -22,12 +23,6 @@ const { Text } = Typography;
 // ── Add form ────────────────────────────────────────────────────────────────
 
 type BudgetType = "RECURRING" | "ONE_TIME" | "ANNUAL";
-
-const BUDGET_TYPE_TABS = [
-  { key: "RECURRING", label: "Recurrente" },
-  { key: "ONE_TIME", label: "Único" },
-  { key: "ANNUAL", label: "Anual" },
-];
 
 interface AddBudgetForm {
   category: string | null;
@@ -43,8 +38,15 @@ interface AddBudgetModalProps {
 }
 
 export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<AddBudgetForm>();
   const [budgetType, setBudgetType] = useState<BudgetType>("RECURRING");
+
+  const BUDGET_TYPE_TABS = [
+    { key: "RECURRING", label: t("budgets.typeRecurring") },
+    { key: "ONE_TIME", label: t("budgets.typeOneTime") },
+    { key: "ANNUAL", label: t("budgets.typeAnnual") },
+  ];
 
   const addBudget = useAddBudget();
 
@@ -83,7 +85,7 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
   };
 
   const categoryOptions = [
-    { label: "Sin categoría", value: "__none__" },
+    { label: t("budgets.noCategoryOption"), value: "__none__" },
     ...categories.map((c) => ({ label: c.description, value: c.description })),
   ];
 
@@ -91,17 +93,17 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
     <ModalComponent
       open={open}
       onClose={handleClose}
-      title="Agregar presupuesto"
+      title={t("budgets.addBudgetTitle")}
       width={480}
       footer={
         <Flex justify="flex-end" gap={8}>
-          <Button onClick={handleClose}>Cancelar</Button>
+          <Button onClick={handleClose}>{t("budgets.cancel")}</Button>
           <Button
             type="primary"
             loading={addBudget.isPending}
             onClick={() => form.submit()}
           >
-            Agregar
+            {t("budgets.add")}
           </Button>
         </Flex>
       }
@@ -115,11 +117,11 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
       >
         <Form.Item
           name="currency"
-          label="Moneda"
-          rules={[{ required: true, message: "Seleccioná una moneda" }]}
+          label={t("budgets.currencyLabel")}
+          rules={[{ required: true, message: t("budgets.selectCurrencyPlaceholder") }]}
         >
           <Select
-            placeholder="Seleccioná una moneda"
+            placeholder={t("budgets.selectCurrencyPlaceholder")}
             options={currencies.map((c) => ({
               label: c.symbol,
               value: c.symbol,
@@ -127,9 +129,9 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
           />
         </Form.Item>
 
-        <Form.Item name="category" label="Categoría">
+        <Form.Item name="category" label={t("budgets.categoryLabel")}>
           <Select
-            placeholder="Sin categoría"
+            placeholder={t("budgets.noCategoryOption")}
             options={categoryOptions}
             allowClear
             onChange={(val) => {
@@ -140,25 +142,25 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
 
         <Form.Item
           name="amount"
-          label="Monto"
+          label={t("budgets.amountLabel")}
           rules={[
-            { required: true, message: "Ingresá un monto" },
+            { required: true, message: t("budgets.enterAmountMessage") },
             {
               type: "number",
               min: 0.01,
-              message: "El monto debe ser mayor a 0",
+              message: t("budgets.amountMinMessage"),
             },
           ]}
         >
           <InputNumber
             style={{ width: "100%" }}
-            placeholder="0.00"
+            placeholder={t("budgets.amountPlaceholder")}
             precision={2}
             min={0.01}
           />
         </Form.Item>
 
-        <Form.Item label="Tipo de presupuesto">
+        <Form.Item label={t("budgets.budgetTypeLabel")}>
           <Tabs
             activeKey={budgetType}
             onChange={(key) => setBudgetType(key as BudgetType)}
@@ -169,14 +171,14 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
         {budgetType === "ONE_TIME" && (
           <Form.Item
             name="monthYear"
-            label="Mes y año"
-            rules={[{ required: true, message: "Seleccioná el mes" }]}
+            label={t("budgets.monthYearLabel")}
+            rules={[{ required: true, message: t("budgets.selectMonthMessage") }]}
           >
             <DatePicker
               picker="month"
               style={{ width: "100%" }}
               format="MM/YYYY"
-              placeholder="Seleccioná el mes"
+              placeholder={t("budgets.selectMonthMessage")}
             />
           </Form.Item>
         )}
@@ -184,14 +186,14 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
         {budgetType === "ANNUAL" && (
           <Form.Item
             name="year"
-            label="Año"
-            rules={[{ required: true, message: "Seleccioná el año" }]}
+            label={t("budgets.yearLabel")}
+            rules={[{ required: true, message: t("budgets.selectYearMessage") }]}
           >
             <DatePicker
               picker="year"
               style={{ width: "100%" }}
               format="YYYY"
-              placeholder="Seleccioná el año"
+              placeholder={t("budgets.selectYearMessage")}
             />
           </Form.Item>
         )}

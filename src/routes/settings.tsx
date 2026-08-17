@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { SettingIncome } from "@/components/settings/SettingIncome";
 import { Col, Flex, Grid, Row, Tabs } from "antd";
 import { SettingCurrentWorkspace } from "@/components/settings/SettingCurrentWorkspace";
@@ -30,8 +31,9 @@ export const Route = createFileRoute("/settings")({
 
 function RouteComponent() {
   const screens = useBreakpoint();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   const TABS = [
     {

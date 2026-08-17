@@ -16,6 +16,7 @@ import {
   Typography,
 } from "antd";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useCurrency } from "@/apis/hooks/useCurrency";
 import { useUserDefault } from "@/apis/hooks/useSettings";
 import { useRecoveryTime } from "@/apis/hooks/useBalance";
@@ -31,6 +32,7 @@ interface RecoveryTimeForm {
 
 export function RecoveryTimeCalculator() {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const [form] = Form.useForm<RecoveryTimeForm>();
   const { data: currencies = [] } = useCurrency();
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
@@ -74,11 +76,10 @@ export function RecoveryTimeCalculator() {
         </div>
         <div>
           <Title level={5} style={{ margin: 0 }}>
-            Tiempo de recuperación de un gasto
+            {t("utilities.recoveryTime.title")}
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Calculá cuántos meses tardarías en recuperarte de un gasto según
-            tu ahorro promedio.
+            {t("utilities.recoveryTime.subtitle")}
           </Text>
         </div>
       </Flex>
@@ -99,8 +100,8 @@ export function RecoveryTimeCalculator() {
           <Col xs={24} sm={10}>
             <Form.Item
               name="amount"
-              label="Monto del gasto"
-              rules={[{ required: true, message: "Ingresá el monto" }]}
+              label={t("utilities.recoveryTime.amountLabel")}
+              rules={[{ required: true, message: t("utilities.recoveryTime.amountRequired") }]}
             >
               <InputNumber
                 style={{ width: "100%" }}
@@ -117,10 +118,10 @@ export function RecoveryTimeCalculator() {
           <Col xs={24} sm={6}>
             <Form.Item
               name="currency"
-              label="Moneda"
-              rules={[{ required: true, message: "Seleccioná una moneda" }]}
+              label={t("utilities.recoveryTime.currencyLabel")}
+              rules={[{ required: true, message: t("utilities.recoveryTime.currencyRequired") }]}
             >
-              <Select placeholder="Moneda">
+              <Select placeholder={t("utilities.recoveryTime.currencyLabel")}>
                 {currencies.map((currency) => (
                   <Select.Option key={currency.id} value={currency.symbol}>
                     {currency.symbol}
@@ -132,8 +133,8 @@ export function RecoveryTimeCalculator() {
           <Col xs={24} sm={8}>
             <Form.Item
               name="months"
-              label="Meses a promediar"
-              tooltip="Cuántos meses cerrados hacia atrás se usan para calcular tu ahorro promedio"
+              label={t("utilities.recoveryTime.monthsLabel")}
+              tooltip={t("utilities.recoveryTime.monthsTooltip")}
             >
               <InputNumber
                 style={{ width: "100%" }}
@@ -151,7 +152,7 @@ export function RecoveryTimeCalculator() {
           icon={<CalculatorOutlined />}
           loading={isFetching}
         >
-          Calcular
+          {t("utilities.recoveryTime.calculateButton")}
         </Button>
       </Form>
 
@@ -160,7 +161,7 @@ export function RecoveryTimeCalculator() {
           style={{ marginTop: 16 }}
           type="error"
           showIcon
-          message="No pudimos calcular el tiempo de recuperación. Probá de nuevo."
+          message={t("utilities.recoveryTime.errorMessage")}
         />
       )}
 
@@ -170,7 +171,9 @@ export function RecoveryTimeCalculator() {
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={12}>
               <Statistic
-                title={`Ahorro promedio mensual (últimos ${result.mesesConsiderados} meses)`}
+                title={t("utilities.recoveryTime.averageSavingsTitle", {
+                  months: result.mesesConsiderados,
+                })}
                 value={result.ahorroPromedioMensual}
                 precision={2}
                 suffix={result.moneda}
@@ -185,18 +188,20 @@ export function RecoveryTimeCalculator() {
             <Col xs={24} sm={12}>
               {result.recuperable ? (
                 <Statistic
-                  title="Tiempo estimado de recuperación"
+                  title={t("utilities.recoveryTime.recoveryTimeTitle")}
                   value={result.mesesParaRecuperar ?? 0}
                   precision={1}
-                  suffix="meses"
+                  suffix={t("utilities.recoveryTime.monthsSuffix")}
                   valueStyle={{ color: token.colorSuccess }}
                 />
               ) : (
                 <Alert
                   type="warning"
                   showIcon
-                  message="No recuperable a este ritmo"
-                  description={`Tu ahorro promedio de los últimos ${result.mesesConsiderados} meses fue cero o negativo, así que a este ritmo nunca recuperarías este gasto.`}
+                  message={t("utilities.recoveryTime.notRecoverableTitle")}
+                  description={t("utilities.recoveryTime.notRecoverableDescription", {
+                    months: result.mesesConsiderados,
+                  })}
                 />
               )}
             </Col>

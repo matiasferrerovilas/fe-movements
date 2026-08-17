@@ -61,9 +61,9 @@ function makeWrapper(queryClient: QueryClient) {
   );
 }
 
-// Ant Design icon-only buttons get their accessible name from the icon's aria-label.
-// The Tooltip title is not reflected in the button role — use the icon aria-label instead.
-const editBtn = () => screen.getByRole("button", { name: "edit" });
+// Icon-only buttons now carry a descriptive aria-label (accessibility pass).
+// The Tooltip title is not reflected in the button role — use the aria-label instead.
+const editBtn = () => screen.getByRole("button", { name: /editar servicio/i });
 const saveBtn = () => screen.getByRole("button", { name: /guardar/i });
 const cancelBtn = () => screen.getByRole("button", { name: /cancelar/i });
 const payBtn = () => screen.getByRole("button", { name: /marcar como pagado/i });

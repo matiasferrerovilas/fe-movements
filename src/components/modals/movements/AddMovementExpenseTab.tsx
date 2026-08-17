@@ -18,7 +18,8 @@ import CreditCardOutlined from "@ant-design/icons/CreditCardOutlined";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import TagOutlined from "@ant-design/icons/TagOutlined";
 import { useMutation } from "@tanstack/react-query";
-import { TypeEnum, TypeEnumLabel } from "@/enums/TypeEnum";
+import { useTranslation } from "react-i18next";
+import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
 import {
   MAX_MOVEMENT_CATEGORIES,
   type CreateMovementForm,
@@ -49,7 +50,9 @@ const AddMovementExpenseTab = forwardRef<
 >(({ onSuccess, movementToEdit }, ref) => {
   const { token } = theme.useToken();
   const [form] = Form.useForm<CreateMovementForm>();
-  
+  const { t } = useTranslation();
+  const typeEnumLabel = getTypeEnumLabel(t);
+
   // Las categorías se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
   const { data: categories = [] } = useCategory();
   
@@ -204,7 +207,7 @@ const AddMovementExpenseTab = forwardRef<
             >
               {Object.values(TypeEnum).map((type) => (
                 <Select.Option key={type} value={type}>
-                  {TypeEnumLabel[type]}
+                  {typeEnumLabel[type]}
                 </Select.Option>
               ))}
             </Select>

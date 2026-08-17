@@ -6,6 +6,11 @@ dayjs.extend(relativeTime);
 dayjs.locale("es");
 
 import "@testing-library/jest-dom";
+import i18n from "../src/i18n/config";
+
+// Deterministic language for tests regardless of jsdom's navigator locale — matches the app's
+// own default (Spanish) rather than whatever the language detector happens to pick up.
+await i18n.changeLanguage("es");
 
 // Mock window.env for all tests
 Object.defineProperty(window, "env", {

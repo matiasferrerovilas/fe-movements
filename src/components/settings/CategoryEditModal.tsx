@@ -1,5 +1,6 @@
 import { Button, Divider, Flex, Form, Input, message, Modal, theme, Typography } from "antd";
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import type { Category } from "@/models/Category";
 import { useUpdateCategory } from "@/apis/hooks/useCategory";
 import { ColorPicker, PRESET_COLORS } from "@/components/settings/ColorPicker";
@@ -28,6 +29,7 @@ function CategoryEditModalContent({
   onClose: () => void;
 }) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const updateCategoryMutation = useUpdateCategory();
 
   // Valores iniciales derivados de category
@@ -57,10 +59,10 @@ function CategoryEditModalContent({
           iconColor: values.iconColor,
         },
       });
-      message.success("Categoría actualizada exitosamente");
+      message.success(t("settings.categoryEditModal.updateSuccess"));
       onClose();
     } catch (error) {
-      message.error("Error al actualizar la categoría");
+      message.error(t("settings.categoryEditModal.updateError"));
       console.error(error);
     }
   };
@@ -104,7 +106,7 @@ function CategoryEditModalContent({
               marginBottom: 12,
             }}
           >
-            Vista previa
+            {t("settings.categoryEditModal.previewLabel")}
           </Text>
           <div
             style={{
@@ -125,11 +127,11 @@ function CategoryEditModalContent({
         {/* Nombre de la categoría */}
         <Form.Item
           name="description"
-          label="Nombre de la categoría"
+          label={t("settings.categoryEditModal.nameLabel")}
           rules={[
             {
               required: true,
-              message: "Ingresá el nombre de la categoría",
+              message: t("settings.categoryEditModal.nameRequired"),
             },
           ]}
         >
@@ -138,7 +140,7 @@ function CategoryEditModalContent({
               borderRadius: 8,
               height: 40,
             }}
-            placeholder="Ej: Hogar, Transporte, etc."
+            placeholder={t("settings.categoryEditModal.namePlaceholder")}
           />
         </Form.Item>
 
@@ -166,14 +168,14 @@ function CategoryEditModalContent({
         {/* Botones */}
         <Flex gap={8} justify="flex-end" style={{ marginTop: 24 }}>
           <Button onClick={handleCancel} disabled={updateCategoryMutation.isPending}>
-            Cancelar
+            {t("settings.categoryEditModal.cancelButton")}
           </Button>
           <Button
             type="primary"
             htmlType="submit"
             loading={updateCategoryMutation.isPending}
           >
-            Guardar cambios
+            {t("settings.categoryEditModal.saveButton")}
           </Button>
         </Flex>
       </Form>
@@ -186,9 +188,10 @@ export function CategoryEditModal({
   open,
   onClose,
 }: CategoryEditModalProps) {
+  const { t } = useTranslation();
   return (
     <Modal
-      title="Editar Categoría"
+      title={t("settings.categoryEditModal.title")}
       open={open}
       onCancel={onClose}
       footer={null}

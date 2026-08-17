@@ -1,5 +1,6 @@
 import { Alert, Card, Flex, Segmented, Typography, message, theme } from "antd";
 import UserOutlined from "@ant-design/icons/UserOutlined";
+import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { useChangeUserType } from "@/apis/hooks/useUserType";
 import { UserTypeEnum } from "@/enums/UserTypeEnum";
@@ -14,6 +15,7 @@ const { Title, Text } = Typography;
  */
 export default function AdminUserType() {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
   const changeUserTypeMutation = useChangeUserType();
 
@@ -29,21 +31,21 @@ export default function AdminUserType() {
       { userType: newType },
       {
         onSuccess: () => {
-          message.success(`Tipo de usuario cambiado a ${newType}`);
+          message.success(t("admin.userType.changeSuccess", { type: newType }));
         },
         onError: (error) => {
           if (error instanceof Error) {
             // @ts-expect-error - response puede estar presente en el error de Axios
             const status = error.response?.status;
             if (status === 403) {
-              message.error("No tenés permisos para cambiar el tipo de usuario");
+              message.error(t("admin.userType.errorForbidden"));
             } else if (status === 400) {
-              message.error("Tipo de usuario inválido");
+              message.error(t("admin.userType.errorInvalid"));
             } else {
-              message.error("Error al cambiar el tipo de usuario");
+              message.error(t("admin.userType.errorGeneric"));
             }
           } else {
-            message.error("Error inesperado al cambiar el tipo de usuario");
+            message.error(t("admin.userType.errorUnexpected"));
           }
         },
       },
@@ -70,10 +72,10 @@ export default function AdminUserType() {
           </div>
           <div>
             <Title level={5} style={{ margin: 0, fontWeight: 600 }}>
-              Tipo de Usuario
+              {t("admin.userType.title")}
             </Title>
             <Text type="secondary" style={{ fontSize: 13 }}>
-              Cambiá el tipo de uso de tu cuenta
+              {t("admin.userType.subtitle")}
             </Text>
           </div>
         </Flex>
@@ -81,14 +83,14 @@ export default function AdminUserType() {
         <Alert
           type="info"
           showIcon
-          message="Seleccioná el tipo de uso que mejor se adapte a tus necesidades"
+          message={t("admin.userType.alertMessage")}
           description={
             <ul style={{ margin: "8px 0 0 0", paddingLeft: 20 }}>
               <li>
-                <strong>Personal:</strong> Para uso personal (familia, sueldo, gastos personales)
+                <strong>{t("admin.userType.personalLabel")}:</strong> {t("admin.userType.personalDescription")}
               </li>
               <li>
-                <strong>Enterprise:</strong> Para uso empresarial (proyectos, ingresos, gastos del negocio)
+                <strong>{t("admin.userType.enterpriseLabel")}:</strong> {t("admin.userType.enterpriseDescription")}
               </li>
             </ul>
           }
@@ -96,7 +98,7 @@ export default function AdminUserType() {
         />
 
         <Flex vertical gap={8}>
-          <Text strong>Tipo actual:</Text>
+          <Text strong>{t("admin.userType.currentTypeLabel")}</Text>
           <Segmented
             value={currentUser?.userType ?? UserTypeEnum.PERSONAL}
             onChange={handleChange}
@@ -105,12 +107,12 @@ export default function AdminUserType() {
             size="large"
             options={[
               {
-                label: "Personal",
+                label: t("admin.userType.personalLabel"),
                 value: UserTypeEnum.PERSONAL,
                 icon: <UserOutlined />,
               },
               {
-                label: "Enterprise",
+                label: t("admin.userType.enterpriseLabel"),
                 value: UserTypeEnum.ENTERPRISE,
                 icon: <UserOutlined />,
               },

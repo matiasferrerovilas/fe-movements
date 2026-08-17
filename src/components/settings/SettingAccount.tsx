@@ -11,6 +11,7 @@ import { deleteAllMovements } from "@/apis/movement/MovementApi";
 import { useMutation } from "@tanstack/react-query";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import SettingOutlined from "@ant-design/icons/SettingOutlined";
+import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
 
@@ -18,8 +19,9 @@ const { Text } = Typography;
 
 export default function SettingAccount() {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   const deleteAllMovementsMutation = useMutation({
     mutationFn: () => deleteAllMovements(),
@@ -48,7 +50,7 @@ export default function SettingAccount() {
         </div>
         <div>
           <Typography.Title level={5} style={{ margin: 0 }}>
-            Configuración de la cuenta
+            {t("settings.account.title")}
           </Typography.Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
             {labels.settingsCuentaAcciones}
@@ -60,11 +62,11 @@ export default function SettingAccount() {
 
       <Flex vertical gap={12}>
         <Popconfirm
-          title="¿Estás seguro?"
-          description="Se eliminarán todos los movimientos permanentemente."
+          title={t("settings.account.deleteAllConfirmTitle")}
+          description={t("settings.account.deleteAllConfirmDescription")}
           onConfirm={() => deleteAllMovementsMutation.mutate()}
-          okText="Sí, eliminar"
-          cancelText="Cancelar"
+          okText={t("settings.account.deleteAllConfirmOk")}
+          cancelText={t("settings.account.deleteAllConfirmCancel")}
           placement="top"
         >
           <Button
@@ -74,7 +76,7 @@ export default function SettingAccount() {
             variant="outlined"
             loading={deleteAllMovementsMutation.isPending}
           >
-            Eliminar todos los movimientos
+            {t("settings.account.deleteAllButton")}
           </Button>
         </Popconfirm>
 
@@ -84,7 +86,7 @@ export default function SettingAccount() {
           variant="outlined"
           icon={<DeleteOutlined />}
         >
-          Eliminar la cuenta
+          {t("settings.account.deleteAccountButton")}
         </Button>
       </Flex>
     </Card>

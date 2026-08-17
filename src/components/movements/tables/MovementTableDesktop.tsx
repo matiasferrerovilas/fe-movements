@@ -1,6 +1,7 @@
 import { Card, Col, Empty, Row, Tag, Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import type { MovementTableViewProps } from "@/components/movements/tables/types";
-import { TypeEnum, TypeEnumLabel } from "@/enums/TypeEnum";
+import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
 import CategoryCircleTable from "@/components/movements/tables/CategoryCircleTable";
 import { capitalizeFirst } from "@/utils/stringFunctions";
 import MovementActionButtons from "@/components/movements/tables/MovementActionButtons";
@@ -14,6 +15,9 @@ export default function MovementTableDesktop({
   onDelete,
   getCardStyle,
 }: MovementTableViewProps) {
+  const { t } = useTranslation();
+  const typeEnumLabel = getTypeEnumLabel(t);
+
   return (
     <>
       <Card
@@ -21,24 +25,24 @@ export default function MovementTableDesktop({
         styles={{ body: { padding: COL_PADDING } }}
       >
         <Row justify="center" align="middle">
-          <Col span={2}>Fecha</Col>
-          <Col span={2}>Categoría</Col>
-          <Col span={2}>Banco</Col>
-          <Col span={2}>Grupo</Col>
-          <Col span={2}>Cargado por</Col>
-          <Col span={2}>Tipo</Col>
-          <Col span={4}>Descripción</Col>
-          <Col span={2} style={{ textAlign: "center" }}>Cuotas</Col>
-          <Col span={3}>Monto</Col>
+          <Col span={2}>{t("movements.columnDate")}</Col>
+          <Col span={2}>{t("movements.columnCategory")}</Col>
+          <Col span={2}>{t("movements.columnBank")}</Col>
+          <Col span={2}>{t("movements.columnGroup")}</Col>
+          <Col span={2}>{t("movements.columnLoadedBy")}</Col>
+          <Col span={2}>{t("movements.columnType")}</Col>
+          <Col span={4}>{t("movements.columnDescription")}</Col>
+          <Col span={2} style={{ textAlign: "center" }}>{t("movements.columnInstallments")}</Col>
+          <Col span={3}>{t("movements.columnAmount")}</Col>
           <Col span={2} style={{ textAlign: "right" }}>
-            Acciones
+            {t("movements.columnActions")}
           </Col>
         </Row>
       </Card>
 
       <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
         {movements.length === 0 ? (
-          <Empty description="Sin movimientos" style={{ padding: "40px 0" }} />
+          <Empty description={t("movements.noMovements")} style={{ padding: "40px 0" }} />
         ) : (
           movements.map((record, index) => (
             <Card
@@ -60,7 +64,7 @@ export default function MovementTableDesktop({
                 <Col span={2}>{capitalizeFirst(record.metadata.workspace.name)}</Col>
                 <Col span={2}>{capitalizeFirst(record.metadata.owner.givenName ?? "")}</Col>
                 <Col span={2}>
-                  {TypeEnumLabel[record.type as TypeEnum] ?? record.type}
+                  {typeEnumLabel[record.type as TypeEnum] ?? record.type}
                 </Col>
                 <Col span={4}>{record.description}</Col>
                 <Col span={2} style={{ textAlign: "center" }}>{record.installments}</Col>

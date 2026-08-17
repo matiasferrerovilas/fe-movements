@@ -1,5 +1,6 @@
 import { Button, Divider, Flex, Form, Input, message, Modal, theme, Typography } from "antd";
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import type { InvestmentType } from "@/models/InvestmentType";
 import { useUpdateInvestmentType } from "@/apis/hooks/useInvestmentTypes";
 import { ColorPicker, PRESET_COLORS } from "@/components/settings/ColorPicker";
@@ -28,6 +29,7 @@ function InvestmentTypeEditModalContent({
   onClose: () => void;
 }) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const updateMutation = useUpdateInvestmentType();
 
   const initialValues = useMemo(
@@ -54,10 +56,10 @@ function InvestmentTypeEditModalContent({
           iconColor: values.iconColor,
         },
       });
-      message.success("Tipo de inversión actualizado");
+      message.success(t("settings.investmentTypeEditModal.updateSuccess"));
       onClose();
     } catch (error) {
-      message.error("Error al actualizar el tipo de inversión");
+      message.error(t("settings.investmentTypeEditModal.updateError"));
       console.error(error);
     }
   };
@@ -89,7 +91,7 @@ function InvestmentTypeEditModalContent({
           }}
         >
           <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 12 }}>
-            Vista previa
+            {t("settings.investmentTypeEditModal.previewLabel")}
           </Text>
           <div
             style={{
@@ -109,10 +111,13 @@ function InvestmentTypeEditModalContent({
 
         <Form.Item
           name="name"
-          label="Nombre del tipo"
-          rules={[{ required: true, message: "Ingresá el nombre del tipo de inversión" }]}
+          label={t("settings.investmentTypeEditModal.nameLabel")}
+          rules={[{ required: true, message: t("settings.investmentTypeEditModal.nameRequired") }]}
         >
-          <Input style={{ borderRadius: 8, height: 40 }} placeholder="Ej: Acciones, FCI, Cripto..." />
+          <Input
+            style={{ borderRadius: 8, height: 40 }}
+            placeholder={t("settings.investmentTypeEditModal.namePlaceholder")}
+          />
         </Form.Item>
 
         <Form.Item name="iconColor" label=" ">
@@ -132,10 +137,10 @@ function InvestmentTypeEditModalContent({
 
         <Flex gap={8} justify="flex-end" style={{ marginTop: 24 }}>
           <Button onClick={handleCancel} disabled={updateMutation.isPending}>
-            Cancelar
+            {t("settings.investmentTypeEditModal.cancelButton")}
           </Button>
           <Button type="primary" htmlType="submit" loading={updateMutation.isPending}>
-            Guardar cambios
+            {t("settings.investmentTypeEditModal.saveButton")}
           </Button>
         </Flex>
       </Form>
@@ -148,9 +153,10 @@ export function InvestmentTypeEditModal({
   open,
   onClose,
 }: InvestmentTypeEditModalProps) {
+  const { t } = useTranslation();
   return (
     <Modal
-      title="Editar Tipo de Inversión"
+      title={t("settings.investmentTypeEditModal.title")}
       open={open}
       onCancel={onClose}
       footer={null}

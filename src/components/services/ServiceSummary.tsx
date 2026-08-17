@@ -2,6 +2,7 @@ import { Card, Col, Flex, Row, Statistic, theme, Typography } from "antd";
 import AppstoreOutlined from "@ant-design/icons/AppstoreOutlined";
 import CheckCircleOutlined from "@ant-design/icons/CheckCircleOutlined";
 import ClockCircleOutlined from "@ant-design/icons/ClockCircleOutlined";
+import { useTranslation } from "react-i18next";
 import type { Service } from "@/models/Service";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getServiceLabels } from "@/utils/serviceLabels";
@@ -17,7 +18,8 @@ export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
   const { token } = theme.useToken();
 
   const { data: currentUser } = useCurrentUser();
-  const labels = getServiceLabels(currentUser?.userType ?? null);
+  const { t } = useTranslation();
+  const labels = getServiceLabels(currentUser?.userType ?? null, t);
 
   const unpaidServices = services?.filter((s) => !s.isPaid) ?? [];
   const paidServices = services?.filter((s) => s.isPaid) ?? [];

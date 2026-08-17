@@ -1,6 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Card, Col, Row, Steps, Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import IncomeOnboarding from "@/components/onboarding/IncomeOnboarding";
 import WorkspaceOnboarding from "@/components/onboarding/WorkspaceOnboarding";
 import CategoryOnboarding from "@/components/onboarding/CategoryOnboarding";
@@ -32,8 +33,9 @@ function RouteComponent() {
   const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [formData, setFormData] = useState<Partial<OnboardingForm>>({});
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   const handleNext = (values: Partial<OnboardingForm>) => {
     setDirection("forward");

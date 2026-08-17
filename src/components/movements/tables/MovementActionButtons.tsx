@@ -35,6 +35,7 @@ export default function MovementActionButtons({
             fontSize: 18,
           }}
           title="Eliminar el movimiento"
+          aria-label="Eliminar el movimiento"
         />
       </Popconfirm>
       <EditMovementModal movement={record} />

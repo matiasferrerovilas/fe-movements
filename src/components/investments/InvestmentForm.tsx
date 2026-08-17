@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Col, DatePicker, Form, Input, InputNumber, Modal, Row, Select } from "antd";
+import { useTranslation } from "react-i18next";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import type { InvestmentType } from "@/models/InvestmentType";
@@ -34,6 +35,7 @@ export function InvestmentForm({
   currencies,
   investment,
 }: InvestmentFormProps) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<InvestmentFormValues>();
   const isEdit = investment != null;
 
@@ -62,29 +64,29 @@ export function InvestmentForm({
 
   return (
     <Modal
-      title={isEdit ? "Editar inversión" : "Nueva inversión"}
+      title={isEdit ? t("investments.editTitle") : t("investments.newTitle")}
       open={open}
       onCancel={onClose}
       onOk={() => form.submit()}
-      okText={isEdit ? "Guardar" : "Agregar"}
-      cancelText="Cancelar"
+      okText={isEdit ? t("investments.save") : t("investments.add")}
+      cancelText={t("investments.cancel")}
       confirmLoading={isLoading}
       destroyOnHidden
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Row gutter={12}>
           <Col span={14}>
-            <Form.Item name="description" label="Descripción">
-              <Input placeholder="Ej: AAPL, BTC, plazo fijo..." />
+            <Form.Item name="description" label={t("investments.descriptionLabel")}>
+              <Input placeholder={t("investments.descriptionPlaceholder")} />
             </Form.Item>
           </Col>
           <Col span={10}>
             <Form.Item
               name="investmentTypeId"
-              label="Tipo"
-              rules={[{ required: true, message: "Seleccioná un tipo" }]}
+              label={t("investments.typeLabel")}
+              rules={[{ required: true, message: t("investments.typeRequired") }]}
             >
-              <Select placeholder="Seleccioná un tipo" aria-label="tipo">
+              <Select placeholder={t("investments.typePlaceholder")} aria-label={t("investments.typeAriaLabel")}>
                 {investmentTypes.map((t) => (
                   <Select.Option key={t.id} value={t.id}>
                     {t.name}
@@ -99,8 +101,8 @@ export function InvestmentForm({
           <Col span={14}>
             <Form.Item
               name="amount"
-              label="Monto invertido"
-              rules={[{ required: true, message: "Ingresá el monto" }]}
+              label={t("investments.amountLabel")}
+              rules={[{ required: true, message: t("investments.amountRequired") }]}
             >
               <InputNumber min={0} style={{ width: "100%" }} />
             </Form.Item>
@@ -108,10 +110,10 @@ export function InvestmentForm({
           <Col span={10}>
             <Form.Item
               name="currencySymbol"
-              label="Moneda"
-              rules={[{ required: true, message: "Seleccioná la moneda" }]}
+              label={t("investments.currencyLabel")}
+              rules={[{ required: true, message: t("investments.currencyRequired") }]}
             >
-              <Select placeholder="Seleccioná la moneda">
+              <Select placeholder={t("investments.currencyPlaceholder")}>
                 {currencies.map((c) => (
                   <Select.Option key={c.id} value={c.symbol}>
                     {c.symbol}
@@ -126,14 +128,14 @@ export function InvestmentForm({
           <Col span={12}>
             <Form.Item
               name="startDate"
-              label="Fecha de inicio"
-              rules={[{ required: true, message: "Seleccioná la fecha" }]}
+              label={t("investments.startDateLabel")}
+              rules={[{ required: true, message: t("investments.startDateRequired") }]}
             >
               <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item name="endDate" label="Fecha de fin">
+            <Form.Item name="endDate" label={t("investments.endDateLabel")}>
               <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
             </Form.Item>
           </Col>

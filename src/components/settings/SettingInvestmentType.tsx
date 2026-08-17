@@ -20,6 +20,7 @@ import {
   Typography,
 } from "antd";
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   useAddInvestmentType,
   useDeleteInvestmentType,
@@ -57,6 +58,7 @@ function InvestmentTypeCard({
   onEdit,
 }: InvestmentTypeCardProps) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const isDefault = investmentType.id === defaultTypeId;
 
   const iconColor = investmentType.iconColor ?? token.colorPrimary;
@@ -118,17 +120,23 @@ function InvestmentTypeCard({
                     lineHeight: "18px",
                   }}
                 >
-                  ★ Default
+                  ★ {t("settings.investmentType.defaultBadge")}
                 </span>
               )}
             </Flex>
           </Flex>
         </Flex>
         <Space size={4}>
-          <Tooltip title={isDefault ? "Ya es el tipo por defecto" : "Establecer como tipo por defecto"}>
+          <Tooltip
+            title={
+              isDefault
+                ? t("settings.investmentType.starTooltipDefault")
+                : t("settings.investmentType.starTooltipSetDefault")
+            }
+          >
             <Button
               type="text"
-              aria-label={`Estrella tipo ${investmentType.name}`}
+              aria-label={t("settings.investmentType.starAriaLabel", { name: investmentType.name })}
               style={{
                 borderRadius: "50%",
                 width: 34,
@@ -149,10 +157,10 @@ function InvestmentTypeCard({
               }
             />
           </Tooltip>
-          <Tooltip title="Editar tipo de inversión">
+          <Tooltip title={t("settings.investmentType.editTooltip")}>
             <Button
               type="text"
-              aria-label={`Editar tipo ${investmentType.name}`}
+              aria-label={t("settings.investmentType.editAriaLabel", { name: investmentType.name })}
               onClick={() => onEdit(investmentType)}
               style={{
                 borderRadius: "50%",
@@ -167,21 +175,25 @@ function InvestmentTypeCard({
             />
           </Tooltip>
           <Tooltip
-            title={isDefault ? "No se puede eliminar el tipo por defecto" : "Eliminar tipo de inversión"}
+            title={
+              isDefault
+                ? t("settings.investmentType.deleteTooltipDefault")
+                : t("settings.investmentType.deleteTooltipEnabled")
+            }
           >
             <Popconfirm
-              title="¿Eliminar este tipo de inversión?"
-              description="Se quitará de tu lista de tipos."
+              title={t("settings.investmentType.deleteConfirmTitle")}
+              description={t("settings.investmentType.deleteConfirmDescription")}
               onConfirm={() => onDelete(investmentType.id)}
-              okText="Eliminar"
-              cancelText="Cancelar"
+              okText={t("settings.investmentType.deleteConfirmOk")}
+              cancelText={t("settings.investmentType.deleteConfirmCancel")}
               okButtonProps={{ danger: true }}
               disabled={isDefault}
             >
               <Button
                 type="text"
                 danger
-                aria-label={`Eliminar tipo ${investmentType.name}`}
+                aria-label={t("settings.investmentType.deleteAriaLabel", { name: investmentType.name })}
                 style={{
                   borderRadius: "50%",
                   width: 34,
@@ -210,6 +222,7 @@ export function SettingInvestmentType() {
   const deleteMutation = useDeleteInvestmentType();
   const [form] = Form.useForm<AddTypeForm>();
   const { token } = theme.useToken();
+  const { t } = useTranslation();
 
   const [editingType, setEditingType] = useState<InvestmentType | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -252,10 +265,10 @@ export function SettingInvestmentType() {
           </div>
           <div>
             <Title level={5} style={{ margin: 0 }}>
-              Tipos de Inversión
+              {t("settings.investmentType.title")}
             </Title>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              Administrá los tipos de inversión disponibles en tu workspace.
+              {t("settings.investmentType.subtitle")}
             </Text>
           </div>
         </Flex>
@@ -276,7 +289,7 @@ export function SettingInvestmentType() {
             strong
             style={{ fontSize: 13, color: token.colorText, display: "block", marginBottom: 10 }}
           >
-            Nuevo Tipo
+            {t("settings.investmentType.newTypeLabel")}
           </Text>
           <Form form={form} layout="vertical" onFinish={onFinish}>
             <Row gutter={[12, 0]} align="middle">
@@ -284,11 +297,11 @@ export function SettingInvestmentType() {
                 <Form.Item
                   name="name"
                   style={{ margin: 0 }}
-                  rules={[{ required: true, message: "Ingresá el nombre del tipo de inversión" }]}
+                  rules={[{ required: true, message: t("settings.investmentType.nameRequired") }]}
                 >
                   <Input
                     style={{ borderRadius: 10, height: 40, fontSize: 14 }}
-                    placeholder="Ej: Acciones, FCI, Cripto, Plazo Fijo..."
+                    placeholder={t("settings.investmentType.namePlaceholder")}
                   />
                 </Form.Item>
               </Col>
@@ -301,7 +314,7 @@ export function SettingInvestmentType() {
                   style={{ height: 40, borderRadius: 10, fontWeight: 600 }}
                   loading={addMutation.isPending}
                 >
-                  Agregar
+                  {t("settings.investmentType.addButton")}
                 </Button>
               </Col>
             </Row>

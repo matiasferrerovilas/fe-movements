@@ -1,5 +1,6 @@
 import MailOutlined from "@ant-design/icons/MailOutlined";
 import { Badge, Card, Space, theme, Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import { useWorkspaceInvitations } from "@/apis/hooks/useWorkspaces";
 import type { Invitations } from "@/models/UserWorkspace";
 import SettingInviteWorkspaceCard from "@/components/settings/SettingInviteWorkspaceCard";
@@ -10,6 +11,7 @@ const { Text } = Typography;
 export function SettingInviteWorkspaces() {
   const { data: invitations, isFetching } = useWorkspaceInvitations();
   const { token } = theme.useToken();
+  const { t } = useTranslation();
 
   useInvitationSubscription();
 
@@ -26,7 +28,7 @@ export function SettingInviteWorkspaces() {
           <MailOutlined
             style={{ color: token.colorPrimary, fontSize: 18 }}
           />
-          <Text strong>Invitaciones Pendientes</Text>
+          <Text strong>{t("settings.inviteWorkspace.pendingInvitationsTitle")}</Text>
           <Badge
             count={invitations?.length}
             style={{

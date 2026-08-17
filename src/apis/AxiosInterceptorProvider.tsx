@@ -2,6 +2,7 @@
 import { useLayoutEffect, useRef } from "react";
 import { useKeycloak } from "@react-keycloak/web";
 import { api } from "@/apis/axios";
+import { logger } from "@/utils/logger";
 
 export function AxiosInterceptorProvider({
   children,
@@ -28,7 +29,7 @@ export function AxiosInterceptorProvider({
             await keycloak.updateToken(30);
             config.headers.Authorization = `Bearer ${keycloak.token}`;
           } catch (error) {
-            console.error("Error renovando token:", error);
+            logger.error("Error renovando token:", error);
             keycloak.login();
             return Promise.reject(error);
           }
@@ -64,7 +65,7 @@ export function AxiosInterceptorProvider({
               return api(originalRequest);
             }
           } catch (refreshError) {
-            console.error(
+            logger.error(
               "Error renovando token después de 401:",
               refreshError
             );

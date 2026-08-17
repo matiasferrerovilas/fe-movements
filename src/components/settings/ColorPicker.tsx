@@ -1,28 +1,30 @@
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import { Flex, theme, Typography } from "antd";
+import { useTranslation } from "react-i18next";
 
 const { Text } = Typography;
 
 /**
  * Paleta de colores predefinidos para categorías.
  * Basado en la paleta de colores de Ant Design.
+ * Los nombres se traducen en el componente vía settings.colorPicker.colors.*
  */
 const PRESET_COLORS = [
-  { name: "Rojo", value: "#f5222d" },
-  { name: "Naranja Oscuro", value: "#fa541c" },
-  { name: "Naranja", value: "#fa8c16" },
-  { name: "Dorado", value: "#faad14" },
-  { name: "Amarillo", value: "#fadb14" },
-  { name: "Lima", value: "#a0d911" },
-  { name: "Verde", value: "#52c41a" },
-  { name: "Cian", value: "#13c2c2" },
-  { name: "Azul", value: "#1890ff" },
-  { name: "Azul Profundo", value: "#2f54eb" },
-  { name: "Púrpura", value: "#722ed1" },
-  { name: "Magenta", value: "#eb2f96" },
-  { name: "Violeta", value: "#9254de" },
-  { name: "Gris", value: "#8c8c8c" },
-  { name: "Gris Claro", value: "#d9d9d9" },
+  { name: "Rojo", key: "red", value: "#f5222d" },
+  { name: "Naranja Oscuro", key: "darkOrange", value: "#fa541c" },
+  { name: "Naranja", key: "orange", value: "#fa8c16" },
+  { name: "Dorado", key: "gold", value: "#faad14" },
+  { name: "Amarillo", key: "yellow", value: "#fadb14" },
+  { name: "Lima", key: "lime", value: "#a0d911" },
+  { name: "Verde", key: "green", value: "#52c41a" },
+  { name: "Cian", key: "cyan", value: "#13c2c2" },
+  { name: "Azul", key: "blue", value: "#1890ff" },
+  { name: "Azul Profundo", key: "deepBlue", value: "#2f54eb" },
+  { name: "Púrpura", key: "purple", value: "#722ed1" },
+  { name: "Magenta", key: "magenta", value: "#eb2f96" },
+  { name: "Violeta", key: "violet", value: "#9254de" },
+  { name: "Gris", key: "gray", value: "#8c8c8c" },
+  { name: "Gris Claro", key: "lightGray", value: "#d9d9d9" },
 ];
 
 // Exportar para uso en CategoryEditModal
@@ -35,6 +37,7 @@ interface ColorPickerProps {
 
 export function ColorPicker({ value, onChange }: ColorPickerProps) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
 
   return (
     <div>
@@ -47,11 +50,12 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
           marginBottom: 8,
         }}
       >
-        Color
+        {t("settings.colorPicker.label")}
       </Text>
       <Flex wrap="wrap" gap={8}>
         {PRESET_COLORS.map((color) => {
           const isSelected = value === color.value;
+          const colorName = t(`settings.colorPicker.colors.${color.key}`);
           return (
             <div
               key={color.value}
@@ -81,7 +85,8 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "scale(1)";
               }}
-              title={color.name}
+              title={colorName}
+              aria-label={t("settings.colorPicker.colorAriaLabel", { name: colorName })}
             >
               {isSelected && (
                 <CheckOutlined

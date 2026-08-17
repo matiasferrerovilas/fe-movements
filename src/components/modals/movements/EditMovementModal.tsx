@@ -43,6 +43,7 @@ export default function EditMovementModal({
           fontSize: 18,
         }}
         title="Editar el movimiento"
+        aria-label="Editar el movimiento"
       />
 
       <ModalComponent

@@ -18,6 +18,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
+import { useTranslation } from "react-i18next";
 import { useAddBank, useBanks, useDeleteBank } from "@/apis/hooks/useBank";
 import { useUserDefault, useSetUserDefault } from "@/apis/hooks/useSettings";
 import type { BankRecord } from "@/models/Bank";
@@ -50,6 +51,7 @@ function BankCard({
   bancosQuitar,
 }: BankCardProps) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const isDefault = bank.id === defaultBankId;
 
   return (
@@ -123,13 +125,13 @@ function BankCard({
           <Tooltip
             title={
               isDefault
-                ? "Ya es el banco por defecto"
-                : "Establecer como banco por defecto"
+                ? t("settings.bank.starTooltipDefault")
+                : t("settings.bank.starTooltipSetDefault")
             }
           >
             <Button
               type="text"
-              aria-label={`Estrella banco ${bank.description}`}
+              aria-label={t("settings.bank.starAriaLabel", { name: bank.description })}
               style={{
                 borderRadius: "50%",
                 width: 34,
@@ -153,23 +155,23 @@ function BankCard({
           <Tooltip
             title={
               isDefault
-                ? "No se puede eliminar el banco por defecto"
-                : "Eliminar banco"
+                ? t("settings.bank.deleteTooltipDefault")
+                : t("settings.bank.deleteTooltipDelete")
             }
           >
             <Popconfirm
-              title="¿Eliminar este banco?"
+              title={t("settings.bank.deleteConfirmTitle")}
               description={bancosQuitar}
               onConfirm={() => onDelete(bank.id)}
-              okText="Eliminar"
-              cancelText="Cancelar"
+              okText={t("settings.bank.deleteConfirmOk")}
+              cancelText={t("settings.bank.deleteConfirmCancel")}
               okButtonProps={{ danger: true }}
               disabled={isDefault}
             >
               <Button
                 type="text"
                 danger
-                aria-label={`Eliminar banco ${bank.description}`}
+                aria-label={t("settings.bank.deleteAriaLabel", { name: bank.description })}
                 style={{
                   borderRadius: "50%",
                   width: 34,
@@ -198,8 +200,9 @@ export function SettingBank() {
   const deleteBankMutation = useDeleteBank();
   const [form] = Form.useForm<AddBankForm>();
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   const onFinish = (values: AddBankForm) => {
     addBankMutation.mutate(values.description, {

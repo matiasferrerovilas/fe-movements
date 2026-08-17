@@ -4,6 +4,7 @@ import { Button, Form, Input } from "antd";
 import PlusCircleOutlined from "@ant-design/icons/PlusCircleOutlined";
 import UserAddOutlined from "@ant-design/icons/UserAddOutlined";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import type {
   CreateInvitationForm,
   Workspace,
@@ -19,8 +20,9 @@ interface InviteUserToWorkspaceProps {
 export default function InviteUserToWorkspace({ group }: InviteUserToWorkspaceProps) {
   const [form] = Form.useForm();
   const [modalOpen, setModalOpen] = useState(false);
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
   const handleCloseModal = () => {
     setModalOpen(false);
   };
@@ -56,6 +58,7 @@ export default function InviteUserToWorkspace({ group }: InviteUserToWorkspacePr
         }}
         onClick={() => setModalOpen(true)}
         title={labels.miembroInvitar}
+        aria-label={labels.miembroInvitar}
       ></Button>
       <ModalComponent
         open={modalOpen}
@@ -68,7 +71,7 @@ export default function InviteUserToWorkspace({ group }: InviteUserToWorkspacePr
             loading={addInvitationMutation.isPending}
             onClick={() => form.submit()}
           >
-            Enviar invitación
+            {t("settings.inviteWorkspace.sendInvitationButton")}
           </Button>
         }
       >
@@ -82,11 +85,11 @@ export default function InviteUserToWorkspace({ group }: InviteUserToWorkspacePr
             label={labels.miembroEmail}
             name="email"
             rules={[
-              { required: true, message: "Por favor ingresa un correo" },
-              { type: "email", message: "Ingresa un correo válido" },
+              { required: true, message: t("settings.inviteWorkspace.emailRequired") },
+              { type: "email", message: t("settings.inviteWorkspace.emailInvalid") },
             ]}
           >
-            <Input placeholder="usuario@ejemplo.com" />
+            <Input placeholder={t("settings.inviteWorkspace.emailPlaceholder")} />
           </Form.Item>
         </Form>
       </ModalComponent>

@@ -1,5 +1,6 @@
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import { Card, Divider, Flex, Switch, theme, Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import { useUserDefault, useSetUserDefault } from "@/apis/hooks/useSettings";
 
 const { Title, Text } = Typography;
@@ -9,6 +10,7 @@ export function SettingPreferences() {
     useUserDefault("AUTO_INCOME_ENABLED");
   const setDefault = useSetUserDefault();
   const { token } = theme.useToken();
+  const { t } = useTranslation();
 
   const isAutoIncomeEnabled = autoIncomeSetting?.value === 1;
 
@@ -36,10 +38,10 @@ export function SettingPreferences() {
         </div>
         <div>
           <Title level={5} style={{ margin: 0 }}>
-            Automatización
+            {t("settings.preferences.title")}
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Configurá acciones automáticas para tus finanzas.
+            {t("settings.preferences.subtitle")}
           </Text>
         </div>
       </Flex>
@@ -50,11 +52,10 @@ export function SettingPreferences() {
       <Flex align="center" justify="space-between" gap={16}>
         <Flex vertical gap={2}>
           <Text strong style={{ fontSize: 14 }}>
-            Ingresos automáticos
+            {t("settings.preferences.autoIncomeLabel")}
           </Text>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Se generarán movimientos de ingreso automáticamente cada mes con los
-            ingresos configurados.
+            {t("settings.preferences.autoIncomeDescription")}
           </Text>
         </Flex>
         <Switch

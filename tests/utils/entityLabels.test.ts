@@ -1,10 +1,13 @@
 import { describe, it, expect } from "vitest";
+import i18n from "@/i18n/config";
 import { getEntityLabels } from "@/utils/entityLabels";
 import { UserTypeEnum } from "@/enums/UserTypeEnum";
 
+const t = i18n.t.bind(i18n);
+
 describe("getEntityLabels", () => {
   it("retorna labels de CONSUMER cuando userType es PERSONAL", () => {
-    const labels = getEntityLabels(UserTypeEnum.PERSONAL);
+    const labels = getEntityLabels(UserTypeEnum.PERSONAL, t);
 
     expect(labels.workspace).toBe("Workspace");
     expect(labels.workspacePlaceholder).toContain("Familia");
@@ -17,7 +20,7 @@ describe("getEntityLabels", () => {
   });
 
   it("retorna labels de COMPANY cuando userType es ENTERPRISE", () => {
-    const labels = getEntityLabels(UserTypeEnum.ENTERPRISE);
+    const labels = getEntityLabels(UserTypeEnum.ENTERPRISE, t);
 
     expect(labels.workspace).toBe("Espacio de trabajo");
     expect(labels.workspacePlaceholder).toContain("Proyecto");
@@ -30,7 +33,7 @@ describe("getEntityLabels", () => {
   });
 
   it("retorna labels de CONSUMER cuando userType es null (fallback)", () => {
-    const labels = getEntityLabels(null);
+    const labels = getEntityLabels(null, t);
 
     expect(labels.workspace).toBe("Workspace");
     expect(labels.ingresoLabel).toContain("sueldo mensual");
@@ -38,7 +41,7 @@ describe("getEntityLabels", () => {
   });
 
   it("retorna un objeto con todos los campos esperados", () => {
-    const labels = getEntityLabels(UserTypeEnum.PERSONAL);
+    const labels = getEntityLabels(UserTypeEnum.PERSONAL, t);
 
     // Verificar que existan los campos principales
     expect(labels).toHaveProperty("workspace");

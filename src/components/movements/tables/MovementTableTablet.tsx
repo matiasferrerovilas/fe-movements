@@ -1,6 +1,7 @@
 import { Card, Col, Empty, Row, Tag, Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import type { MovementTableViewProps } from "@/components/movements/tables/types";
-import { TypeEnum, TypeEnumLabel } from "@/enums/TypeEnum";
+import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
 import CategoryCircleTable from "@/components/movements/tables/CategoryCircleTable";
 import { capitalizeFirst } from "@/utils/stringFunctions";
 import MovementActionButtons from "@/components/movements/tables/MovementActionButtons";
@@ -14,6 +15,9 @@ export default function MovementTableTablet({
   onDelete,
   getCardStyle,
 }: MovementTableViewProps) {
+  const { t } = useTranslation();
+  const typeEnumLabel = getTypeEnumLabel(t);
+
   return (
     <>
       <Card
@@ -21,21 +25,21 @@ export default function MovementTableTablet({
         styles={{ body: { padding: COL_PADDING } }}
       >
         <Row justify="center" align="middle">
-          <Col span={3}>Fecha</Col>
-          <Col span={3}>Categoría</Col>
-          <Col span={3}>Banco</Col>
-          <Col span={3}>Tipo</Col>
-          <Col span={5}>Descripción</Col>
-          <Col span={4}>Monto</Col>
+          <Col span={3}>{t("movements.columnDate")}</Col>
+          <Col span={3}>{t("movements.columnCategory")}</Col>
+          <Col span={3}>{t("movements.columnBank")}</Col>
+          <Col span={3}>{t("movements.columnType")}</Col>
+          <Col span={5}>{t("movements.columnDescription")}</Col>
+          <Col span={4}>{t("movements.columnAmount")}</Col>
           <Col span={3} style={{ textAlign: "right" }}>
-            Acciones
+            {t("movements.columnActions")}
           </Col>
         </Row>
       </Card>
 
       <div style={{ maxHeight: "75vh", overflowY: "auto" }}>
         {movements.length === 0 ? (
-          <Empty description="Sin movimientos" style={{ padding: "40px 0" }} />
+          <Empty description={t("movements.noMovements")} style={{ padding: "40px 0" }} />
         ) : (
           movements.map((record, index) => (
             <Card
@@ -55,7 +59,7 @@ export default function MovementTableTablet({
                 </Col>
                 <Col span={3}>{capitalizeFirst(record.bank)}</Col>
                 <Col span={3}>
-                  {TypeEnumLabel[record.type as TypeEnum] ?? record.type}
+                  {typeEnumLabel[record.type as TypeEnum] ?? record.type}
                 </Col>
                 <Col span={5} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {record.description}

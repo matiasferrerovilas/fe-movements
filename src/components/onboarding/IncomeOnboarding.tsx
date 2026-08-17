@@ -9,6 +9,7 @@ import {
   Typography,
 } from "antd";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
+import { useTranslation } from "react-i18next";
 import { useCurrency } from "@/apis/hooks/useCurrency";
 import type { OnboardingBankEntry, OnboardingForm, OnboardingIngresoForm } from "@/apis/onboarding/OnboardingApi";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
@@ -31,8 +32,9 @@ export default function IncomeOnboarding({
 }: Props) {
   const [form] = Form.useForm<OnboardingIngresoForm>();
   const { data: currencies = [] } = useCurrency();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   // Usamos los bancos ingresados en el paso anterior (si los hay)
   const banksToAdd: OnboardingBankEntry[] = initialValues.banksToAdd ?? [];

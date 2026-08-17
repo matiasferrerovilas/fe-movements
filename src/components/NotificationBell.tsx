@@ -96,7 +96,11 @@ export default function NotificationBell() {
       styles={{ root: { marginTop: 8 }, content: { padding: 0 } }}
     >
       <Badge count={unreadCount} size="small" offset={[-2, 2]}>
-        <Button type="text" icon={<BellOutlined style={{ fontSize: 18 }} />} />
+        <Button
+          type="text"
+          icon={<BellOutlined style={{ fontSize: 18 }} />}
+          aria-label="Notificaciones"
+        />
       </Badge>
     </Popover>
   );

@@ -16,6 +16,7 @@ import {
 } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useIncome } from "@/apis/hooks/useIncome";
 import { useUserDefault } from "@/apis/hooks/useSettings";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
@@ -39,13 +40,14 @@ export function SettingIncome() {
   const [form] = Form.useForm<IncomeAddForm>();
   const { data: ingresos, isLoading } = useIncome();
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const { data: currencies = [] } = useCurrency();
   const { data: banks = [] } = useBanks();
   const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const queryClient = useQueryClient();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   const createIngresoMutation = useMutation({
     mutationFn: ({ income }: { income: IncomeAddPayload }) => addIncome(income),
@@ -109,7 +111,7 @@ export function SettingIncome() {
         </div>
         <div>
           <Title level={5} style={{ margin: 0 }}>
-            Gestionar Ingresos
+            {t("settings.income.title")}
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
             {labels.ingresoDescripcion}
@@ -130,7 +132,7 @@ export function SettingIncome() {
         }}
       >
         <Text strong style={{ display: "block", marginBottom: token.marginSM }}>
-          Agregar Ingreso
+          {t("settings.income.addIncomeLabel")}
         </Text>
         <Form
           form={form}
@@ -147,10 +149,10 @@ export function SettingIncome() {
             <Col xs={24} sm={12}>
               <Form.Item
                 name="bank"
-                label="Banco"
-                rules={[{ required: true, message: "Seleccione un banco" }]}
+                label={t("settings.income.bankLabel")}
+                rules={[{ required: true, message: t("settings.income.bankRequired") }]}
               >
-                <Select placeholder="Seleccionar banco">
+                <Select placeholder={t("settings.income.bankPlaceholder")}>
                   {banks.map((bank) => (
                     <Select.Option key={bank.id} value={bank.description}>
                       {bank.description}
@@ -162,10 +164,10 @@ export function SettingIncome() {
             <Col xs={24} sm={12}>
               <Form.Item
                 name="currency"
-                label="Moneda"
-                rules={[{ required: true, message: "Ingrese Moneda" }]}
+                label={t("settings.income.currencyLabel")}
+                rules={[{ required: true, message: t("settings.income.currencyRequired") }]}
               >
-                <Select placeholder="Seleccionar moneda">
+                <Select placeholder={t("settings.income.currencyPlaceholder")}>
                   {currencies.map((currency) => (
                     <Select.Option key={currency.id} value={currency.symbol}>
                       {currency.symbol}
@@ -177,8 +179,8 @@ export function SettingIncome() {
             <Col xs={24}>
               <Form.Item
                 name="amount"
-                label="Monto"
-                rules={[{ required: true, message: "Ingresar Monto" }]}
+                label={t("settings.income.amountLabel")}
+                rules={[{ required: true, message: t("settings.income.amountRequired") }]}
               >
                 <InputNumber
                   precision={2}
@@ -196,14 +198,14 @@ export function SettingIncome() {
             htmlType="submit"
             loading={createIngresoMutation.isPending}
           >
-            Agregar ingreso
+            {t("settings.income.addButton")}
           </Button>
         </Form>
       </Card>
 
       {/* Lista de ingresos */}
       {!ingresos || ingresos.length === 0 ? (
-        <Empty description="Todavía no configuraste ingresos" />
+        <Empty description={t("settings.income.emptyDescription")} />
       ) : (
         <Flex vertical gap={10}>
           {ingresos.map((ingreso: Income, index: number) => (
@@ -259,8 +261,8 @@ export function SettingIncome() {
                   </Text>
 
                   <Popconfirm
-                    title="Ingresar movimiento manualmente"
-                    description="Este ingreso será agregado como movimiento."
+                    title={t("settings.income.reloadConfirmTitle")}
+                    description={t("settings.income.reloadConfirmDescription")}
                     onConfirm={() =>
                       addIngresoMutation.mutate({ id: ingreso.id })
                     }
@@ -269,17 +271,23 @@ export function SettingIncome() {
                       type="text"
                       icon={<ReloadOutlined />}
                       style={{ color: token.colorWarning }}
+                      aria-label={t("settings.income.reloadAriaLabel", { name: ingreso.accountName })}
                     />
                   </Popconfirm>
 
                   <Popconfirm
-                    title="Eliminar ingreso"
-                    description="Este ingreso dejará de generar movimientos mensuales."
+                    title={t("settings.income.deleteConfirmTitle")}
+                    description={t("settings.income.deleteConfirmDescription")}
                     onConfirm={() =>
                       deleteIngresoMutation.mutate({ id: ingreso.id })
                     }
                   >
-                    <Button danger type="text" icon={<DeleteOutlined />} />
+                    <Button
+                      danger
+                      type="text"
+                      icon={<DeleteOutlined />}
+                      aria-label={t("settings.income.deleteAriaLabel", { name: ingreso.accountName })}
+                    />
                   </Popconfirm>
                 </Flex>
               </Flex>

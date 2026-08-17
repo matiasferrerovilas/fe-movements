@@ -26,6 +26,7 @@ import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import type { Service, ServiceToUpdate } from "@/models/Service";
 import React, { useState } from "react";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 import { useDeleteService } from "@/apis/hooks/useService";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getServiceLabels } from "@/utils/serviceLabels";
@@ -57,7 +58,8 @@ export const ServiceCard = React.memo(function ServiceCard({
   const { message } = App.useApp();
 
   const { data: currentUser } = useCurrentUser();
-  const labels = getServiceLabels(currentUser?.userType ?? null);
+  const { t } = useTranslation();
+  const labels = getServiceLabels(currentUser?.userType ?? null, t);
 
   const isPaid = service.isPaid;
   const statusColor = isPaid ? token.colorSuccess : token.colorError;
@@ -216,6 +218,7 @@ export const ServiceCard = React.memo(function ServiceCard({
                   type="text"
                   icon={<EditOutlined style={{ fontSize: 18 }} />}
                   onClick={() => setIsEditing(true)}
+                  aria-label={`Editar servicio ${service.description}`}
                 />
               </Tooltip>
               <Popconfirm
@@ -230,6 +233,7 @@ export const ServiceCard = React.memo(function ServiceCard({
                   type="text"
                   danger
                   icon={<DeleteOutlined style={{ fontSize: 18 }} />}
+                  aria-label={`Eliminar servicio ${service.description}`}
                 />
               </Popconfirm>
             </Flex>

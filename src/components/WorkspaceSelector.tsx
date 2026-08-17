@@ -2,6 +2,7 @@ import { Badge, Divider, Select, Space, Typography, theme } from "antd";
 import SwapOutlined from "@ant-design/icons/SwapOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import AppstoreOutlined from "@ant-design/icons/AppstoreOutlined";
+import { useTranslation } from "react-i18next";
 import { useCurrentWorkspace } from "@/apis/workspace/WorkspaceContext";
 import CreateWorkspaceModal from "@/components/modals/workspaces/CreateWorkspaceModal";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
@@ -17,8 +18,9 @@ interface WorkspaceSelectorProps {
 export default function WorkspaceSelector({ compact = false }: WorkspaceSelectorProps) {
   const { currentWorkspace, workspaces, setCurrentWorkspace, isLoading } =
     useCurrentWorkspace();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
   const { token } = theme.useToken();
 
   if (isLoading || workspaces.length === 0) {

@@ -5,6 +5,7 @@ import { ReactKeycloakProvider } from "@react-keycloak/web";
 import App from "@/App";
 import { AuthProvider } from "@/apis/auth/AuthProvider";
 import Forbidden from "@/components/Forbidden";
+import { logger } from "@/utils/logger";
 
 const keycloak = new Keycloak(window.env.keycloak);
 
@@ -39,11 +40,11 @@ export default function Root() {
       }
       onEvent={(event, error) => {
         if (event === "onInitError" || event === "onAuthError") {
-          console.error("Error de autenticación:", error);
+          logger.error("Error de autenticación:", error);
           setAuthFailed(true);
         }
         if (event === "onAuthSuccess") {
-          console.debug("Autenticación exitosa");
+          logger.debug("Autenticación exitosa");
         }
       }}
     >

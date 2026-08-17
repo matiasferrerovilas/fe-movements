@@ -18,6 +18,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
+import { useTranslation } from "react-i18next";
 import {
   useAddCurrency,
   useCurrency,
@@ -55,6 +56,7 @@ function CurrencyCard({
   monedasQuitar,
 }: CurrencyCardProps) {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const isDefault = currency.id === defaultCurrencyId;
   const canDelete = currency.isDeletable && !isDefault;
 
@@ -129,7 +131,7 @@ function CurrencyCard({
                     lineHeight: "18px",
                   }}
                 >
-                  ★ Default
+                  ★ {t("settings.currency.defaultBadge")}
                 </span>
               )}
             </Flex>
@@ -142,13 +144,13 @@ function CurrencyCard({
           <Tooltip
             title={
               isDefault
-                ? "Ya es la moneda por defecto"
-                : "Establecer como moneda por defecto"
+                ? t("settings.currency.starTooltipDefault")
+                : t("settings.currency.starTooltipSetDefault")
             }
           >
             <Button
               type="text"
-              aria-label={`Estrella moneda ${currency.description}`}
+              aria-label={t("settings.currency.starAriaLabel", { name: currency.description })}
               style={{
                 borderRadius: "50%",
                 width: 34,
@@ -172,25 +174,25 @@ function CurrencyCard({
           <Tooltip
             title={
               isDefault
-                ? "No se puede eliminar la moneda por defecto"
+                ? t("settings.currency.deleteTooltipDefault")
                 : !currency.isDeletable
-                  ? "Esta moneda no se puede eliminar"
-                  : "Eliminar moneda"
+                  ? t("settings.currency.deleteTooltipDisabled")
+                  : t("settings.currency.deleteTooltipEnabled")
             }
           >
             <Popconfirm
-              title="¿Eliminar esta moneda?"
+              title={t("settings.currency.deleteConfirmTitle")}
               description={monedasQuitar}
               onConfirm={() => onDelete(currency.id)}
-              okText="Eliminar"
-              cancelText="Cancelar"
+              okText={t("settings.currency.deleteConfirmOk")}
+              cancelText={t("settings.currency.deleteConfirmCancel")}
               okButtonProps={{ danger: true }}
               disabled={!canDelete}
             >
               <Button
                 type="text"
                 danger
-                aria-label={`Eliminar moneda ${currency.description}`}
+                aria-label={t("settings.currency.deleteAriaLabel", { name: currency.description })}
                 style={{
                   borderRadius: "50%",
                   width: 34,
@@ -219,8 +221,9 @@ export function SettingCurrency() {
   const deleteCurrencyMutation = useDeleteCurrency();
   const [form] = Form.useForm<AddCurrencyForm>();
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null);
+  const labels = getEntityLabels(currentUser?.userType ?? null, t);
 
   const onFinish = (values: AddCurrencyForm) => {
     addCurrencyMutation.mutate(
@@ -249,7 +252,7 @@ export function SettingCurrency() {
         </div>
         <div>
           <Title level={5} style={{ margin: 0 }}>
-            Mis Monedas
+            {t("settings.currency.title")}
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
             {labels.monedasSubtitle}
@@ -278,7 +281,7 @@ export function SettingCurrency() {
             marginBottom: 10,
           }}
         >
-          Nueva Moneda
+          {t("settings.currency.newCurrencyLabel")}
         </Text>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Row gutter={[12, 0]} align="middle">
@@ -287,12 +290,12 @@ export function SettingCurrency() {
                 name="symbol"
                 style={{ margin: 0 }}
                 rules={[
-                  { required: true, message: "Ingresá el símbolo" },
+                  { required: true, message: t("settings.currency.symbolRequired") },
                 ]}
               >
                 <Input
                   style={{ borderRadius: 10, height: 40, fontSize: 14 }}
-                  placeholder="Símbolo..."
+                  placeholder={t("settings.currency.symbolPlaceholder")}
                   maxLength={10}
                 />
               </Form.Item>
@@ -302,12 +305,12 @@ export function SettingCurrency() {
                 name="description"
                 style={{ margin: 0 }}
                 rules={[
-                  { required: true, message: "Ingresá el nombre de la moneda" },
+                  { required: true, message: t("settings.currency.nameRequired") },
                 ]}
               >
                 <Input
                   style={{ borderRadius: 10, height: 40, fontSize: 14 }}
-                  placeholder="Nombre de la moneda..."
+                  placeholder={t("settings.currency.namePlaceholder")}
                 />
               </Form.Item>
             </Col>
@@ -320,7 +323,7 @@ export function SettingCurrency() {
                 style={{ height: 40, borderRadius: 10, fontWeight: 600 }}
                 loading={addCurrencyMutation.isPending}
               >
-                Agregar
+                {t("settings.currency.addButton")}
               </Button>
             </Col>
           </Row>
