@@ -7,5 +7,6 @@ export interface ProjectionResponse {
   currentBalance: number;
   averageMonthlyNet: number;
   trailingMonths: number;
+  currency: string;
   projectedPoints: ProjectedPoint[];
 }

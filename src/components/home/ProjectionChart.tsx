@@ -17,8 +17,8 @@ import { useUserDefault } from "@/apis/hooks/useSettings";
 
 const { Text } = Typography;
 
-function formatUsd(value: number): string {
-  return `$${value.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`;
+function formatAmount(value: number, currency: string): string {
+  return `${currency} ${value.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`;
 }
 
 export default function ProjectionChart() {
@@ -66,7 +66,7 @@ export default function ProjectionChart() {
           <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 16 }}>
             {t("home.projection.subtitle", {
               trend: t(isPositiveTrend ? "home.projection.trendUp" : "home.projection.trendDown"),
-              amount: formatUsd(Math.abs(data.averageMonthlyNet)),
+              amount: formatAmount(Math.abs(data.averageMonthlyNet), data.currency),
               months: data.trailingMonths,
             })}
           </Text>
@@ -74,9 +74,13 @@ export default function ProjectionChart() {
             <LineChart data={chartData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={token.colorBorderSecondary} />
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} width={80} tickFormatter={formatUsd} />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                width={80}
+                tickFormatter={(val) => formatAmount(Number(val), data.currency)}
+              />
               <ReferenceLine y={0} stroke={token.colorBorder} />
-              <Tooltip formatter={(val) => formatUsd(Number(val ?? 0))} />
+              <Tooltip formatter={(val) => formatAmount(Number(val ?? 0), data.currency)} />
               <Line
                 type="monotone"
                 dataKey="balance"
