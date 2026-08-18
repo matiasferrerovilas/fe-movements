@@ -1,5 +1,10 @@
 {
   "common": {
+    "undo": {
+      "itemDeleted": "Elemento eliminado",
+      "undoButton": "Deshacer",
+      "deleteFailed": "No se pudo eliminar el elemento"
+    },
     "entity": {
       "workspace_personal": "Workspace",
       "workspace_company": "Espacio de trabajo",
@@ -103,6 +108,7 @@
   "nav": {
     "movements": "Movimientos",
     "budgets": "Presupuestos",
+    "goals": "Metas de ahorro",
     "settings": "Ajustes",
     "help": "Ayuda",
     "investments": "Inversiones",
@@ -188,7 +194,32 @@
     "annualEvolutionEmpty": "Sin datos para el año seleccionado",
     "categoryPieTitle": "Gastos por Categoría",
     "categoryPieEmpty": "Sin datos para el período",
-    "categoryPieTotal": "Total"
+    "categoryPieTotal": "Total",
+    "insights": {
+      "title": "Insights de gasto",
+      "subtitle": "Categorías que se desvían de tu promedio de los últimos 6 meses",
+      "aboveMessage": "{{category}}: {{percent}}% arriba de tu promedio de 6 meses",
+      "belowMessage": "{{category}}: {{percent}}% abajo de tu promedio de 6 meses",
+      "detail": "Este mes: {{current}} · Promedio: {{average}}"
+    },
+    "goals": {
+      "title": "Metas de ahorro",
+      "subtitle": "Tu progreso hacia los objetivos que definiste",
+      "empty": "Todavía no creaste ninguna meta de ahorro",
+      "viewAll": "Ver todas",
+      "rowDetail": "{{saved}} de {{target}}"
+    },
+    "projection": {
+      "title": "Proyección de balance",
+      "subtitle": "Tendencia {{trend}}: ahorrás en promedio {{amount}} por mes (últimos {{months}} meses)",
+      "trendUp": "positiva",
+      "trendDown": "negativa",
+      "today": "Hoy",
+      "monthsOutLabel": "+{{count}}m",
+      "balanceLegend": "Balance proyectado",
+      "empty": "No hay datos suficientes para proyectar",
+      "disclaimer": "Estimación conservadora basada en tu flujo de caja histórico. No incluye rendimientos de inversión."
+    }
   },
   "movements": {
     "current": "Actuales",
@@ -229,6 +260,24 @@
     "no": "No",
     "deleteTooltip": "Eliminar el movimiento",
     "installmentsTag": "{{installments}} cuotas",
+    "bulk": {
+      "selectRowAriaLabel": "Seleccionar movimiento",
+      "selectedCount": "{{count}} seleccionados",
+      "categorizeButton": "Categorizar",
+      "deleteButton": "Eliminar",
+      "clearSelection": "Cancelar selección",
+      "cancel": "Cancelar",
+      "deleteConfirmTitle": "¿Eliminar {{count}} movimientos?",
+      "deleteConfirmDescription": "Esta acción no se puede deshacer.",
+      "deleteConfirmOk": "Eliminar",
+      "deleteSummary": "{{succeeded}} movimientos eliminados, {{failed}} fallaron",
+      "deleteAllSuccess": "{{count}} movimientos eliminados",
+      "categorizeTitle": "Categorizar {{count}} movimientos",
+      "categorizePlaceholder": "Seleccioná hasta 2 categorías",
+      "categorizeConfirm": "Aplicar",
+      "categorizeSummary": "{{succeeded}} movimientos actualizados, {{failed}} fallaron",
+      "categorizeAllSuccess": "{{count}} movimientos actualizados"
+    },
     "csvHeaders": {
       "date": "Fecha",
       "description": "Descripción",
@@ -311,6 +360,49 @@
       "deleteConfirmDescription": "Esta acción no se puede deshacer.",
       "deleteConfirmOk": "Eliminar",
       "deleteAriaLabel": "Eliminar presupuesto {{category}}"
+    }
+  },
+  "goals": {
+    "pageSubtitle": "Definí objetivos de ahorro y seguí tu progreso",
+    "addGoalTitle": "Nueva meta de ahorro",
+    "addButton": "+ Nueva meta",
+    "cancel": "Cancelar",
+    "add": "Crear",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Ej: Viaje a Bariloche",
+    "enterNameMessage": "Ingresá un nombre",
+    "currencyLabel": "Moneda",
+    "selectCurrencyPlaceholder": "Seleccioná una moneda",
+    "targetAmountLabel": "Monto objetivo",
+    "enterAmountMessage": "Ingresá un monto",
+    "amountMinMessage": "El monto debe ser mayor a 0",
+    "amountPlaceholder": "0.00",
+    "targetDateLabel": "Fecha objetivo (opcional)",
+    "selectTargetDateMessage": "Seleccioná un mes",
+    "noGoalsEmpty": "Todavía no creaste ninguna meta de ahorro",
+    "edit": {
+      "title": "Editar meta — {{name}}",
+      "save": "Guardar"
+    },
+    "contribute": {
+      "title": "Agregar contribución — {{name}}",
+      "amountLabel": "Monto a agregar",
+      "confirm": "Agregar"
+    },
+    "card": {
+      "target": "Objetivo",
+      "saved": "Ahorrado",
+      "progressSuffix": "completado",
+      "completed": "(¡meta alcanzada!)",
+      "contributeTooltip": "Agregar contribución",
+      "contributeAriaLabel": "Agregar contribución a {{name}}",
+      "editTooltip": "Editar meta",
+      "editAriaLabel": "Editar meta {{name}}",
+      "deleteTooltip": "Eliminar meta",
+      "deleteAriaLabel": "Eliminar meta {{name}}",
+      "deleteConfirmTitle": "¿Eliminar esta meta de ahorro?",
+      "deleteConfirmDescription": "Esta acción no se puede deshacer.",
+      "deleteConfirmOk": "Eliminar"
     }
   },
   "investments": {
@@ -592,6 +684,7 @@
       "yes": "Sí",
       "no": "No",
       "deleteAriaLabel": "Eliminar servicio {{description}}",
+      "undoDeletedMessage": "{{description}} eliminado",
       "lastPaymentLabel": "Último pago",
       "lastPaymentPrefix": "Último pago:",
       "saveButton": "Guardar",

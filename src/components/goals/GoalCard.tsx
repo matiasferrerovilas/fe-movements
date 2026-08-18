@@ -1,6 +1,7 @@
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
-import FundOutlined from "@ant-design/icons/FundOutlined";
+import PlusOutlined from "@ant-design/icons/PlusOutlined";
+import TrophyOutlined from "@ant-design/icons/TrophyOutlined";
 import {
   Button,
   Card,
@@ -12,23 +13,24 @@ import {
   Tooltip,
   Typography,
 } from "antd";
+import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
-import type { BudgetRecord } from "@/models/Budget";
+import type { GoalRecord } from "@/models/Goal";
 
 const { Text } = Typography;
 
-interface BudgetCardProps {
-  budget: BudgetRecord;
-  onEdit: (budget: BudgetRecord) => void;
+interface GoalCardProps {
+  goal: GoalRecord;
+  onEdit: (goal: GoalRecord) => void;
+  onContribute: (goal: GoalRecord) => void;
   onDelete: (id: number) => void;
   isDeleting?: boolean;
-  isPendingRemoval?: boolean;
 }
 
-function getProgressColor(percentage: number): string {
-  if (percentage >= 100) return "#ef4444";
-  if (percentage >= 80) return "#f59e0b";
-  return "#22c55e";
+function getProgressColor(percent: number): string {
+  if (percent >= 100) return "#22c55e";
+  if (percent >= 60) return "#3b82f6";
+  return "#f59e0b";
 }
 
 function formatAmount(amount: number): string {
@@ -38,24 +40,17 @@ function formatAmount(amount: number): string {
   });
 }
 
-export function BudgetCard({
-  budget,
+export function GoalCard({
+  goal,
   onEdit,
+  onContribute,
   onDelete,
   isDeleting,
-  isPendingRemoval,
-}: BudgetCardProps) {
+}: GoalCardProps) {
   const { token } = theme.useToken();
   const { t } = useTranslation();
-  const progressColor = getProgressColor(budget.percentage);
-  const categoryName =
-    budget.category?.description ?? t("budgets.noCategoryOption");
-  const budgetTypeLabel =
-    budget.year === null && budget.month === null
-      ? t("budgets.typeRecurring")
-      : budget.month === null
-        ? t("budgets.typeAnnual")
-        : null;
+  const progressColor = getProgressColor(goal.progressPercent);
+  const isCompleted = goal.progressPercent >= 100;
 
   return (
     <Card
@@ -63,39 +58,33 @@ export function BudgetCard({
       style={{
         borderRadius: token.borderRadiusLG,
         border: `1.5px solid ${token.colorBorderSecondary}`,
-        transition: "box-shadow 0.2s ease",
-        ...(isPendingRemoval
-          ? { opacity: 0.45, filter: "grayscale(70%)", pointerEvents: "none" }
-          : {}),
       }}
     >
       <Flex align="flex-start" justify="space-between" gap={12}>
-        {/* Icon + Info */}
         <Flex align="flex-start" gap={14} style={{ flex: 1, minWidth: 0 }}>
           <div
             style={{
               width: 44,
               height: 44,
               borderRadius: token.borderRadius,
-              background: `linear-gradient(135deg, ${token.colorPrimary} 0%, ${token.colorPrimaryHover} 100%)`,
+              background: isCompleted
+                ? `linear-gradient(135deg, ${token.colorSuccess} 0%, #16a34a 100%)`
+                : `linear-gradient(135deg, ${token.colorPrimary} 0%, ${token.colorPrimaryHover} 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
             }}
           >
-            <FundOutlined style={{ color: "#fff", fontSize: 20 }} />
+            <TrophyOutlined style={{ color: "#fff", fontSize: 20 }} />
           </div>
 
           <div style={{ flex: 1, minWidth: 0 }}>
             <Flex align="center" gap={8} style={{ marginBottom: 4 }}>
-              <Text
-                strong
-                style={{ fontSize: 15, color: token.colorText }}
-              >
-                {categoryName}
+              <Text strong style={{ fontSize: 15, color: token.colorText }}>
+                {goal.name}
               </Text>
-              {budgetTypeLabel && (
+              {goal.targetDate && (
                 <Text
                   type="secondary"
                   style={{
@@ -106,7 +95,7 @@ export function BudgetCard({
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {budgetTypeLabel}
+                  {dayjs(goal.targetDate).format("MM/YYYY")}
                 </Text>
               )}
             </Flex>
@@ -114,61 +103,70 @@ export function BudgetCard({
             <Flex gap={16} style={{ marginBottom: 10 }}>
               <Flex vertical>
                 <Text type="secondary" style={{ fontSize: 11 }}>
-                  {t("budgets.card.budgeted")}
+                  {t("goals.card.target")}
                 </Text>
                 <Text strong style={{ fontSize: 14 }}>
-                  {budget.currency.symbol} {formatAmount(budget.amount)}
+                  {goal.currency.symbol} {formatAmount(goal.targetAmount)}
                 </Text>
               </Flex>
               <Flex vertical>
                 <Text type="secondary" style={{ fontSize: 11 }}>
-                  {t("budgets.card.spent")}
+                  {t("goals.card.saved")}
                 </Text>
-                <Text
-                  strong
-                  style={{ fontSize: 14, color: progressColor }}
-                >
-                  {budget.currency.symbol} {formatAmount(budget.spent)}
+                <Text strong style={{ fontSize: 14, color: progressColor }}>
+                  {goal.currency.symbol} {formatAmount(goal.currentAmount)}
                 </Text>
               </Flex>
             </Flex>
 
             <Progress
-              percent={Math.min(budget.percentage, 100)}
+              percent={goal.progressPercent}
               strokeColor={progressColor}
               trailColor={token.colorFillSecondary}
               showInfo={false}
               size="small"
               style={{ marginBottom: 4 }}
             />
-            <Text
-              style={{ fontSize: 12, color: progressColor, fontWeight: 600 }}
-            >
-              {budget.percentage.toFixed(1)}% {t("budgets.card.utilizedSuffix")}
-              {budget.percentage > 100 && (
+            <Text style={{ fontSize: 12, color: progressColor, fontWeight: 600 }}>
+              {goal.progressPercent.toFixed(1)}% {t("goals.card.progressSuffix")}
+              {isCompleted && (
                 <Text
                   style={{
                     fontSize: 11,
-                    color: token.colorError,
+                    color: token.colorSuccess,
                     marginLeft: 6,
                     fontWeight: 400,
                   }}
                 >
-                  {t("budgets.card.exceeded")}
+                  {t("goals.card.completed")}
                 </Text>
               )}
             </Text>
           </div>
         </Flex>
 
-        {/* Actions */}
         <Space size={4} style={{ flexShrink: 0 }}>
-          <Tooltip title={t("budgets.card.editAmountTooltip")}>
+          <Tooltip title={t("goals.card.contributeTooltip")}>
             <Button
               type="text"
-              aria-label={t("budgets.card.editAriaLabel", {
-                category: categoryName,
-              })}
+              aria-label={t("goals.card.contributeAriaLabel", { name: goal.name })}
+              icon={<PlusOutlined style={{ fontSize: 15 }} />}
+              style={{
+                borderRadius: "50%",
+                width: 34,
+                height: 34,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 0,
+              }}
+              onClick={() => onContribute(goal)}
+            />
+          </Tooltip>
+          <Tooltip title={t("goals.card.editTooltip")}>
+            <Button
+              type="text"
+              aria-label={t("goals.card.editAriaLabel", { name: goal.name })}
               icon={<EditOutlined style={{ fontSize: 15 }} />}
               style={{
                 borderRadius: "50%",
@@ -179,24 +177,22 @@ export function BudgetCard({
                 justifyContent: "center",
                 padding: 0,
               }}
-              onClick={() => onEdit(budget)}
+              onClick={() => onEdit(goal)}
             />
           </Tooltip>
-          <Tooltip title={t("budgets.card.deleteTooltip")}>
+          <Tooltip title={t("goals.card.deleteTooltip")}>
             <Popconfirm
-              title={t("budgets.card.deleteConfirmTitle")}
-              description={t("budgets.card.deleteConfirmDescription")}
-              onConfirm={() => onDelete(budget.id)}
-              okText={t("budgets.card.deleteConfirmOk")}
-              cancelText={t("budgets.cancel")}
+              title={t("goals.card.deleteConfirmTitle")}
+              description={t("goals.card.deleteConfirmDescription")}
+              onConfirm={() => onDelete(goal.id)}
+              okText={t("goals.card.deleteConfirmOk")}
+              cancelText={t("goals.cancel")}
               okButtonProps={{ danger: true }}
             >
               <Button
                 type="text"
                 danger
-                aria-label={t("budgets.card.deleteAriaLabel", {
-                  category: categoryName,
-                })}
+                aria-label={t("goals.card.deleteAriaLabel", { name: goal.name })}
                 icon={<DeleteOutlined style={{ fontSize: 15 }} />}
                 style={{
                   borderRadius: "50%",

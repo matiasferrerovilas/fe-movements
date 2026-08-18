@@ -1,4 +1,4 @@
-import { Card, Col, Empty, Row, Tag, Typography } from "antd";
+import { Card, Checkbox, Col, Empty, Row, Tag, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import type { MovementTableViewProps } from "@/components/movements/tables/types";
 import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
@@ -14,6 +14,8 @@ export default function MovementTableDesktop({
   movements,
   onDelete,
   getCardStyle,
+  selectedIds,
+  onToggleSelect,
 }: MovementTableViewProps) {
   const { t } = useTranslation();
   const typeEnumLabel = getTypeEnumLabel(t);
@@ -25,13 +27,14 @@ export default function MovementTableDesktop({
         styles={{ body: { padding: COL_PADDING } }}
       >
         <Row justify="center" align="middle">
+          <Col span={1} />
           <Col span={2}>{t("movements.columnDate")}</Col>
           <Col span={2}>{t("movements.columnCategory")}</Col>
           <Col span={2}>{t("movements.columnBank")}</Col>
           <Col span={2}>{t("movements.columnGroup")}</Col>
           <Col span={2}>{t("movements.columnLoadedBy")}</Col>
           <Col span={2}>{t("movements.columnType")}</Col>
-          <Col span={4}>{t("movements.columnDescription")}</Col>
+          <Col span={3}>{t("movements.columnDescription")}</Col>
           <Col span={2} style={{ textAlign: "center" }}>{t("movements.columnInstallments")}</Col>
           <Col span={3}>{t("movements.columnAmount")}</Col>
           <Col span={2} style={{ textAlign: "right" }}>
@@ -56,6 +59,13 @@ export default function MovementTableDesktop({
               styles={{ body: { padding: COL_PADDING } }}
             >
               <Row justify="center" align="middle">
+                <Col span={1}>
+                  <Checkbox
+                    checked={selectedIds.has(record.id)}
+                    onChange={() => onToggleSelect(record.id)}
+                    aria-label={t("movements.bulk.selectRowAriaLabel")}
+                  />
+                </Col>
                 <Col span={2}>{record.formattedDate}</Col>
                 <Col span={2}>
                   <CategoryCircleTable categories={record.categories} />
@@ -66,7 +76,7 @@ export default function MovementTableDesktop({
                 <Col span={2}>
                   {typeEnumLabel[record.type as TypeEnum] ?? record.type}
                 </Col>
-                <Col span={4}>{record.description}</Col>
+                <Col span={3}>{record.description}</Col>
                 <Col span={2} style={{ textAlign: "center" }}>{record.installments}</Col>
                 <Col span={3}>
                   <Text>{`${record.amountSign}$${Math.abs(record.amount).toFixed(2)}`}</Text>

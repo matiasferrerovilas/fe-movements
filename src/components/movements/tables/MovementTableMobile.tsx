@@ -1,4 +1,4 @@
-import { Card, Col, Empty, Row, Tag, Typography } from "antd";
+import { Card, Checkbox, Col, Empty, Row, Tag, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import type { MovementTableViewProps } from "@/components/movements/tables/types";
 import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
@@ -12,6 +12,8 @@ export default function MovementTableMobile({
   movements,
   onDelete,
   getCardStyle,
+  selectedIds,
+  onToggleSelect,
 }: MovementTableViewProps) {
   const { t } = useTranslation();
   const typeEnumLabel = getTypeEnumLabel(t);
@@ -33,9 +35,15 @@ export default function MovementTableMobile({
             styles={{ body: { padding: "10px 12px" } }}
           >
             <Row justify="space-between" align="middle" style={{ marginBottom: 6 }}>
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                {record.formattedDate}
-              </Text>
+              <Checkbox
+                checked={selectedIds.has(record.id)}
+                onChange={() => onToggleSelect(record.id)}
+                aria-label={t("movements.bulk.selectRowAriaLabel")}
+              >
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  {record.formattedDate}
+                </Text>
+              </Checkbox>
               <Text strong style={{ color: record.amountColor, fontSize: 16 }}>
                 {`${record.amountSign} $${Math.abs(record.amount).toFixed(2)}`}
                 <Tag color="blue" style={{ marginLeft: 6, fontSize: 11 }}>

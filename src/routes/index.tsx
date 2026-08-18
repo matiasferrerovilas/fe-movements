@@ -4,6 +4,8 @@ import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { RoleEnum } from "@/enums/RoleEnum";
 import MonthlySummary from "@/components/home/MonthlySummary";
+import InsightsPanel from "@/components/home/InsightsPanel";
+import GoalsPanel from "@/components/home/GoalsPanel";
 import TopCategories from "@/components/home/TopCategories";
 import BalanceFiltersCollapsible from "@/components/home/BalanceFiltersCollapsible";
 import { getUserDisplayName } from "@/utils/userDisplayName";
@@ -18,6 +20,7 @@ import type { BalanceFilters } from "@/models/BalanceFilters";
 // Lazy load de componentes con Recharts para reducir bundle inicial
 const CategoryPieChart = lazy(() => import("@/components/home/CategoryPieChart"));
 const AnnualEvolution = lazy(() => import("@/components/home/AnnualEvolution"));
+const ProjectionChart = lazy(() => import("@/components/home/ProjectionChart"));
 
 // Componente de loading para gráficos
 function ChartSkeleton() {
@@ -121,13 +124,23 @@ function RouteComponent() {
         <MonthlySummary />
       </div>
 
-      {/* 3. Top 5 Categorías */}
+      {/* 3. Insights de gasto y metas de ahorro, lado a lado */}
+      <Row gutter={[20, 0]}>
+        <Col xs={24} md={12}>
+          <InsightsPanel />
+        </Col>
+        <Col xs={24} md={12}>
+          <GoalsPanel />
+        </Col>
+      </Row>
+
+      {/* 4. Top 5 Categorías */}
       <TopCategories />
 
-      {/* 4. Divider visual */}
+      {/* 5. Divider visual */}
       <Divider style={{ margin: "8px 0 24px" }} />
 
-      {/* 5. Filtros colapsables (cerrados por defecto) */}
+      {/* 6. Filtros colapsables (cerrados por defecto) */}
       <BalanceFiltersCollapsible
         filters={filters}
         currencies={currencies}
@@ -145,6 +158,11 @@ function RouteComponent() {
         {/* 7. Evolución temporal */}
         <div style={{ marginTop: 20 }}>
           <AnnualEvolution year={dayjs(filters.dates[0]).year()} />
+        </div>
+
+        {/* 8. Proyección de balance futuro */}
+        <div style={{ marginTop: 20 }}>
+          <ProjectionChart />
         </div>
       </Suspense>
     </div>

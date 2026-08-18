@@ -30,6 +30,7 @@ import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
 import { CategoryEditModal } from "@/components/settings/CategoryEditModal";
 import { getIconComponent } from "@/utils/getIconComponent";
+import { useUndoableDelete } from "@/utils/useUndoableDelete";
 
 const { Title, Text } = Typography;
 
@@ -42,10 +43,18 @@ interface CategoryCardProps {
   onDelete: (id: number) => void;
   onEdit: (category: Category) => void;
   isDeleting?: boolean;
+  isPendingRemoval?: boolean;
   categoriasQuitar: string;
 }
 
-function CategoryCard({ category, onDelete, onEdit, isDeleting, categoriasQuitar }: CategoryCardProps) {
+function CategoryCard({
+  category,
+  onDelete,
+  onEdit,
+  isDeleting,
+  isPendingRemoval,
+  categoriasQuitar,
+}: CategoryCardProps) {
   const { token } = theme.useToken();
   const { t } = useTranslation();
 
@@ -69,6 +78,9 @@ function CategoryCard({ category, onDelete, onEdit, isDeleting, categoriasQuitar
         background: token.colorFillAlter,
         transition: "all 0.25s ease",
         overflow: "hidden",
+        ...(isPendingRemoval
+          ? { opacity: 0.45, filter: "grayscale(70%)", pointerEvents: "none" }
+          : {}),
       }}
     >
       <Flex align="center" justify="space-between">
@@ -164,6 +176,11 @@ export function SettingCategory() {
   const { data: categories = [], isLoading } = useCategory();
   const addCategoryMutation = useAddCategory();
   const deleteCategoryMutation = useDeleteCategory();
+  const { requestDelete: requestDeleteCategory, isPending: isPendingCategoryRemoval } =
+    useUndoableDelete<number>({
+      getId: (id) => id,
+      onDelete: (id) => deleteCategoryMutation.mutateAsync({ categoryId: id }),
+    });
   const [form] = Form.useForm<AddCategoryForm>();
   const { token } = theme.useToken();
   const { t } = useTranslation();
@@ -182,7 +199,7 @@ export function SettingCategory() {
   };
 
   const handleDelete = (categoryId: number) => {
-    deleteCategoryMutation.mutate({ categoryId });
+    requestDeleteCategory(categoryId);
   };
 
   const handleEdit = (category: Category) => {
@@ -299,6 +316,7 @@ export function SettingCategory() {
                 onDelete={(categoryId) => handleDelete(categoryId)}
                 onEdit={(cat) => handleEdit(cat)}
                 isDeleting={deleteCategoryMutation.isPending}
+                isPendingRemoval={isPendingCategoryRemoval(category.id)}
                 categoriasQuitar={labels.categoriasQuitar}
               />
             </div>

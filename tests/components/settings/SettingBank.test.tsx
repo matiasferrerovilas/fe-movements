@@ -219,8 +219,9 @@ describe("SettingBank", () => {
       const confirmBtn = await screen.findByText("Eliminar");
       await user.click(confirmBtn);
 
-      await waitFor(() => expect(deletedId).toBe("2"));
-    });
+      // El borrado real recién se dispara tras la ventana de "deshacer" (~7s)
+      await waitFor(() => expect(deletedId).toBe("2"), { timeout: 9000 });
+    }, 12000);
   });
 
   describe("establecer banco por defecto", () => {

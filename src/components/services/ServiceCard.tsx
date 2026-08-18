@@ -30,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import { useDeleteService } from "@/apis/hooks/useService";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getServiceLabels } from "@/utils/serviceLabels";
+import { useUndoableDelete } from "@/utils/useUndoableDelete";
 
 const { Text, Title } = Typography;
 
@@ -102,6 +103,13 @@ export const ServiceCard = React.memo(function ServiceCard({
   };
 
   const deleteServiceMutation = useDeleteService();
+  const { requestDelete: requestDeleteService, isPending: isPendingServiceRemoval } =
+    useUndoableDelete<Service>({
+      getId: (s) => s.id,
+      onDelete: (s) => deleteServiceMutation.mutateAsync(s),
+      getMessage: () => t("services.card.undoDeletedMessage", { description: service.description }),
+    });
+  const isPendingRemoval = isPendingServiceRemoval(service);
 
   return (
     <Card
@@ -110,6 +118,9 @@ export const ServiceCard = React.memo(function ServiceCard({
         borderColor: statusBorder,
         borderWidth: 2,
         background: statusBg,
+        ...(isPendingRemoval
+          ? { opacity: 0.45, filter: "grayscale(70%)", pointerEvents: "none" }
+          : {}),
       }}
       styles={{ body: { padding: 16 } }}
     >
@@ -231,7 +242,7 @@ export const ServiceCard = React.memo(function ServiceCard({
               <Popconfirm
                 title={labels.eliminar}
                 description={t("services.card.deleteConfirmDescription")}
-                onConfirm={() => deleteServiceMutation.mutate(service)}
+                onConfirm={() => requestDeleteService(service)}
                 okText={t("services.card.yes")}
                 cancelText={t("services.card.no")}
                 placement="topRight"

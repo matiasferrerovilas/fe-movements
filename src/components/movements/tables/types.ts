@@ -8,10 +8,13 @@ export interface FormattedMovement extends Movement {
   isDebit: boolean;
   amountColor: string;
   amountSign: string;
+  isPendingRemoval: boolean;
 }
 
 export interface MovementTableViewProps {
   movements: FormattedMovement[];
   onDelete: (id: number) => void;
   getCardStyle: (record: FormattedMovement) => React.CSSProperties;
+  selectedIds: Set<number>;
+  onToggleSelect: (id: number) => void;
 }

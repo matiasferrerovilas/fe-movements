@@ -1,4 +1,4 @@
-import { Card, Col, Empty, Row, Tag, Typography } from "antd";
+import { Card, Checkbox, Col, Empty, Row, Tag, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import type { MovementTableViewProps } from "@/components/movements/tables/types";
 import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
@@ -14,6 +14,8 @@ export default function MovementTableTablet({
   movements,
   onDelete,
   getCardStyle,
+  selectedIds,
+  onToggleSelect,
 }: MovementTableViewProps) {
   const { t } = useTranslation();
   const typeEnumLabel = getTypeEnumLabel(t);
@@ -25,12 +27,13 @@ export default function MovementTableTablet({
         styles={{ body: { padding: COL_PADDING } }}
       >
         <Row justify="center" align="middle">
+          <Col span={2} />
           <Col span={3}>{t("movements.columnDate")}</Col>
           <Col span={3}>{t("movements.columnCategory")}</Col>
           <Col span={3}>{t("movements.columnBank")}</Col>
           <Col span={3}>{t("movements.columnType")}</Col>
-          <Col span={5}>{t("movements.columnDescription")}</Col>
-          <Col span={4}>{t("movements.columnAmount")}</Col>
+          <Col span={4}>{t("movements.columnDescription")}</Col>
+          <Col span={3}>{t("movements.columnAmount")}</Col>
           <Col span={3} style={{ textAlign: "right" }}>
             {t("movements.columnActions")}
           </Col>
@@ -53,6 +56,13 @@ export default function MovementTableTablet({
               styles={{ body: { padding: COL_PADDING } }}
             >
               <Row justify="center" align="middle">
+                <Col span={2}>
+                  <Checkbox
+                    checked={selectedIds.has(record.id)}
+                    onChange={() => onToggleSelect(record.id)}
+                    aria-label={t("movements.bulk.selectRowAriaLabel")}
+                  />
+                </Col>
                 <Col span={3}>{record.formattedDate}</Col>
                 <Col span={3}>
                   <CategoryCircleTable categories={record.categories} />
@@ -61,10 +71,10 @@ export default function MovementTableTablet({
                 <Col span={3}>
                   {typeEnumLabel[record.type as TypeEnum] ?? record.type}
                 </Col>
-                <Col span={5} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <Col span={4} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {record.description}
                 </Col>
-                <Col span={4}>
+                <Col span={3}>
                   <Text style={{ color: record.amountColor }}>
                     {`${record.amountSign}$${Math.abs(record.amount).toFixed(2)}`}
                     <Text type="secondary" style={{ marginLeft: 4, fontSize: 11 }}>

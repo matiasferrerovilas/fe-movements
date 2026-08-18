@@ -211,10 +211,14 @@ describe("BudgetAlert", () => {
       const confirmBtn = await screen.findByRole("button", { name: "Eliminar" });
       await user.click(confirmBtn);
 
-      await waitFor(() => {
-        expect(capturedId).toBe("1");
-      });
-    });
+      // El borrado real recién se dispara tras la ventana de "deshacer" (~7s)
+      await waitFor(
+        () => {
+          expect(capturedId).toBe("1");
+        },
+        { timeout: 9000 },
+      );
+    }, 12000);
   });
 
   describe("editar presupuesto", () => {

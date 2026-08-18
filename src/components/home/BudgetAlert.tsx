@@ -8,6 +8,7 @@ import { useBudgets, useDeleteBudget } from "@/apis/hooks/useBudget";
 import { BudgetCard } from "@/components/budgets/BudgetCard";
 import { EditBudgetModal } from "@/components/budgets/BudgetFormModal";
 import type { BudgetRecord } from "@/models/Budget";
+import { useUndoableDelete } from "@/utils/useUndoableDelete";
 
 const { Text, Title } = Typography;
 
@@ -25,6 +26,11 @@ export default function BudgetAlert() {
   const { data: budgets } = useBudgets({ year, month });
 
   const deleteBudget = useDeleteBudget();
+  const { requestDelete: requestDeleteBudget, isPending: isPendingBudgetRemoval } =
+    useUndoableDelete<number>({
+      getId: (id) => id,
+      onDelete: (id) => deleteBudget.mutateAsync(id),
+    });
   const [editingBudget, setEditingBudget] = useState<BudgetRecord | null>(null);
 
   const alertBudgets = (budgets ?? []).filter(
@@ -86,11 +92,12 @@ export default function BudgetAlert() {
             <BudgetCard
               budget={budget}
               onEdit={setEditingBudget}
-              onDelete={(id) => deleteBudget.mutate(id)}
+              onDelete={(id) => requestDeleteBudget(id)}
               isDeleting={
                 deleteBudget.isPending &&
                 deleteBudget.variables === budget.id
               }
+              isPendingRemoval={isPendingBudgetRemoval(budget.id)}
             />
           </Col>
         ))}

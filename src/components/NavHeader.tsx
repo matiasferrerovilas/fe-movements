@@ -25,6 +25,7 @@ import RiseOutlined from "@ant-design/icons/RiseOutlined";
 import SafetyOutlined from "@ant-design/icons/SafetyOutlined";
 import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import SunOutlined from "@ant-design/icons/SunOutlined";
+import TrophyOutlined from "@ant-design/icons/TrophyOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import { useKeycloak } from "@react-keycloak/web";
 import { useRouter, useRouterState } from "@tanstack/react-router";
@@ -110,6 +111,13 @@ const getUserMenuItems = (t: TFunction): SideBarItem[] => [
     icon: <RiseOutlined />,
     label: t("nav.investments"),
     path: "/investments",
+    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+  },
+  {
+    key: "goals",
+    icon: <TrophyOutlined />,
+    label: t("nav.goals"),
+    path: "/goals",
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
   },
   {

@@ -1,5 +1,10 @@
 {
   "common": {
+    "undo": {
+      "itemDeleted": "Item deleted",
+      "undoButton": "Undo",
+      "deleteFailed": "Could not delete the item"
+    },
     "entity": {
       "workspace_personal": "Workspace",
       "workspace_company": "Work space",
@@ -103,6 +108,7 @@
   "nav": {
     "movements": "Movements",
     "budgets": "Budgets",
+    "goals": "Savings goals",
     "settings": "Settings",
     "help": "Help",
     "investments": "Investments",
@@ -188,7 +194,32 @@
     "annualEvolutionEmpty": "No data for the selected year",
     "categoryPieTitle": "Expenses by Category",
     "categoryPieEmpty": "No data for the period",
-    "categoryPieTotal": "Total"
+    "categoryPieTotal": "Total",
+    "insights": {
+      "title": "Spending insights",
+      "subtitle": "Categories deviating from your 6-month average",
+      "aboveMessage": "{{category}}: {{percent}}% above your 6-month average",
+      "belowMessage": "{{category}}: {{percent}}% below your 6-month average",
+      "detail": "This month: {{current}} · Average: {{average}}"
+    },
+    "goals": {
+      "title": "Savings goals",
+      "subtitle": "Your progress toward the goals you set",
+      "empty": "You haven't created any savings goal yet",
+      "viewAll": "View all",
+      "rowDetail": "{{saved}} of {{target}}"
+    },
+    "projection": {
+      "title": "Balance projection",
+      "subtitle": "{{trend}} trend: you save {{amount}} on average per month (last {{months}} months)",
+      "trendUp": "Positive",
+      "trendDown": "Negative",
+      "today": "Today",
+      "monthsOutLabel": "+{{count}}m",
+      "balanceLegend": "Projected balance",
+      "empty": "Not enough data to project",
+      "disclaimer": "Conservative estimate based on your historical cash flow. Does not include investment returns."
+    }
   },
   "movements": {
     "current": "Current",
@@ -229,6 +260,24 @@
     "no": "No",
     "deleteTooltip": "Delete the movement",
     "installmentsTag": "{{installments}} installments",
+    "bulk": {
+      "selectRowAriaLabel": "Select movement",
+      "selectedCount": "{{count}} selected",
+      "categorizeButton": "Categorize",
+      "deleteButton": "Delete",
+      "clearSelection": "Clear selection",
+      "cancel": "Cancel",
+      "deleteConfirmTitle": "Delete {{count}} movements?",
+      "deleteConfirmDescription": "This action cannot be undone.",
+      "deleteConfirmOk": "Delete",
+      "deleteSummary": "{{succeeded}} movements deleted, {{failed}} failed",
+      "deleteAllSuccess": "{{count}} movements deleted",
+      "categorizeTitle": "Categorize {{count}} movements",
+      "categorizePlaceholder": "Select up to 2 categories",
+      "categorizeConfirm": "Apply",
+      "categorizeSummary": "{{succeeded}} movements updated, {{failed}} failed",
+      "categorizeAllSuccess": "{{count}} movements updated"
+    },
     "csvHeaders": {
       "date": "Date",
       "description": "Description",
@@ -311,6 +360,49 @@
       "deleteConfirmDescription": "This action cannot be undone.",
       "deleteConfirmOk": "Delete",
       "deleteAriaLabel": "Delete budget {{category}}"
+    }
+  },
+  "goals": {
+    "pageSubtitle": "Set savings goals and track your progress",
+    "addGoalTitle": "New savings goal",
+    "addButton": "+ New goal",
+    "cancel": "Cancel",
+    "add": "Create",
+    "nameLabel": "Name",
+    "namePlaceholder": "E.g: Trip to Bariloche",
+    "enterNameMessage": "Enter a name",
+    "currencyLabel": "Currency",
+    "selectCurrencyPlaceholder": "Select a currency",
+    "targetAmountLabel": "Target amount",
+    "enterAmountMessage": "Enter an amount",
+    "amountMinMessage": "The amount must be greater than 0",
+    "amountPlaceholder": "0.00",
+    "targetDateLabel": "Target date (optional)",
+    "selectTargetDateMessage": "Select a month",
+    "noGoalsEmpty": "You haven't created any savings goals yet",
+    "edit": {
+      "title": "Edit goal — {{name}}",
+      "save": "Save"
+    },
+    "contribute": {
+      "title": "Add contribution — {{name}}",
+      "amountLabel": "Amount to add",
+      "confirm": "Add"
+    },
+    "card": {
+      "target": "Target",
+      "saved": "Saved",
+      "progressSuffix": "complete",
+      "completed": "(goal reached!)",
+      "contributeTooltip": "Add contribution",
+      "contributeAriaLabel": "Add contribution to {{name}}",
+      "editTooltip": "Edit goal",
+      "editAriaLabel": "Edit goal {{name}}",
+      "deleteTooltip": "Delete goal",
+      "deleteAriaLabel": "Delete goal {{name}}",
+      "deleteConfirmTitle": "Delete this savings goal?",
+      "deleteConfirmDescription": "This action cannot be undone.",
+      "deleteConfirmOk": "Delete"
     }
   },
   "investments": {
@@ -592,6 +684,7 @@
       "yes": "Yes",
       "no": "No",
       "deleteAriaLabel": "Delete service {{description}}",
+      "undoDeletedMessage": "{{description}} deleted",
       "lastPaymentLabel": "Last payment",
       "lastPaymentPrefix": "Last payment:",
       "saveButton": "Save",

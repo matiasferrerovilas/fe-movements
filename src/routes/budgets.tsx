@@ -29,6 +29,7 @@ import {
   EditBudgetModal,
 } from "@/components/budgets/BudgetFormModal";
 import type { BudgetRecord } from "@/models/Budget";
+import { useUndoableDelete } from "@/utils/useUndoableDelete";
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -89,6 +90,11 @@ function RouteComponent() {
   );
 
   const deleteBudget = useDeleteBudget();
+  const { requestDelete: requestDeleteBudget, isPending: isPendingBudgetRemoval } =
+    useUndoableDelete<number>({
+      getId: (id) => id,
+      onDelete: (id) => deleteBudget.mutateAsync(id),
+    });
 
   const monthLabel = dayjs()
     .locale("es")
@@ -167,8 +173,9 @@ function RouteComponent() {
               <BudgetCard
                 budget={budget}
                 onEdit={setEditingBudget}
-                onDelete={(id) => deleteBudget.mutate(id)}
+                onDelete={(id) => requestDeleteBudget(id)}
                 isDeleting={deleteBudget.isPending}
+                isPendingRemoval={isPendingBudgetRemoval(budget.id)}
               />
             </Col>
           ))}
