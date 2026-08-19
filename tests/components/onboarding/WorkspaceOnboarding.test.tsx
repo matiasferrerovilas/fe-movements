@@ -131,7 +131,7 @@ describe("WorkspaceOnboarding", () => {
       );
     });
 
-    it("avanza con el workspace agregado y el default primero al escribir un nombre válido", async () => {
+    it("avanza con el workspace agregado y marcado como default al escribir un nombre válido", async () => {
       const user = userEvent.setup();
       const onNext = vi.fn();
       renderWorkspace(onNext);
@@ -140,10 +140,12 @@ describe("WorkspaceOnboarding", () => {
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));
-      expect(onNext).toHaveBeenCalledWith({ accountsToAdd: ["Familia"] });
+      expect(onNext).toHaveBeenCalledWith({
+        workspacesToAdd: [{ name: "Familia", isDefault: true }],
+      });
     });
 
-    it("avanza con accountsToAdd vacío cuando no se agregó ningún workspace", async () => {
+    it("avanza con workspacesToAdd vacío cuando no se agregó ningún workspace", async () => {
       const user = userEvent.setup();
       const onNext = vi.fn();
       renderWorkspace(onNext);
@@ -151,7 +153,7 @@ describe("WorkspaceOnboarding", () => {
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));
-      expect(onNext).toHaveBeenCalledWith({ accountsToAdd: [] });
+      expect(onNext).toHaveBeenCalledWith({ workspacesToAdd: [] });
     });
   });
 

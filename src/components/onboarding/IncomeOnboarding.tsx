@@ -10,7 +10,7 @@ import {
 } from "antd";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import { useTranslation } from "react-i18next";
-import type { OnboardingBankEntry, OnboardingCurrencyEntry, OnboardingForm, OnboardingIngresoForm } from "@/apis/onboarding/OnboardingApi";
+import type { OnboardingBankEntry, OnboardingCurrencyEntry, OnboardingForm, OnboardingIngresoForm, OnboardingWorkspaceEntry } from "@/apis/onboarding/OnboardingApi";
 import { getEntityLabels } from "@/utils/entityLabels";
 import { WorkspaceEnum } from "@/enums/WorkspaceEnum";
 
@@ -33,15 +33,17 @@ export default function IncomeOnboarding({
   const { t } = useTranslation();
   const labels = getEntityLabels(initialValues.userType ?? null, t);
 
-  // Usamos los bancos y monedas ingresados en los pasos anteriores (si los hay)
+  // Usamos los bancos, monedas y workspaces ingresados en los pasos anteriores (si los hay)
   const banksToAdd: OnboardingBankEntry[] = initialValues.banksToAdd ?? [];
   const currenciesToAdd: OnboardingCurrencyEntry[] = initialValues.currenciesToAdd ?? [];
-  const accountsToAddOptions: string[] = (initialValues.accountsToAdd || []).filter(
-    (g: string) => g && g.trim(),
-  );
+  const workspacesToAddOptions: OnboardingWorkspaceEntry[] = (
+    initialValues.workspacesToAdd || []
+  ).filter((w) => w.name && w.name.trim());
 
-  // Default bank pre-seleccionado si hay uno marcado como default
+  // Default bank / workspace pre-seleccionados si hay uno marcado como default
   const defaultBank = banksToAdd.find((b) => b.isDefault)?.description;
+  const defaultWorkspaceName =
+    workspacesToAddOptions.find((w) => w.isDefault)?.name ?? workspacesToAddOptions[0]?.name;
 
   // Finalizar: envía los valores actuales sin requerir ningún campo
   const handleSubmit = () => {
@@ -113,16 +115,12 @@ export default function IncomeOnboarding({
             <Form.Item
               name="accountToAdd"
               label={<Text strong>{labels.workspace}</Text>}
-              initialValue={
-                accountsToAddOptions.length > 0
-                  ? accountsToAddOptions[0]
-                  : WorkspaceEnum.DEFAULT
-              }
+              initialValue={defaultWorkspaceName ?? WorkspaceEnum.DEFAULT}
             >
-              {accountsToAddOptions.length > 0 ? (
+              {workspacesToAddOptions.length > 0 ? (
                 <Select
                   placeholder={t("onboarding.income.workspacePlaceholder")}
-                  options={accountsToAddOptions.map((g) => ({ label: g, value: g }))}
+                  options={workspacesToAddOptions.map((w) => ({ label: w.name, value: w.name }))}
                 />
               ) : (
                 <Select

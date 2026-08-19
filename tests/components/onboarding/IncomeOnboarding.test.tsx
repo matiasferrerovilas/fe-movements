@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfigProvider } from "antd";
 import type { ReactNode } from "react";
 import IncomeOnboarding from "@/components/onboarding/IncomeOnboarding";
-import type { OnboardingBankEntry, OnboardingCurrencyEntry } from "@/apis/onboarding/OnboardingApi";
+import type { OnboardingBankEntry, OnboardingCurrencyEntry, OnboardingWorkspaceEntry } from "@/apis/onboarding/OnboardingApi";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -25,7 +25,7 @@ function renderIngreso(
   onPrev = vi.fn(),
   initialValues: {
     userType?: string;
-    accountsToAdd?: string[];
+    workspacesToAdd?: OnboardingWorkspaceEntry[];
     banksToAdd?: OnboardingBankEntry[];
     currenciesToAdd?: OnboardingCurrencyEntry[];
   } = { userType: "PERSONAL" },
@@ -71,7 +71,10 @@ describe("IncomeOnboarding", () => {
       const user = userEvent.setup();
       renderIngreso(vi.fn(), vi.fn(), {
         userType: "PERSONAL",
-        accountsToAdd: ["Familia", "Personal"],
+        workspacesToAdd: [
+          { name: "Familia", isDefault: true },
+          { name: "Personal", isDefault: false },
+        ],
       });
       expect(screen.getByText("Workspace")).toBeInTheDocument();
 

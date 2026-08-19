@@ -18,20 +18,15 @@ import {
 } from "antd";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { OnboardingForm } from "@/apis/onboarding/OnboardingApi";
+import type { OnboardingForm, OnboardingWorkspaceEntry } from "@/apis/onboarding/OnboardingApi";
 import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Text } = Typography;
 
 interface Props {
   initialValues: Partial<OnboardingForm>;
-  onNext: (values: Pick<OnboardingForm, "accountsToAdd">) => void;
+  onNext: (values: Pick<OnboardingForm, "workspacesToAdd">) => void;
   onPrev: () => void;
-}
-
-interface WorkspaceEntry {
-  name: string;
-  isDefault: boolean;
 }
 
 export default function WorkspaceOnboarding({ initialValues, onNext, onPrev }: Props) {
@@ -39,11 +34,8 @@ export default function WorkspaceOnboarding({ initialValues, onNext, onPrev }: P
   const { t } = useTranslation();
   const [form] = Form.useForm<{ name: string }>();
   const labels = getEntityLabels(initialValues.userType ?? null, t);
-  const [workspaces, setWorkspaces] = useState<WorkspaceEntry[]>(
-    (initialValues.accountsToAdd ?? []).map((name, i) => ({
-      name,
-      isDefault: i === 0,
-    })),
+  const [workspaces, setWorkspaces] = useState<OnboardingWorkspaceEntry[]>(
+    initialValues.workspacesToAdd ?? [],
   );
 
   const handleAdd = () => {
@@ -78,9 +70,7 @@ export default function WorkspaceOnboarding({ initialValues, onNext, onPrev }: P
   };
 
   const handleSubmit = () => {
-    // El default (si hay uno) queda primero — es el que se usa como workspace por defecto
-    const ordered = [...workspaces].sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
-    onNext({ accountsToAdd: ordered.map((w) => w.name) });
+    onNext({ workspacesToAdd: workspaces });
   };
 
   return (

@@ -19,7 +19,7 @@ afterAll(() => server.close());
 // ── Tests ──────────────────────────────────────────────────────────────────
 
 const validForm: OnboardingForm = {
-  accountsToAdd: ["Familia"],
+  workspacesToAdd: [{ name: "Familia", isDefault: true }],
   userType: "PERSONAL",
   categoriesToAdd: [],
   banksToAdd: [],

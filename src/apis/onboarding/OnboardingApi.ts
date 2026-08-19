@@ -11,8 +11,13 @@ export interface OnboardingCurrencyEntry {
   description: string;
 }
 
+export interface OnboardingWorkspaceEntry {
+  name: string;
+  isDefault: boolean;
+}
+
 export interface OnboardingForm {
-  accountsToAdd: string[];
+  workspacesToAdd: OnboardingWorkspaceEntry[];
   userType: UserTypeEnum;
   onBoardingAmount: OnBoardingIngreso;
   categoriesToAdd: string[];

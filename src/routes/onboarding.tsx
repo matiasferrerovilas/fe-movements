@@ -136,16 +136,19 @@ function RouteComponent() {
           initialValues={formData}
           onPrev={handlePrev}
           onFinish={(values: OnboardingIngresoForm) => {
-            const newGroups = (formData.accountsToAdd || []).filter(
-              (g: string) => g && g.trim(),
+            const newGroups = (formData.workspacesToAdd || []).filter(
+              (w) => w.name && w.name.trim(),
             );
             if (newGroups.length === 0) {
-              newGroups.push(WorkspaceEnum.DEFAULT);
+              newGroups.push({ name: WorkspaceEnum.DEFAULT, isDefault: true });
             }
-            const selectedGroup = values.accountToAdd || newGroups[0];
+            const selectedGroup =
+              values.accountToAdd ||
+              newGroups.find((w) => w.isDefault)?.name ||
+              newGroups[0].name;
 
             const finalData: OnboardingForm = {
-              accountsToAdd: newGroups,
+              workspacesToAdd: newGroups,
               userType: formData.userType ?? UserTypeEnum.PERSONAL,
               categoriesToAdd: formData.categoriesToAdd ?? [],
               banksToAdd: formData.banksToAdd ?? [],
