@@ -6,6 +6,7 @@ import IncomeOnboarding from "@/components/onboarding/IncomeOnboarding";
 import WorkspaceOnboarding from "@/components/onboarding/WorkspaceOnboarding";
 import CategoryOnboarding from "@/components/onboarding/CategoryOnboarding";
 import BankOnboarding from "@/components/onboarding/BankOnboarding";
+import CurrencyOnboarding from "@/components/onboarding/CurrencyOnboarding";
 import {
   finishOnboarding,
   type OnboardingForm,
@@ -16,7 +17,8 @@ import { onBoardingGuard } from "@/apis/auth/onBoardingGuard";
 import { useKeycloak } from "@react-keycloak/web";
 import UserTypeOnboarding from "@/components/onboarding/UserTypeOnboarding";
 import { WorkspaceEnum } from "@/enums/WorkspaceEnum";
-import { CURRENT_USER_QUERY_KEY, useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { UserTypeEnum } from "@/enums/UserTypeEnum";
+import { CURRENT_USER_QUERY_KEY } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Title, Text } = Typography;
@@ -34,8 +36,7 @@ function RouteComponent() {
   const [formData, setFormData] = useState<Partial<OnboardingForm>>({});
   const router = useRouter();
   const { t } = useTranslation();
-  const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null, t);
+  const labels = getEntityLabels(formData.userType ?? null, t);
 
   const handleNext = (values: Partial<OnboardingForm>) => {
     setDirection("forward");
@@ -57,16 +58,36 @@ function RouteComponent() {
         // token refresh no crítico, continuar igual
       }
       await queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
-      router.invalidate();
+      // Actualizamos el contexto del router de forma síncrona antes de navegar:
+      // si esperáramos a que el efecto de RouterWithAuth (App.tsx) detecte el
+      // refetch de useCurrentUser, hay una carrera en la que el guard de "/"
+      // todavía ve firstLogin=true y redirige de nuevo a /onboarding.
+      router.update({
+        context: {
+          ...router.options.context,
+          auth: { ...router.options.context.auth, firstLogin: false },
+        },
+      });
       router.navigate({ to: "/", replace: true });
     },
   });
 
   const steps = [
     {
+      title: t("onboarding.steps.profileTitle"),
+      description: t("onboarding.steps.profileDescription"),
+      content: <UserTypeOnboarding initialValues={formData} onNext={handleNext} />,
+    },
+    {
       title: t("onboarding.steps.workspacesTitle"),
       description: t("onboarding.steps.workspacesDescription"),
-      content: <WorkspaceOnboarding initialValues={formData} onNext={handleNext} />,
+      content: (
+        <WorkspaceOnboarding
+          initialValues={formData}
+          onPrev={handlePrev}
+          onNext={handleNext}
+        />
+      ),
     },
     {
       title: t("onboarding.steps.categoriesTitle"),
@@ -91,10 +112,10 @@ function RouteComponent() {
       ),
     },
     {
-      title: t("onboarding.steps.profileTitle"),
-      description: t("onboarding.steps.profileDescription"),
+      title: t("onboarding.steps.currencyTitle"),
+      description: t("onboarding.steps.currencyDescription"),
       content: (
-        <UserTypeOnboarding
+        <CurrencyOnboarding
           initialValues={formData}
           onPrev={handlePrev}
           onNext={handleNext}
@@ -119,9 +140,10 @@ function RouteComponent() {
 
             const finalData: OnboardingForm = {
               accountsToAdd: newGroups,
-              userType: formData.userType ?? "PERSONAL",
+              userType: formData.userType ?? UserTypeEnum.PERSONAL,
               categoriesToAdd: formData.categoriesToAdd ?? [],
               banksToAdd: formData.banksToAdd ?? [],
+              currenciesToAdd: formData.currenciesToAdd ?? [],
               onBoardingAmount: {
                 amount: values.amount,
                 bank: values.bank,

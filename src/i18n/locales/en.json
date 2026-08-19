@@ -99,6 +99,11 @@
       "subtitle": "You don't have permission to access this application.",
       "retryButton": "Retry"
     },
+    "notFound": {
+      "title": "404",
+      "subtitle": "The page you're looking for doesn't exist or was moved.",
+      "homeButton": "Back to home"
+    },
     "errorBoundary": {
       "title": "Something went wrong",
       "subtitle": "An unexpected error occurred. You can try reloading the page.",
@@ -154,6 +159,18 @@
       "removeAriaLabel": "Remove category {{name}}",
       "footerNote": "You can add more categories from Settings at any time."
     },
+    "currency": {
+      "description2": "You'll be able to choose among these currencies when setting your income.",
+      "symbolRequired": "Enter the currency symbol",
+      "symbolPlaceholder": "E.g.: USD, ARS...",
+      "nameRequired": "Enter the currency name",
+      "namePlaceholder": "E.g.: US Dollar, Argentine Peso...",
+      "addButton": "Add",
+      "emptyDescription": "You haven't added any currencies yet. You can continue without adding any.",
+      "deleteTooltip": "Delete currency",
+      "deleteAriaLabel": "Delete currency {{name}}",
+      "footerNote": "You can add more currencies from Settings at any time."
+    },
     "income": {
       "bankLabel": "Bank",
       "bankPlaceholder": "Bank where you receive the income",
@@ -179,6 +196,8 @@
       "banksDescription": "Your banking entities",
       "profileTitle": "Profile",
       "profileDescription": "Type of use",
+      "currencyTitle": "Currencies",
+      "currencyDescription": "Currencies you use",
       "incomeTitle": "Income",
       "incomeDescription": "Initial balance",
       "welcomeTitle": "Welcome"

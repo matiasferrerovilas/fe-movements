@@ -11,11 +11,10 @@ function wrapper({ children }: { children: ReactNode }) {
 
 function renderTipo(
   onNext = vi.fn(),
-  onPrev = vi.fn(),
   initialValues = {},
 ) {
   return render(
-    <UserTypeOnboarding initialValues={initialValues} onNext={onNext} onPrev={onPrev} />,
+    <UserTypeOnboarding initialValues={initialValues} onNext={onNext} />,
     { wrapper },
   );
 }
@@ -28,10 +27,10 @@ describe("UserTypeOnboarding", () => {
       expect(screen.getByText("Emprendedor")).toBeInTheDocument();
     });
 
-    it("muestra los botones Volver y Siguiente", () => {
+    it("muestra el botón Siguiente (sin Volver, es el primer paso)", () => {
       renderTipo();
-      expect(screen.getByText("Volver")).toBeInTheDocument();
       expect(screen.getByText("Siguiente")).toBeInTheDocument();
+      expect(screen.queryByText("Volver")).not.toBeInTheDocument();
     });
 
     it("selecciona PERSONAL por defecto cuando no hay initialValues", () => {
@@ -68,24 +67,12 @@ describe("UserTypeOnboarding", () => {
     it("respeta el initialValue ENTERPRISE", async () => {
       const user = userEvent.setup();
       const onNext = vi.fn();
-      renderTipo(onNext, vi.fn(), { userType: "ENTERPRISE" });
+      renderTipo(onNext, { userType: "ENTERPRISE" });
 
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));
       expect(onNext).toHaveBeenCalledWith({ userType: "ENTERPRISE" });
-    });
-  });
-
-  describe("navegación", () => {
-    it("llama onPrev al hacer click en Volver", async () => {
-      const user = userEvent.setup();
-      const onPrev = vi.fn();
-      renderTipo(vi.fn(), onPrev);
-
-      await user.click(screen.getByText("Volver"));
-
-      expect(onPrev).toHaveBeenCalledTimes(1);
     });
   });
 });

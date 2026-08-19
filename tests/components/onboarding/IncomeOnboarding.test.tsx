@@ -1,39 +1,11 @@
-import { describe, it, expect, vi, beforeAll, afterEach, afterAll } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfigProvider } from "antd";
-import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
 import IncomeOnboarding from "@/components/onboarding/IncomeOnboarding";
-import type { OnboardingBankEntry } from "@/apis/onboarding/OnboardingApi";
-
-// ── Mock useCurrentUser ────────────────────────────────────────────────────
-const mockCurrentUserReturn = vi.fn(() => ({
-  data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
-  isLoading: false,
-}));
-
-vi.mock("@/apis/hooks/useCurrentUser", () => ({
-  useCurrentUser: () => mockCurrentUserReturn(),
-}));
-
-// ── MSW ────────────────────────────────────────────────────────────────────
-// IncomeOnboarding ya no llama a /banks — solo necesita /currencies
-
-const server = setupServer(
-  http.get("http://localhost:8080/currencies", () =>
-    HttpResponse.json([
-      { id: 1, symbol: "ARS" },
-      { id: 2, symbol: "USD" },
-    ]),
-  ),
-);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+import type { OnboardingBankEntry, OnboardingCurrencyEntry } from "@/apis/onboarding/OnboardingApi";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -55,6 +27,7 @@ function renderIngreso(
     userType?: string;
     accountsToAdd?: string[];
     banksToAdd?: OnboardingBankEntry[];
+    currenciesToAdd?: OnboardingCurrencyEntry[];
   } = { userType: "PERSONAL" },
 ) {
   return render(
@@ -71,59 +44,39 @@ function renderIngreso(
 
 describe("IncomeOnboarding", () => {
   describe("render inicial", () => {
-    // FIXME: Estos tests necesitan que el mock de useCurrentUser sea dinámico
-    it.skip("muestra el título para usuario PERSONAL", async () => {
-      mockCurrentUserReturn.mockReturnValue({
-        data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
-        isLoading: false,
-      });
-      renderIngreso();
-      await waitFor(() =>
-        expect(screen.getByText(/ingresá tu ingreso mensual/i)).toBeInTheDocument(),
-      );
+    it("muestra el título para usuario PERSONAL", () => {
+      renderIngreso(vi.fn(), vi.fn(), { userType: "PERSONAL" });
+      expect(screen.getByText(/ingresá tu ingreso mensual/i)).toBeInTheDocument();
     });
 
-    it.skip("muestra el título para usuario ENTERPRISE", async () => {
-      mockCurrentUserReturn.mockReturnValue({
-        data: { id: 1, email: "test@test.com", userType: "ENTERPRISE" },
-        isLoading: false,
-      });
+    it("muestra el título para usuario ENTERPRISE", () => {
       renderIngreso(vi.fn(), vi.fn(), { userType: "ENTERPRISE" });
-      await waitFor(() =>
-        expect(screen.getByText(/ingresá tu ingreso diario/i)).toBeInTheDocument(),
-      );
+      expect(screen.getByText(/ingresá tu ingreso diario/i)).toBeInTheDocument();
     });
 
-    it("muestra los botones Volver y Finalizar (sin Omitir)", async () => {
+    it("muestra los botones Volver y Finalizar (sin Omitir)", () => {
       renderIngreso();
-      await waitFor(() =>
-        expect(screen.getByText("Finalizar")).toBeInTheDocument(),
-      );
+      expect(screen.getByText("Finalizar")).toBeInTheDocument();
       expect(screen.getByText("Volver")).toBeInTheDocument();
       expect(screen.queryByText("Omitir por ahora")).not.toBeInTheDocument();
     });
 
-    it("no muestra el selector de workspace si no hay workspaces custom", async () => {
+    it("no muestra el selector de workspace si no hay workspaces custom", () => {
       renderIngreso();
-      await waitFor(() =>
-        expect(screen.getByText("Finalizar")).toBeInTheDocument(),
-      );
       expect(screen.queryByText("Workspace")).not.toBeInTheDocument();
     });
 
-    it("muestra el selector de workspace si hay workspaces definidos", async () => {
+    it("muestra el selector de workspace si hay workspaces definidos", () => {
       renderIngreso(vi.fn(), vi.fn(), {
         userType: "PERSONAL",
         accountsToAdd: ["Familia", "Personal"],
-      } as never);
-      await waitFor(() =>
-        expect(screen.getByText("Workspace")).toBeInTheDocument(),
-      );
+      });
+      expect(screen.getByText("Workspace")).toBeInTheDocument();
     });
   });
 
   describe("bancos desde formData (no API)", () => {
-    it("muestra los bancos pasados en banksToAdd como opciones del selector", async () => {
+    it("muestra los bancos pasados en banksToAdd como opciones del selector", () => {
       renderIngreso(vi.fn(), vi.fn(), {
         userType: "PERSONAL",
         banksToAdd: [
@@ -132,27 +85,47 @@ describe("IncomeOnboarding", () => {
         ],
       });
 
-      await waitFor(() =>
-        expect(screen.getByText("Finalizar")).toBeInTheDocument(),
-      );
-
       // El label del campo Banco debe estar presente
       expect(screen.getByText("Banco")).toBeInTheDocument();
     });
 
-    it("no llama a la API de bancos (solo usa el prop banksToAdd)", async () => {
-      // Si el componente intentara llamar /banks sin handler MSW, msw arrojaría un warning.
-      // Este test verifica que con banksToAdd vacío el campo banco sigue presente y no hay error.
+    it("no llama a la API de bancos (solo usa el prop banksToAdd)", () => {
       renderIngreso(vi.fn(), vi.fn(), {
         userType: "PERSONAL",
         banksToAdd: [],
       });
 
-      await waitFor(() =>
-        expect(screen.getByText("Finalizar")).toBeInTheDocument(),
-      );
-
       expect(screen.getByText("Banco")).toBeInTheDocument();
+    });
+  });
+
+  describe("monedas desde formData (no API)", () => {
+    it("muestra las monedas pasadas en currenciesToAdd como opciones del selector", async () => {
+      const user = userEvent.setup();
+      renderIngreso(vi.fn(), vi.fn(), {
+        userType: "PERSONAL",
+        currenciesToAdd: [
+          { symbol: "ARS", description: "Peso argentino" },
+          { symbol: "USD", description: "Dólar" },
+        ],
+      });
+
+      const [, currencySelect] = screen.getAllByRole("combobox");
+      await user.click(currencySelect);
+
+      await waitFor(() => {
+        expect(screen.getByText("ARS — Peso argentino")).toBeInTheDocument();
+        expect(screen.getByText("USD — Dólar")).toBeInTheDocument();
+      });
+    });
+
+    it("no muestra opciones de moneda si currenciesToAdd está vacío", () => {
+      renderIngreso(vi.fn(), vi.fn(), {
+        userType: "PERSONAL",
+        currenciesToAdd: [],
+      });
+
+      expect(screen.getByText("Moneda")).toBeInTheDocument();
     });
   });
 
@@ -161,10 +134,6 @@ describe("IncomeOnboarding", () => {
       const user = userEvent.setup();
       const onFinish = vi.fn();
       renderIngreso(onFinish);
-
-      await waitFor(() =>
-        expect(screen.getByText("Finalizar")).toBeInTheDocument(),
-      );
 
       await user.click(screen.getByText("Finalizar"));
 
@@ -177,10 +146,6 @@ describe("IncomeOnboarding", () => {
       const user = userEvent.setup();
       const onPrev = vi.fn();
       renderIngreso(vi.fn(), onPrev);
-
-      await waitFor(() =>
-        expect(screen.getByText("Volver")).toBeInTheDocument(),
-      );
 
       await user.click(screen.getByText("Volver"));
 

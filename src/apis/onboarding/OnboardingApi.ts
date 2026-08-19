@@ -1,16 +1,23 @@
 import { api } from "@/apis/axios";
+import type { UserTypeEnum } from "@/enums/UserTypeEnum";
 
 export interface OnboardingBankEntry {
   description: string;
   isDefault: boolean;
 }
 
+export interface OnboardingCurrencyEntry {
+  symbol: string;
+  description: string;
+}
+
 export interface OnboardingForm {
   accountsToAdd: string[];
-  userType: string;
+  userType: UserTypeEnum;
   onBoardingAmount: OnBoardingIngreso;
   categoriesToAdd: string[];
   banksToAdd: OnboardingBankEntry[];
+  currenciesToAdd: OnboardingCurrencyEntry[];
 }
 
 export interface OnBoardingIngreso {

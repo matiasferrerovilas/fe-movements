@@ -10,9 +10,7 @@ import {
 } from "antd";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import { useTranslation } from "react-i18next";
-import { useCurrency } from "@/apis/hooks/useCurrency";
-import type { OnboardingBankEntry, OnboardingForm, OnboardingIngresoForm } from "@/apis/onboarding/OnboardingApi";
-import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import type { OnboardingBankEntry, OnboardingCurrencyEntry, OnboardingForm, OnboardingIngresoForm } from "@/apis/onboarding/OnboardingApi";
 import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Text } = Typography;
@@ -31,13 +29,12 @@ export default function IncomeOnboarding({
   isLoading,
 }: Props) {
   const [form] = Form.useForm<OnboardingIngresoForm>();
-  const { data: currencies = [] } = useCurrency();
   const { t } = useTranslation();
-  const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null, t);
+  const labels = getEntityLabels(initialValues.userType ?? null, t);
 
-  // Usamos los bancos ingresados en el paso anterior (si los hay)
+  // Usamos los bancos y monedas ingresados en los pasos anteriores (si los hay)
   const banksToAdd: OnboardingBankEntry[] = initialValues.banksToAdd ?? [];
+  const currenciesToAdd: OnboardingCurrencyEntry[] = initialValues.currenciesToAdd ?? [];
   const accountsToAddOptions: string[] = (initialValues.accountsToAdd || []).filter(
     (g: string) => g && g.trim(),
   );
@@ -87,9 +84,9 @@ export default function IncomeOnboarding({
               label={<Text strong>{t("onboarding.income.currencyLabel")}</Text>}
             >
               <Select placeholder={t("onboarding.income.currencyPlaceholder")}>
-                {currencies.map((currency) => (
-                  <Select.Option key={currency.id} value={currency.symbol}>
-                    {currency.symbol}
+                {currenciesToAdd.map((currency) => (
+                  <Select.Option key={currency.symbol} value={currency.symbol}>
+                    {currency.symbol} — {currency.description}
                   </Select.Option>
                 ))}
               </Select>

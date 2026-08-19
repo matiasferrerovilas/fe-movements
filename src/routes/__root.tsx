@@ -5,6 +5,7 @@ import NavHeader from "@/components/NavHeader";
 import type { QueryClient } from "@tanstack/react-query";
 import { memo } from "react";
 import { QueryLoadingBoundary } from "@/components/QueryLoadingBoundary";
+import NotFound from "@/components/NotFound";
 import type { AuthContextState } from "@/apis/auth/AuthContext";
 import { ColorEnum } from "@/enums/ColorEnum";
 import type Keycloak from "keycloak-js";
@@ -70,4 +71,5 @@ function RootComponent() {
 
 export const Route = createRootRouteWithContext<RootRouteContext>()({
   component: RootComponent,
+  notFoundComponent: NotFound,
 });

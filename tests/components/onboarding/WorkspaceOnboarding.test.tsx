@@ -5,21 +5,19 @@ import { ConfigProvider } from "antd";
 import type { ReactNode } from "react";
 import WorkspaceOnboarding from "@/components/onboarding/WorkspaceOnboarding";
 
-// ── Mocks ──────────────────────────────────────────────────────────────────
-
-vi.mock("@/apis/hooks/useCurrentUser", () => ({
-  useCurrentUser: () => ({
-    data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
-    isLoading: false,
-  }),
-}));
-
 function wrapper({ children }: { children: ReactNode }) {
   return <ConfigProvider>{children}</ConfigProvider>;
 }
 
-function renderWorkspace(onNext = vi.fn()) {
-  return render(<WorkspaceOnboarding initialValues={{}} onNext={onNext} />, { wrapper });
+function renderWorkspace(
+  onNext = vi.fn(),
+  onPrev = vi.fn(),
+  initialValues = {},
+) {
+  return render(
+    <WorkspaceOnboarding initialValues={initialValues} onNext={onNext} onPrev={onPrev} />,
+    { wrapper },
+  );
 }
 
 describe("WorkspaceOnboarding", () => {
@@ -34,8 +32,9 @@ describe("WorkspaceOnboarding", () => {
       expect(screen.getByPlaceholderText("Ej: Familia, Trabajo, Personal...")).toBeInTheDocument();
     });
 
-    it("muestra solo el botón Siguiente (sin Omitir)", () => {
+    it("muestra los botones Volver y Siguiente (sin Omitir)", () => {
       renderWorkspace();
+      expect(screen.getByText("Volver")).toBeInTheDocument();
       expect(screen.getByText("Siguiente")).toBeInTheDocument();
       expect(screen.queryByText("Omitir por ahora")).not.toBeInTheDocument();
     });
@@ -101,6 +100,18 @@ describe("WorkspaceOnboarding", () => {
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));
       expect(onNext).toHaveBeenCalledWith({ accountsToAdd: [] });
+    });
+  });
+
+  describe("navegación", () => {
+    it("llama onPrev al hacer click en Volver", async () => {
+      const user = userEvent.setup();
+      const onPrev = vi.fn();
+      renderWorkspace(vi.fn(), onPrev);
+
+      await user.click(screen.getByText("Volver"));
+
+      expect(onPrev).toHaveBeenCalledTimes(1);
     });
   });
 

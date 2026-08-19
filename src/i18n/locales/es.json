@@ -99,6 +99,11 @@
       "subtitle": "No tenés permisos para acceder a esta aplicación.",
       "retryButton": "Reintentar"
     },
+    "notFound": {
+      "title": "404",
+      "subtitle": "La página que buscás no existe o fue movida.",
+      "homeButton": "Volver al inicio"
+    },
     "errorBoundary": {
       "title": "Algo salió mal",
       "subtitle": "Ocurrió un error inesperado. Podés intentar recargar la página.",
@@ -154,6 +159,18 @@
       "removeAriaLabel": "Quitar categoría {{name}}",
       "footerNote": "Podés agregar más categorías desde Configuración en cualquier momento."
     },
+    "currency": {
+      "description2": "Vas a poder elegir entre estas monedas al cargar tu ingreso.",
+      "symbolRequired": "Ingresá el símbolo de la moneda",
+      "symbolPlaceholder": "Ej: USD, ARS...",
+      "nameRequired": "Ingresá el nombre de la moneda",
+      "namePlaceholder": "Ej: Dólar, Peso argentino...",
+      "addButton": "Agregar",
+      "emptyDescription": "No agregaste monedas aún. Podés continuar sin agregar.",
+      "deleteTooltip": "Eliminar moneda",
+      "deleteAriaLabel": "Eliminar moneda {{name}}",
+      "footerNote": "Podés agregar más monedas desde Configuración en cualquier momento."
+    },
     "income": {
       "bankLabel": "Banco",
       "bankPlaceholder": "Banco en el cual recibís el ingreso",
@@ -179,6 +196,8 @@
       "banksDescription": "Tus entidades bancarias",
       "profileTitle": "Perfil",
       "profileDescription": "Tipo de uso",
+      "currencyTitle": "Monedas",
+      "currencyDescription": "Monedas que usás",
       "incomeTitle": "Ingresos",
       "incomeDescription": "Saldo inicial",
       "welcomeTitle": "Bienvenido"

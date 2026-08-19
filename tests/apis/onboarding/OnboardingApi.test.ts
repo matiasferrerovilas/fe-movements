@@ -21,6 +21,9 @@ afterAll(() => server.close());
 const validForm: OnboardingForm = {
   accountsToAdd: ["Familia"],
   userType: "PERSONAL",
+  categoriesToAdd: [],
+  banksToAdd: [],
+  currenciesToAdd: [],
   onBoardingAmount: {
     amount: 100000,
     bank: "GALICIA",

@@ -3,7 +3,6 @@ import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import { Button, Col, Form, Input, Row, Space, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import type { OnboardingForm } from "@/apis/onboarding/OnboardingApi";
-import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Text } = Typography;
@@ -11,13 +10,13 @@ const { Text } = Typography;
 interface Props {
   initialValues: Partial<OnboardingForm>;
   onNext: (values: Pick<OnboardingForm, "accountsToAdd">) => void;
+  onPrev: () => void;
 }
 
-export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
+export default function WorkspaceOnboarding({ initialValues, onNext, onPrev }: Props) {
   const [form] = Form.useForm<{ accountsToAdd: string[] }>();
   const { t } = useTranslation();
-  const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null, t);
+  const labels = getEntityLabels(initialValues.userType ?? null, t);
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
@@ -112,9 +111,14 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
         </Text>
 
         <Row gutter={[16, 10]}>
-          <Col xs={24}>
+          <Col xs={12}>
+            <Button block type="default" onClick={onPrev}>
+              {t("onboarding.backButton")}
+            </Button>
+          </Col>
+          <Col xs={12}>
             <Button color="geekblue" block onClick={handleSubmit} variant="filled">
-              Siguiente
+              {t("onboarding.nextButton")}
             </Button>
           </Col>
         </Row>

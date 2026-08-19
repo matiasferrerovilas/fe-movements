@@ -16,13 +16,13 @@ import {
 } from "antd";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import type { OnboardingForm } from "@/apis/onboarding/OnboardingApi";
 import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Text } = Typography;
 
 interface Props {
-  initialValues: { categoriesToAdd?: string[] };
+  initialValues: Partial<OnboardingForm>;
   onNext: (values: { categoriesToAdd: string[] }) => void;
   onPrev: () => void;
 }
@@ -34,8 +34,7 @@ export default function CategoryOnboarding({ initialValues, onNext, onPrev }: Pr
     initialValues.categoriesToAdd ?? [],
   );
   const { t } = useTranslation();
-  const { data: currentUser } = useCurrentUser();
-  const labels = getEntityLabels(currentUser?.userType ?? null, t);
+  const labels = getEntityLabels(initialValues.userType ?? null, t);
 
   const handleAdd = () => {
     form.validateFields().then(({ description }) => {

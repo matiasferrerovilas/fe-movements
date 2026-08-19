@@ -3,29 +3,29 @@ import UserOutlined from "@ant-design/icons/UserOutlined";
 import { Button, Card, Col, Form, Row, Space, Typography, theme } from "antd";
 import { useTranslation } from "react-i18next";
 import type { OnboardingForm } from "@/apis/onboarding/OnboardingApi";
+import { UserTypeEnum } from "@/enums/UserTypeEnum";
 
 const { Text } = Typography;
 
 interface Props {
   initialValues: Partial<OnboardingForm>;
   onNext: (values: Pick<OnboardingForm, "userType">) => void;
-  onPrev: () => void;
 }
 
 export default function UserTypeOnboarding({
   initialValues,
   onNext,
-  onPrev,
 }: Props) {
   const { token } = theme.useToken();
   const { t } = useTranslation();
-  const [form] = Form.useForm<{ userType: string }>();
+  const [form] = Form.useForm<{ userType: UserTypeEnum }>();
 
   // Derivamos el tipo seleccionado directamente del Form — único source of truth.
-  const selectedType = Form.useWatch("userType", form) ?? initialValues.userType ?? "PERSONAL";
-  const isPersonal = selectedType === "PERSONAL";
+  const selectedType =
+    Form.useWatch("userType", form) ?? initialValues.userType ?? UserTypeEnum.PERSONAL;
+  const isPersonal = selectedType === UserTypeEnum.PERSONAL;
 
-  const handleSelect = (value: "PERSONAL" | "ENTERPRISE") => {
+  const handleSelect = (value: UserTypeEnum) => {
     form.setFieldValue("userType", value);
   };
 
@@ -46,7 +46,7 @@ export default function UserTypeOnboarding({
       <Form
         form={form}
         layout="vertical"
-        initialValues={{ userType: initialValues.userType || "PERSONAL" }}
+        initialValues={{ userType: initialValues.userType || UserTypeEnum.PERSONAL }}
       >
         <Form.Item
           name="userType"
@@ -56,7 +56,7 @@ export default function UserTypeOnboarding({
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12}>
               <Card
-                onClick={() => handleSelect("PERSONAL")}
+                onClick={() => handleSelect(UserTypeEnum.PERSONAL)}
                 hoverable
                 style={{
                   border: `2px ${isPersonal ? "solid" : "dashed"} ${isPersonal ? token.colorPrimary : token.colorBorderSecondary}`,
@@ -75,7 +75,7 @@ export default function UserTypeOnboarding({
             </Col>
             <Col xs={24} md={12}>
               <Card
-                onClick={() => handleSelect("ENTERPRISE")}
+                onClick={() => handleSelect(UserTypeEnum.ENTERPRISE)}
                 hoverable
                 style={{
                   border: `2px ${!isPersonal ? "solid" : "dashed"} ${!isPersonal ? token.colorPrimary : token.colorBorderSecondary}`,
@@ -95,13 +95,8 @@ export default function UserTypeOnboarding({
           </Row>
         </Form.Item>
 
-        <Row gutter={16} justify="space-between">
-          <Col xs={12} md={12}>
-            <Button block type="default" onClick={onPrev}>
-              {t("onboarding.backButton")}
-            </Button>
-          </Col>
-          <Col xs={12} md={12}>
+        <Row gutter={16}>
+          <Col xs={24}>
             <Button block color="geekblue" variant="filled" onClick={handleSubmit}>
               {t("onboarding.nextButton")}
             </Button>

@@ -5,14 +5,6 @@ import { ConfigProvider } from "antd";
 import type { ReactNode } from "react";
 import CategoryOnboarding from "@/components/onboarding/CategoryOnboarding";
 
-// ── Mock useCurrentUser ────────────────────────────────────────────────────
-vi.mock("@/apis/hooks/useCurrentUser", () => ({
-  useCurrentUser: () => ({
-    data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
-    isLoading: false,
-  }),
-}));
-
 function wrapper({ children }: { children: ReactNode }) {
   return <ConfigProvider>{children}</ConfigProvider>;
 }
