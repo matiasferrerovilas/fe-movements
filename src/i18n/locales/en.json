@@ -116,7 +116,6 @@
     "goals": "Savings goals",
     "settings": "Settings",
     "help": "Help",
-    "investments": "Investments",
     "utilities": "Utilities",
     "admin": "Admin",
     "lightMode": "Light mode",
@@ -130,7 +129,7 @@
       "budgetsDescription": "Set monthly budgets by category and monitor your spending progress.",
       "movementsDescription": "Record and view all your movements. Filter by type, bank, category and more.",
       "profileTitle": "Your profile",
-      "profileDescription": "Here you'll find Settings, Help, Investments, Savings Goals, Utilities and more — everything you don't use every day is grouped in one place."
+      "profileDescription": "Here you'll find Settings, Help, Savings Goals, Utilities and more — everything you don't use every day is grouped in one place."
     }
   },
   "onboarding": {
@@ -256,7 +255,7 @@
       "monthsOutLabel": "+{{count}}m",
       "balanceLegend": "Projected balance",
       "empty": "Not enough data to project",
-      "disclaimer": "Conservative estimate based on your historical cash flow. Does not include investment returns."
+      "disclaimer": "Conservative estimate based on your historical cash flow."
     }
   },
   "movements": {
@@ -443,48 +442,6 @@
       "deleteConfirmOk": "Delete"
     }
   },
-  "investments": {
-    "totalInvested": "Total invested",
-    "editTitle": "Edit investment",
-    "newTitle": "New investment",
-    "save": "Save",
-    "add": "Add",
-    "cancel": "Cancel",
-    "descriptionLabel": "Description",
-    "descriptionPlaceholder": "E.g.: AAPL",
-    "typeLabel": "Type",
-    "typeRequired": "Select a type",
-    "typePlaceholder": "Select a type",
-    "typeAriaLabel": "Investment type",
-    "amountLabel": "Amount invested",
-    "amountRequired": "Enter the amount",
-    "currencyLabel": "Currency",
-    "currencyRequired": "Select a currency",
-    "currencyPlaceholder": "Select a currency",
-    "startDateLabel": "Start date",
-    "startDateRequired": "Select the start date",
-    "endDateLabel": "End date",
-    "edit": "Edit",
-    "editAriaLabel": "Edit investment",
-    "deleteConfirmTitle": "Delete this investment?",
-    "yes": "Yes",
-    "no": "No",
-    "delete": "Delete",
-    "deleteAriaLabel": "Delete investment",
-    "columnDescriptionType": "Description / Type",
-    "columnAmount": "Amount",
-    "columnStartDate": "Start date",
-    "columnEndDate": "End date",
-    "columnOwner": "Owner",
-    "columnActions": "Actions",
-    "emptyState": "No investments recorded",
-    "mobileStartLabel": "Start:",
-    "mobileEndLabel": "End:",
-    "addButton": "Add investment",
-    "addedSuccess": "Investment added",
-    "updatedSuccess": "Investment updated",
-    "deletedSuccess": "Investment deleted"
-  },
   "settings": {
     "account": {
       "title": "Account settings",
@@ -526,27 +483,6 @@
       "toPlaceholder": "Select target...",
       "migrateButton": "Migrate",
       "cancelButton": "Cancel"
-    },
-    "investmentType": {
-      "title": "Investment Types",
-      "subtitle": "Manage the investment types available in your workspace.",
-      "newTypeLabel": "New Type",
-      "nameRequired": "Enter the investment type name",
-      "namePlaceholder": "E.g.: Stocks, Mutual Funds, Crypto, Fixed Deposit...",
-      "addButton": "Add",
-      "defaultBadge": "Default",
-      "starTooltipDefault": "Already the default type",
-      "starTooltipSetDefault": "Set as default type",
-      "starAriaLabel": "Star type {{name}}",
-      "editTooltip": "Edit investment type",
-      "editAriaLabel": "Edit type {{name}}",
-      "deleteTooltipDefault": "The default type can't be deleted",
-      "deleteTooltipEnabled": "Delete investment type",
-      "deleteConfirmTitle": "Delete this investment type?",
-      "deleteConfirmDescription": "It will be removed from your list of types.",
-      "deleteConfirmOk": "Delete",
-      "deleteConfirmCancel": "Cancel",
-      "deleteAriaLabel": "Delete type {{name}}"
     },
     "inviteWorkspace": {
       "pendingInvitationsTitle": "Pending Invitations",
@@ -620,17 +556,6 @@
       "nameLabel": "Category name",
       "nameRequired": "Enter the category name",
       "namePlaceholder": "E.g.: Home, Transport, etc.",
-      "cancelButton": "Cancel",
-      "saveButton": "Save changes"
-    },
-    "investmentTypeEditModal": {
-      "title": "Edit Investment Type",
-      "updateSuccess": "Investment type updated",
-      "updateError": "Error updating the investment type",
-      "previewLabel": "Preview",
-      "nameLabel": "Type name",
-      "nameRequired": "Enter the investment type name",
-      "namePlaceholder": "E.g.: Stocks, Mutual Funds, Crypto...",
       "cancelButton": "Cancel",
       "saveButton": "Save changes"
     },
@@ -857,18 +782,6 @@
         ],
         "tip": "If you set up budgets, you'll get alerts on the Balance page when you're close to exceeding your limits."
       },
-      "investments": {
-        "title": "Investments",
-        "text1": "The Investments section lets you keep a record of your investments (stocks, fixed deposits, crypto, funds, etc.) separate from your regular expenses and income.",
-        "list1": [
-          "Go to Investments from your profile menu (avatar, top right)",
-          "Add an investment specifying amount, currency, type and date",
-          "The summary at the top shows the total invested",
-          "You can edit or delete any investment from the table",
-          "Investment types (Stocks, Mutual Funds, Crypto, Fixed Deposit, etc.) are customizable"
-        ],
-        "tip": "You can create and customize your own investment types (name, icon and color) from Settings → Investments, and mark one as the default type."
-      },
       "income": {
         "title": "Income",
         "text1": "Income represents your salary or other recurring money inflows. It's configured once and can be set to generate automatically every month.",
@@ -899,7 +812,6 @@
           "Account: your personal data and user type",
           "Workspace: pending invitations, current workspace and shared categories",
           "My Finances: banks, own currencies and income",
-          "Investments: customizable investment types",
           "Preferences: automations like automatic income"
         ],
         "tip": "In My Finances you can create your own currencies in addition to the system's global ones. Currencies you create can be freely deleted; global currencies or the one set as your default currency cannot."

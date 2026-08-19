@@ -199,7 +199,7 @@ describe("NavTour", () => {
       expect(document.querySelector(".ant-tour-title")).toHaveTextContent("Tu perfil");
     });
     expect(
-      screen.getByText(/Ajustes, Ayuda, Inversiones, Metas de ahorro, Utilidades/),
+      screen.getByText(/Ajustes, Ayuda, Metas de ahorro, Utilidades/),
     ).toBeInTheDocument();
   });
 });

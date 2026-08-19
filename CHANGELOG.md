@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- New onboarding intro screen (`IntroOnboarding`): a first, form-free step before the setup wizard
+  that states the app's value proposition (budgets with alerts, savings goals, spending insights,
+  real-time shared workspaces, multi-bank/multi-currency) with a single "Empezar" CTA.
+
+### Removed
+- Investments feature entirely: the `/investments` route, dashboard, table/form components, settings
+  tab, API client, hooks, WebSocket subscription, and all related i18n copy and nav entries.
+
 ## [2.3.0] - 2026-08-18
 
 ### Added

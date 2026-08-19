@@ -13,10 +13,8 @@ import UserOutlined from "@ant-design/icons/UserOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import WalletOutlined from "@ant-design/icons/WalletOutlined";
 import BellOutlined from "@ant-design/icons/BellOutlined";
-import LineChartOutlined from "@ant-design/icons/LineChartOutlined";
 import { SettingCategory } from "@/components/settings/SettingCategory";
 import { SettingPreferences } from "@/components/settings/SettingPreferences";
-import { SettingInvestmentType } from "@/components/settings/SettingInvestmentType";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
 
@@ -65,12 +63,6 @@ function RouteComponent() {
           <SettingIncome />
         </Flex>
       ),
-    },
-    {
-      key: "investments",
-      label: "Inversiones",
-      icon: <LineChartOutlined />,
-      children: <SettingInvestmentType />,
     },
     {
       key: "preferencias",

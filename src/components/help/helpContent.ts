@@ -73,19 +73,6 @@ export const getHelpSections = (t: TFunction): HelpSection[] => [
     ],
   },
   {
-    key: "investments",
-    title: t("help.sections.investments.title"),
-    icon: "LineChartOutlined",
-    content: [
-      { type: "text", content: t("help.sections.investments.text1") },
-      {
-        type: "list",
-        content: t("help.sections.investments.list1", { returnObjects: true }) as string[],
-      },
-      { type: "tip", content: t("help.sections.investments.tip") },
-    ],
-  },
-  {
     key: "income",
     title: t("help.sections.income.title"),
     icon: "WalletOutlined",

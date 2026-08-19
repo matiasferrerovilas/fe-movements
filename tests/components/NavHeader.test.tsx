@@ -204,7 +204,7 @@ describe("NavHeader", () => {
       });
     });
 
-    it("muestra 'Utilidades' e 'Inversiones' junto a Ajustes/Ayuda/Admin", async () => {
+    it("muestra 'Utilidades' junto a Ajustes/Ayuda/Admin", async () => {
       const user = userEvent.setup();
       renderNavHeader(false);
 
@@ -215,7 +215,6 @@ describe("NavHeader", () => {
       await waitFor(() => {
         expect(screen.getByText("Utilidades")).toBeInTheDocument();
       });
-      expect(screen.getByText("Inversiones")).toBeInTheDocument();
       expect(screen.getByText("Ajustes")).toBeInTheDocument();
       expect(screen.getByText("Ayuda")).toBeInTheDocument();
     });

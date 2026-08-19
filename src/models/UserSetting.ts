@@ -2,7 +2,6 @@ export type UserSettingKey =
   | "DEFAULT_WORKSPACE"
   | "DEFAULT_CURRENCY"
   | "DEFAULT_BANK"
-  | "DEFAULT_INVESTMENT_TYPE"
   | "AUTO_INCOME_ENABLED";
 
 export interface UserSetting {

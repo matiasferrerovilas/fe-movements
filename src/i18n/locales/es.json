@@ -116,7 +116,6 @@
     "goals": "Metas de ahorro",
     "settings": "Ajustes",
     "help": "Ayuda",
-    "investments": "Inversiones",
     "utilities": "Utilidades",
     "admin": "Admin",
     "lightMode": "Modo claro",
@@ -130,7 +129,7 @@
       "budgetsDescription": "Define presupuestos mensuales por categoría y monitorea tu progreso de gastos.",
       "movementsDescription": "Registra y consulta todos tus movimientos. Filtra por tipo, banco, categoría y más.",
       "profileTitle": "Tu perfil",
-      "profileDescription": "Acá encontrás Ajustes, Ayuda, Inversiones, Metas de ahorro, Utilidades y más — todo lo que no usás todos los días quedó agrupado en un solo lugar."
+      "profileDescription": "Acá encontrás Ajustes, Ayuda, Metas de ahorro, Utilidades y más — todo lo que no usás todos los días quedó agrupado en un solo lugar."
     }
   },
   "onboarding": {
@@ -256,7 +255,7 @@
       "monthsOutLabel": "+{{count}}m",
       "balanceLegend": "Balance proyectado",
       "empty": "No hay datos suficientes para proyectar",
-      "disclaimer": "Estimación conservadora basada en tu flujo de caja histórico. No incluye rendimientos de inversión."
+      "disclaimer": "Estimación conservadora basada en tu flujo de caja histórico."
     }
   },
   "movements": {
@@ -443,48 +442,6 @@
       "deleteConfirmOk": "Eliminar"
     }
   },
-  "investments": {
-    "totalInvested": "Total invertido",
-    "editTitle": "Editar inversión",
-    "newTitle": "Nueva inversión",
-    "save": "Guardar",
-    "add": "Agregar",
-    "cancel": "Cancelar",
-    "descriptionLabel": "Descripción",
-    "descriptionPlaceholder": "Ej: AAPL",
-    "typeLabel": "Tipo",
-    "typeRequired": "Seleccioná un tipo",
-    "typePlaceholder": "Seleccioná un tipo",
-    "typeAriaLabel": "Tipo de inversión",
-    "amountLabel": "Monto invertido",
-    "amountRequired": "Ingresá el monto",
-    "currencyLabel": "Moneda",
-    "currencyRequired": "Seleccioná una moneda",
-    "currencyPlaceholder": "Seleccioná una moneda",
-    "startDateLabel": "Fecha de inicio",
-    "startDateRequired": "Seleccioná la fecha de inicio",
-    "endDateLabel": "Fecha de fin",
-    "edit": "Editar",
-    "editAriaLabel": "Editar inversión",
-    "deleteConfirmTitle": "¿Eliminar esta inversión?",
-    "yes": "Sí",
-    "no": "No",
-    "delete": "Eliminar",
-    "deleteAriaLabel": "Eliminar inversión",
-    "columnDescriptionType": "Descripción / Tipo",
-    "columnAmount": "Monto",
-    "columnStartDate": "Fecha inicio",
-    "columnEndDate": "Fecha fin",
-    "columnOwner": "Propietario",
-    "columnActions": "Acciones",
-    "emptyState": "Sin inversiones registradas",
-    "mobileStartLabel": "Inicio:",
-    "mobileEndLabel": "Fin:",
-    "addButton": "Agregar inversión",
-    "addedSuccess": "Inversión agregada",
-    "updatedSuccess": "Inversión actualizada",
-    "deletedSuccess": "Inversión eliminada"
-  },
   "settings": {
     "account": {
       "title": "Configuración de la cuenta",
@@ -526,27 +483,6 @@
       "toPlaceholder": "Seleccionar destino...",
       "migrateButton": "Migrar",
       "cancelButton": "Cancelar"
-    },
-    "investmentType": {
-      "title": "Tipos de Inversión",
-      "subtitle": "Administrá los tipos de inversión disponibles en tu workspace.",
-      "newTypeLabel": "Nuevo Tipo",
-      "nameRequired": "Ingresá el nombre del tipo de inversión",
-      "namePlaceholder": "Ej: Acciones, FCI, Cripto, Plazo Fijo...",
-      "addButton": "Agregar",
-      "defaultBadge": "Default",
-      "starTooltipDefault": "Ya es el tipo por defecto",
-      "starTooltipSetDefault": "Establecer como tipo por defecto",
-      "starAriaLabel": "Estrella tipo {{name}}",
-      "editTooltip": "Editar tipo de inversión",
-      "editAriaLabel": "Editar tipo {{name}}",
-      "deleteTooltipDefault": "No se puede eliminar el tipo por defecto",
-      "deleteTooltipEnabled": "Eliminar tipo de inversión",
-      "deleteConfirmTitle": "¿Eliminar este tipo de inversión?",
-      "deleteConfirmDescription": "Se quitará de tu lista de tipos.",
-      "deleteConfirmOk": "Eliminar",
-      "deleteConfirmCancel": "Cancelar",
-      "deleteAriaLabel": "Eliminar tipo {{name}}"
     },
     "inviteWorkspace": {
       "pendingInvitationsTitle": "Invitaciones Pendientes",
@@ -620,17 +556,6 @@
       "nameLabel": "Nombre de la categoría",
       "nameRequired": "Ingresá el nombre de la categoría",
       "namePlaceholder": "Ej: Hogar, Transporte, etc.",
-      "cancelButton": "Cancelar",
-      "saveButton": "Guardar cambios"
-    },
-    "investmentTypeEditModal": {
-      "title": "Editar Tipo de Inversión",
-      "updateSuccess": "Tipo de inversión actualizado",
-      "updateError": "Error al actualizar el tipo de inversión",
-      "previewLabel": "Vista previa",
-      "nameLabel": "Nombre del tipo",
-      "nameRequired": "Ingresá el nombre del tipo de inversión",
-      "namePlaceholder": "Ej: Acciones, FCI, Cripto...",
       "cancelButton": "Cancelar",
       "saveButton": "Guardar cambios"
     },
@@ -857,18 +782,6 @@
         ],
         "tip": "Si configurás presupuestos, vas a recibir alertas en el Balance cuando estés cerca de exceder tus límites."
       },
-      "investments": {
-        "title": "Inversiones",
-        "text1": "La sección de Inversiones te permite llevar un registro de tus inversiones (acciones, plazos fijos, cripto, fondos, etc.) por fuera de tus gastos e ingresos habituales.",
-        "list1": [
-          "Andá a Inversiones desde el menú de tu perfil (avatar, arriba a la derecha)",
-          "Agregá una inversión indicando monto, moneda, tipo y fecha",
-          "El resumen superior muestra el total invertido",
-          "Podés editar o eliminar cualquier inversión desde la tabla",
-          "Los tipos de inversión (Acciones, FCI, Cripto, Plazo Fijo, etc.) son personalizables"
-        ],
-        "tip": "Podés crear y personalizar tus propios tipos de inversión (nombre, ícono y color) desde Ajustes → Inversiones, y marcar uno como tipo por defecto."
-      },
       "income": {
         "title": "Ingresos",
         "text1": "Los ingresos representan tu sueldo u otras entradas de dinero recurrentes. Se configuran una vez y podés hacer que se generen automáticamente cada mes.",
@@ -899,7 +812,6 @@
           "Cuenta: tus datos personales y tipo de usuario",
           "Workspace: invitaciones pendientes, workspace actual y categorías compartidas",
           "Mis finanzas: bancos, monedas propias e ingresos",
-          "Inversiones: tipos de inversión personalizables",
           "Preferencias: automatizaciones como los ingresos automáticos"
         ],
         "tip": "En Mis finanzas podés crear tus propias monedas además de las globales del sistema. Las que vos creás se pueden eliminar libremente; las globales o la que tenés configurada como moneda por defecto, no."
