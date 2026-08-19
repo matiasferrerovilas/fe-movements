@@ -9,10 +9,20 @@ Guía de contexto, convenciones y reglas para agentes que trabajen en este repos
 Aplicación SPA de gestión financiera personal. Permite registrar movimientos, servicios/suscripciones, ingresos, y administrar grupos de usuarios con roles. La UI está completamente en español.
 
 - **Nombre del paquete**: `fe-expenses`
-- **Versión**: 1.2.0
+- **Versión**: 2.4.0
 - **Backend**: Spring Boot separado. El frontend solo consume via REST (`window.env.backend.api`) y WebSocket STOMP (`window.env.backend.websocketUrl`).
 - **Roles de usuario**: `ADMIN`, `FAMILY`, `GUEST`
 - **Autenticación**: Keycloak obligatoria al cargar (`login-required`), PKCE S256.
+
+---
+
+## Versionado
+
+**Todo cambio sube la versión de `package.json` siguiendo semver (`major.minor.patch`)** — sin excepción. El workflow de CI (`.github/workflows/frontend-ci.yml`, job `tag`) lee ese campo para taggear releases en `main`, así que un cambio sin bump no se refleja en un tag nuevo.
+
+- **patch** (`x.y.Z`): fixes, correcciones de bugs, ajustes menores que no cambian comportamiento observable.
+- **minor** (`x.Y.0`): features nuevas, backwards-compatible (ej: nuevo step de onboarding, nueva pantalla).
+- **major** (`X.0.0`): breaking changes (cambios de contrato con el backend, remoción de funcionalidad, migraciones que requieren acción manual).
 
 ---
 

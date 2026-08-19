@@ -177,6 +177,7 @@
       "currencyLabel": "Moneda",
       "currencyPlaceholder": "En qué moneda recibís tu ingreso",
       "workspacePlaceholder": "Seleccioná un workspace",
+      "workspaceDefaultOption": "Tu {{workspace}} por defecto",
       "footerNote": "Podés completar esto más tarde desde Configuración.",
       "finishButton": "Finalizar"
     },
@@ -200,7 +201,25 @@
       "currencyDescription": "Monedas que usás",
       "incomeTitle": "Ingresos",
       "incomeDescription": "Saldo inicial",
-      "welcomeTitle": "Bienvenido"
+      "welcomeTitle": "Bienvenido",
+      "introTitle": "Bienvenida",
+      "introDescription": "Por qué esta app"
+    },
+    "intro": {
+      "headline": "Tu plata, organizada — y compartida con quien quieras",
+      "subheadline": "2 minutos de configuración. Después, todo pasa solo.",
+      "value1Title": "Presupuestos con alertas",
+      "value1Description": "Te avisamos antes de que te pases, no después.",
+      "value2Title": "Metas de ahorro",
+      "value2Description": "Definí un objetivo y mirá el progreso real, no una hoja de cálculo.",
+      "value3Title": "Insights automáticos",
+      "value3Description": "Te decimos si gastaste más que el mes pasado, sin que lo calcules vos.",
+      "value4Title": "Compartido en tiempo real",
+      "value4Description": "Invitá a tu pareja, familia o roommates: todos ven los mismos movimientos al instante.",
+      "value5Title": "Multi-banco y multi-moneda",
+      "value5Description": "Importá resúmenes en PDF y dejá de copiar todo a mano.",
+      "ctaButton": "Empezar",
+      "footnote": "Podés cambiar todo esto después, en cualquier momento."
     }
   },
   "home": {

@@ -61,17 +61,27 @@ describe("IncomeOnboarding", () => {
       expect(screen.queryByText("Omitir por ahora")).not.toBeInTheDocument();
     });
 
-    it("no muestra el selector de workspace si no hay workspaces custom", () => {
+    it("muestra el selector de workspace deshabilitado con el default indicado si no hay workspaces custom", () => {
       renderIngreso();
-      expect(screen.queryByText("Workspace")).not.toBeInTheDocument();
+      expect(screen.getByText("Workspace")).toBeInTheDocument();
+      expect(screen.getByText("Tu workspace por defecto")).toBeInTheDocument();
     });
 
-    it("muestra el selector de workspace si hay workspaces definidos", () => {
+    it("muestra el selector de workspace habilitado si hay workspaces definidos", async () => {
+      const user = userEvent.setup();
       renderIngreso(vi.fn(), vi.fn(), {
         userType: "PERSONAL",
         accountsToAdd: ["Familia", "Personal"],
       });
       expect(screen.getByText("Workspace")).toBeInTheDocument();
+
+      const [, , workspaceSelect] = screen.getAllByRole("combobox");
+      await user.click(workspaceSelect);
+
+      await waitFor(() => {
+        expect(screen.getAllByText("Familia").length).toBeGreaterThan(0);
+        expect(screen.getAllByText("Personal").length).toBeGreaterThan(0);
+      });
     });
   });
 
@@ -138,6 +148,18 @@ describe("IncomeOnboarding", () => {
       await user.click(screen.getByText("Finalizar"));
 
       expect(onFinish).toHaveBeenCalledTimes(1);
+    });
+
+    it("llama onFinish con accountToAdd DEFAULT cuando no hay workspaces custom", async () => {
+      const user = userEvent.setup();
+      const onFinish = vi.fn();
+      renderIngreso(onFinish);
+
+      await user.click(screen.getByText("Finalizar"));
+
+      expect(onFinish).toHaveBeenCalledWith(
+        expect.objectContaining({ accountToAdd: "DEFAULT" }),
+      );
     });
   });
 

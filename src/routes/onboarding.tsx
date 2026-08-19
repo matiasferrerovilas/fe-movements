@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card, Col, Row, Steps, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import IncomeOnboarding from "@/components/onboarding/IncomeOnboarding";
+import IntroOnboarding from "@/components/onboarding/IntroOnboarding";
 import WorkspaceOnboarding from "@/components/onboarding/WorkspaceOnboarding";
 import CategoryOnboarding from "@/components/onboarding/CategoryOnboarding";
 import BankOnboarding from "@/components/onboarding/BankOnboarding";
@@ -73,6 +74,11 @@ function RouteComponent() {
   });
 
   const steps = [
+    {
+      title: t("onboarding.steps.introTitle"),
+      description: t("onboarding.steps.introDescription"),
+      content: <IntroOnboarding onNext={handleNext} />,
+    },
     {
       title: t("onboarding.steps.profileTitle"),
       description: t("onboarding.steps.profileDescription"),
@@ -171,12 +177,14 @@ function RouteComponent() {
             animation: "onboarding-card-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
-          <div style={{ textAlign: "center", marginBottom: 30 }}>
-            <Title level={2} style={{ margin: 0 }}>{t("onboarding.steps.welcomeTitle")}</Title>
-            <Text type="secondary">
-              {labels.onboardingBienvenida}
-            </Text>
-          </div>
+          {currentStep > 0 && (
+            <div style={{ textAlign: "center", marginBottom: 30 }}>
+              <Title level={2} style={{ margin: 0 }}>{t("onboarding.steps.welcomeTitle")}</Title>
+              <Text type="secondary">
+                {labels.onboardingBienvenida}
+              </Text>
+            </div>
+          )}
 
           <Steps
             current={currentStep}

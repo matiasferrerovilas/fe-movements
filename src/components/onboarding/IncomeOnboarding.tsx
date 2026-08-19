@@ -12,6 +12,7 @@ import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import { useTranslation } from "react-i18next";
 import type { OnboardingBankEntry, OnboardingCurrencyEntry, OnboardingForm, OnboardingIngresoForm } from "@/apis/onboarding/OnboardingApi";
 import { getEntityLabels } from "@/utils/entityLabels";
+import { WorkspaceEnum } from "@/enums/WorkspaceEnum";
 
 const { Text } = Typography;
 
@@ -108,19 +109,34 @@ export default function IncomeOnboarding({
             </Form.Item>
           </Col>
 
-          {accountsToAddOptions.length > 0 && (
-            <Col xs={24}>
-              <Form.Item
-                name="accountToAdd"
-                label={<Text strong>Workspace</Text>}
-              >
+          <Col xs={24}>
+            <Form.Item
+              name="accountToAdd"
+              label={<Text strong>Workspace</Text>}
+              initialValue={
+                accountsToAddOptions.length > 0 ? undefined : WorkspaceEnum.DEFAULT
+              }
+            >
+              {accountsToAddOptions.length > 0 ? (
                 <Select
                   placeholder={t("onboarding.income.workspacePlaceholder")}
                   options={accountsToAddOptions.map((g) => ({ label: g, value: g }))}
                 />
-              </Form.Item>
-            </Col>
-          )}
+              ) : (
+                <Select
+                  disabled
+                  options={[
+                    {
+                      value: WorkspaceEnum.DEFAULT,
+                      label: t("onboarding.income.workspaceDefaultOption", {
+                        workspace: labels.workspaceSingular,
+                      }),
+                    },
+                  ]}
+                />
+              )}
+            </Form.Item>
+          </Col>
         </Row>
 
         <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 12, textAlign: "center" }}>

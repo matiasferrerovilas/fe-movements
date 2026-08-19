@@ -177,6 +177,7 @@
       "currencyLabel": "Currency",
       "currencyPlaceholder": "Which currency you receive your income in",
       "workspacePlaceholder": "Select a workspace",
+      "workspaceDefaultOption": "Your default {{workspace}}",
       "footerNote": "You can complete this later from Settings.",
       "finishButton": "Finish"
     },
@@ -200,7 +201,25 @@
       "currencyDescription": "Currencies you use",
       "incomeTitle": "Income",
       "incomeDescription": "Initial balance",
-      "welcomeTitle": "Welcome"
+      "welcomeTitle": "Welcome",
+      "introTitle": "Welcome",
+      "introDescription": "Why this app"
+    },
+    "intro": {
+      "headline": "Your money, organized — and shared with whoever you want",
+      "subheadline": "2 minutes to set up. After that, it just works.",
+      "value1Title": "Budgets with alerts",
+      "value1Description": "We warn you before you overspend, not after.",
+      "value2Title": "Savings goals",
+      "value2Description": "Set a target and watch real progress, not a spreadsheet.",
+      "value3Title": "Automatic insights",
+      "value3Description": "We tell you if you spent more than last month, so you don't have to calculate it.",
+      "value4Title": "Shared in real time",
+      "value4Description": "Invite your partner, family, or roommates: everyone sees the same movements instantly.",
+      "value5Title": "Multi-bank and multi-currency",
+      "value5Description": "Import PDF statements and stop copying everything by hand.",
+      "ctaButton": "Get started",
+      "footnote": "You can change all of this later, anytime."
     }
   },
   "home": {
