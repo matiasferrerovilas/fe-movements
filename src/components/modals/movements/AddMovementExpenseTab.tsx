@@ -329,6 +329,7 @@ const AddMovementExpenseTab = forwardRef<
             ]}
           >
             <Input
+              autoFocus
               placeholder={t("movements.form.descriptionPlaceholder")}
               prefix={<TagOutlined style={{ color: token.colorTextTertiary }} />}
             />

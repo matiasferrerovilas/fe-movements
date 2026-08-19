@@ -7,6 +7,7 @@ import MonthlySummary from "@/components/home/MonthlySummary";
 import InsightsPanel from "@/components/home/InsightsPanel";
 import GoalsPanel from "@/components/home/GoalsPanel";
 import TopCategories from "@/components/home/TopCategories";
+import FirstMovementCta from "@/components/home/FirstMovementCta";
 import BalanceFiltersCollapsible from "@/components/home/BalanceFiltersCollapsible";
 import { getUserDisplayName } from "@/utils/userDisplayName";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -121,6 +122,9 @@ function RouteComponent() {
       >
         Bienvenido{displayName ? `, ${displayName}` : ""}
       </Title>
+
+      {/* 1.5. CTA para cargar el primer movimiento — solo cuando no hay ningún gasto este año */}
+      {!fetchingCategory && categoryData.length === 0 && <FirstMovementCta />}
 
       {/* 2. KPIs mensuales (MonthlySummary incluye: KPIs, Mayor categoría, Total USD, BudgetAlert) */}
       <div style={{ marginBottom: 24 }}>

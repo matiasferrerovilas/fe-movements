@@ -1,6 +1,6 @@
 import { Button, Tabs } from "antd";
 import ModalComponent from "@/components/modals/Modal";
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import PlusCircleOutlined from "@ant-design/icons/PlusCircleOutlined";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
@@ -11,7 +11,13 @@ import AddMovementExpenseTab from "@/components/modals/movements/AddMovementExpe
 const TAB_INDIVIDUAL = "1";
 const TAB_ARCHIVO = "2";
 
-export default function AddMovementModal({ block }: { block?: boolean }) {
+interface AddMovementModalProps {
+  block?: boolean;
+  /** Reemplaza el botón trigger por defecto — recibe el onClick que abre el modal. */
+  trigger?: (onClick: () => void) => ReactNode;
+}
+
+export default function AddMovementModal({ block, trigger }: AddMovementModalProps) {
   const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
   const handleCloseModal = () => {
@@ -42,16 +48,20 @@ export default function AddMovementModal({ block }: { block?: boolean }) {
 
   return (
     <>
-      <Button
-        type="primary"
-        size="large"
-        shape="round"
-        block={block}
-        icon={<PlusCircleOutlined />}
-        onClick={() => setModalOpen(true)}
-      >
-        {t("movements.modal.movementButton")}
-      </Button>
+      {trigger ? (
+        trigger(() => setModalOpen(true))
+      ) : (
+        <Button
+          type="primary"
+          size="large"
+          shape="round"
+          block={block}
+          icon={<PlusCircleOutlined />}
+          onClick={() => setModalOpen(true)}
+        >
+          {t("movements.modal.movementButton")}
+        </Button>
+      )}
       <ModalComponent
         open={modalOpen}
         onClose={handleCloseModal}

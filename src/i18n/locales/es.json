@@ -39,8 +39,6 @@
       "workspaceNoMiembros_company": "No hay miembros en este espacio",
       "workspaceNameRequired_personal": "Ingresa el nombre del {{workspace}}",
       "workspaceNameRequired_company": "Ingresa el nombre del {{workspace}}",
-      "workspaceDeleteAriaLabel_personal": "Eliminar {{workspace}}",
-      "workspaceDeleteAriaLabel_company": "Eliminar {{workspace}}",
       "workspacesLowerCreateHint_personal": "Si no querés crear {{workspaces}} ahora, dejá el campo vacío y hacé click en Siguiente.",
       "workspacesLowerCreateHint_company": "Si no querés crear {{workspaces}} ahora, dejá el campo vacío y hacé click en Siguiente.",
       "miembro_personal": "Miembro",
@@ -148,7 +146,13 @@
     "backButton": "Volver",
     "nextButton": "Siguiente",
     "workspace": {
-      "nameLettersOnly": "Solo se permiten letras y espacios"
+      "nameLettersOnly": "Solo se permiten letras y espacios",
+      "emptyDescription": "Todavía no agregaste ningún {{workspace}}. Podés continuar sin agregar — se creará uno por defecto.",
+      "starTooltipDefault": "Ya es tu {{workspace}} por defecto",
+      "starTooltipSetDefault": "Establecer como default",
+      "starAriaLabel": "Estrella {{workspace}} {{name}}",
+      "deleteTooltip": "Eliminar {{workspace}}",
+      "deleteAriaLabel": "Eliminar {{workspace}} {{name}}"
     },
     "bank": {
       "description1": "Agregá los bancos que usás y elegí cuál es tu default.",
@@ -237,6 +241,11 @@
     }
   },
   "home": {
+    "firstMovement": {
+      "title": "¿Empezamos?",
+      "subtitle": "Todavía no cargaste ningún gasto este año. Registrá el primero para ver tus gráficos, presupuestos e insights en acción.",
+      "cta": "Cargar mi primer gasto"
+    },
     "filtersAdvanced": "Filtros de Análisis Avanzado",
     "currencyLabel": "Moneda",
     "periodLabel": "Período",

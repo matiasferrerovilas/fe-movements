@@ -114,7 +114,9 @@ export default function IncomeOnboarding({
               name="accountToAdd"
               label={<Text strong>{labels.workspace}</Text>}
               initialValue={
-                accountsToAddOptions.length > 0 ? undefined : WorkspaceEnum.DEFAULT
+                accountsToAddOptions.length > 0
+                  ? accountsToAddOptions[0]
+                  : WorkspaceEnum.DEFAULT
               }
             >
               {accountsToAddOptions.length > 0 ? (

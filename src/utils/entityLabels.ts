@@ -37,9 +37,6 @@ export const getEntityLabels = (userType: UserTypeEnum | null, t: TFunction) => 
     workspaceNameRequired: eInterpolated("workspaceNameRequired", {
       workspace: workspaceSingular,
     }),
-    workspaceDeleteAriaLabel: eInterpolated("workspaceDeleteAriaLabel", {
-      workspace: workspaceSingular,
-    }),
     workspacesLowerCreateHint: eInterpolated("workspacesLowerCreateHint", {
       workspaces: e("workspacesLower"),
     }),

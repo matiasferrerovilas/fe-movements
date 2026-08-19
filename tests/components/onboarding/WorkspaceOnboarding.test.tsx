@@ -20,6 +20,11 @@ function renderWorkspace(
   );
 }
 
+async function addWorkspace(user: ReturnType<typeof userEvent.setup>, name: string) {
+  await user.type(screen.getByPlaceholderText("Ej: Familia, Trabajo, Personal..."), name);
+  await user.click(screen.getByText("Crear workspace"));
+}
+
 describe("WorkspaceOnboarding", () => {
   describe("render inicial", () => {
     it("muestra el texto descriptivo", () => {
@@ -32,6 +37,13 @@ describe("WorkspaceOnboarding", () => {
       expect(screen.getByPlaceholderText("Ej: Familia, Trabajo, Personal...")).toBeInTheDocument();
     });
 
+    it("muestra el estado vacío cuando no hay workspaces agregados", () => {
+      renderWorkspace();
+      expect(
+        screen.getByText(/Todavía no agregaste ningún workspace/i),
+      ).toBeInTheDocument();
+    });
+
     it("muestra los botones Volver y Siguiente (sin Omitir)", () => {
       renderWorkspace();
       expect(screen.getByText("Volver")).toBeInTheDocument();
@@ -41,28 +53,68 @@ describe("WorkspaceOnboarding", () => {
   });
 
   describe("agregar y eliminar workspaces", () => {
-    it("agrega un nuevo input al hacer click en Crear workspace", async () => {
+    it("agrega un workspace a la lista al hacer click en Crear workspace", async () => {
       const user = userEvent.setup();
       renderWorkspace();
 
-      await user.click(screen.getByText("Crear workspace"));
+      await addWorkspace(user, "Familia");
 
-      const inputs = screen.getAllByPlaceholderText("Ej: Familia, Trabajo, Personal...");
-      expect(inputs).toHaveLength(2);
+      expect(screen.getByText("Familia")).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Todavía no agregaste ningún workspace/i),
+      ).not.toBeInTheDocument();
     });
 
-    it("muestra el botón de eliminar cuando hay más de un campo", async () => {
+    it("marca el primer workspace agregado como default automáticamente", async () => {
       const user = userEvent.setup();
       renderWorkspace();
 
-      await user.click(screen.getByText("Crear workspace"));
+      await addWorkspace(user, "Familia");
 
-      expect(screen.getAllByRole("button", { name: /Eliminar workspace/i })).toHaveLength(2);
+      expect(screen.getByText("★ Default")).toBeInTheDocument();
     });
 
-    it("no muestra botón de eliminar cuando solo hay un campo", () => {
+    it("permite cambiar el workspace default con la estrella", async () => {
+      const user = userEvent.setup();
       renderWorkspace();
-      expect(screen.queryByRole("button", { name: /Eliminar workspace/i })).not.toBeInTheDocument();
+
+      await addWorkspace(user, "Familia");
+      await addWorkspace(user, "Trabajo");
+
+      const [, setDefaultButton] = screen.getAllByRole("button", {
+        name: /Estrella workspace/i,
+      });
+      await user.click(setDefaultButton);
+
+      const trabajoRow = screen.getByText("Trabajo").closest("div")!;
+      expect(trabajoRow).toHaveTextContent("★ Default");
+    });
+
+    it("muestra el botón de eliminar por cada workspace agregado", async () => {
+      const user = userEvent.setup();
+      renderWorkspace();
+
+      await addWorkspace(user, "Familia");
+      await addWorkspace(user, "Trabajo");
+
+      expect(
+        screen.getAllByRole("button", { name: /Eliminar workspace/i }),
+      ).toHaveLength(2);
+    });
+
+    it("al eliminar el default, el primero restante pasa a ser default", async () => {
+      const user = userEvent.setup();
+      renderWorkspace();
+
+      await addWorkspace(user, "Familia");
+      await addWorkspace(user, "Trabajo");
+
+      await user.click(
+        screen.getByRole("button", { name: "Eliminar workspace Familia" }),
+      );
+
+      const trabajoRow = screen.getByText("Trabajo").closest("div")!;
+      expect(trabajoRow).toHaveTextContent("★ Default");
     });
   });
 
@@ -72,26 +124,26 @@ describe("WorkspaceOnboarding", () => {
       renderWorkspace();
 
       await user.type(screen.getByPlaceholderText("Ej: Familia, Trabajo, Personal..."), "Grupo1!");
-      await user.click(screen.getByText("Siguiente"));
+      await user.click(screen.getByText("Crear workspace"));
 
       await waitFor(() =>
         expect(screen.getByText("Solo se permiten letras y espacios")).toBeInTheDocument(),
       );
     });
 
-    it("avanza con los grupos completados al escribir nombres válidos", async () => {
+    it("avanza con el workspace agregado y el default primero al escribir un nombre válido", async () => {
       const user = userEvent.setup();
       const onNext = vi.fn();
       renderWorkspace(onNext);
 
-      await user.type(screen.getByPlaceholderText("Ej: Familia, Trabajo, Personal..."), "Familia");
+      await addWorkspace(user, "Familia");
       await user.click(screen.getByText("Siguiente"));
 
       await waitFor(() => expect(onNext).toHaveBeenCalledTimes(1));
       expect(onNext).toHaveBeenCalledWith({ accountsToAdd: ["Familia"] });
     });
 
-    it("avanza con accountsToAdd vacío cuando el campo está vacío", async () => {
+    it("avanza con accountsToAdd vacío cuando no se agregó ningún workspace", async () => {
       const user = userEvent.setup();
       const onNext = vi.fn();
       renderWorkspace(onNext);

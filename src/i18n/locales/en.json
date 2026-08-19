@@ -39,8 +39,6 @@
       "workspaceNoMiembros_company": "There are no members in this space",
       "workspaceNameRequired_personal": "Enter the {{workspace}} name",
       "workspaceNameRequired_company": "Enter the {{workspace}} name",
-      "workspaceDeleteAriaLabel_personal": "Delete {{workspace}}",
-      "workspaceDeleteAriaLabel_company": "Delete {{workspace}}",
       "workspacesLowerCreateHint_personal": "If you don't want to create {{workspaces}} now, leave the field empty and click Next.",
       "workspacesLowerCreateHint_company": "If you don't want to create {{workspaces}} now, leave the field empty and click Next.",
       "miembro_personal": "Member",
@@ -148,7 +146,13 @@
     "backButton": "Back",
     "nextButton": "Next",
     "workspace": {
-      "nameLettersOnly": "Only letters and spaces are allowed"
+      "nameLettersOnly": "Only letters and spaces are allowed",
+      "emptyDescription": "You haven't added any {{workspace}} yet. You can continue without adding one — a default one will be created.",
+      "starTooltipDefault": "Already your default {{workspace}}",
+      "starTooltipSetDefault": "Set as default",
+      "starAriaLabel": "Star {{workspace}} {{name}}",
+      "deleteTooltip": "Delete {{workspace}}",
+      "deleteAriaLabel": "Delete {{workspace}} {{name}}"
     },
     "bank": {
       "description1": "Add the banks you use and choose which one is your default.",
@@ -237,6 +241,11 @@
     }
   },
   "home": {
+    "firstMovement": {
+      "title": "Ready to start?",
+      "subtitle": "You haven't logged any expense this year yet. Add your first one to see your charts, budgets, and insights in action.",
+      "cta": "Log my first expense"
+    },
     "filtersAdvanced": "Advanced Analysis Filters",
     "currencyLabel": "Currency",
     "periodLabel": "Period",
