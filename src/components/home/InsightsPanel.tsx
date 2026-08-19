@@ -2,6 +2,7 @@ import ArrowDownOutlined from "@ant-design/icons/ArrowDownOutlined";
 import ArrowUpOutlined from "@ant-design/icons/ArrowUpOutlined";
 import BulbOutlined from "@ant-design/icons/BulbOutlined";
 import { Card, Flex, List, Tag, theme, Typography } from "antd";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useInsights } from "@/apis/hooks/useInsights";
 import { useUserDefault } from "@/apis/hooks/useSettings";
@@ -61,7 +62,11 @@ function InsightRow({ insight }: { insight: CategoryInsight }) {
   );
 }
 
-export default function InsightsPanel() {
+interface InsightsPanelProps {
+  onVisibilityChange?: (visible: boolean) => void;
+}
+
+export default function InsightsPanel({ onVisibilityChange }: InsightsPanelProps = {}) {
   const { token } = theme.useToken();
   const { t } = useTranslation();
 
@@ -69,8 +74,13 @@ export default function InsightsPanel() {
   const workspaceId = defaultWorkspace?.value ?? null;
 
   const { data: insights = [], isFetching } = useInsights(workspaceId);
+  const isVisible = isFetching || insights.length > 0;
 
-  if (!isFetching && insights.length === 0) {
+  useEffect(() => {
+    onVisibilityChange?.(isVisible);
+  }, [isVisible, onVisibilityChange]);
+
+  if (!isVisible) {
     return null;
   }
 
@@ -81,7 +91,7 @@ export default function InsightsPanel() {
       style={{
         borderRadius: token.borderRadiusLG,
         borderColor: token.colorBorder,
-        marginBottom: 24,
+        height: "100%",
       }}
     >
       <Flex align="center" gap={8} style={{ marginBottom: 4 }}>

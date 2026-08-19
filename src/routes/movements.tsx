@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Card } from "antd";
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import MovementTable from "@/components/movements/tables/MovementTable";
 import MovementFilters from "@/components/movements/MovementFilters";
 import { TypeEnum } from "@/enums/TypeEnum";
@@ -25,6 +26,7 @@ export type MovementFilters = {
 };
 
 function RouteComponent() {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<MovementFilters>({
     currency: [],
     description: null,
@@ -48,7 +50,7 @@ function RouteComponent() {
         onFiltersChange={handleFiltersChange}
         AddEditMovementModal={AddMovementModal}
       />
-      <Card title="Movimientos" style={{ marginBottom: 16, padding: 0 }}>
+      <Card title={t("nav.movements")} style={{ marginBottom: 16, padding: 0 }}>
         <MovementTable filters={filters} />
       </Card>
     </div>

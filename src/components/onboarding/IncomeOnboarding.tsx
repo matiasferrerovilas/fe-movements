@@ -112,7 +112,7 @@ export default function IncomeOnboarding({
           <Col xs={24}>
             <Form.Item
               name="accountToAdd"
-              label={<Text strong>Workspace</Text>}
+              label={<Text strong>{labels.workspace}</Text>}
               initialValue={
                 accountsToAddOptions.length > 0 ? undefined : WorkspaceEnum.DEFAULT
               }

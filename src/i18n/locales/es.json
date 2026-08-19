@@ -1,5 +1,6 @@
 {
   "common": {
+    "loading": "Cargando...",
     "undo": {
       "itemDeleted": "Elemento eliminado",
       "undoButton": "Deshacer",
@@ -36,6 +37,12 @@
       "workspaceSalir_company": "¿Estás seguro de que quieres salir del espacio de trabajo?",
       "workspaceNoMiembros_personal": "No hay miembros en este workspace",
       "workspaceNoMiembros_company": "No hay miembros en este espacio",
+      "workspaceNameRequired_personal": "Ingresa el nombre del {{workspace}}",
+      "workspaceNameRequired_company": "Ingresa el nombre del {{workspace}}",
+      "workspaceDeleteAriaLabel_personal": "Eliminar {{workspace}}",
+      "workspaceDeleteAriaLabel_company": "Eliminar {{workspace}}",
+      "workspacesLowerCreateHint_personal": "Si no querés crear {{workspaces}} ahora, dejá el campo vacío y hacé click en Siguiente.",
+      "workspacesLowerCreateHint_company": "Si no querés crear {{workspaces}} ahora, dejá el campo vacío y hacé click en Siguiente.",
       "miembro_personal": "Miembro",
       "miembro_company": "Colaborador",
       "miembros_personal": "Miembros",
@@ -108,6 +115,11 @@
       "title": "Algo salió mal",
       "subtitle": "Ocurrió un error inesperado. Podés intentar recargar la página.",
       "reloadButton": "Recargar página"
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "empty": "Sin notificaciones",
+      "ariaLabel": "Notificaciones"
     }
   },
   "nav": {
@@ -135,6 +147,9 @@
   "onboarding": {
     "backButton": "Volver",
     "nextButton": "Siguiente",
+    "workspace": {
+      "nameLettersOnly": "Solo se permiten letras y espacios"
+    },
     "bank": {
       "description1": "Agregá los bancos que usás y elegí cuál es tu default.",
       "description2": "El banco default se selecciona automáticamente al registrar ingresos.",
@@ -229,6 +244,23 @@
     "topCategoriesEmpty": "Sin gastos registrados este mes",
     "annualEvolutionTitle": "Evolución Anual de Gastos y Ahorro",
     "annualEvolutionEmpty": "Sin datos para el año seleccionado",
+    "annualEvolutionFilterLabel": "Filtrar monedas",
+    "annualEvolutionExpenseLegend": "{{currency}} - Gasto",
+    "annualEvolutionSavingsLegend": "{{currency}} - Ahorro",
+    "monthsShort": [
+      "Ene",
+      "Feb",
+      "Mar",
+      "Abr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dic"
+    ],
     "categoryPieTitle": "Gastos por Categoría",
     "categoryPieEmpty": "Sin datos para el período",
     "categoryPieTotal": "Total",
@@ -256,6 +288,24 @@
       "balanceLegend": "Balance proyectado",
       "empty": "No hay datos suficientes para proyectar",
       "disclaimer": "Estimación conservadora basada en tu flujo de caja histórico."
+    },
+    "monthlySummary": {
+      "errorMessage": "No se pudo cargar el resumen mensual.",
+      "titlePrefix": "Resumen de",
+      "emptyMessage": "Sin movimientos registrados este mes.",
+      "incomeTitle": "Ingresado",
+      "expenseTitle": "Gastado",
+      "differenceTitle": "Diferencia",
+      "deltaVsLastMonth": "vs mes anterior",
+      "topCategoryLabel": "Mayor gasto del mes:",
+      "totalUsdLabel": "Total en USD",
+      "incomeLabel": "Ingresos",
+      "expenseLabel": "Gastos",
+      "netDifferenceLabel": "Diferencia neta"
+    },
+    "budgetAlert": {
+      "title": "Presupuestos en alerta",
+      "viewAllButton": "Ver todos"
     }
   },
   "movements": {
@@ -355,6 +405,27 @@
       "categoryLabel": "Categoría",
       "categoryRequired": "Seleccione al menos una categoría",
       "categoryPlaceholder": "Seleccionar categoría"
+    },
+    "modal": {
+      "movementButton": "Movimiento",
+      "addTitle": "Agregar Movimiento",
+      "confirmImport": "Importar",
+      "confirmAdd": "Agregar",
+      "tabManual": "Manual",
+      "tabImportPdf": "Importar PDF",
+      "editTooltip": "Editar el movimiento",
+      "editTitle": "Editar Movimiento",
+      "saveButton": "Guardar"
+    },
+    "import": {
+      "introPrefix": "Podés importar tu resumen bancario en formato",
+      "supportedBanks": "Bancos soportados actualmente: BBVA, Galicia.",
+      "creditCardOnlyPrefix": "Solo se admiten",
+      "creditCardOnlyBold": "resúmenes de tarjeta de crédito",
+      "creditCardOnlySuffix": "por el momento.",
+      "fileLabel": "Archivo",
+      "fileRequired": "Seleccione un archivo",
+      "selectFileButton": "Seleccionar archivo"
     }
   },
   "budgets": {
@@ -451,6 +522,10 @@
       "deleteAllConfirmCancel": "Cancelar",
       "deleteAllButton": "Eliminar todos los movimientos",
       "deleteAccountButton": "Eliminar la cuenta"
+    },
+    "tabs": {
+      "account": "Cuenta",
+      "preferences": "Preferencias"
     },
     "category": {
       "title": "Mis Categorías",
@@ -632,7 +707,15 @@
       "tourTitle_personal": "Servicios",
       "tourTitle_company": "Gastos Recurrentes",
       "tourDescription_personal": "Gestiona tus suscripciones y servicios recurrentes. Lleva control de pagos mensuales.",
-      "tourDescription_company": "Gestiona tus gastos operativos recurrentes. Lleva control de pagos mensuales del negocio."
+      "tourDescription_company": "Gestiona tus gastos operativos recurrentes. Lleva control de pagos mensuales del negocio.",
+      "updateSuccess_personal": "Servicio actualizado",
+      "updateSuccess_company": "Gasto recurrente actualizado",
+      "addSuccess_personal": "Servicio agregado",
+      "addSuccess_company": "Gasto agregado"
+    },
+    "summary": {
+      "paidTitle": "Pagados",
+      "pendingTitle": "Pendientes"
     },
     "card": {
       "amountMustBePositive": "El monto debe ser mayor que 0",

@@ -10,12 +10,16 @@ export const getEntityLabels = (userType: UserTypeEnum | null, t: TFunction) => 
   const isCompany = userType === "ENTERPRISE";
   const context = isCompany ? "company" : "personal";
   const e = (key: string) => t(`common.entity.${key}`, { context });
+  const eInterpolated = (key: string, options: Record<string, unknown>) =>
+    t(`common.entity.${key}`, { context, ...options });
+
+  const workspaceSingular = e("workspaceSingular");
 
   return {
     // === WORKSPACE ===
     workspace: e("workspace"),
     workspaces: e("workspaces"),
-    workspaceSingular: e("workspaceSingular"),
+    workspaceSingular,
     workspacesLower: e("workspacesLower"),
 
     workspaceQuestion: e("workspaceQuestion"),
@@ -30,6 +34,15 @@ export const getEntityLabels = (userType: UserTypeEnum | null, t: TFunction) => 
     workspaceGestionar: e("workspaceGestionar"),
     workspaceSalir: e("workspaceSalir"),
     workspaceNoMiembros: e("workspaceNoMiembros"),
+    workspaceNameRequired: eInterpolated("workspaceNameRequired", {
+      workspace: workspaceSingular,
+    }),
+    workspaceDeleteAriaLabel: eInterpolated("workspaceDeleteAriaLabel", {
+      workspace: workspaceSingular,
+    }),
+    workspacesLowerCreateHint: eInterpolated("workspacesLowerCreateHint", {
+      workspaces: e("workspacesLower"),
+    }),
 
     // === MIEMBROS ===
     miembro: e("miembro"),

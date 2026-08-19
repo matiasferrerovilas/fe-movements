@@ -4,6 +4,7 @@ import { Button, Col, Divider, Flex, Row, theme, Typography } from "antd";
 import ArrowRightOutlined from "@ant-design/icons/ArrowRightOutlined";
 import WarningOutlined from "@ant-design/icons/WarningOutlined";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 import { useBudgets, useDeleteBudget } from "@/apis/hooks/useBudget";
 import { BudgetCard } from "@/components/budgets/BudgetCard";
 import { EditBudgetModal } from "@/components/budgets/BudgetFormModal";
@@ -16,6 +17,7 @@ const ALERT_THRESHOLD = 50;
 
 export default function BudgetAlert() {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const now = dayjs();
@@ -54,7 +56,7 @@ export default function BudgetAlert() {
             style={{ color: token.colorWarning, fontSize: 16 }}
           />
           <Title level={5} style={{ margin: 0, fontWeight: 600 }}>
-            Presupuestos en alerta
+            {t("home.budgetAlert.title")}
           </Title>
           <Text
             type="secondary"
@@ -78,7 +80,7 @@ export default function BudgetAlert() {
           style={{ padding: 0, fontSize: 13 }}
           data-testid="ver-todos-link"
         >
-          Ver todos
+          {t("home.budgetAlert.viewAllButton")}
         </Button>
       </Flex>
 

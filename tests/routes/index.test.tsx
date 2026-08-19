@@ -142,4 +142,25 @@ describe("Index Route (Home Unificado)", () => {
       ).toBeInTheDocument();
     }, { timeout: 5000 });
   });
+
+  it("ocupa todo el ancho con Metas de ahorro cuando no hay insights de gasto", async () => {
+    server.use(
+      http.get("*/settings/defaults/DEFAULT_WORKSPACE", () =>
+        HttpResponse.json({ value: "ws-1" }),
+      ),
+      http.get("*/insights", () => HttpResponse.json([])),
+      http.get("*/goals*", () => HttpResponse.json([])),
+    );
+
+    const RouteComponent = IndexRoute.options.component!;
+    renderWithRouter(<RouteComponent />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Metas de ahorro")).toBeInTheDocument();
+    });
+
+    const goalsCard = screen.getByText("Metas de ahorro").closest(".ant-col");
+    expect(goalsCard).toHaveClass("ant-col-md-24");
+    expect(goalsCard?.className).not.toMatch(/ant-col-md-12\b/);
+  });
 });

@@ -6,6 +6,7 @@ import CloseCircleOutlined from "@ant-design/icons/CloseCircleOutlined";
 import InfoCircleOutlined from "@ant-design/icons/InfoCircleOutlined";
 import WarningOutlined from "@ant-design/icons/WarningOutlined";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 import { useMarkNotificationsRead, useNotifications } from "@/apis/hooks/useNotifications";
 import { NotificationSeverity } from "@/models/AppNotification";
 
@@ -20,6 +21,7 @@ const SEVERITY_ICON: Record<NotificationSeverity, React.ReactNode> = {
 
 export default function NotificationBell() {
   const { token } = theme.useToken();
+  const { t } = useTranslation();
   const { data: notifications } = useNotifications();
   const markAllRead = useMarkNotificationsRead();
   const [open, setOpen] = useState(false);
@@ -41,12 +43,12 @@ export default function NotificationBell() {
   const content = (
     <div style={{ width: 320 }}>
       <div style={{ padding: "12px 16px" }}>
-        <Text strong>Notificaciones</Text>
+        <Text strong>{t("common.notifications.title")}</Text>
       </div>
       <Divider style={{ margin: 0 }} />
       {notifications.length === 0 ? (
         <Empty
-          description="Sin notificaciones"
+          description={t("common.notifications.empty")}
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           style={{ padding: 24 }}
         />
@@ -99,7 +101,7 @@ export default function NotificationBell() {
         <Button
           type="text"
           icon={<BellOutlined style={{ fontSize: 18 }} />}
-          aria-label="Notificaciones"
+          aria-label={t("common.notifications.ariaLabel")}
         />
       </Badge>
     </Popover>

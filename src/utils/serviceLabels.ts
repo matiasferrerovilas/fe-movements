@@ -29,6 +29,8 @@ export const getServiceLabels = (userType: UserTypeEnum | null, t: TFunction) =>
     alDia: s("alDia"),
     pendientes: s("pendientes"),
     eliminar: s("eliminar"),
+    updateSuccess: s("updateSuccess"),
+    addSuccess: s("addSuccess"),
 
     // Tour
     tourTitle: s("tourTitle"),

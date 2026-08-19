@@ -29,21 +29,6 @@ const CHART_COLORS = [
   "#f97316",
 ];
 
-const MONTH_LABELS = [
-  "Ene",
-  "Feb",
-  "Mar",
-  "Abr",
-  "May",
-  "Jun",
-  "Jul",
-  "Ago",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dic",
-];
-
 type Props = {
   year: number;
 };
@@ -51,6 +36,7 @@ type Props = {
 export default function AnnualEvolution({ year }: Props) {
   const { token } = theme.useToken();
   const { t } = useTranslation();
+  const MONTH_LABELS = t("home.monthsShort", { returnObjects: true }) as string[];
   // Los datos de evolución se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
   const { data = [], isFetching } = useBalanceMonthlyEvolution(year);
 
@@ -85,7 +71,7 @@ export default function AnnualEvolution({ year }: Props) {
     );
     // Garantizar los 12 meses en el frontend como fallback defensivo
     return MONTH_LABELS.map((label) => byMonth[label] ?? { month: label });
-  }, [data]);
+  }, [data, MONTH_LABELS]);
 
   return (
     <Card
@@ -134,7 +120,7 @@ export default function AnnualEvolution({ year }: Props) {
                         key={`${currency}_spent`}
                         type="monotone"
                         dataKey={`${currency}_spent`}
-                        name={`${currency} - Gasto`}
+                        name={t("home.annualEvolutionExpenseLegend", { currency })}
                         stroke={CHART_COLORS[idx % CHART_COLORS.length]}
                         strokeWidth={2}
                         dot={{ r: 3 }}
@@ -144,7 +130,7 @@ export default function AnnualEvolution({ year }: Props) {
                         key={`${currency}_savings`}
                         type="monotone"
                         dataKey={`${currency}_savings`}
-                        name={`${currency} - Ahorro`}
+                        name={t("home.annualEvolutionSavingsLegend", { currency })}
                         stroke={CHART_COLORS[idx % CHART_COLORS.length]}
                         strokeWidth={2}
                         strokeDasharray="5 5"

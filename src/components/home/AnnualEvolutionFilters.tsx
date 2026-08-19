@@ -1,5 +1,6 @@
 import { Checkbox, Collapse, Flex } from "antd";
 import FilterOutlined from "@ant-design/icons/FilterOutlined";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   currencies: string[];
@@ -12,6 +13,7 @@ export default function AnnualEvolutionFilters({
   selected,
   onChange,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <Collapse
       style={{ marginBottom: 16 }}
@@ -21,7 +23,7 @@ export default function AnnualEvolutionFilters({
           label: (
             <Flex align="center" gap={8}>
               <FilterOutlined />
-              <span>Filtrar monedas</span>
+              <span>{t("home.annualEvolutionFilterLabel")}</span>
             </Flex>
           ),
           children: (

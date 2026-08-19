@@ -7,6 +7,7 @@ import { AuthProvider } from "@/apis/auth/AuthProvider";
 import Forbidden from "@/components/Forbidden";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { logger } from "@/utils/logger";
+import i18n from "@/i18n/config";
 
 const keycloak = new Keycloak(window.env.keycloak);
 
@@ -20,7 +21,7 @@ const loadingIndicator = (
       fontSize: "18px",
     }}
   >
-    Cargando...
+    {i18n.t("common.loading")}
   </div>
 );
 

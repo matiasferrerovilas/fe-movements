@@ -1,5 +1,6 @@
 {
   "common": {
+    "loading": "Loading...",
     "undo": {
       "itemDeleted": "Item deleted",
       "undoButton": "Undo",
@@ -36,6 +37,12 @@
       "workspaceSalir_company": "Are you sure you want to leave the work space?",
       "workspaceNoMiembros_personal": "There are no members in this workspace",
       "workspaceNoMiembros_company": "There are no members in this space",
+      "workspaceNameRequired_personal": "Enter the {{workspace}} name",
+      "workspaceNameRequired_company": "Enter the {{workspace}} name",
+      "workspaceDeleteAriaLabel_personal": "Delete {{workspace}}",
+      "workspaceDeleteAriaLabel_company": "Delete {{workspace}}",
+      "workspacesLowerCreateHint_personal": "If you don't want to create {{workspaces}} now, leave the field empty and click Next.",
+      "workspacesLowerCreateHint_company": "If you don't want to create {{workspaces}} now, leave the field empty and click Next.",
       "miembro_personal": "Member",
       "miembro_company": "Collaborator",
       "miembros_personal": "Members",
@@ -108,6 +115,11 @@
       "title": "Something went wrong",
       "subtitle": "An unexpected error occurred. You can try reloading the page.",
       "reloadButton": "Reload page"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "empty": "No notifications",
+      "ariaLabel": "Notifications"
     }
   },
   "nav": {
@@ -135,6 +147,9 @@
   "onboarding": {
     "backButton": "Back",
     "nextButton": "Next",
+    "workspace": {
+      "nameLettersOnly": "Only letters and spaces are allowed"
+    },
     "bank": {
       "description1": "Add the banks you use and choose which one is your default.",
       "description2": "The default bank is automatically selected when recording income.",
@@ -229,6 +244,23 @@
     "topCategoriesEmpty": "No expenses recorded this month",
     "annualEvolutionTitle": "Annual Expense and Savings Evolution",
     "annualEvolutionEmpty": "No data for the selected year",
+    "annualEvolutionFilterLabel": "Filter currencies",
+    "annualEvolutionExpenseLegend": "{{currency}} - Expense",
+    "annualEvolutionSavingsLegend": "{{currency}} - Savings",
+    "monthsShort": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
     "categoryPieTitle": "Expenses by Category",
     "categoryPieEmpty": "No data for the period",
     "categoryPieTotal": "Total",
@@ -256,6 +288,24 @@
       "balanceLegend": "Projected balance",
       "empty": "Not enough data to project",
       "disclaimer": "Conservative estimate based on your historical cash flow."
+    },
+    "monthlySummary": {
+      "errorMessage": "Could not load the monthly summary.",
+      "titlePrefix": "Summary for",
+      "emptyMessage": "No movements recorded this month.",
+      "incomeTitle": "Income",
+      "expenseTitle": "Spent",
+      "differenceTitle": "Difference",
+      "deltaVsLastMonth": "vs last month",
+      "topCategoryLabel": "Top expense this month:",
+      "totalUsdLabel": "Total in USD",
+      "incomeLabel": "Income",
+      "expenseLabel": "Expenses",
+      "netDifferenceLabel": "Net difference"
+    },
+    "budgetAlert": {
+      "title": "Budgets on alert",
+      "viewAllButton": "View all"
     }
   },
   "movements": {
@@ -355,6 +405,27 @@
       "categoryLabel": "Category",
       "categoryRequired": "Select at least one category",
       "categoryPlaceholder": "Select category"
+    },
+    "modal": {
+      "movementButton": "Movement",
+      "addTitle": "Add Movement",
+      "confirmImport": "Import",
+      "confirmAdd": "Add",
+      "tabManual": "Manual",
+      "tabImportPdf": "Import PDF",
+      "editTooltip": "Edit the movement",
+      "editTitle": "Edit Movement",
+      "saveButton": "Save"
+    },
+    "import": {
+      "introPrefix": "You can import your bank statement in",
+      "supportedBanks": "Currently supported banks: BBVA, Galicia.",
+      "creditCardOnlyPrefix": "Only",
+      "creditCardOnlyBold": "credit card statements",
+      "creditCardOnlySuffix": "are supported for now.",
+      "fileLabel": "File",
+      "fileRequired": "Select a file",
+      "selectFileButton": "Select file"
     }
   },
   "budgets": {
@@ -451,6 +522,10 @@
       "deleteAllConfirmCancel": "Cancel",
       "deleteAllButton": "Delete all movements",
       "deleteAccountButton": "Delete account"
+    },
+    "tabs": {
+      "account": "Account",
+      "preferences": "Preferences"
     },
     "category": {
       "title": "My Categories",
@@ -632,7 +707,15 @@
       "tourTitle_personal": "Services",
       "tourTitle_company": "Recurring Expenses",
       "tourDescription_personal": "Manage your subscriptions and recurring services. Keep track of monthly payments.",
-      "tourDescription_company": "Manage your recurring operating expenses. Keep track of the business's monthly payments."
+      "tourDescription_company": "Manage your recurring operating expenses. Keep track of the business's monthly payments.",
+      "updateSuccess_personal": "Service updated",
+      "updateSuccess_company": "Recurring expense updated",
+      "addSuccess_personal": "Service added",
+      "addSuccess_company": "Expense added"
+    },
+    "summary": {
+      "paidTitle": "Paid",
+      "pendingTitle": "Pending"
     },
     "card": {
       "amountMustBePositive": "The amount must be greater than 0",

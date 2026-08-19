@@ -65,7 +65,7 @@ export default function WorkspaceOnboarding({ initialValues, onNext, onPrev }: P
                             if (!value || !value.trim()) return Promise.resolve();
                             if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(value)) {
                               return Promise.reject(
-                                new Error("Solo se permiten letras y espacios"),
+                                new Error(t("onboarding.workspace.nameLettersOnly")),
                               );
                             }
                             return Promise.resolve();
@@ -86,7 +86,7 @@ export default function WorkspaceOnboarding({ initialValues, onNext, onPrev }: P
                           danger
                           icon={<DeleteOutlined />}
                           onClick={() => remove(name)}
-                          aria-label={`Eliminar ${labels.workspaceSingular}`}
+                          aria-label={labels.workspaceDeleteAriaLabel}
                         />
                       )}
                   </Col>
@@ -107,7 +107,7 @@ export default function WorkspaceOnboarding({ initialValues, onNext, onPrev }: P
         </Form.List>
 
         <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 12, textAlign: "center" }}>
-          Si no querés crear {labels.workspacesLower} ahora, dejá el campo vacío y hacé click en Siguiente.
+          {labels.workspacesLowerCreateHint}
         </Text>
 
         <Row gutter={[16, 10]}>

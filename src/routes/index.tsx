@@ -52,6 +52,9 @@ function RouteComponent() {
   const { data: currentUser } = useCurrentUser();
   const displayName = currentUser ? getUserDisplayName(currentUser) : null;
 
+  // Controla si InsightsPanel ocupa la mitad del ancho o si GoalsPanel toma todo el largo
+  const [insightsVisible, setInsightsVisible] = useState(true);
+
   // Filtros para gráficos
   const [filters, setFilters] = useState<BalanceFilters>({
     currency: CurrencyEnum.ARS,
@@ -125,11 +128,11 @@ function RouteComponent() {
       </div>
 
       {/* 3. Insights de gasto y metas de ahorro, lado a lado */}
-      <Row gutter={[20, 0]}>
-        <Col xs={24} md={12}>
-          <InsightsPanel />
+      <Row gutter={[20, 20]} align="stretch" style={{ marginBottom: 24 }}>
+        <Col xs={24} md={insightsVisible ? 12 : 0}>
+          <InsightsPanel onVisibilityChange={setInsightsVisible} />
         </Col>
-        <Col xs={24} md={12}>
+        <Col xs={24} md={insightsVisible ? 12 : 24}>
           <GoalsPanel />
         </Col>
       </Row>

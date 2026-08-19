@@ -36,7 +36,7 @@ function RouteComponent() {
   const TABS = [
     {
       key: "cuenta",
-      label: "Cuenta",
+      label: t("settings.tabs.account"),
       icon: <UserOutlined />,
       children: <SettingAccount />,
     },
@@ -66,7 +66,7 @@ function RouteComponent() {
     },
     {
       key: "preferencias",
-      label: "Preferencias",
+      label: t("settings.tabs.preferences"),
       icon: <BellOutlined />,
       children: <SettingPreferences />,
     },

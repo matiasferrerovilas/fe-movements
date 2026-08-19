@@ -70,7 +70,7 @@ export default function CreateWorkspaceModal({ children }: CreateWorkspaceModalP
             label={labels.workspaceNombreLabel}
             name="description"
             rules={[
-              { required: true, message: `Ingresa el nombre del ${labels.workspaceSingular}` },
+              { required: true, message: labels.workspaceNameRequired },
             ]}
           >
             <Input placeholder={labels.workspacePlaceholder} />

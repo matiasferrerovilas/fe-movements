@@ -73,7 +73,6 @@ export default function GoalsPanel() {
       style={{
         borderRadius: token.borderRadiusLG,
         borderColor: token.colorBorder,
-        marginBottom: 24,
         height: "100%",
       }}
     >

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { App, Col, Row } from "antd";
+import { useTranslation } from "react-i18next";
 import type { ServiceToAdd } from "@/apis/SubscriptionApi";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { ServiceCardForm } from "@/components/services/ServiceCardForm";
@@ -13,6 +14,8 @@ import { useServiceSubscription } from "@/apis/websocket/useServiceSubscription"
 import { ServiceSummary } from "@/components/services/ServiceSummary";
 import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
 import { RoleEnum } from "@/enums/RoleEnum";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { getServiceLabels } from "@/utils/serviceLabels";
 
 export const Route = createFileRoute("/services")({
   beforeLoad: protectedRouteGuard({
@@ -27,18 +30,21 @@ export const Route = createFileRoute("/services")({
 function RouteComponent() {
   const { data: services = [], isFetching } = useSubscription();
   const { message } = App.useApp();
+  const { t } = useTranslation();
+  const { data: currentUser } = useCurrentUser();
+  const labels = getServiceLabels(currentUser?.userType ?? null, t);
 
   useServiceSubscription();
 
   const payMutation = usePayService();
   const updateServiceMutation = useUpdateService({
     onSuccess: () => {
-      void message.success("Servicio actualizado");
+      void message.success(labels.updateSuccess);
     },
   });
   const addServiceMutation = useAddService({
     onSuccess: () => {
-      void message.success("Servicio agregado");
+      void message.success(labels.addSuccess);
     },
   });
 

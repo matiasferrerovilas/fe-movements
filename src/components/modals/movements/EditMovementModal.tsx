@@ -1,6 +1,7 @@
 import { Button } from "antd";
 import ModalComponent from "@/components/modals/Modal";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AddMovementExpenseTab from "@/components/modals/movements/AddMovementExpenseTab";
 import EditOutlined from "@ant-design/icons/EditOutlined";
 import type { Movement } from "@/models/Movement";
@@ -12,6 +13,7 @@ interface EditMovementModalProps {
 export default function EditMovementModal({
   movement,
 }: EditMovementModalProps) {
+  const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -42,17 +44,17 @@ export default function EditMovementModal({
           padding: "4px 8px",
           fontSize: 18,
         }}
-        title="Editar el movimiento"
-        aria-label="Editar el movimiento"
+        title={t("movements.modal.editTooltip")}
+        aria-label={t("movements.modal.editTooltip")}
       />
 
       <ModalComponent
         open={modalOpen}
         onClose={handleCloseModal}
-        title="Editar Movimiento"
+        title={t("movements.modal.editTitle")}
         footer={
           <Button type="primary" onClick={handleConfirm}>
-            Guardar
+            {t("movements.modal.saveButton")}
           </Button>
         }
       >

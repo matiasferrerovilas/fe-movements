@@ -51,7 +51,7 @@ export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
         />
       ),
       iconBg: token.colorSuccessBg,
-      title: "Pagados",
+      title: t("services.summary.paidTitle"),
       value: totalPaid,
       prefix: "$",
       suffix: undefined,
@@ -66,7 +66,7 @@ export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
         />
       ),
       iconBg: token.colorWarningBg,
-      title: "Pendientes",
+      title: t("services.summary.pendingTitle"),
       value: totalUnpaid,
       prefix: "$",
       suffix: undefined,

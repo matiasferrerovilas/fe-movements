@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { Button, Form, Select, Typography, Upload } from "antd";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useBanks } from "@/apis/hooks/useBank";
 import { useUserDefault } from "@/apis/hooks/useSettings";
 import type { UploadChangeParam, UploadFile } from "antd/es/upload";
@@ -24,6 +25,7 @@ interface ImportMovementTabProps {
 
 const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
   ({ onSuccess }, ref) => {
+    const { t } = useTranslation();
     const { data: banks = [] } = useBanks();
     const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
     const [form] = Form.useForm<UploadForm>();
@@ -77,23 +79,22 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
       >
         <div style={{ marginBottom: 10 }}>
           <Text type="secondary">
-            Podés importar tu resumen bancario en formato{" "}
-            <strong>PDF</strong>.
+            {t("movements.import.introPrefix")} <strong>PDF</strong>.
             <br />
-            Bancos soportados actualmente: BBVA, Galicia.
+            {t("movements.import.supportedBanks")}
             <br />
-            Solo se admiten <strong>
-              resúmenes de tarjeta de crédito
+            {t("movements.import.creditCardOnlyPrefix")} <strong>
+              {t("movements.import.creditCardOnlyBold")}
             </strong>{" "}
-            por el momento.
+            {t("movements.import.creditCardOnlySuffix")}
           </Text>
         </div>
         <Form.Item
           name="bank"
-          label="Banco"
-          rules={[{ required: true, message: "Seleccione un banco" }]}
+          label={t("movements.form.bankLabel")}
+          rules={[{ required: true, message: t("movements.form.bankRequired") }]}
         >
-          <Select placeholder="Seleccionar banco">
+          <Select placeholder={t("movements.form.bankPlaceholder")}>
             {banks.map((bank) => (
               <Select.Option key={bank.id} value={bank.description}>
                 {bank.description}
@@ -104,13 +105,13 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
 
         <Form.Item
           name="fileList"
-          label="Archivo"
+          label={t("movements.import.fileLabel")}
           valuePropName="fileList"
           getValueFromEvent={normFile}
-          rules={[{ required: true, message: "Seleccione un archivo" }]}
+          rules={[{ required: true, message: t("movements.import.fileRequired") }]}
         >
           <Upload beforeUpload={() => false} maxCount={1} accept=".pdf">
-            <Button icon={<UploadOutlined />}>Seleccionar archivo</Button>
+            <Button icon={<UploadOutlined />}>{t("movements.import.selectFileButton")}</Button>
           </Upload>
         </Form.Item>
       </Form>

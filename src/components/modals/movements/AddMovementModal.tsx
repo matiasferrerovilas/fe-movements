@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import PlusCircleOutlined from "@ant-design/icons/PlusCircleOutlined";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
+import { useTranslation } from "react-i18next";
 import ImportMovementTab from "@/components/modals/movements/ImportMovementTab";
 import AddMovementExpenseTab from "@/components/modals/movements/AddMovementExpenseTab";
 
@@ -11,6 +12,7 @@ const TAB_INDIVIDUAL = "1";
 const TAB_ARCHIVO = "2";
 
 export default function AddMovementModal({ block }: { block?: boolean }) {
+  const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -31,7 +33,10 @@ export default function AddMovementModal({ block }: { block?: boolean }) {
     }
   };
 
-  const confirmLabel = activeTab === TAB_ARCHIVO ? "Importar" : "Agregar";
+  const confirmLabel =
+    activeTab === TAB_ARCHIVO
+      ? t("movements.modal.confirmImport")
+      : t("movements.modal.confirmAdd");
   const confirmIcon =
     activeTab === TAB_ARCHIVO ? <UploadOutlined /> : <PlusOutlined />;
 
@@ -45,12 +50,12 @@ export default function AddMovementModal({ block }: { block?: boolean }) {
         icon={<PlusCircleOutlined />}
         onClick={() => setModalOpen(true)}
       >
-        Movimiento
+        {t("movements.modal.movementButton")}
       </Button>
       <ModalComponent
         open={modalOpen}
         onClose={handleCloseModal}
-        title="Agregar Movimiento"
+        title={t("movements.modal.addTitle")}
         footer={
           <Button type="primary" icon={confirmIcon} onClick={handleConfirm}>
             {confirmLabel}
@@ -63,7 +68,7 @@ export default function AddMovementModal({ block }: { block?: boolean }) {
           items={[
             {
               key: TAB_INDIVIDUAL,
-              label: "Manual",
+              label: t("movements.modal.tabManual"),
               children: (
                 <AddMovementExpenseTab
                   ref={expenseRef}
@@ -73,7 +78,7 @@ export default function AddMovementModal({ block }: { block?: boolean }) {
             },
             {
               key: TAB_ARCHIVO,
-              label: "Importar PDF",
+              label: t("movements.modal.tabImportPdf"),
               children: (
                 <ImportMovementTab ref={uploadRef} onSuccess={handleCloseModal} />
               ),
