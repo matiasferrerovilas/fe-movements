@@ -168,12 +168,12 @@ function RouteComponent() {
 
   return (
     <Row justify="center">
-      <Col xs={24} sm={20} md={16} lg={12}>
+      <Col xs={24} sm={22} md={19} lg={16}>
         <Card
           style={{
             margin: 20,
             paddingInline: 20,
-            maxWidth: 900,
+            maxWidth: 1040,
             animation: "onboarding-card-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
@@ -188,9 +188,11 @@ function RouteComponent() {
 
           <Steps
             current={currentStep}
-            items={steps.map((s) => ({ title: s.title, description: s.description }))}
+            items={steps.map((s) => ({ title: s.title }))}
             style={{ marginBottom: 40 }}
             size="small"
+            labelPlacement="vertical"
+            responsive
           />
 
           <div
