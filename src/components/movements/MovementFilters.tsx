@@ -136,6 +136,7 @@ export default function MovementFilters({
         />
         <Flex gap={12} vertical={isMobile}>
           <Dropdown.Button
+            size="large"
             icon={<DownloadOutlined />}
             loading={exporting}
             onClick={() => handleExport("csv")}
