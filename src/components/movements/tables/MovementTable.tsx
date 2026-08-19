@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { App, Grid, Pagination, Row, Tag } from "antd";
+import { App, Card, Grid, Pagination, Row, Tag } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import type { CreateMovementForm, Movement } from "@/models/Movement";
@@ -17,6 +17,7 @@ import MovementTableTablet from "@/components/movements/tables/MovementTableTabl
 import MovementTableMobile from "@/components/movements/tables/MovementTableMobile";
 import BulkActionsToolbar from "@/components/movements/tables/BulkActionsToolbar";
 import BulkCategorizeModal from "@/components/movements/tables/BulkCategorizeModal";
+import MovementsEmptyState from "@/components/movements/MovementsEmptyState";
 import { useUndoableDelete } from "@/utils/useUndoableDelete";
 
 const { useBreakpoint } = Grid;
@@ -63,6 +64,13 @@ export default function MovementTable({ filters }: MovementTableProps) {
 
   const { data: movements = { content: [], totalElements: 0, totalPages: 0 } } =
     useMovement(filters, page, pageSize);
+
+  const hasActiveFilters =
+    !!filters.description ||
+    filters.type.length > 0 ||
+    filters.bank.length > 0 ||
+    filters.categories.length > 0 ||
+    filters.currency.length > 0;
 
   const handleDelete = (id: number) => requestDelete(id);
 
@@ -174,8 +182,12 @@ export default function MovementTable({ filters }: MovementTableProps) {
     onToggleSelect: handleToggleSelect,
   };
 
+  if (!hasActiveFilters && movements.totalElements === 0) {
+    return <MovementsEmptyState />;
+  }
+
   return (
-    <>
+    <Card title={t("nav.movements")} style={{ marginBottom: 16, padding: 0 }}>
       <BulkActionsToolbar
         selectedCount={selectedIds.size}
         isDeleting={isBulkDeleting}
@@ -207,6 +219,6 @@ export default function MovementTable({ filters }: MovementTableProps) {
         onClose={() => setCategorizeModalOpen(false)}
         onConfirm={(categories) => void handleBulkCategorize(categories)}
       />
-    </>
+    </Card>
   );
 }

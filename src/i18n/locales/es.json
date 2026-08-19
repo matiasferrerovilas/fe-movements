@@ -321,6 +321,11 @@
     "current": "Actuales",
     "historical": "Históricos",
     "filters": "Filtros",
+    "emptyState": {
+      "title": "¿Empezamos?",
+      "subtitle": "Todavía no cargaste ningún movimiento. Registrá el primero para empezar a llevar el control de tus finanzas.",
+      "cta": "Cargar mi primer movimiento"
+    },
     "descriptionLabel": "Descripción",
     "searchPlaceholder": "Buscar...",
     "typeLabel": "Tipo",

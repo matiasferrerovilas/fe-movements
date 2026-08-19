@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New onboarding intro screen (`IntroOnboarding`): a first, form-free step before the setup wizard
   that states the app's value proposition (budgets with alerts, savings goals, spending insights,
   real-time shared workspaces, multi-bank/multi-currency) with a single "Empezar" CTA.
+- New `FirstMovementCta` banner on the home screen: shown only when the user has no expenses logged
+  this year, with a large button that opens the add-movement modal (description field auto-focused).
+  Closes the loop the onboarding wizard used to leave open. `AddMovementModal` gained an optional
+  `trigger` render-prop to support the custom button without duplicating its form logic.
+- Matching `MovementsEmptyState` on the `/movements` page: when the account has no movements and no
+  filters are active, the table/pagination/Card are replaced by a large "add your first movement" CTA
+  instead of an empty table.
 
 ### Removed
 - Investments feature entirely: the `/investments` route, dashboard, table/form components, settings

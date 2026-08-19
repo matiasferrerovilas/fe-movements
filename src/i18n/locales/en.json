@@ -321,6 +321,11 @@
     "current": "Current",
     "historical": "Historical",
     "filters": "Filters",
+    "emptyState": {
+      "title": "Ready to start?",
+      "subtitle": "You haven't logged any movement yet. Add your first one to start tracking your finances.",
+      "cta": "Log my first movement"
+    },
     "descriptionLabel": "Description",
     "searchPlaceholder": "Search...",
     "typeLabel": "Type",

@@ -112,12 +112,28 @@ describe("MovementTable", () => {
       );
     });
 
-    it("shows 'Sin movimientos' when the API returns an empty list", async () => {
+    it("shows the first-movement CTA instead of the list when there are no movements and no active filters", async () => {
       render(<MovementTable filters={defaultFilters} />, { wrapper: makeWrapper() });
+
+      await waitFor(() =>
+        expect(screen.getByText("¿Empezamos?")).toBeInTheDocument(),
+      );
+      expect(
+        screen.getByRole("button", { name: /Cargar mi primer movimiento/ }),
+      ).toBeInTheDocument();
+      expect(screen.queryByText("Sin movimientos")).not.toBeInTheDocument();
+    });
+
+    it("shows 'Sin movimientos' (not the CTA) when a filter is active and returns no results", async () => {
+      render(
+        <MovementTable filters={{ ...defaultFilters, description: "no existe" }} />,
+        { wrapper: makeWrapper() },
+      );
 
       await waitFor(() =>
         expect(screen.getAllByText("Sin movimientos").length).toBeGreaterThan(0),
       );
+      expect(screen.queryByText("¿Empezamos?")).not.toBeInTheDocument();
     });
   });
 
