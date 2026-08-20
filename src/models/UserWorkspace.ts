@@ -12,8 +12,15 @@ export interface AccountWithMembers {
   members: AccountMember[];
 }
 
+export interface WorkspaceMemberDetail {
+  userId: number;
+  email: string;
+  role: string;
+}
+
 export interface WorkspaceMetadata {
   members: string[];
+  memberDetails: WorkspaceMemberDetail[];
   role: string;
   joinedAt: string;
   isDefault: boolean;

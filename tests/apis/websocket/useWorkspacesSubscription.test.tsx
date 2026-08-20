@@ -9,8 +9,8 @@ import { useWorkspacesSubscription } from "@/apis/websocket/useWorkspacesSubscri
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock("@react-keycloak/web", () => ({
-  useKeycloak: vi.fn(),
+vi.mock("@/apis/hooks/useCurrentUser", () => ({
+  useCurrentUser: vi.fn(),
 }));
 
 vi.mock("@/apis/hooks/useWorkspaces", () => ({
@@ -21,7 +21,7 @@ vi.mock("@/apis/websocket/WebSocketProvider", () => ({
   useWebSocket: vi.fn(),
 }));
 
-import { useKeycloak } from "@react-keycloak/web";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { useWorkspaces } from "@/apis/hooks/useWorkspaces";
 import { useWebSocket } from "@/apis/websocket/WebSocketProvider";
 
@@ -53,7 +53,7 @@ function makeWrapper(queryClient: QueryClient) {
 
 // ── Test Data ──────────────────────────────────────────────────────────────
 
-const keycloakSubject = "kc-uuid-123";
+const userEmail = "user@test.com";
 
 const memberships: Workspace[] = [
   {
@@ -85,13 +85,9 @@ describe("useWorkspacesSubscription", () => {
 
     wsMock = makeWsMock();
 
-    vi.mocked(useKeycloak).mockReturnValue({
-      keycloak: {
-        authenticated: true,
-        subject: keycloakSubject,
-      } as ReturnType<typeof useKeycloak>["keycloak"],
-      initialized: true,
-    });
+    vi.mocked(useCurrentUser).mockReturnValue({
+      data: { email: userEmail },
+    } as ReturnType<typeof useCurrentUser>);
 
     vi.mocked(useWorkspaces).mockReturnValue({
       data: memberships,
@@ -105,36 +101,27 @@ describe("useWorkspacesSubscription", () => {
     vi.clearAllMocks();
   });
 
-  it("subscribes to default topic, per-membership leave and members/update topics on mount", () => {
+  it("subscribes to the membership-removed topic and per-membership members/update topics on mount", () => {
     renderHook(() => useWorkspacesSubscription(), {
       wrapper: makeWrapper(queryClient),
     });
 
-    // Static default topic
+    // Static, email-keyed "removed from workspace" topic
     expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/account/default/${keycloakSubject}`,
-      expect.any(Function),
-    );
-    // Per-membership leave topics
-    expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/account/${memberships[0].workspaceId}/leave`,
-      expect.any(Function),
-    );
-    expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/account/${memberships[1].workspaceId}/leave`,
+      `/topic/membership/${userEmail}/remove`,
       expect.any(Function),
     );
     // Per-membership members/update topics
     expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/account/${memberships[0].workspaceId}/members/update`,
+      `/topic/workspace/${memberships[0].workspaceId}/members/update`,
       expect.any(Function),
     );
     expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/account/${memberships[1].workspaceId}/members/update`,
+      `/topic/workspace/${memberships[1].workspaceId}/members/update`,
       expect.any(Function),
     );
-    // 1 static + 2 leave + 2 members/update = 5 total
-    expect(wsMock.subscribe).toHaveBeenCalledTimes(5);
+    // 1 static + 2 members/update = 3 total
+    expect(wsMock.subscribe).toHaveBeenCalledTimes(3);
   });
 
   it("does not subscribe when websocket is not connected", () => {
@@ -147,14 +134,10 @@ describe("useWorkspacesSubscription", () => {
     expect(wsMock.subscribe).not.toHaveBeenCalled();
   });
 
-  it("does not subscribe when keycloakUserId is absent", () => {
-    vi.mocked(useKeycloak).mockReturnValue({
-      keycloak: {
-        authenticated: true,
-        subject: undefined,
-      } as ReturnType<typeof useKeycloak>["keycloak"],
-      initialized: true,
-    });
+  it("does not subscribe when the current user's email is absent", () => {
+    vi.mocked(useCurrentUser).mockReturnValue({
+      data: undefined,
+    } as ReturnType<typeof useCurrentUser>);
 
     renderHook(() => useWorkspacesSubscription(), {
       wrapper: makeWrapper(queryClient),
@@ -170,30 +153,22 @@ describe("useWorkspacesSubscription", () => {
 
     unmount();
 
-    expect(wsMock.unsubscribe).toHaveBeenCalledTimes(5);
+    expect(wsMock.unsubscribe).toHaveBeenCalledTimes(3);
     expect(wsMock.unsubscribe).toHaveBeenCalledWith(
-      `/topic/account/default/${keycloakSubject}`,
+      `/topic/membership/${userEmail}/remove`,
       expect.any(Function),
     );
     expect(wsMock.unsubscribe).toHaveBeenCalledWith(
-      `/topic/account/${memberships[0].workspaceId}/leave`,
+      `/topic/workspace/${memberships[0].workspaceId}/members/update`,
       expect.any(Function),
     );
     expect(wsMock.unsubscribe).toHaveBeenCalledWith(
-      `/topic/account/${memberships[1].workspaceId}/leave`,
-      expect.any(Function),
-    );
-    expect(wsMock.unsubscribe).toHaveBeenCalledWith(
-      `/topic/account/${memberships[0].workspaceId}/members/update`,
-      expect.any(Function),
-    );
-    expect(wsMock.unsubscribe).toHaveBeenCalledWith(
-      `/topic/account/${memberships[1].workspaceId}/members/update`,
+      `/topic/workspace/${memberships[1].workspaceId}/members/update`,
       expect.any(Function),
     );
   });
 
-  it("invalidates user-workspaces queries on ACCOUNT_LEFT", () => {
+  it("invalidates user-workspaces queries on WORKSPACE_LEFT", () => {
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
     renderHook(() => useWorkspacesSubscription(), {
@@ -201,132 +176,40 @@ describe("useWorkspacesSubscription", () => {
     });
 
     const event: EventWrapper<unknown> = {
-      eventType: EventType.ACCOUNT_LEFT,
+      eventType: EventType.WORKSPACE_LEFT,
       message: {},
     };
 
     act(() => {
-      wsMock.trigger(`/topic/account/${memberships[0].workspaceId}/leave`, event);
+      wsMock.trigger(`/topic/membership/${userEmail}/remove`, event);
     });
 
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-workspaces"] });
   });
 
-  it("updates an existing group in cache on MEMBERSHIP_UPDATED", () => {
+  it("invalidates user-workspaces queries on MEMBERSHIP_UPDATED via members/update topic", () => {
     queryClient.setQueryData(["user-workspaces"], groups);
+    const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
     renderHook(() => useWorkspacesSubscription(), {
       wrapper: makeWrapper(queryClient),
     });
 
-    const updatedGroup: Workspace = {
-      id: 2,
-      workspaceId: 20,
-      workspaceName: "Trabajo",
-      metadata: { members: ["a@test.com", "b@test.com", "c@test.com", "d@test.com"], role: "FAMILY", joinedAt: "2026-01-01T00:00:00", isDefault: true },
-    };
-    const event: EventWrapper<Workspace> = {
+    // El payload real es el evento de invitación aceptada, no un Workspace completo — el hook
+    // no intenta mergearlo, solo invalida para refetchear la lista con los miembros al día.
+    const event: EventWrapper<unknown> = {
       eventType: EventType.MEMBERSHIP_UPDATED,
-      message: updatedGroup,
+      message: { workspaceId: 10, acceptedByEmail: "new@test.com" },
     };
 
     act(() => {
-      wsMock.trigger(`/topic/account/default/${keycloakSubject}`, event);
+      wsMock.trigger(`/topic/workspace/${memberships[0].workspaceId}/members/update`, event);
     });
 
-    const cached = queryClient.getQueryData<Workspace[]>(["user-workspaces"]);
-    expect(cached?.find((g) => g.workspaceId === 20)).toMatchObject({
-      metadata: expect.objectContaining({ isDefault: true }),
-    });
-    // el grupo anterior deja de ser default
-    expect(cached?.find((g) => g.workspaceId === 10)).toMatchObject({
-      metadata: expect.objectContaining({ isDefault: false }),
-    });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["user-workspaces"] });
   });
 
-  it("adds a new group to cache on MEMBERSHIP_UPDATED when it does not exist", () => {
-    queryClient.setQueryData(["user-workspaces"], groups);
-
-    renderHook(() => useWorkspacesSubscription(), {
-      wrapper: makeWrapper(queryClient),
-    });
-
-    const newGroup: Workspace = {
-      id: 3,
-      workspaceId: 30,
-      workspaceName: "Amigos",
-      metadata: { members: ["a@test.com"], role: "GUEST", joinedAt: "2026-01-01T00:00:00", isDefault: false },
-    };
-    const event: EventWrapper<Workspace> = {
-      eventType: EventType.MEMBERSHIP_UPDATED,
-      message: newGroup,
-    };
-
-    act(() => {
-      wsMock.trigger(`/topic/account/default/${keycloakSubject}`, event);
-    });
-
-    const cached = queryClient.getQueryData<Workspace[]>(["user-workspaces"]);
-    expect(cached).toHaveLength(3);
-    expect(cached?.find((g) => g.workspaceId === 30)).toMatchObject(newGroup);
-  });
-
-  it("initializes cache with new group when cache is empty on MEMBERSHIP_UPDATED", () => {
-    renderHook(() => useWorkspacesSubscription(), {
-      wrapper: makeWrapper(queryClient),
-    });
-
-    const newGroup: Workspace = {
-      id: 1,
-      workspaceId: 10,
-      workspaceName: "Familia",
-      metadata: { members: ["a@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
-    };
-    const event: EventWrapper<Workspace> = {
-      eventType: EventType.MEMBERSHIP_UPDATED,
-      message: newGroup,
-    };
-
-    act(() => {
-      wsMock.trigger(`/topic/account/default/${keycloakSubject}`, event);
-    });
-
-    const cached = queryClient.getQueryData<Workspace[]>(["user-workspaces"]);
-    expect(cached).toEqual([newGroup]);
-  });
-
-  it("handles MEMBERSHIP_UPDATED via members/update topic", () => {
-    queryClient.setQueryData(["user-workspaces"], groups);
-
-    renderHook(() => useWorkspacesSubscription(), {
-      wrapper: makeWrapper(queryClient),
-    });
-
-    const updatedGroup: Workspace = {
-      id: 1,
-      workspaceId: 10,
-      workspaceName: "Familia",
-      metadata: { members: ["a@test.com", "b@test.com", "c@test.com", "d@test.com", "e@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
-    };
-    const event: EventWrapper<Workspace> = {
-      eventType: EventType.MEMBERSHIP_UPDATED,
-      message: updatedGroup,
-    };
-
-    act(() => {
-      wsMock.trigger(
-        `/topic/account/${memberships[0].workspaceId}/members/update`,
-        event,
-      );
-    });
-
-    const cached = queryClient.getQueryData<Workspace[]>(["user-workspaces"]);
-    expect(cached?.find((g) => g.workspaceId === 10)).toMatchObject({
-      metadata: expect.objectContaining({ members: expect.arrayContaining(["e@test.com"]) }),
-    });
-  });
-
-  it("subscribes only to default topic when memberships list is empty", () => {
+  it("does not subscribe to members/update topics when memberships list is empty", () => {
     vi.mocked(useWorkspaces).mockReturnValue({
       data: [],
       isSuccess: true,
@@ -336,10 +219,10 @@ describe("useWorkspacesSubscription", () => {
       wrapper: makeWrapper(queryClient),
     });
 
-    // Only 1 static topic, no leave nor members/update topics
+    // Only the static membership-removed topic, no members/update topics
     expect(wsMock.subscribe).toHaveBeenCalledTimes(1);
     expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/account/default/${keycloakSubject}`,
+      `/topic/membership/${userEmail}/remove`,
       expect.any(Function),
     );
   });

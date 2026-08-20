@@ -6,6 +6,8 @@ import type { Invitations } from "@/models/UserWorkspace";
 import type { EventWrapper } from "@/apis/websocket/EventWrapper";
 import { EventType } from "@/apis/websocket/EventWrapper";
 import { useInvitationSubscription } from "@/apis/websocket/useInvitationSubscription";
+import { NOTIFICATIONS_QUERY_KEY } from "@/apis/hooks/useNotifications";
+import type { AppNotificationEntry } from "@/models/AppNotification";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -59,7 +61,7 @@ describe("useInvitationSubscription", () => {
   let queryClient: QueryClient;
   let wsMock: ReturnType<typeof makeWsMock>;
 
-  const userId = 99;
+  const userEmail = "me@test.com";
   const invitation: Invitations = {
     id: 1,
     workspaceId: 10,
@@ -79,15 +81,15 @@ describe("useInvitationSubscription", () => {
     vi.mocked(useKeycloak).mockReturnValue({
       keycloak: {
         authenticated: true,
-        tokenParsed: { preferred_username: "me@test.com" },
+        tokenParsed: { preferred_username: userEmail },
       } as ReturnType<typeof useKeycloak>["keycloak"],
       initialized: true,
     });
 
     vi.mocked(useCurrentUser).mockReturnValue({
       data: {
-        id: userId,
-        email: "me@test.com",
+        id: 99,
+        email: userEmail,
         givenName: "Test",
         familyName: "User",
         userType: "ADMIN",
@@ -109,17 +111,17 @@ describe("useInvitationSubscription", () => {
     });
 
     expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/invitation/${userId}/new`,
+      `/topic/invitations/${userEmail}/new`,
       expect.any(Function),
     );
     expect(wsMock.subscribe).toHaveBeenCalledWith(
-      `/topic/invitation/${userId}/update`,
+      `/topic/invitations/${userEmail}/update`,
       expect.any(Function),
     );
     expect(wsMock.subscribe).toHaveBeenCalledTimes(2);
   });
 
-  it("does not subscribe when userId is not available", () => {
+  it("does not subscribe when the current user's email is not available", () => {
     vi.mocked(useCurrentUser).mockReturnValue({
       data: undefined,
       isSuccess: false,
@@ -150,11 +152,11 @@ describe("useInvitationSubscription", () => {
     unmount();
 
     expect(wsMock.unsubscribe).toHaveBeenCalledWith(
-      `/topic/invitation/${userId}/new`,
+      `/topic/invitations/${userEmail}/new`,
       expect.any(Function),
     );
     expect(wsMock.unsubscribe).toHaveBeenCalledWith(
-      `/topic/invitation/${userId}/update`,
+      `/topic/invitations/${userEmail}/update`,
       expect.any(Function),
     );
     expect(wsMock.unsubscribe).toHaveBeenCalledTimes(2);
@@ -184,7 +186,7 @@ describe("useInvitationSubscription", () => {
     };
 
     act(() => {
-      wsMock.trigger(`/topic/invitation/${userId}/new`, event);
+      wsMock.trigger(`/topic/invitations/${userEmail}/new`, event);
     });
 
     expect(queryClient.getQueryData(["workspace-invitations"])).toEqual([invitation]);
@@ -203,10 +205,69 @@ describe("useInvitationSubscription", () => {
     };
 
     act(() => {
-      wsMock.trigger(`/topic/invitation/${userId}/new`, event);
+      wsMock.trigger(`/topic/invitations/${userEmail}/new`, event);
     });
 
     expect(queryClient.getQueryData<Invitations[]>(["workspace-invitations"])).toHaveLength(1);
+  });
+
+  it("pushes a bell notification on INVITATION_ADDED", () => {
+    queryClient.setQueryData(["workspace-invitations"], []);
+
+    renderHook(() => useInvitationSubscription(), {
+      wrapper: makeWrapper(queryClient),
+    });
+
+    const event: EventWrapper<Invitations> = {
+      eventType: EventType.INVITATION_ADDED,
+      message: invitation,
+    };
+
+    act(() => {
+      wsMock.trigger(`/topic/invitations/${userEmail}/new`, event);
+    });
+
+    const notifications = queryClient.getQueryData<AppNotificationEntry[]>(NOTIFICATIONS_QUERY_KEY);
+    expect(notifications).toHaveLength(1);
+    expect(notifications?.[0]).toMatchObject({
+      id: `invitation-${invitation.id}`,
+      severity: "INFO",
+      read: false,
+      createdAt: invitation.createdAt,
+    });
+    expect(notifications?.[0].message).toContain(invitation.invitedByEmail);
+    expect(notifications?.[0].message).toContain(invitation.workspaceName);
+  });
+
+  it("does not push a duplicate bell notification on repeated INVITATION_ADDED", () => {
+    queryClient.setQueryData(["workspace-invitations"], []);
+    queryClient.setQueryData<AppNotificationEntry[]>(NOTIFICATIONS_QUERY_KEY, [
+      {
+        id: `invitation-${invitation.id}`,
+        title: "already there",
+        message: "already there",
+        severity: "INFO",
+        createdAt: invitation.createdAt,
+        read: false,
+      },
+    ]);
+
+    renderHook(() => useInvitationSubscription(), {
+      wrapper: makeWrapper(queryClient),
+    });
+
+    const event: EventWrapper<Invitations> = {
+      eventType: EventType.INVITATION_ADDED,
+      message: invitation,
+    };
+
+    act(() => {
+      wsMock.trigger(`/topic/invitations/${userEmail}/new`, event);
+    });
+
+    expect(
+      queryClient.getQueryData<AppNotificationEntry[]>(NOTIFICATIONS_QUERY_KEY),
+    ).toHaveLength(1);
   });
 
   it("removes invitation from cache and invalidates user-workspaces on INVITATION_CONFIRMED_REJECTED", () => {
@@ -232,7 +293,7 @@ describe("useInvitationSubscription", () => {
     };
 
     act(() => {
-      wsMock.trigger(`/topic/invitation/${userId}/update`, event);
+      wsMock.trigger(`/topic/invitations/${userEmail}/update`, event);
     });
 
     const remaining = queryClient.getQueryData<Invitations[]>(["workspace-invitations"]);
@@ -243,29 +304,23 @@ describe("useInvitationSubscription", () => {
   it("ignores invitation sent by the current user", () => {
     queryClient.setQueryData(["workspace-invitations"], []);
 
-    // The current user's preferred_username matches invitedByEmail
-    vi.mocked(useKeycloak).mockReturnValue({
-      keycloak: {
-        authenticated: true,
-        tokenParsed: { preferred_username: "me@test.com" },
-      } as ReturnType<typeof useKeycloak>["keycloak"],
-      initialized: true,
-    });
-
     renderHook(() => useInvitationSubscription(), {
       wrapper: makeWrapper(queryClient),
     });
 
     const event: EventWrapper<Invitations> = {
       eventType: EventType.INVITATION_ADDED,
-      message: { ...invitation, invitedByEmail: "me@test.com" },
+      message: { ...invitation, invitedByEmail: userEmail },
     };
 
     act(() => {
-      wsMock.trigger(`/topic/invitation/${userId}/new`, event);
+      wsMock.trigger(`/topic/invitations/${userEmail}/new`, event);
     });
 
     // Cache should remain empty because the invitation was sent by the current user
     expect(queryClient.getQueryData<Invitations[]>(["workspace-invitations"])).toEqual([]);
+    expect(
+      queryClient.getQueryData<AppNotificationEntry[]>(NOTIFICATIONS_QUERY_KEY),
+    ).toBeUndefined();
   });
 });

@@ -12,6 +12,11 @@ const baseUrl = "/workspace";
 export const exitWorkspaceApi = (id: number) =>
   api.delete(`${baseUrl}/${id}`).then((response) => response.data);
 
+export const removeWorkspaceMemberApi = (workspaceId: number, userId: number) =>
+  api
+    .delete(`${baseUrl}/${workspaceId}/members/${userId}`)
+    .then((response) => response.data);
+
 export const addWorkspaceApi = (workspace: CreateWorkspaceForm) =>
   api.post(baseUrl, workspace).then((response) => response.data);
 

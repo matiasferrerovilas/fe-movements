@@ -1,20 +1,25 @@
 // useInvitationSubscription.ts
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useWebSocket } from "@/apis/websocket/WebSocketProvider";
 import { EventType, type EventWrapper } from "@/apis/websocket/EventWrapper";
 import type { Invitations } from "@/models/UserWorkspace";
 import { useKeycloak } from "@react-keycloak/web";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { NOTIFICATIONS_QUERY_KEY } from "@/apis/hooks/useNotifications";
+import { NotificationSeverity, type AppNotificationEntry } from "@/models/AppNotification";
 
 const INVITATIONS_ACCOUNT_QUERY_KEY = "workspace-invitations" as const;
+const MAX_NOTIFICATIONS = 50;
 
 export const useInvitationSubscription = () => {
   const queryClient = useQueryClient();
   const ws = useWebSocket();
   const { keycloak } = useKeycloak();
   const { data: currentUser } = useCurrentUser();
-  const userId = currentUser?.id;
+  const userEmail = currentUser?.email;
+  const { t } = useTranslation();
 
   // callbackRef evita stale closures: siempre lee los valores más recientes
   const callbackRef = useRef<((event: EventWrapper<Invitations>) => void) | null>(null);
@@ -24,6 +29,26 @@ export const useInvitationSubscription = () => {
 
       if (payload.invitedByEmail == keycloak.tokenParsed?.preferred_username) {
         return;
+      }
+
+      if (event.eventType === EventType.INVITATION_ADDED) {
+        const notifId = `invitation-${payload.id}`;
+        queryClient.setQueryData<AppNotificationEntry[]>(NOTIFICATIONS_QUERY_KEY, (notifs = []) => {
+          if (notifs.some((n) => n.id === notifId)) return notifs;
+
+          const entry: AppNotificationEntry = {
+            id: notifId,
+            title: t("common.notifications.invitationReceivedTitle"),
+            message: t("common.notifications.invitationReceivedMessage", {
+              invitedByEmail: payload.invitedByEmail,
+              workspaceName: payload.workspaceName,
+            }),
+            severity: NotificationSeverity.INFO,
+            createdAt: payload.createdAt,
+            read: false,
+          };
+          return [entry, ...notifs].slice(0, MAX_NOTIFICATIONS);
+        });
       }
 
       const queries = queryClient.getQueriesData<Invitations[]>({
@@ -61,13 +86,15 @@ export const useInvitationSubscription = () => {
   });
 
   useEffect(() => {
-    if (!ws.isConnected || !userId) return;
+    if (!ws.isConnected || !userEmail) return;
 
     const callback = (event: EventWrapper<Invitations>) => callbackRef.current!(event);
 
+    // api-movements direcciona estos topics por email (ver WebSocketTopics.invitationsNew), no
+    // por userId — es lo único que el evento de api-identity trae sobre el invitado.
     const topics = [
-      `/topic/invitation/${userId}/new`,
-      `/topic/invitation/${userId}/update`,
+      `/topic/invitations/${userEmail}/new`,
+      `/topic/invitations/${userEmail}/update`,
     ];
 
     // Suscribimos una vez por montaje
@@ -77,7 +104,7 @@ export const useInvitationSubscription = () => {
     return () => {
       topics.forEach((topic) => ws.unsubscribe(topic, callback));
     };
-  }, [ws, ws.isConnected, userId]); // se re-suscribe si el socket o el userId cambia
+  }, [ws, ws.isConnected, userEmail]); // se re-suscribe si el socket o el email cambia
 
   return null;
 };

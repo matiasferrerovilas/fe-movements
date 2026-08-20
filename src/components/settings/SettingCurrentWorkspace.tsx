@@ -7,7 +7,10 @@ import { useCurrentWorkspace } from "@/apis/workspace/WorkspaceContext";
 import { useWorkspacesSubscription } from "@/apis/websocket/useWorkspacesSubscription";
 import InviteUserToWorkspace from "@/components/modals/workspaces/InviteUserToWorkspace";
 import ExitWorkspaceModal from "@/components/modals/workspaces/ExitWorkspaceModal";
+import RemoveMemberButton from "@/components/modals/workspaces/RemoveMemberButton";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { useUserRoles } from "@/apis/hooks/useUserRoles";
+import { RoleEnum } from "@/enums/RoleEnum";
 import { getEntityLabels } from "@/utils/entityLabels";
 
 const { Title, Text } = Typography;
@@ -16,10 +19,16 @@ export function SettingCurrentWorkspace() {
   const { token } = theme.useToken();
   const { t } = useTranslation();
   const { currentWorkspace, workspaces, isLoading } = useCurrentWorkspace();
-  // Los miembros vienen incluidos en el workspace activo (metadata.members)
-  const members = currentWorkspace?.metadata.members ?? [];
+  // Los miembros vienen incluidos en el workspace activo (metadata.memberDetails)
+  const memberDetails = currentWorkspace?.metadata.memberDetails ?? [];
   const { data: currentUser } = useCurrentUser();
+  const { hasAnyRole } = useUserRoles();
   const labels = getEntityLabels(currentUser?.userType ?? null, t);
+
+  // Solo el OWNER del workspace o un administrador global pueden eliminar miembros — mismo
+  // criterio que ya valida el backend (WorkspaceMembershipService.removeMembership).
+  const canRemoveMembers =
+    currentWorkspace?.metadata.role === "OWNER" || hasAnyRole(RoleEnum.ADMIN);
 
   useWorkspacesSubscription();
 
@@ -93,7 +102,7 @@ export function SettingCurrentWorkspace() {
           <InviteUserToWorkspace group={currentWorkspace} />
         </Flex>
         <List
-          dataSource={members}
+          dataSource={memberDetails}
           locale={{
             emptyText: (
               <Empty
@@ -102,18 +111,27 @@ export function SettingCurrentWorkspace() {
               />
             ),
           }}
-          renderItem={(email) => (
+          renderItem={(member) => (
             <List.Item style={{ padding: "8px 0" }}>
-              <Flex align="center" gap={12}>
-                <Avatar
-                  size={32}
-                  icon={<UserOutlined />}
-                  style={{ backgroundColor: token.colorPrimaryBg, color: token.colorPrimary }}
-                />
-                <Flex align="center" gap={6}>
-                  <MailOutlined style={{ color: token.colorTextSecondary, fontSize: 12 }} />
-                  <Text style={{ fontSize: 13 }}>{email}</Text>
+              <Flex align="center" justify="space-between" style={{ width: "100%" }}>
+                <Flex align="center" gap={12}>
+                  <Avatar
+                    size={32}
+                    icon={<UserOutlined />}
+                    style={{ backgroundColor: token.colorPrimaryBg, color: token.colorPrimary }}
+                  />
+                  <Flex align="center" gap={6}>
+                    <MailOutlined style={{ color: token.colorTextSecondary, fontSize: 12 }} />
+                    <Text style={{ fontSize: 13 }}>{member.email}</Text>
+                  </Flex>
                 </Flex>
+                {canRemoveMembers && member.email !== currentUser?.email && (
+                  <RemoveMemberButton
+                    workspaceId={currentWorkspace.workspaceId}
+                    userId={member.userId}
+                    email={member.email}
+                  />
+                )}
               </Flex>
             </List.Item>
           )}

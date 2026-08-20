@@ -7,7 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `useInvitationSubscription` subscribed to `/topic/invitation/{userId}/new` (singular, keyed by
+  numeric user id), but api-movements publishes new invitations to `/topic/invitations/{email}/new`
+  (plural, keyed by email — see `WebSocketTopics.invitationsNew`) — a receiving user had to hit F5
+  to see an invitation that had, in fact, already arrived over the wire. Fixed to subscribe by
+  email on the real topic.
+- `useWorkspacesSubscription` subscribed to STOMP topics (`/topic/account/...`) and an event type
+  (`ACCOUNT_LEFT`) that api-movements never publishes — nothing backend-side has emitted to that
+  prefix, so accepting an invitation never refreshed the inviter's member list, and being kicked
+  never refreshed the removed user's workspace list, live. Rewired to the real topics
+  api-movements actually pushes to: `/topic/workspace/{workspaceId}/members/update`
+  (`MEMBERSHIP_UPDATED`, on invitation accepted) and `/topic/membership/{email}/remove`
+  (`WORKSPACE_LEFT`, on kick/leave — keyed by email, not workspaceId, matching how the backend
+  addresses it). Both now just invalidate the `user-workspaces` query instead of trying to merge a
+  full `Workspace` object into the cache, since neither event actually carries one.
+
 ### Added
+- Bell notification on `INVITATION_ADDED`: `useInvitationSubscription` now also pushes an entry
+  into the notification bell's cache (`NOTIFICATIONS_QUERY_KEY`) when a workspace invitation
+  arrives live, in addition to updating the invitations list — so the invited user notices it
+  without having the invitations page open. New i18n keys
+  `common.notifications.invitationReceived{Title,Message}`.
+- Remove-member button in the workspace member list (Settings → Workspace): visible only when the
+  authenticated user is the workspace's `OWNER` or has the global `ADMIN` role, and never on their
+  own row. New `RemoveMemberButton` component, `removeWorkspaceMemberApi`, and `memberDetails` on
+  `WorkspaceMetadata` (userId/email/role per member, needed to target the DELETE call).
 - New onboarding intro screen (`IntroOnboarding`): a first, form-free step before the setup wizard
   that states the app's value proposition (budgets with alerts, savings goals, spending insights,
   real-time shared workspaces, multi-bank/multi-currency) with a single "Empezar" CTA.

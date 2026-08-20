@@ -118,7 +118,9 @@
     "notifications": {
       "title": "Notifications",
       "empty": "No notifications",
-      "ariaLabel": "Notifications"
+      "ariaLabel": "Notifications",
+      "invitationReceivedTitle": "New invitation",
+      "invitationReceivedMessage": "{{invitedByEmail}} invited you to {{workspaceName}}"
     }
   },
   "nav": {
@@ -595,7 +597,15 @@
       "memberCount_other": "{{count}} members",
       "exitButton": "Leave group",
       "exitConfirmOk": "Yes",
-      "exitConfirmCancel": "No"
+      "exitConfirmCancel": "No",
+      "removeMemberTooltip": "Remove from workspace",
+      "removeMemberAriaLabel": "Remove {{email}} from the workspace",
+      "removeMemberConfirmTitle": "Remove {{email}} from the workspace?",
+      "removeMemberConfirmDescription": "They'll lose access to this workspace immediately.",
+      "removeMemberConfirmOk": "Remove",
+      "removeMemberConfirmCancel": "Cancel",
+      "removeMemberSuccess": "{{email}} was removed from the workspace",
+      "removeMemberError": "Couldn't remove {{email}} from the workspace"
     },
     "preferences": {
       "title": "Automation",

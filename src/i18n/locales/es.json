@@ -118,7 +118,9 @@
     "notifications": {
       "title": "Notificaciones",
       "empty": "Sin notificaciones",
-      "ariaLabel": "Notificaciones"
+      "ariaLabel": "Notificaciones",
+      "invitationReceivedTitle": "Nueva invitación",
+      "invitationReceivedMessage": "{{invitedByEmail}} te invitó a {{workspaceName}}"
     }
   },
   "nav": {
@@ -595,7 +597,15 @@
       "memberCount_other": "{{count}} miembros",
       "exitButton": "Salir del grupo",
       "exitConfirmOk": "Sí",
-      "exitConfirmCancel": "No"
+      "exitConfirmCancel": "No",
+      "removeMemberTooltip": "Eliminar del workspace",
+      "removeMemberAriaLabel": "Eliminar a {{email}} del workspace",
+      "removeMemberConfirmTitle": "¿Eliminar a {{email}} del workspace?",
+      "removeMemberConfirmDescription": "Va a perder acceso a este workspace de inmediato.",
+      "removeMemberConfirmOk": "Eliminar",
+      "removeMemberConfirmCancel": "Cancelar",
+      "removeMemberSuccess": "{{email}} fue eliminado del workspace",
+      "removeMemberError": "No se pudo eliminar a {{email}} del workspace"
     },
     "preferences": {
       "title": "Automatización",

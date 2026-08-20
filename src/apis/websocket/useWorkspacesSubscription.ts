@@ -2,52 +2,34 @@ import { useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "@/apis/websocket/WebSocketProvider";
 import { EventType, type EventWrapper } from "@/apis/websocket/EventWrapper";
-import type { Workspace } from "@/models/UserWorkspace";
-import { useKeycloak } from "@react-keycloak/web";
 import { useWorkspaces } from "@/apis/hooks/useWorkspaces";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 
 const USER_WORKSPACES_QUERY_KEY = ["user-workspaces"] as const;
 
 export const useWorkspacesSubscription = () => {
   const queryClient = useQueryClient();
   const ws = useWebSocket();
-  const { keycloak } = useKeycloak();
-  const keycloakUserId = keycloak.subject;
   const { data: memberships = [] } = useWorkspaces();
+  const { data: currentUser } = useCurrentUser();
+  const userEmail = currentUser?.email;
 
-  const leaveTopics = useMemo(
-    () => memberships.map((m) => `/topic/account/${m.workspaceId}/leave`),
-    [memberships],
-  );
-
+  // api-movements publica acá (ver InvitationPublishServiceWebSocket) cuando alguien se suma a
+  // un workspace compartido, para que quien lo tenga abierto refresque la lista de miembros en
+  // vez de quedarse con datos desactualizados.
   const membersUpdateTopics = useMemo(
-    () => memberships.map((m) => `/topic/account/${m.workspaceId}/members/update`),
+    () => memberships.map((m) => `/topic/workspace/${m.workspaceId}/members/update`),
     [memberships],
   );
 
   // El callback solo usa queryClient (estable), así que se puede inicializar directamente
   const callbackRef = useRef((event: EventWrapper<unknown>) => {
     switch (event.eventType) {
-      case EventType.ACCOUNT_LEFT: {
+      case EventType.MEMBERSHIP_UPDATED:
+      case EventType.WORKSPACE_LEFT: {
+        // El payload varía según el topic de origen (quién se sumó / quién fue removido) y no
+        // trae el workspace completo, así que refrescamos la lista en vez de mergear a mano.
         queryClient.invalidateQueries({ queryKey: USER_WORKSPACES_QUERY_KEY });
-        break;
-      }
-      case EventType.MEMBERSHIP_UPDATED: {
-        const updated = event.message as Workspace;
-        queryClient.setQueryData(
-          USER_WORKSPACES_QUERY_KEY,
-          (old?: Workspace[]) => {
-            if (!old) return [updated];
-            const base = old.map((g) => ({
-              ...g,
-              metadata: { ...g.metadata, isDefault: false },
-            }));
-            const exists = base.some((g) => g.workspaceId === updated.workspaceId);
-            return exists
-              ? base.map((g) => (g.workspaceId === updated.workspaceId ? updated : g))
-              : [...base, updated];
-          },
-        );
         break;
       }
       default:
@@ -56,19 +38,15 @@ export const useWorkspacesSubscription = () => {
   });
 
   useEffect(() => {
-    if (!ws?.isConnected || !keycloakUserId) return;
+    if (!ws?.isConnected || !userEmail) return;
 
     const callback = callbackRef.current;
 
-    const topics = [
-      `/topic/account/default/${keycloakUserId}`,
-      ...leaveTopics,
-      ...membersUpdateTopics,
-    ];
+    const topics = [`/topic/membership/${userEmail}/remove`, ...membersUpdateTopics];
 
     topics.forEach((t) => ws.subscribe(t, callback));
     return () => topics.forEach((t) => ws.unsubscribe(t, callback));
-  }, [ws, ws?.isConnected, keycloakUserId, leaveTopics, membersUpdateTopics]);
+  }, [ws, ws?.isConnected, userEmail, membersUpdateTopics]);
 
   return null;
 };

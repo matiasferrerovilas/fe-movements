@@ -9,9 +9,16 @@ import { SettingCurrentWorkspace } from "@/components/settings/SettingCurrentWor
 
 vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
-    data: { id: 1, email: "test@test.com", userType: "PERSONAL" },
+    // El email matchea a "usuario1@email.com" en memberDetails abajo a propósito, para poder
+    // probar que el botón de eliminar nunca aparece sobre el propio usuario autenticado.
+    data: { id: 1, email: "usuario1@email.com", userType: "PERSONAL" },
     isLoading: false,
   }),
+}));
+
+const mockHasAnyRole = vi.fn(() => false);
+vi.mock("@/apis/hooks/useUserRoles", () => ({
+  useUserRoles: () => ({ hasAnyRole: mockHasAnyRole }),
 }));
 
 const mockWorkspaces: Workspace[] = [
@@ -21,6 +28,10 @@ const mockWorkspaces: Workspace[] = [
     workspaceName: "Personal",
     metadata: {
       members: ["usuario1@email.com", "usuario2@email.com"],
+      memberDetails: [
+        { userId: 1, email: "usuario1@email.com", role: "OWNER" },
+        { userId: 2, email: "usuario2@email.com", role: "COLLABORATOR" },
+      ],
       role: "ADMIN",
       joinedAt: "2026-01-01T00:00:00",
       isDefault: true,
@@ -32,6 +43,11 @@ const mockWorkspaces: Workspace[] = [
     workspaceName: "Familia",
     metadata: {
       members: ["usuario1@email.com", "usuario2@email.com", "usuario3@email.com"],
+      memberDetails: [
+        { userId: 1, email: "usuario1@email.com", role: "OWNER" },
+        { userId: 2, email: "usuario2@email.com", role: "COLLABORATOR" },
+        { userId: 3, email: "usuario3@email.com", role: "COLLABORATOR" },
+      ],
       role: "FAMILY",
       joinedAt: "2026-01-01T00:00:00",
       isDefault: false,
@@ -74,6 +90,7 @@ function renderComponent() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockHasAnyRole.mockReturnValue(false);
   mockUseCurrentWorkspace.mockReturnValue({
     currentWorkspace: mockWorkspaces[0],
     workspaces: mockWorkspaces,
@@ -132,7 +149,7 @@ describe("SettingCurrentWorkspace", () => {
       mockUseCurrentWorkspace.mockReturnValue({
         currentWorkspace: {
           ...mockWorkspaces[0],
-          metadata: { ...mockWorkspaces[0].metadata, members: [] },
+          metadata: { ...mockWorkspaces[0].metadata, members: [], memberDetails: [] },
         },
         workspaces: mockWorkspaces,
         setCurrentWorkspace: mockSetCurrentWorkspace,
@@ -207,6 +224,68 @@ describe("SettingCurrentWorkspace", () => {
       renderComponent();
       await waitFor(() =>
         expect(screen.getByText("No hay workspace seleccionado")).toBeInTheDocument(),
+      );
+    });
+  });
+
+  describe("eliminar miembro", () => {
+    it("no muestra el botón de eliminar cuando el usuario no es OWNER ni admin", async () => {
+      renderComponent();
+      await waitFor(() =>
+        expect(screen.getByText("usuario2@email.com")).toBeInTheDocument(),
+      );
+      expect(
+        screen.queryByLabelText("Eliminar a usuario2@email.com del workspace"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("muestra el botón de eliminar en otros miembros cuando el usuario es OWNER del workspace", async () => {
+      mockUseCurrentWorkspace.mockReturnValue({
+        currentWorkspace: {
+          ...mockWorkspaces[0],
+          metadata: { ...mockWorkspaces[0].metadata, role: "OWNER" },
+        },
+        workspaces: mockWorkspaces,
+        setCurrentWorkspace: mockSetCurrentWorkspace,
+        isLoading: false,
+      });
+
+      renderComponent();
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText("Eliminar a usuario2@email.com del workspace"),
+        ).toBeInTheDocument(),
+      );
+    });
+
+    it("no muestra el botón de eliminar sobre uno mismo, aunque sea OWNER", async () => {
+      mockUseCurrentWorkspace.mockReturnValue({
+        currentWorkspace: {
+          ...mockWorkspaces[0],
+          metadata: { ...mockWorkspaces[0].metadata, role: "OWNER" },
+        },
+        workspaces: mockWorkspaces,
+        setCurrentWorkspace: mockSetCurrentWorkspace,
+        isLoading: false,
+      });
+
+      renderComponent();
+      await waitFor(() =>
+        expect(screen.getByText("usuario1@email.com")).toBeInTheDocument(),
+      );
+      expect(
+        screen.queryByLabelText("Eliminar a usuario1@email.com del workspace"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("muestra el botón de eliminar cuando el usuario tiene el rol global ROLE_ADMIN, aunque no sea OWNER", async () => {
+      mockHasAnyRole.mockReturnValue(true);
+
+      renderComponent();
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText("Eliminar a usuario2@email.com del workspace"),
+        ).toBeInTheDocument(),
       );
     });
   });
