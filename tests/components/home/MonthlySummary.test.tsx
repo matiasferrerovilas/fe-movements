@@ -237,18 +237,19 @@ describe("MonthlySummary", () => {
   });
 
   describe("empty state", () => {
-    it("shows empty message when porMoneda is empty", async () => {
+    it("renders nothing when porMoneda is empty", async () => {
       server.use(
         http.get("http://localhost:8080/workspaces/:workspaceId/summary/monthly", () =>
           HttpResponse.json({ ...mockSummary, porMoneda: [] }),
         ),
       );
 
-      render(<MonthlySummary />, { wrapper: makeWrapper() });
+      const { container } = render(<MonthlySummary />, { wrapper: makeWrapper() });
 
-      expect(
-        await screen.findByText("Sin movimientos registrados este mes."),
-      ).toBeInTheDocument();
+      // Esperar a que resuelva la query (deja de haber skeleton) antes de afirmar que no renderiza nada
+      await waitFor(() => {
+        expect(container).toBeEmptyDOMElement();
+      });
     });
   });
 
@@ -269,22 +270,19 @@ describe("MonthlySummary", () => {
   });
 
   describe("no default workspace", () => {
-    it("does not fetch summary when DEFAULT_WORKSPACE is null", async () => {
+    it("renders nothing when DEFAULT_WORKSPACE is null (nothing to summarize)", async () => {
       server.use(
         http.get("http://localhost:8080/settings/defaults/DEFAULT_WORKSPACE", () =>
           HttpResponse.json({ key: "DEFAULT_WORKSPACE", value: null }),
         ),
       );
 
-      render(<MonthlySummary />, { wrapper: makeWrapper() });
+      const { container } = render(<MonthlySummary />, { wrapper: makeWrapper() });
 
-      // The header should render, but no KPI cards (empty state)
-      const expectedMonth = dayjs().locale("es").format("MMMM YYYY");
-      expect(await screen.findByText(expectedMonth, { exact: false })).toBeInTheDocument();
-      
-      // Since workspaceId is null, query is disabled → shows loading skeleton
-      // Check that no error message is shown (query didn't fail, it's just disabled)
-      expect(screen.queryByText("No se pudo cargar el resumen mensual.")).not.toBeInTheDocument();
+      // workspaceId es null → la query queda deshabilitada y no hay nada que resumir
+      await waitFor(() => {
+        expect(container).toBeEmptyDOMElement();
+      });
     });
   });
 });

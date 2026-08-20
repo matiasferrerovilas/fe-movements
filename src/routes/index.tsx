@@ -141,37 +141,42 @@ function RouteComponent() {
         </Col>
       </Row>
 
-      {/* 4. Top 5 Categorías */}
-      <TopCategories />
+      {/* 4-8. Top categorías, filtros y gráficos — ocultos por completo si no hay gastos por categoría */}
+      {(fetchingCategory || categoryData.length > 0) && (
+        <>
+          {/* 4. Top 5 Categorías */}
+          <TopCategories />
 
-      {/* 5. Divider visual */}
-      <Divider style={{ margin: "8px 0 24px" }} />
+          {/* 5. Divider visual */}
+          <Divider style={{ margin: "8px 0 24px" }} />
 
-      {/* 6. Filtros colapsables (cerrados por defecto) */}
-      <BalanceFiltersCollapsible
-        filters={filters}
-        currencies={currencies}
-        onFilterChange={handleChange}
-      />
+          {/* 6. Filtros colapsables (cerrados por defecto) */}
+          <BalanceFiltersCollapsible
+            filters={filters}
+            currencies={currencies}
+            onFilterChange={handleChange}
+          />
 
-      {/* 6. Gráficos en Row/Col */}
-      <Suspense fallback={<ChartSkeleton />}>
-        <Row gutter={[20, 20]}>
-          <Col xs={24}>
-            <CategoryPieChart data={categoryChart} isFetching={fetchingCategory} />
-          </Col>
-        </Row>
+          {/* 7. Gráficos en Row/Col */}
+          <Suspense fallback={<ChartSkeleton />}>
+            <Row gutter={[20, 20]}>
+              <Col xs={24}>
+                <CategoryPieChart data={categoryChart} isFetching={fetchingCategory} />
+              </Col>
+            </Row>
 
-        {/* 7. Evolución temporal */}
-        <div style={{ marginTop: 20 }}>
-          <AnnualEvolution year={dayjs(filters.dates[0]).year()} />
-        </div>
+            {/* 8. Evolución temporal */}
+            <div style={{ marginTop: 20 }}>
+              <AnnualEvolution year={dayjs(filters.dates[0]).year()} />
+            </div>
 
-        {/* 8. Proyección de balance futuro */}
-        <div style={{ marginTop: 20 }}>
-          <ProjectionChart />
-        </div>
-      </Suspense>
+            {/* 9. Proyección de balance futuro */}
+            <div style={{ marginTop: 20 }}>
+              <ProjectionChart />
+            </div>
+          </Suspense>
+        </>
+      )}
     </div>
   );
 }

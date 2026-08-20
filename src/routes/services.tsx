@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import type { ServiceToAdd } from "@/apis/SubscriptionApi";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { ServiceCardForm } from "@/components/services/ServiceCardForm";
+import ServicesEmptyState from "@/components/services/ServicesEmptyState";
 import {
   useAddService,
   usePayService,
@@ -53,37 +54,47 @@ function RouteComponent() {
   };
   return (
     <div style={{ paddingTop: 30 }}>
-      <div className="fade-in-up" style={{ animationDelay: "0ms" }}>
-        <ServiceSummary services={services} isFetching={isFetching} />
-      </div>
+      {(isFetching || services.length > 0) && (
+        <div className="fade-in-up" style={{ animationDelay: "0ms" }}>
+          <ServiceSummary services={services} isFetching={isFetching} />
+        </div>
+      )}
 
-      <Row gutter={16} style={{ marginBottom: 16, padding: 0 }}>
-        <Col
-          xs={24}
-          sm={12}
-          lg={8}
-          style={{ marginBottom: 16, animationDelay: "80ms" }}
-          className="fade-in-up"
-        >
-          <ServiceCardForm handleAddService={handleAddService} />
-        </Col>
-        {services?.map((service, index) => (
+      {!isFetching && services.length === 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <ServicesEmptyState onAddService={handleAddService} />
+        </div>
+      )}
+
+      {(isFetching || services.length > 0) && (
+        <Row gutter={16} style={{ marginBottom: 16, padding: 0 }}>
           <Col
             xs={24}
             sm={12}
             lg={8}
-            key={service.id}
-            style={{ marginBottom: 16, animationDelay: `${(index + 2) * 80}ms` }}
+            style={{ marginBottom: 16, animationDelay: "80ms" }}
             className="fade-in-up"
           >
-            <ServiceCard
-              service={service}
-              handlePayServiceMutation={(s) => payMutation.mutate(s)}
-              handleUpdateServiceMutation={(s) => updateServiceMutation.mutate(s)}
-            />
+            <ServiceCardForm handleAddService={handleAddService} />
           </Col>
-        ))}
-      </Row>
+          {services?.map((service, index) => (
+            <Col
+              xs={24}
+              sm={12}
+              lg={8}
+              key={service.id}
+              style={{ marginBottom: 16, animationDelay: `${(index + 2) * 80}ms` }}
+              className="fade-in-up"
+            >
+              <ServiceCard
+                service={service}
+                handlePayServiceMutation={(s) => payMutation.mutate(s)}
+                handleUpdateServiceMutation={(s) => updateServiceMutation.mutate(s)}
+              />
+            </Col>
+          ))}
+        </Row>
+      )}
     </div>
   );
 }

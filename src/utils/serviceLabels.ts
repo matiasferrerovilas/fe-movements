@@ -32,6 +32,10 @@ export const getServiceLabels = (userType: UserTypeEnum | null, t: TFunction) =>
     updateSuccess: s("updateSuccess"),
     addSuccess: s("addSuccess"),
 
+    // Empty state
+    emptyStateTitle: s("emptyStateTitle"),
+    emptyStateSubtitle: s("emptyStateSubtitle"),
+
     // Tour
     tourTitle: s("tourTitle"),
     tourDescription: s("tourDescription"),

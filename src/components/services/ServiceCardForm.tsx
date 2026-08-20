@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -19,8 +20,10 @@ import ApartmentOutlined from "@ant-design/icons/ApartmentOutlined";
 import CheckCircleOutlined from "@ant-design/icons/CheckCircleOutlined";
 import CloseCircleOutlined from "@ant-design/icons/CloseCircleOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
+import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "@tanstack/react-router";
 import type { ServiceToAdd } from "@/apis/SubscriptionApi";
 import { useCurrency } from "@/apis/hooks/useCurrency";
 import { useUserDefault } from "@/apis/hooks/useSettings";
@@ -44,13 +47,19 @@ interface ServiceCardFormProps extends React.HTMLAttributes<HTMLElement> {
 export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const [form] = Form.useForm<CreateServiceForm>();
   const [isPaid, setIsPaid] = useState(false);
-  const { data: currencies = [] } = useCurrency();
+  const { data: currencies = [], isLoading: isLoadingCurrencies } = useCurrency();
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const { token } = theme.useToken();
+  const navigate = useNavigate();
 
   const { data: currentUser } = useCurrentUser();
   const { t } = useTranslation();
   const labels = getServiceLabels(currentUser?.userType ?? null, t);
+
+  const hasNoCurrencies = !isLoadingCurrencies && currencies.length === 0;
+  const handleGoToSettings = () => {
+    void navigate({ to: "/settings", search: { tab: "finanzas" } });
+  };
 
   const onFinish = (values: CreateServiceForm) => {
     const service: ServiceToAdd = {
@@ -74,6 +83,27 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
       isPaid: false,
     });
   }, [defaultCurrency, currencies, form]);
+
+  if (hasNoCurrencies) {
+    return (
+      <Alert
+        type="warning"
+        showIcon
+        message={t("services.form.noCurrencyTitle")}
+        description={t("services.form.noCurrencyDescription")}
+        action={
+          <Button
+            size="small"
+            type="primary"
+            icon={<SettingOutlined />}
+            onClick={handleGoToSettings}
+          >
+            {t("services.form.noCurrencyCta")}
+          </Button>
+        }
+      />
+    );
+  }
 
   return (
     <Card

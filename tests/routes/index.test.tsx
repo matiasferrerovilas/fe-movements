@@ -78,13 +78,13 @@ describe("Index Route (Home Unificado)", () => {
     server.use(
       http.get("*/users/me", () => HttpResponse.json(mockCurrentUser)),
       http.get("*/currencies", () => HttpResponse.json(mockCurrencies)),
-      http.get("*/settings/default/DEFAULT_CURRENCY", () =>
+      http.get("*/settings/defaults/DEFAULT_CURRENCY", () =>
         HttpResponse.json(mockUserDefault),
       ),
-      http.get("*/settings/default/DEFAULT_WORKSPACE", () =>
+      http.get("*/settings/defaults/DEFAULT_WORKSPACE", () =>
         HttpResponse.json({ value: "ws-1" }),
       ),
-      http.get("*/workspaces/*/summary", () =>
+      http.get("*/workspaces/*/summary/monthly", () =>
         HttpResponse.json(mockWorkspaceSummary),
       ),
       http.get("*/balance/category", () => HttpResponse.json([])),
@@ -111,7 +111,13 @@ describe("Index Route (Home Unificado)", () => {
     });
   });
 
-  it("renderiza el componente TopCategories", async () => {
+  it("renderiza el componente TopCategories cuando hay gastos por categoría", async () => {
+    server.use(
+      http.get("*/balance/category", () =>
+        HttpResponse.json([{ category: "Vivienda", total: 50000 }]),
+      ),
+    );
+
     const RouteComponent = IndexRoute.options.component!;
     renderWithRouter(<RouteComponent />);
 
@@ -120,7 +126,13 @@ describe("Index Route (Home Unificado)", () => {
     });
   });
 
-  it("renderiza los filtros colapsables", async () => {
+  it("renderiza los filtros colapsables cuando hay gastos por categoría", async () => {
+    server.use(
+      http.get("*/balance/category", () =>
+        HttpResponse.json([{ category: "Vivienda", total: 50000 }]),
+      ),
+    );
+
     const RouteComponent = IndexRoute.options.component!;
     renderWithRouter(<RouteComponent />);
 
@@ -131,7 +143,13 @@ describe("Index Route (Home Unificado)", () => {
     });
   });
 
-  it("renderiza los gráficos de análisis", async () => {
+  it("renderiza los gráficos de análisis cuando hay gastos por categoría", async () => {
+    server.use(
+      http.get("*/balance/category", () =>
+        HttpResponse.json([{ category: "Vivienda", total: 50000 }]),
+      ),
+    );
+
     const RouteComponent = IndexRoute.options.component!;
     renderWithRouter(<RouteComponent />);
 
@@ -141,6 +159,30 @@ describe("Index Route (Home Unificado)", () => {
         screen.getByText("Evolución Anual de Gastos y Ahorro"),
       ).toBeInTheDocument();
     }, { timeout: 5000 });
+  });
+
+  it("no renderiza top categorías, filtros ni gráficos cuando no hay gastos por categoría", async () => {
+    const RouteComponent = IndexRoute.options.component!;
+    renderWithRouter(<RouteComponent />);
+
+    // El CTA de primer movimiento solo aparece cuando terminó de cargar y no hay categorías
+    await waitFor(() => {
+      expect(screen.getByText("¿Empezamos?")).toBeInTheDocument();
+    });
+
+    expect(
+      screen.queryByText("Top Categorías del Mes"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Filtros de Análisis Avanzado"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Gastos por Categoría")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Evolución Anual de Gastos y Ahorro"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Proyección de balance"),
+    ).not.toBeInTheDocument();
   });
 
   it("ocupa todo el ancho con Metas de ahorro cuando no hay insights de gasto", async () => {

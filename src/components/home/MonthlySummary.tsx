@@ -251,6 +251,11 @@ export default function MonthlySummary() {
   const porMoneda = data?.porMoneda ?? [];
   const totalUSD = data?.totalUnificadoUSD;
 
+  // Sin ingresos ni gastos este mes — no tiene sentido mostrar el resumen
+  if (!loading && porMoneda.length === 0) {
+    return null;
+  }
+
   // ── Tabs items ──────────────────────────────────────────────────────────────
   const tabItems = porMoneda.map((moneda) => ({
     key: moneda.currency,
@@ -302,10 +307,6 @@ export default function MonthlySummary() {
             </Col>
           ))}
         </Row>
-      ) : porMoneda.length === 0 ? (
-        <Text type="secondary" style={{ display: "block", paddingBottom: 8 }}>
-          {t("home.monthlySummary.emptyMessage")}
-        </Text>
       ) : porMoneda.length === 1 ? (
         /* Una sola moneda — sin tabs */
         <CurrencyPanel data={porMoneda[0]} loading={false} />

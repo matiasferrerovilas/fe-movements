@@ -751,7 +751,11 @@
       "updateSuccess_personal": "Service updated",
       "updateSuccess_company": "Recurring expense updated",
       "addSuccess_personal": "Service added",
-      "addSuccess_company": "Expense added"
+      "addSuccess_company": "Expense added",
+      "emptyStateTitle_personal": "Let's start?",
+      "emptyStateTitle_company": "Let's start?",
+      "emptyStateSubtitle_personal": "You haven't added any service yet. Add your first one to keep track of your recurring payments.",
+      "emptyStateSubtitle_company": "You haven't added any recurring expense yet. Add your first one to keep track of the business's operating payments."
     },
     "summary": {
       "paidTitle": "Paid",
@@ -793,7 +797,10 @@
       "statusPaidSwitch": "Paid",
       "statusPendingSwitch": "Pending",
       "paymentDateLabel": "Payment date",
-      "paymentDateRequired": "Select the payment date"
+      "paymentDateRequired": "Select the payment date",
+      "noCurrencyTitle": "You need a currency to continue",
+      "noCurrencyDescription": "You haven't added any currency yet. Add one in Settings to be able to register services.",
+      "noCurrencyCta": "Go to Settings"
     }
   },
   "admin": {

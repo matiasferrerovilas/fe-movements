@@ -24,7 +24,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   addresses it). Both now just invalidate the `user-workspaces` query instead of trying to merge a
   full `Workspace` object into the cache, since neither event actually carries one.
 
+### Changed
+- `MovementsEmptyState` ("¿Empezamos?" CTA on `/movements` with no expenses yet) now fills most of
+  the viewport height (`minHeight: calc(100vh - 240px)`, content vertically centered) instead of a
+  small fixed-padding box, so it reads as the page's actual content instead of a shrunken banner.
+- `/services` with no services no longer shows the "Total/Pagados/Pendientes" summary row — those
+  stats are all zero and just add noise before there's anything to summarize. Shown again as soon
+  as the first service is added.
+
 ### Added
+- New `ServicesEmptyState` ("¿Empezamos?" hero, `services.labels.emptyState{Title,Subtitle}`,
+  PERSONAL/ENTERPRISE-aware like the rest of `getServiceLabels`) shown on `/services` when there are
+  no services yet, filling most of the page instead of leaving just the small add-service form
+  sitting in an otherwise empty grid. The add-service form (`ServiceCardForm`) now renders *inside*
+  this block, centered below the text, instead of as a separate card floating below it — only for
+  the empty case; once at least one service exists, the page is unchanged (form stays as the first
+  grid card next to the service list, as before).
+- `ServiceCardForm` now guards on missing currencies the same way `AddMovementModal` already did
+  for movements: if the workspace has no currency configured yet, it shows an alert ("Necesitás una
+  moneda para continuar") with a button to `/settings?tab=finanzas` instead of the actual add form.
+  (Unlike movements, services don't need a bank — `ServiceCardForm` has no bank field — so only the
+  currency check applies.) New `services.form.noCurrency{Title,Description,Cta}` i18n keys.
 - `PendingDeleteIndicator`: a small spinning badge shown on any card mid-"undo delete" window
   (`useUndoableDelete`'s `isPendingRemoval`), across services, goals, budgets, banks, categories,
   and movements (all 3 responsive table views). Previously the item just dimmed/grayed out with no

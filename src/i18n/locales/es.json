@@ -751,7 +751,11 @@
       "updateSuccess_personal": "Servicio actualizado",
       "updateSuccess_company": "Gasto recurrente actualizado",
       "addSuccess_personal": "Servicio agregado",
-      "addSuccess_company": "Gasto agregado"
+      "addSuccess_company": "Gasto agregado",
+      "emptyStateTitle_personal": "¿Empezamos?",
+      "emptyStateTitle_company": "¿Empezamos?",
+      "emptyStateSubtitle_personal": "Todavía no cargaste ningún servicio. Agregá el primero para llevar el control de tus pagos recurrentes.",
+      "emptyStateSubtitle_company": "Todavía no cargaste ningún gasto recurrente. Agregá el primero para llevar el control de los pagos operativos."
     },
     "summary": {
       "paidTitle": "Pagados",
@@ -793,7 +797,10 @@
       "statusPaidSwitch": "Pagado",
       "statusPendingSwitch": "Pendiente",
       "paymentDateLabel": "Fecha de pago",
-      "paymentDateRequired": "Seleccione la fecha de pago"
+      "paymentDateRequired": "Seleccione la fecha de pago",
+      "noCurrencyTitle": "Necesitás una moneda para continuar",
+      "noCurrencyDescription": "Todavía no cargaste ninguna moneda. Agregá una en Configuración para poder registrar servicios.",
+      "noCurrencyCta": "Ir a Configuración"
     }
   },
   "admin": {
