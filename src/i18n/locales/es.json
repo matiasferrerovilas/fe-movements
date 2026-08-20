@@ -3,6 +3,7 @@
     "loading": "Cargando...",
     "undo": {
       "itemDeleted": "Elemento eliminado",
+      "itemsDeleted": "{{count}} elementos eliminados",
       "undoButton": "Deshacer",
       "deleteFailed": "No se pudo eliminar el elemento"
     },
@@ -369,7 +370,7 @@
       "clearSelection": "Cancelar selección",
       "cancel": "Cancelar",
       "deleteConfirmTitle": "¿Eliminar {{count}} movimientos?",
-      "deleteConfirmDescription": "Esta acción no se puede deshacer.",
+      "deleteConfirmDescription": "Vas a poder deshacer esta acción durante los próximos segundos.",
       "deleteConfirmOk": "Eliminar",
       "deleteSummary": "{{succeeded}} movimientos eliminados, {{failed}} fallaron",
       "deleteAllSuccess": "{{count}} movimientos eliminados",
@@ -528,7 +529,7 @@
       "deleteTooltip": "Eliminar meta",
       "deleteAriaLabel": "Eliminar meta {{name}}",
       "deleteConfirmTitle": "¿Eliminar esta meta de ahorro?",
-      "deleteConfirmDescription": "Esta acción no se puede deshacer.",
+      "deleteConfirmDescription": "Vas a poder deshacer esta acción durante los próximos segundos.",
       "deleteConfirmOk": "Eliminar"
     }
   },

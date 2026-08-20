@@ -25,6 +25,7 @@ interface GoalCardProps {
   onContribute: (goal: GoalRecord) => void;
   onDelete: (id: number) => void;
   isDeleting?: boolean;
+  isPendingRemoval?: boolean;
 }
 
 function getProgressColor(percent: number): string {
@@ -46,6 +47,7 @@ export function GoalCard({
   onContribute,
   onDelete,
   isDeleting,
+  isPendingRemoval,
 }: GoalCardProps) {
   const { token } = theme.useToken();
   const { t } = useTranslation();
@@ -58,6 +60,9 @@ export function GoalCard({
       style={{
         borderRadius: token.borderRadiusLG,
         border: `1.5px solid ${token.colorBorderSecondary}`,
+        ...(isPendingRemoval
+          ? { opacity: 0.45, filter: "grayscale(70%)", pointerEvents: "none" }
+          : {}),
       }}
     >
       <Flex align="flex-start" justify="space-between" gap={12}>

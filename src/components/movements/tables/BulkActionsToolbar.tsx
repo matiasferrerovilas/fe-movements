@@ -7,7 +7,6 @@ const { Text } = Typography;
 
 interface BulkActionsToolbarProps {
   selectedCount: number;
-  isDeleting?: boolean;
   onBulkDelete: () => void;
   onOpenCategorize: () => void;
   onClearSelection: () => void;
@@ -15,7 +14,6 @@ interface BulkActionsToolbarProps {
 
 export default function BulkActionsToolbar({
   selectedCount,
-  isDeleting,
   onBulkDelete,
   onOpenCategorize,
   onClearSelection,
@@ -49,7 +47,12 @@ export default function BulkActionsToolbar({
           <Button icon={<TagsOutlined />} onClick={onOpenCategorize}>
             {t("movements.bulk.categorizeButton")}
           </Button>
-          <Button danger icon={<DeleteOutlined />} loading={isDeleting} onClick={handleDeleteClick}>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            aria-label={t("movements.bulk.deleteButton")}
+            onClick={handleDeleteClick}
+          >
             {t("movements.bulk.deleteButton")}
           </Button>
           <Button type="text" onClick={onClearSelection}>

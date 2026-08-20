@@ -3,6 +3,7 @@
     "loading": "Loading...",
     "undo": {
       "itemDeleted": "Item deleted",
+      "itemsDeleted": "{{count}} items deleted",
       "undoButton": "Undo",
       "deleteFailed": "Could not delete the item"
     },
@@ -369,7 +370,7 @@
       "clearSelection": "Clear selection",
       "cancel": "Cancel",
       "deleteConfirmTitle": "Delete {{count}} movements?",
-      "deleteConfirmDescription": "This action cannot be undone.",
+      "deleteConfirmDescription": "You'll be able to undo this action for the next few seconds.",
       "deleteConfirmOk": "Delete",
       "deleteSummary": "{{succeeded}} movements deleted, {{failed}} failed",
       "deleteAllSuccess": "{{count}} movements deleted",
@@ -528,7 +529,7 @@
       "deleteTooltip": "Delete goal",
       "deleteAriaLabel": "Delete goal {{name}}",
       "deleteConfirmTitle": "Delete this savings goal?",
-      "deleteConfirmDescription": "This action cannot be undone.",
+      "deleteConfirmDescription": "You'll be able to undo this action for the next few seconds.",
       "deleteConfirmOk": "Delete"
     }
   },

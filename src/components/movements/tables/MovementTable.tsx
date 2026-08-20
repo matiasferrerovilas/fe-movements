@@ -58,9 +58,22 @@ export default function MovementTable({ filters, onStateChange }: MovementTableP
   useMovementSubscription();
 
   const deleteMutation = useDeleteMovement();
-  const { requestDelete, isPending: isPendingRemoval } = useUndoableDelete<number>({
+  const {
+    requestDelete,
+    requestDeleteMany,
+    isPending: isPendingRemoval,
+  } = useUndoableDelete<number>({
     getId: (id) => id,
     onDelete: (id) => deleteMutation.mutateAsync(id),
+    getBulkMessage: (ids) => t("movements.bulk.deleteAllSuccess", { count: ids.length }),
+    onBulkSettled: (ids, results) => {
+      const failed = results.filter((r) => r.status === "rejected").length;
+      if (failed > 0) {
+        void message.warning(
+          t("movements.bulk.deleteSummary", { succeeded: ids.length - failed, failed }),
+        );
+      }
+    },
   });
 
   const { data: movements = { content: [], totalElements: 0, totalPages: 0 }, isLoading } =
@@ -83,7 +96,6 @@ export default function MovementTable({ filters, onStateChange }: MovementTableP
 
   // ── Selección múltiple y acciones en lote ──────────────────────────────────
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [isBulkCategorizing, setIsBulkCategorizing] = useState(false);
   const [categorizeModalOpen, setCategorizeModalOpen] = useState(false);
 
@@ -100,25 +112,9 @@ export default function MovementTable({ filters, onStateChange }: MovementTableP
 
   const selectedMovements = movements.content.filter((m) => selectedIds.has(m.id));
 
-  const handleBulkDelete = async () => {
-    setIsBulkDeleting(true);
-    try {
-      const results = await Promise.allSettled(
-        selectedMovements.map((m) => deleteMutation.mutateAsync(m.id)),
-      );
-      const failed = results.filter((r) => r.status === "rejected").length;
-      const succeeded = results.length - failed;
-      if (failed > 0) {
-        void message.warning(
-          t("movements.bulk.deleteSummary", { succeeded, failed }),
-        );
-      } else {
-        void message.success(t("movements.bulk.deleteAllSuccess", { count: succeeded }));
-      }
-      clearSelection();
-    } finally {
-      setIsBulkDeleting(false);
-    }
+  const handleBulkDelete = () => {
+    requestDeleteMany(selectedMovements.map((m) => m.id));
+    clearSelection();
   };
 
   const handleBulkCategorize = async (categories: string[]) => {
@@ -205,8 +201,7 @@ export default function MovementTable({ filters, onStateChange }: MovementTableP
     <Card title={t("nav.movements")} style={{ marginBottom: 16, padding: 0 }}>
       <BulkActionsToolbar
         selectedCount={selectedIds.size}
-        isDeleting={isBulkDeleting}
-        onBulkDelete={() => void handleBulkDelete()}
+        onBulkDelete={handleBulkDelete}
         onOpenCategorize={() => setCategorizeModalOpen(true)}
         onClearSelection={clearSelection}
       />

@@ -14,6 +14,7 @@ import {
   EditGoalModal,
 } from "@/components/goals/GoalFormModal";
 import type { GoalRecord } from "@/models/Goal";
+import { useUndoableDelete } from "@/utils/useUndoableDelete";
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -38,6 +39,11 @@ function RouteComponent() {
 
   const { data: goals = [], isFetching } = useGoals(workspaceId);
   const deleteGoal = useDeleteGoal();
+  const { requestDelete: requestDeleteGoal, isPending: isPendingGoalRemoval } =
+    useUndoableDelete<number>({
+      getId: (id) => id,
+      onDelete: (id) => deleteGoal.mutateAsync(id),
+    });
 
   const [editingGoal, setEditingGoal] = useState<GoalRecord | null>(null);
   const [contributingGoal, setContributingGoal] = useState<GoalRecord | null>(null);
@@ -85,8 +91,9 @@ function RouteComponent() {
                 goal={goal}
                 onEdit={setEditingGoal}
                 onContribute={setContributingGoal}
-                onDelete={(id) => deleteGoal.mutate(id)}
+                onDelete={(id) => requestDeleteGoal(id)}
                 isDeleting={deleteGoal.isPending && deleteGoal.variables === goal.id}
+                isPendingRemoval={isPendingGoalRemoval(goal.id)}
               />
             </Col>
           ))}

@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse, delay } from "msw";
 import { setupServer } from "msw/node";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { App as AntdApp } from "antd";
 import type { Movement } from "@/models/Movement";
 import type { PageResponse } from "@/models/BaseMode";
 import type { MovementFilters } from "@/routes/movements";
@@ -22,6 +24,36 @@ vi.mock("@/apis/websocket/WebSocketProvider", () => ({
 
 vi.mock("@/apis/hooks/useWorkspaces", () => ({
   useWorkspaces: vi.fn(() => ({ data: [], isSuccess: true })),
+}));
+
+// Reemplaza el hook de borrado deshacible por una versión síncrona (sin
+// esperar los 7s reales) que sigue siendo reactiva (isPending refleja el
+// estado inmediatamente tras requestDelete/requestDeleteMany), y expone spies
+// para verificar con qué argumentos se la invoca.
+const requestDeleteSpy = vi.fn();
+const requestDeleteManySpy = vi.fn();
+
+vi.mock("@/utils/useUndoableDelete", () => ({
+  useUndoableDelete: () => {
+    const [pending, setPending] = useState<Set<number>>(new Set());
+    const requestDelete = (id: number) => {
+      requestDeleteSpy(id);
+      setPending((prev) => new Set(prev).add(id));
+    };
+    const requestDeleteMany = (ids: number[]) => {
+      requestDeleteManySpy(ids);
+      setPending((prev) => {
+        const next = new Set(prev);
+        ids.forEach((id) => next.add(id));
+        return next;
+      });
+    };
+    return {
+      requestDelete,
+      requestDeleteMany,
+      isPending: (id: number) => pending.has(id),
+    };
+  },
 }));
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
@@ -92,7 +124,9 @@ function makeWrapper() {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   return ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <AntdApp>{children}</AntdApp>
+    </QueryClientProvider>
   );
 }
 
@@ -217,6 +251,62 @@ describe("MovementTable", () => {
       await waitFor(() =>
         expect(onStateChange).toHaveBeenCalledWith({ isLoading: false, hasMovements: false }),
       );
+    });
+  });
+
+  describe("borrado en lote", () => {
+    beforeEach(() => {
+      server.use(
+        http.get("http://localhost:8080/expenses", () => HttpResponse.json(filledPageResponse)),
+      );
+    });
+
+    it("no elimina de inmediato: pide confirmación y usa requestDeleteMany en vez de llamar al DELETE directamente", async () => {
+      const user = userEvent.setup();
+      render(<MovementTable filters={defaultFilters} />, { wrapper: makeWrapper() });
+
+      await waitFor(() =>
+        expect(screen.getAllByText(/Movimiento 1/).length).toBeGreaterThan(0),
+      );
+
+      const [checkbox1] = screen.getAllByRole("checkbox", {
+        name: "Seleccionar movimiento",
+      });
+      await user.click(checkbox1);
+
+      await user.click(screen.getByRole("button", { name: "Eliminar" }));
+
+      const dialog = await screen.findByRole("dialog");
+      expect(within(dialog).getAllByText(/¿Eliminar 1 movimientos?/).length).toBeGreaterThan(0);
+
+      expect(requestDeleteManySpy).not.toHaveBeenCalled();
+
+      await user.click(within(dialog).getByRole("button", { name: "Eliminar" }));
+
+      await waitFor(() => expect(requestDeleteManySpy).toHaveBeenCalledWith([1]));
+    });
+
+    it("atenúa (dimming) las filas seleccionadas apenas se confirma el borrado en lote", async () => {
+      const user = userEvent.setup();
+      const { container } = render(<MovementTable filters={defaultFilters} />, {
+        wrapper: makeWrapper(),
+      });
+
+      await waitFor(() =>
+        expect(screen.getAllByText(/Movimiento 1/).length).toBeGreaterThan(0),
+      );
+
+      const [checkbox1] = screen.getAllByRole("checkbox", {
+        name: "Seleccionar movimiento",
+      });
+      await user.click(checkbox1);
+      await user.click(screen.getByRole("button", { name: "Eliminar" }));
+
+      const dialog = await screen.findByRole("dialog");
+      await user.click(within(dialog).getByRole("button", { name: "Eliminar" }));
+
+      await waitFor(() => expect(requestDeleteManySpy).toHaveBeenCalled());
+      expect(container.querySelector('[style*="opacity: 0.45"]')).toBeInTheDocument();
     });
   });
 });
