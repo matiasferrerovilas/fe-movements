@@ -2,9 +2,20 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
+
+type SettingsSearchMock = { tab?: string };
+let mockSearchState: SettingsSearchMock = {};
+const searchListeners = new Set<() => void>();
+function setMockSearch(next: Partial<SettingsSearchMock>) {
+  mockSearchState = { ...mockSearchState, ...next };
+  searchListeners.forEach((listener) => listener());
+}
+const mockNavigate = vi.fn((opts: { search?: Partial<SettingsSearchMock> }) => {
+  if (opts?.search) setMockSearch(opts.search);
+});
 
 vi.mock("@/apis/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
@@ -18,7 +29,18 @@ vi.mock("@/apis/auth/protectedRouteGuard", () => ({
 }));
 
 vi.mock("@tanstack/react-router", () => ({
-  createFileRoute: () => (opts: { component: ReactNode }) => opts,
+  createFileRoute: () => (opts: { component: ReactNode }) => ({
+    ...opts,
+    useSearch: () =>
+      useSyncExternalStore(
+        (listener) => {
+          searchListeners.add(listener);
+          return () => searchListeners.delete(listener);
+        },
+        () => mockSearchState,
+      ),
+  }),
+  useNavigate: () => mockNavigate,
 }));
 
 vi.mock("@/components/settings/SettingAccount", () => ({
@@ -90,6 +112,7 @@ function renderSettings() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockSearchState = {};
 });
 
 afterEach(() => {
@@ -147,5 +170,15 @@ describe("Settings route — estructura de tabs", () => {
     await user.click(screen.getByText("Preferencias"));
 
     expect(screen.getByTestId("setting-preferences")).toBeInTheDocument();
+  });
+});
+
+describe("Settings route — deep link ?tab=finanzas", () => {
+  it("activa la tab 'Mis finanzas' cuando el search param tab=finanzas", () => {
+    mockSearchState = { tab: "finanzas" };
+    renderSettings();
+
+    expect(screen.getByTestId("setting-bank")).toBeInTheDocument();
+    expect(screen.getByTestId("setting-currency")).toBeInTheDocument();
   });
 });

@@ -4,6 +4,7 @@ import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import StarFilled from "@ant-design/icons/StarFilled";
 import StarOutlined from "@ant-design/icons/StarOutlined";
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -250,6 +251,16 @@ export function SettingBank() {
       </Flex>
 
       <Divider style={{ margin: "14px 0" }} />
+
+      {!isLoading && banks.length === 0 && (
+        <Alert
+          type="warning"
+          showIcon
+          message={t("settings.bank.requiredNoticeTitle")}
+          description={t("settings.bank.requiredNoticeDescription")}
+          style={{ borderRadius: 12, marginBottom: 16 }}
+        />
+      )}
 
       {/* Agregar banco */}
       <Card

@@ -244,6 +244,24 @@ describe("SettingCurrency", () => {
     });
   });
 
+  describe("aviso de moneda requerida", () => {
+    it("no muestra el aviso cuando ya hay monedas cargadas", async () => {
+      renderSettingCurrency();
+      await waitFor(() =>
+        expect(screen.getByText("Peso Argentino")).toBeInTheDocument(),
+      );
+      expect(screen.queryByText("Necesitás agregar una moneda")).not.toBeInTheDocument();
+    });
+
+    it("muestra el aviso cuando no hay monedas cargadas", async () => {
+      server.use(
+        http.get("http://localhost:8080/workspace/currencies", () => HttpResponse.json([])),
+      );
+      renderSettingCurrency();
+      expect(await screen.findByText("Necesitás agregar una moneda")).toBeInTheDocument();
+    });
+  });
+
   describe("establecer moneda por defecto", () => {
     it("deshabilita el botón de estrella para la moneda que ya es default", async () => {
       renderSettingCurrency();

@@ -4,6 +4,7 @@ import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import StarFilled from "@ant-design/icons/StarFilled";
 import StarOutlined from "@ant-design/icons/StarOutlined";
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -261,6 +262,16 @@ export function SettingCurrency() {
       </Flex>
 
       <Divider style={{ margin: "14px 0" }} />
+
+      {!isLoading && currencies.length === 0 && (
+        <Alert
+          type="warning"
+          showIcon
+          message={t("settings.currency.requiredNoticeTitle")}
+          description={t("settings.currency.requiredNoticeDescription")}
+          style={{ borderRadius: 12, marginBottom: 16 }}
+        />
+      )}
 
       {/* Agregar moneda */}
       <Card

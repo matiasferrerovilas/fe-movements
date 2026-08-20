@@ -429,7 +429,12 @@
       "tabImportPdf": "Import PDF",
       "editTooltip": "Edit the movement",
       "editTitle": "Edit Movement",
-      "saveButton": "Save"
+      "saveButton": "Save",
+      "noBankTitle": "You need a bank to continue",
+      "noBankDescription": "You haven't added any bank yet. Add one in Settings to be able to register movements.",
+      "noCurrencyTitle": "You need a currency to continue",
+      "noCurrencyDescription": "You haven't added any currency yet. Add one in Settings to be able to register movements.",
+      "noBankCta": "Go to Settings"
     },
     "import": {
       "introPrefix": "You can import your bank statement in",
@@ -615,7 +620,9 @@
       "deleteConfirmTitle": "Delete this currency?",
       "deleteConfirmOk": "Delete",
       "deleteConfirmCancel": "Cancel",
-      "deleteAriaLabel": "Delete currency {{name}}"
+      "deleteAriaLabel": "Delete currency {{name}}",
+      "requiredNoticeTitle": "You need to add a currency",
+      "requiredNoticeDescription": "To register movements you need at least one currency set up. Add one below to continue."
     },
     "income": {
       "title": "Manage Income",
@@ -691,7 +698,9 @@
       "deleteConfirmTitle": "Delete this bank?",
       "deleteConfirmOk": "Delete",
       "deleteConfirmCancel": "Cancel",
-      "deleteAriaLabel": "Delete bank {{name}}"
+      "deleteAriaLabel": "Delete bank {{name}}",
+      "requiredNoticeTitle": "You need to add a bank",
+      "requiredNoticeDescription": "To register movements you need at least one bank set up. Add one below to continue."
     }
   },
   "services": {

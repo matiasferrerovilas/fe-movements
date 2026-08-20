@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
+import { describe, it, expect, vi, beforeAll, afterEach, afterAll } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -11,6 +11,13 @@ import type { UserSetting } from "@/models/UserSetting";
 import type { Category } from "@/models/Category";
 import type { Currency } from "@/apis/currency/CurrencyApi";
 import AddMovementModal from "@/components/modals/movements/AddMovementModal";
+
+// ── Mocks ─────────────────────────────────────────────────────────────────
+
+const mockNavigate = vi.fn();
+vi.mock("@tanstack/react-router", () => ({
+  useNavigate: () => mockNavigate,
+}));
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -66,7 +73,10 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  mockNavigate.mockClear();
+});
 afterAll(() => server.close());
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -148,5 +158,81 @@ describe("AddMovementModal", () => {
       const buttons = screen.getAllByRole("button");
       expect(buttons.find((b) => b.textContent?.trim() === "Agregar")).toBeDefined();
     });
+  });
+});
+
+describe("AddMovementModal sin bancos cargados", () => {
+  it("muestra el aviso de banco requerido en vez de las tabs", async () => {
+    server.use(http.get("http://localhost:8080/banks", () => HttpResponse.json([])));
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+
+    expect(
+      await screen.findByText("Necesitás un banco para continuar"),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: /manual/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryAllByRole("button").find((b) => b.textContent?.trim() === "Agregar"),
+    ).toBeUndefined();
+  });
+
+  it("navega a /settings con el tab de finanzas al hacer click en 'Ir a Configuración'", async () => {
+    server.use(http.get("http://localhost:8080/banks", () => HttpResponse.json([])));
+    const user = userEvent.setup();
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+
+    const ctaBtn = await screen.findByRole("button", { name: /ir a configuración/i });
+    await user.click(ctaBtn);
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      to: "/settings",
+      search: { tab: "finanzas" },
+    });
+  });
+});
+
+describe("AddMovementModal sin monedas cargadas", () => {
+  it("muestra el aviso de moneda requerida en vez de las tabs", async () => {
+    server.use(
+      http.get("http://localhost:8080/workspace/currencies", () => HttpResponse.json([])),
+    );
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+
+    expect(
+      await screen.findByText("Necesitás una moneda para continuar"),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: /manual/i })).not.toBeInTheDocument();
+  });
+
+  it("navega a /settings con el tab de finanzas al hacer click en 'Ir a Configuración'", async () => {
+    server.use(
+      http.get("http://localhost:8080/workspace/currencies", () => HttpResponse.json([])),
+    );
+    const user = userEvent.setup();
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+
+    const ctaBtn = await screen.findByRole("button", { name: /ir a configuración/i });
+    await user.click(ctaBtn);
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      to: "/settings",
+      search: { tab: "finanzas" },
+    });
+  });
+
+  it("prioriza el aviso de banco cuando faltan banco y moneda", async () => {
+    server.use(
+      http.get("http://localhost:8080/banks", () => HttpResponse.json([])),
+      http.get("http://localhost:8080/workspace/currencies", () => HttpResponse.json([])),
+    );
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+
+    expect(
+      await screen.findByText("Necesitás un banco para continuar"),
+    ).toBeInTheDocument();
   });
 });

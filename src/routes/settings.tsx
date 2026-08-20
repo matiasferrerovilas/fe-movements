@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { SettingIncome } from "@/components/settings/SettingIncome";
 import { Col, Flex, Grid, Row, Tabs } from "antd";
@@ -20,9 +20,21 @@ import { getEntityLabels } from "@/utils/entityLabels";
 
 const { useBreakpoint } = Grid;
 
+const SETTINGS_TAB_KEYS = ["cuenta", "workspace", "finanzas", "preferencias"] as const;
+type SettingsTabKey = (typeof SETTINGS_TAB_KEYS)[number];
+
+type SettingsSearch = {
+  tab?: SettingsTabKey;
+};
+
 export const Route = createFileRoute("/settings")({
   beforeLoad: protectedRouteGuard({
     roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+  }),
+  validateSearch: (search: Record<string, unknown>): SettingsSearch => ({
+    tab: SETTINGS_TAB_KEYS.includes(search.tab as SettingsTabKey)
+      ? (search.tab as SettingsTabKey)
+      : undefined,
   }),
   component: RouteComponent,
 });
@@ -32,6 +44,8 @@ function RouteComponent() {
   const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
   const labels = getEntityLabels(currentUser?.userType ?? null, t);
+  const { tab } = Route.useSearch();
+  const navigate = useNavigate();
 
   const TABS = [
     {
@@ -76,7 +90,10 @@ function RouteComponent() {
     <Row justify="center" style={{ paddingTop: 30 }}>
       <Col xs={24} md={20} lg={16} className="fade-in-up" style={{ animationDelay: "0ms" }}>
         <Tabs
-          defaultActiveKey="cuenta"
+          activeKey={tab ?? "cuenta"}
+          onChange={(key) =>
+            void navigate({ to: "/settings", search: { tab: key as SettingsTabKey } })
+          }
           size="middle"
           tabPlacement={screens.md ? "start" : "top"}
           items={TABS.map(({ key, label, icon, children }) => ({

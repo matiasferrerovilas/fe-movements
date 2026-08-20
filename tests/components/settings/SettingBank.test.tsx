@@ -224,6 +224,20 @@ describe("SettingBank", () => {
     }, 12000);
   });
 
+  describe("aviso de banco requerido", () => {
+    it("no muestra el aviso cuando ya hay bancos cargados", async () => {
+      renderSettingBank();
+      await waitFor(() => expect(screen.getByText("GALICIA")).toBeInTheDocument());
+      expect(screen.queryByText("Necesitás agregar un banco")).not.toBeInTheDocument();
+    });
+
+    it("muestra el aviso cuando no hay bancos cargados", async () => {
+      server.use(http.get("http://localhost:8080/banks", () => HttpResponse.json([])));
+      renderSettingBank();
+      expect(await screen.findByText("Necesitás agregar un banco")).toBeInTheDocument();
+    });
+  });
+
   describe("establecer banco por defecto", () => {
     it("deshabilita el botón de estrella para el banco que ya es default", async () => {
       renderSettingBank();

@@ -34,6 +34,7 @@ function RouteComponent() {
   });
 
   const filtersRef = useRef(filters);
+  const [tableState, setTableState] = useState({ isLoading: true, hasMovements: false });
 
   const handleFiltersChange = useCallback((newFilters: MovementFilters) => {
     filtersRef.current = newFilters;
@@ -42,12 +43,14 @@ function RouteComponent() {
 
   return (
     <div style={{ paddingTop: 30 }}>
-      <MovementFilters
-        initialFilters={filters}
-        onFiltersChange={handleFiltersChange}
-        AddEditMovementModal={AddMovementModal}
-      />
-      <MovementTable filters={filters} />
+      {!tableState.isLoading && tableState.hasMovements && (
+        <MovementFilters
+          initialFilters={filters}
+          onFiltersChange={handleFiltersChange}
+          AddEditMovementModal={AddMovementModal}
+        />
+      )}
+      <MovementTable filters={filters} onStateChange={setTableState} />
     </div>
   );
 }

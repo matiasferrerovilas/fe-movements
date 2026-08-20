@@ -429,7 +429,12 @@
       "tabImportPdf": "Importar PDF",
       "editTooltip": "Editar el movimiento",
       "editTitle": "Editar Movimiento",
-      "saveButton": "Guardar"
+      "saveButton": "Guardar",
+      "noBankTitle": "Necesitás un banco para continuar",
+      "noBankDescription": "Todavía no cargaste ningún banco. Agregá uno en Configuración para poder registrar movimientos.",
+      "noCurrencyTitle": "Necesitás una moneda para continuar",
+      "noCurrencyDescription": "Todavía no cargaste ninguna moneda. Agregá una en Configuración para poder registrar movimientos.",
+      "noBankCta": "Ir a Configuración"
     },
     "import": {
       "introPrefix": "Podés importar tu resumen bancario en formato",
@@ -615,7 +620,9 @@
       "deleteConfirmTitle": "¿Eliminar esta moneda?",
       "deleteConfirmOk": "Eliminar",
       "deleteConfirmCancel": "Cancelar",
-      "deleteAriaLabel": "Eliminar moneda {{name}}"
+      "deleteAriaLabel": "Eliminar moneda {{name}}",
+      "requiredNoticeTitle": "Necesitás agregar una moneda",
+      "requiredNoticeDescription": "Para registrar movimientos necesitás tener al menos una moneda cargada. Agregá una acá abajo para continuar."
     },
     "income": {
       "title": "Gestionar Ingresos",
@@ -691,7 +698,9 @@
       "deleteConfirmTitle": "¿Eliminar este banco?",
       "deleteConfirmOk": "Eliminar",
       "deleteConfirmCancel": "Cancelar",
-      "deleteAriaLabel": "Eliminar banco {{name}}"
+      "deleteAriaLabel": "Eliminar banco {{name}}",
+      "requiredNoticeTitle": "Necesitás agregar un banco",
+      "requiredNoticeDescription": "Para registrar movimientos necesitás tener al menos un banco cargado. Agregá uno acá abajo para continuar."
     }
   },
   "services": {

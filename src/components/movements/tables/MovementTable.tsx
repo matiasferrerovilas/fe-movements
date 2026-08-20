@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { App, Card, Grid, Pagination, Row, Tag } from "antd";
+import { useEffect, useMemo, useState } from "react";
+import { App, Card, Flex, Grid, Pagination, Row, Spin, Tag } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import type { CreateMovementForm, Movement } from "@/models/Movement";
@@ -40,9 +40,10 @@ function toMovementForm(movement: Movement, categories: string[]): CreateMovemen
 
 interface MovementTableProps {
   filters: MovementFilters;
+  onStateChange?: (state: { isLoading: boolean; hasMovements: boolean }) => void;
 }
 
-export default function MovementTable({ filters }: MovementTableProps) {
+export default function MovementTable({ filters, onStateChange }: MovementTableProps) {
   const { page, goToPage, pageSize, changePageSize } = usePagination();
   const screens = useBreakpoint();
   const { t } = useTranslation();
@@ -62,7 +63,7 @@ export default function MovementTable({ filters }: MovementTableProps) {
     onDelete: (id) => deleteMutation.mutateAsync(id),
   });
 
-  const { data: movements = { content: [], totalElements: 0, totalPages: 0 } } =
+  const { data: movements = { content: [], totalElements: 0, totalPages: 0 }, isLoading } =
     useMovement(filters, page, pageSize);
 
   const hasActiveFilters =
@@ -71,6 +72,12 @@ export default function MovementTable({ filters }: MovementTableProps) {
     filters.bank.length > 0 ||
     filters.categories.length > 0 ||
     filters.currency.length > 0;
+
+  const hasMovements = hasActiveFilters || movements.totalElements > 0;
+
+  useEffect(() => {
+    onStateChange?.({ isLoading, hasMovements });
+  }, [isLoading, hasMovements, onStateChange]);
 
   const handleDelete = (id: number) => requestDelete(id);
 
@@ -181,6 +188,14 @@ export default function MovementTable({ filters }: MovementTableProps) {
     selectedIds,
     onToggleSelect: handleToggleSelect,
   };
+
+  if (isLoading) {
+    return (
+      <Flex justify="center" style={{ padding: "80px 0" }}>
+        <Spin size="large" />
+      </Flex>
+    );
+  }
 
   if (!hasActiveFilters && movements.totalElements === 0) {
     return <MovementsEmptyState />;

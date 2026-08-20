@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, delay } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
 import type { Movement } from "@/models/Movement";
@@ -160,6 +160,62 @@ describe("MovementTable", () => {
 
       await waitFor(() =>
         expect(screen.getAllByText(/Movimiento \d/).length).toBeGreaterThanOrEqual(2),
+      );
+    });
+  });
+
+  describe("estado de carga", () => {
+    it("muestra un spinner en vez del CTA o la tabla mientras carga", async () => {
+      server.use(
+        http.get("http://localhost:8080/expenses", async () => {
+          await delay(50);
+          return HttpResponse.json(filledPageResponse);
+        }),
+      );
+
+      const { container } = render(<MovementTable filters={defaultFilters} />, {
+        wrapper: makeWrapper(),
+      });
+
+      expect(container.querySelector(".ant-spin")).toBeInTheDocument();
+      expect(screen.queryByText("¿Empezamos?")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Movimiento 1/)).not.toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(screen.getAllByText(/Movimiento 1/).length).toBeGreaterThan(0),
+      );
+      expect(container.querySelector(".ant-spin")).not.toBeInTheDocument();
+    });
+
+    it("notifica onStateChange con hasMovements=true cuando hay movimientos", async () => {
+      server.use(
+        http.get("http://localhost:8080/expenses", () => HttpResponse.json(filledPageResponse)),
+      );
+      const onStateChange = vi.fn();
+
+      render(<MovementTable filters={defaultFilters} onStateChange={onStateChange} />, {
+        wrapper: makeWrapper(),
+      });
+
+      expect(onStateChange).toHaveBeenCalledWith({ isLoading: true, hasMovements: false });
+
+      await waitFor(() =>
+        expect(onStateChange).toHaveBeenCalledWith({ isLoading: false, hasMovements: true }),
+      );
+    });
+
+    it("notifica onStateChange con hasMovements=false cuando la cuenta no tiene movimientos", async () => {
+      server.use(
+        http.get("http://localhost:8080/expenses", () => HttpResponse.json(emptyPageResponse)),
+      );
+      const onStateChange = vi.fn();
+
+      render(<MovementTable filters={defaultFilters} onStateChange={onStateChange} />, {
+        wrapper: makeWrapper(),
+      });
+
+      await waitFor(() =>
+        expect(onStateChange).toHaveBeenCalledWith({ isLoading: false, hasMovements: false }),
       );
     });
   });
