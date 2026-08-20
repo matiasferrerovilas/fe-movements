@@ -1,4 +1,4 @@
-import { Avatar, Card, Divider, Empty, Flex, List, theme, Typography } from "antd";
+import { Avatar, Card, Divider, Empty, Flex, List, Tag, theme, Tooltip, Typography } from "antd";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import MailOutlined from "@ant-design/icons/MailOutlined";
@@ -12,6 +12,11 @@ import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { useUserRoles } from "@/apis/hooks/useUserRoles";
 import { RoleEnum } from "@/enums/RoleEnum";
 import { getEntityLabels } from "@/utils/entityLabels";
+import {
+  getWorkspaceDisplayName,
+  getWorkspaceOwnerEmail,
+  isForeignPersonalWorkspace,
+} from "@/utils/workspaceDisplay";
 
 const { Title, Text } = Typography;
 
@@ -29,6 +34,9 @@ export function SettingCurrentWorkspace() {
   // criterio que ya valida el backend (WorkspaceMembershipService.removeMembership).
   const canRemoveMembers =
     currentWorkspace?.metadata.role === "OWNER" || hasAnyRole(RoleEnum.ADMIN);
+
+  const isForeignPersonal = currentWorkspace ? isForeignPersonalWorkspace(currentWorkspace) : false;
+  const ownerEmail = isForeignPersonal && currentWorkspace ? getWorkspaceOwnerEmail(currentWorkspace) : undefined;
 
   useWorkspacesSubscription();
 
@@ -64,8 +72,15 @@ export function SettingCurrentWorkspace() {
         <div style={{ flex: 1 }}>
           <Flex align="center" gap={8}>
             <Title level={5} style={{ margin: 0 }}>
-              {currentWorkspace.workspaceName}
+              {getWorkspaceDisplayName(currentWorkspace.workspaceName, t)}
             </Title>
+            {isForeignPersonal && ownerEmail && (
+              <Tooltip title={t("common.workspace.notYoursTooltip", { email: ownerEmail })}>
+                <Tag color="gold" style={{ marginInlineEnd: 0, fontSize: 11 }}>
+                  {t("common.workspace.notYoursTag")}
+                </Tag>
+              </Tooltip>
+            )}
             <span
               style={{
                 background: token.colorFillSecondary,

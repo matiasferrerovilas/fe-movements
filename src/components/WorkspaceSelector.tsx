@@ -7,6 +7,11 @@ import { useCurrentWorkspace } from "@/apis/workspace/WorkspaceContext";
 import CreateWorkspaceModal from "@/components/modals/workspaces/CreateWorkspaceModal";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
+import {
+  getWorkspaceDisplayName,
+  getWorkspaceOwnerEmail,
+  isForeignPersonalWorkspace,
+} from "@/utils/workspaceDisplay";
 
 const { Text } = Typography;
 
@@ -27,10 +32,15 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
     return null;
   }
 
-  const workspaceOptions = workspaces.map((ws) => ({
-    value: ws.workspaceId,
-    label: ws.workspaceName,
-  }));
+  const workspaceOptions = workspaces.map((ws) => {
+    const ownerEmail = isForeignPersonalWorkspace(ws) ? getWorkspaceOwnerEmail(ws) : undefined;
+    return {
+      value: ws.workspaceId,
+      label: ownerEmail
+        ? t("common.workspace.personalOf", { email: ownerEmail })
+        : getWorkspaceDisplayName(ws.workspaceName, t),
+    };
+  });
 
   if (compact) {
     return (

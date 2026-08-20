@@ -112,6 +112,20 @@ describe("ServiceCard", () => {
       expect(editBtn()).toBeInTheDocument();
     });
 
+    it("muestra 'Personal' en vez de 'DEFAULT' para el workspace personal", () => {
+      render(
+        <ServiceCard
+          service={makeService({ workspaceName: "DEFAULT" })}
+          handlePayServiceMutation={handlePay}
+          handleUpdateServiceMutation={handleUpdate}
+        />,
+        { wrapper: makeWrapper(queryClient) },
+      );
+
+      expect(screen.getByText("Personal")).toBeInTheDocument();
+      expect(screen.queryByText("DEFAULT")).not.toBeInTheDocument();
+    });
+
     it("muestra el botón 'Marcar como pagado'", () => {
       render(
         <ServiceCard

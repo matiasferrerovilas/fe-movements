@@ -31,6 +31,7 @@ import { getEntityLabels } from "@/utils/entityLabels";
 import { CategoryEditModal } from "@/components/settings/CategoryEditModal";
 import { getIconComponent } from "@/utils/getIconComponent";
 import { useUndoableDelete } from "@/utils/useUndoableDelete";
+import PendingDeleteIndicator from "@/components/PendingDeleteIndicator";
 
 const { Title, Text } = Typography;
 
@@ -73,6 +74,7 @@ function CategoryCard({
       hoverable
       styles={{ body: { padding: "14px 18px", cursor: "default" } }}
       style={{
+        position: "relative",
         borderRadius: 16,
         border: `1.5px solid ${token.colorBorderSecondary}`,
         background: token.colorFillAlter,
@@ -83,6 +85,7 @@ function CategoryCard({
           : {}),
       }}
     >
+      {isPendingRemoval && <PendingDeleteIndicator />}
       <Flex align="center" justify="space-between">
         <Flex align="center" gap={14}>
           <div

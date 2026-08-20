@@ -20,19 +20,19 @@ const mockWorkspaces: Workspace[] = [
     id: 101,
     workspaceId: 1,
     workspaceName: "Personal",
-    metadata: { members: ["a@test.com"], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
+    metadata: { members: ["a@test.com"], memberDetails: [], role: "ADMIN", joinedAt: "2026-01-01T00:00:00", isDefault: true },
   },
   {
     id: 102,
     workspaceId: 2,
     workspaceName: "Familia",
-    metadata: { members: ["a@test.com"], role: "FAMILY", joinedAt: "2026-01-01T00:00:00", isDefault: false },
+    metadata: { members: ["a@test.com"], memberDetails: [], role: "FAMILY", joinedAt: "2026-01-01T00:00:00", isDefault: false },
   },
   {
     id: 103,
     workspaceId: 3,
     workspaceName: "Trabajo",
-    metadata: { members: ["a@test.com"], role: "GUEST", joinedAt: "2026-01-01T00:00:00", isDefault: false },
+    metadata: { members: ["a@test.com"], memberDetails: [], role: "GUEST", joinedAt: "2026-01-01T00:00:00", isDefault: false },
   },
 ];
 
@@ -221,6 +221,53 @@ describe("WorkspaceSelector", () => {
       
       // Verificar que aparece la opción de crear
       expect(screen.getByText("Crear workspace")).toBeInTheDocument();
+    });
+  });
+
+  describe("traducción DEFAULT -> Personal", () => {
+    it("muestra 'Personal' para el propio workspace DEFAULT", async () => {
+      const own: Workspace = {
+        id: 201,
+        workspaceId: 5,
+        workspaceName: "DEFAULT",
+        metadata: { members: ["a@test.com"], memberDetails: [], role: "OWNER", joinedAt: "2026-01-01T00:00:00", isDefault: true },
+      };
+      mockUseCurrentWorkspace.mockReturnValue({
+        currentWorkspace: own,
+        workspaces: [own],
+        setCurrentWorkspace: mockSetCurrentWorkspace,
+        isLoading: false,
+      });
+
+      renderComponent();
+      expect(screen.getByTitle("Personal")).toBeInTheDocument();
+    });
+
+    it("muestra 'Personal (email del owner)' cuando el DEFAULT es de otro usuario", async () => {
+      const foreign: Workspace = {
+        id: 202,
+        workspaceId: 6,
+        workspaceName: "DEFAULT",
+        metadata: {
+          members: ["a@test.com", "owner@test.com"],
+          memberDetails: [
+            { userId: 1, email: "a@test.com", role: "COLLABORATOR" },
+            { userId: 2, email: "owner@test.com", role: "OWNER" },
+          ],
+          role: "COLLABORATOR",
+          joinedAt: "2026-01-01T00:00:00",
+          isDefault: false,
+        },
+      };
+      mockUseCurrentWorkspace.mockReturnValue({
+        currentWorkspace: foreign,
+        workspaces: [foreign],
+        setCurrentWorkspace: mockSetCurrentWorkspace,
+        isLoading: false,
+      });
+
+      renderComponent();
+      expect(screen.getByTitle("Personal (owner@test.com)")).toBeInTheDocument();
     });
   });
 

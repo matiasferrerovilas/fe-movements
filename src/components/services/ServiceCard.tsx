@@ -31,6 +31,8 @@ import { useDeleteService } from "@/apis/hooks/useService";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getServiceLabels } from "@/utils/serviceLabels";
 import { useUndoableDelete } from "@/utils/useUndoableDelete";
+import { getWorkspaceDisplayName } from "@/utils/workspaceDisplay";
+import PendingDeleteIndicator from "@/components/PendingDeleteIndicator";
 
 const { Text, Title } = Typography;
 
@@ -114,6 +116,7 @@ export const ServiceCard = React.memo(function ServiceCard({
   return (
     <Card
       style={{
+        position: "relative",
         borderRadius: token.borderRadiusLG,
         borderColor: statusBorder,
         borderWidth: 2,
@@ -124,6 +127,7 @@ export const ServiceCard = React.memo(function ServiceCard({
       }}
       styles={{ body: { padding: 16 } }}
     >
+      {isPendingRemoval && <PendingDeleteIndicator />}
       <Form
         form={form}
         layout="vertical"
@@ -264,7 +268,7 @@ export const ServiceCard = React.memo(function ServiceCard({
         <div style={{ marginTop: 8 }}>
           <Flex gap={6} wrap="wrap" style={{ marginTop: 4 }}>
             <Tag color={isPaid ? "green" : "red"} variant="solid">
-              {service.workspaceName}
+              {getWorkspaceDisplayName(service.workspaceName, t)}
             </Tag>
             <Tag color={isPaid ? "green" : "red"} variant="solid">
               {service.user}

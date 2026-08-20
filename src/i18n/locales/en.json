@@ -121,6 +121,12 @@
       "ariaLabel": "Notifications",
       "invitationReceivedTitle": "New invitation",
       "invitationReceivedMessage": "{{invitedByEmail}} invited you to {{workspaceName}}"
+    },
+    "workspace": {
+      "personalName": "Personal",
+      "personalOf": "Personal ({{email}})",
+      "notYoursTag": "Not yours",
+      "notYoursTooltip": "This is {{email}}'s personal workspace"
     }
   },
   "nav": {

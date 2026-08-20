@@ -5,6 +5,7 @@ import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
 import CategoryCircleTable from "@/components/movements/tables/CategoryCircleTable";
 import { capitalizeFirst } from "@/utils/stringFunctions";
 import MovementActionButtons from "@/components/movements/tables/MovementActionButtons";
+import PendingDeleteIndicator from "@/components/PendingDeleteIndicator";
 
 const { Text } = Typography;
 
@@ -29,11 +30,13 @@ export default function MovementTableMobile({
             hoverable
             className="step-enter-right"
             style={{
+              position: "relative",
               ...getCardStyle(record),
               animationDelay: `${Math.min(index, 9) * 40}ms`,
             }}
             styles={{ body: { padding: "10px 12px" } }}
           >
+            {record.isPendingRemoval && <PendingDeleteIndicator />}
             <Row justify="space-between" align="middle" style={{ marginBottom: 6 }}>
               <Checkbox
                 checked={selectedIds.has(record.id)}

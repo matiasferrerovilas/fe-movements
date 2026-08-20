@@ -26,6 +26,7 @@ import type { BankRecord } from "@/models/Bank";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
 import { useUndoableDelete } from "@/utils/useUndoableDelete";
+import PendingDeleteIndicator from "@/components/PendingDeleteIndicator";
 
 const { Title, Text } = Typography;
 
@@ -63,6 +64,7 @@ function BankCard({
       hoverable
       styles={{ body: { padding: "14px 18px", cursor: "default" } }}
       style={{
+        position: "relative",
         borderRadius: 16,
         border: `1.5px solid ${isDefault ? token.colorPrimaryBorder : token.colorBorderSecondary}`,
         background: isDefault ? token.colorPrimaryBg : token.colorFillAlter,
@@ -73,6 +75,7 @@ function BankCard({
           : {}),
       }}
     >
+      {isPendingRemoval && <PendingDeleteIndicator />}
       <Flex align="center" justify="space-between">
         <Flex align="center" gap={14}>
           <div

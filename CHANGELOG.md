@@ -25,6 +25,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   full `Workspace` object into the cache, since neither event actually carries one.
 
 ### Added
+- `PendingDeleteIndicator`: a small spinning badge shown on any card mid-"undo delete" window
+  (`useUndoableDelete`'s `isPendingRemoval`), across services, goals, budgets, banks, categories,
+  and movements (all 3 responsive table views). Previously the item just dimmed/grayed out with no
+  motion, which read as frozen and invited a second click.
+- Workspaces named `DEFAULT` (the backend's convention for a user's personal workspace) now display
+  as "Personal" in the workspace selector, workspace settings, service tags, and invitation cards
+  (`getWorkspaceDisplayName`). When the currently-viewed personal workspace belongs to someone else
+  (you're a collaborator there, not the `OWNER`) — e.g. after accepting an invite to their
+  `DEFAULT` — the workspace selector shows "Personal (their@email)" and the workspace settings page
+  shows a "No es tuyo" tag with a tooltip naming the owner, so it's not confused for your own.
 - Bell notification on `INVITATION_ADDED`: `useInvitationSubscription` now also pushes an entry
   into the notification bell's cache (`NOTIFICATIONS_QUERY_KEY`) when a workspace invitation
   arrives live, in addition to updating the invitations list — so the invited user notices it

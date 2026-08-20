@@ -212,6 +212,58 @@ describe("SettingCurrentWorkspace", () => {
     });
   });
 
+  describe("workspace personal (DEFAULT)", () => {
+    it("muestra 'Personal' en vez de 'DEFAULT' para el propio workspace", async () => {
+      mockUseCurrentWorkspace.mockReturnValue({
+        currentWorkspace: {
+          ...mockWorkspaces[0],
+          workspaceName: "DEFAULT",
+          metadata: { ...mockWorkspaces[0].metadata, role: "OWNER" },
+        },
+        workspaces: mockWorkspaces,
+        setCurrentWorkspace: mockSetCurrentWorkspace,
+        isLoading: false,
+      });
+
+      renderComponent();
+      await waitFor(() => expect(screen.getByText("Personal")).toBeInTheDocument());
+      expect(screen.queryByText("No es tuyo")).not.toBeInTheDocument();
+    });
+
+    it("indica cuando el DEFAULT mostrado es el de otro usuario", async () => {
+      mockUseCurrentWorkspace.mockReturnValue({
+        currentWorkspace: {
+          ...mockWorkspaces[0],
+          workspaceName: "DEFAULT",
+          metadata: { ...mockWorkspaces[0].metadata, role: "COLLABORATOR" },
+        },
+        workspaces: mockWorkspaces,
+        setCurrentWorkspace: mockSetCurrentWorkspace,
+        isLoading: false,
+      });
+
+      renderComponent();
+      await waitFor(() => expect(screen.getByText("No es tuyo")).toBeInTheDocument());
+    });
+
+    it("no indica 'no es tuyo' cuando el rol es OWNER, aunque sea DEFAULT", async () => {
+      mockUseCurrentWorkspace.mockReturnValue({
+        currentWorkspace: {
+          ...mockWorkspaces[0],
+          workspaceName: "DEFAULT",
+          metadata: { ...mockWorkspaces[0].metadata, role: "OWNER" },
+        },
+        workspaces: mockWorkspaces,
+        setCurrentWorkspace: mockSetCurrentWorkspace,
+        isLoading: false,
+      });
+
+      renderComponent();
+      await waitFor(() => expect(screen.getByText("Personal")).toBeInTheDocument());
+      expect(screen.queryByText("No es tuyo")).not.toBeInTheDocument();
+    });
+  });
+
   describe("sin workspace seleccionado", () => {
     it("muestra mensaje cuando no hay workspace seleccionado", async () => {
       mockUseCurrentWorkspace.mockReturnValue({

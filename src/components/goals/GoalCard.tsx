@@ -16,6 +16,7 @@ import {
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 import type { GoalRecord } from "@/models/Goal";
+import PendingDeleteIndicator from "@/components/PendingDeleteIndicator";
 
 const { Text } = Typography;
 
@@ -58,6 +59,7 @@ export function GoalCard({
     <Card
       styles={{ body: { padding: "16px 20px" } }}
       style={{
+        position: "relative",
         borderRadius: token.borderRadiusLG,
         border: `1.5px solid ${token.colorBorderSecondary}`,
         ...(isPendingRemoval
@@ -65,6 +67,7 @@ export function GoalCard({
           : {}),
       }}
     >
+      {isPendingRemoval && <PendingDeleteIndicator />}
       <Flex align="flex-start" justify="space-between" gap={12}>
         <Flex align="flex-start" gap={14} style={{ flex: 1, minWidth: 0 }}>
           <div

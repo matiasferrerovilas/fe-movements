@@ -7,6 +7,7 @@ import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { acceptRejectWorkspaceInvitationApi } from "@/apis/WorkspaceApi";
+import { getWorkspaceDisplayName } from "@/utils/workspaceDisplay";
 
 const { Text } = Typography;
 
@@ -86,7 +87,7 @@ export default function SettingInviteWorkspaceCard({
                 display: "block",
               }}
             >
-              {invite.workspaceName}
+              {getWorkspaceDisplayName(invite.workspaceName, t)}
             </Text>
             <Flex align="center" gap={6} style={{ minWidth: 0 }}>
               <Text type="secondary" style={{ fontSize: 12, flexShrink: 0 }}>
