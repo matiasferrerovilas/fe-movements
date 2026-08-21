@@ -1,4 +1,4 @@
-import { Avatar, Card, Divider, Empty, Flex, List, Tag, theme, Tooltip, Typography } from "antd";
+import { Avatar, Card, Divider, Empty, Flex, Tag, theme, Tooltip, Typography } from "antd";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import MailOutlined from "@ant-design/icons/MailOutlined";
@@ -116,41 +116,48 @@ export function SettingCurrentWorkspace() {
           </Flex>
           <InviteUserToWorkspace group={currentWorkspace} />
         </Flex>
-        <List
-          dataSource={memberDetails}
-          locale={{
-            emptyText: (
-              <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={labels.workspaceNoMiembros}
-              />
-            ),
-          }}
-          renderItem={(member) => (
-            <List.Item style={{ padding: "8px 0" }}>
-              <Flex align="center" justify="space-between" style={{ width: "100%" }}>
-                <Flex align="center" gap={12}>
-                  <Avatar
-                    size={32}
-                    icon={<UserOutlined />}
-                    style={{ backgroundColor: token.colorPrimaryBg, color: token.colorPrimary }}
-                  />
-                  <Flex align="center" gap={6}>
-                    <MailOutlined style={{ color: token.colorTextSecondary, fontSize: 12 }} />
-                    <Text style={{ fontSize: 13 }}>{member.email}</Text>
+        {memberDetails.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={labels.workspaceNoMiembros}
+          />
+        ) : (
+          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            {memberDetails.map((member, index) => (
+              <li
+                key={member.userId}
+                style={{
+                  padding: "8px 0",
+                  borderBottom:
+                    index < memberDetails.length - 1
+                      ? `1px solid ${token.colorBorderSecondary}`
+                      : undefined,
+                }}
+              >
+                <Flex align="center" justify="space-between" style={{ width: "100%" }}>
+                  <Flex align="center" gap={12}>
+                    <Avatar
+                      size={32}
+                      icon={<UserOutlined />}
+                      style={{ backgroundColor: token.colorPrimaryBg, color: token.colorPrimary }}
+                    />
+                    <Flex align="center" gap={6}>
+                      <MailOutlined style={{ color: token.colorTextSecondary, fontSize: 12 }} />
+                      <Text style={{ fontSize: 13 }}>{member.email}</Text>
+                    </Flex>
                   </Flex>
+                  {canRemoveMembers && member.email !== currentUser?.email && (
+                    <RemoveMemberButton
+                      workspaceId={currentWorkspace.workspaceId}
+                      userId={member.userId}
+                      email={member.email}
+                    />
+                  )}
                 </Flex>
-                {canRemoveMembers && member.email !== currentUser?.email && (
-                  <RemoveMemberButton
-                    workspaceId={currentWorkspace.workspaceId}
-                    userId={member.userId}
-                    email={member.email}
-                  />
-                )}
-              </Flex>
-            </List.Item>
-          )}
-        />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </Card>
   );

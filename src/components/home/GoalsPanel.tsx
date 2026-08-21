@@ -1,6 +1,6 @@
 import TrophyOutlined from "@ant-design/icons/TrophyOutlined";
 import RightOutlined from "@ant-design/icons/RightOutlined";
-import { Button, Card, Empty, Flex, List, Progress, theme, Typography } from "antd";
+import { Button, Card, Empty, Flex, Progress, theme, Typography } from "antd";
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useGoals } from "@/apis/hooks/useGoal";
@@ -28,30 +28,28 @@ function GoalRow({ goal }: { goal: GoalRecord }) {
   const color = getProgressColor(goal.progressPercent, token);
 
   return (
-    <List.Item style={{ padding: "10px 0", border: "none" }}>
-      <div style={{ width: "100%" }}>
-        <Flex justify="space-between" align="baseline" style={{ marginBottom: 4 }}>
-          <Text style={{ fontSize: 13, fontWeight: 500 }}>{goal.name}</Text>
-          <Text style={{ fontSize: 12, color, fontWeight: 600 }}>
-            {goal.progressPercent.toFixed(0)}%
-          </Text>
-        </Flex>
-        <Progress
-          percent={goal.progressPercent}
-          strokeColor={color}
-          trailColor={token.colorFillSecondary}
-          showInfo={false}
-          size="small"
-          style={{ marginBottom: 2 }}
-        />
-        <Text type="secondary" style={{ fontSize: 11 }}>
-          {t("home.goals.rowDetail", {
-            saved: `${goal.currency.symbol} ${formatAmount(goal.currentAmount)}`,
-            target: `${goal.currency.symbol} ${formatAmount(goal.targetAmount)}`,
-          })}
+    <li style={{ padding: "10px 0" }}>
+      <Flex justify="space-between" align="baseline" style={{ marginBottom: 4 }}>
+        <Text style={{ fontSize: 13, fontWeight: 500 }}>{goal.name}</Text>
+        <Text style={{ fontSize: 12, color, fontWeight: 600 }}>
+          {goal.progressPercent.toFixed(0)}%
         </Text>
-      </div>
-    </List.Item>
+      </Flex>
+      <Progress
+        percent={goal.progressPercent}
+        strokeColor={color}
+        railColor={token.colorFillSecondary}
+        showInfo={false}
+        size="small"
+        style={{ marginBottom: 2 }}
+      />
+      <Text type="secondary" style={{ fontSize: 11 }}>
+        {t("home.goals.rowDetail", {
+          saved: `${goal.currency.symbol} ${formatAmount(goal.currentAmount)}`,
+          target: `${goal.currency.symbol} ${formatAmount(goal.targetAmount)}`,
+        })}
+      </Text>
+    </li>
   );
 }
 
@@ -109,12 +107,11 @@ export default function GoalsPanel() {
           <Text type="secondary" style={{ fontSize: 12 }}>
             {t("home.goals.subtitle")}
           </Text>
-          <List
-            dataSource={shownGoals}
-            renderItem={(goal) => <GoalRow key={goal.id} goal={goal} />}
-            split
-            style={{ marginTop: 8 }}
-          />
+          <ul style={{ listStyle: "none", margin: "8px 0 0", padding: 0 }}>
+            {shownGoals.map((goal) => (
+              <GoalRow key={goal.id} goal={goal} />
+            ))}
+          </ul>
         </>
       )}
     </Card>

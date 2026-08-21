@@ -1,136 +1,101 @@
-import { Card, Col, Flex, Row, Statistic, theme, Typography } from "antd";
-import AppstoreOutlined from "@ant-design/icons/AppstoreOutlined";
-import CheckCircleOutlined from "@ant-design/icons/CheckCircleOutlined";
-import ClockCircleOutlined from "@ant-design/icons/ClockCircleOutlined";
+import { Progress, Skeleton, Typography, theme } from "antd";
+import CheckCircleFilled from "@ant-design/icons/CheckCircleFilled";
 import { useTranslation } from "react-i18next";
 import type { Service } from "@/models/Service";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getServiceLabels } from "@/utils/serviceLabels";
 
-const { Text } = Typography;
+const { Title, Text } = Typography;
 
 interface ServiceSummaryProps {
   services: Service[];
   isFetching: boolean;
 }
 
+function formatAmount(amount: number): string {
+  return amount.toLocaleString("es-AR", { maximumFractionDigits: 0 });
+}
+
 export function ServiceSummary({ services, isFetching }: ServiceSummaryProps) {
   const { token } = theme.useToken();
-
   const { data: currentUser } = useCurrentUser();
   const { t } = useTranslation();
   const labels = getServiceLabels(currentUser?.userType ?? null, t);
 
-  const unpaidServices = services?.filter((s) => !s.isPaid) ?? [];
-  const paidServices = services?.filter((s) => s.isPaid) ?? [];
+  const unpaidServices = services.filter((s) => !s.isPaid);
+  const paidServices = services.filter((s) => s.isPaid);
   const totalPaid = paidServices.reduce((acc, s) => acc + (s.amount || 0), 0);
-  const totalUnpaid = unpaidServices.reduce(
-    (acc, s) => acc + (s.amount || 0),
-    0,
-  );
+  const totalUnpaid = unpaidServices.reduce((acc, s) => acc + (s.amount || 0), 0);
+  const total = totalPaid + totalUnpaid;
+  const paidPercent = total > 0 ? Math.round((totalPaid / total) * 100) : 100;
+  const allPaid = services.length > 0 && unpaidServices.length === 0;
 
-  const stats = [
-    {
-      key: "total",
-      icon: (
-        <AppstoreOutlined style={{ fontSize: 20, color: token.colorPrimary }} />
-      ),
-      iconBg: token.colorPrimaryBg,
-      title: labels.total,
-      value: services?.length ?? 0,
-      prefix: undefined,
-      suffix: undefined,
-      sub: labels.registrados,
-      valueColor: token.colorPrimary,
-    },
-    {
-      key: "paid",
-      icon: (
-        <CheckCircleOutlined
-          style={{ fontSize: 20, color: token.colorSuccess }}
-        />
-      ),
-      iconBg: token.colorSuccessBg,
-      title: t("services.summary.paidTitle"),
-      value: totalPaid,
-      prefix: "$",
-      suffix: undefined,
-      sub: `${paidServices.length} ${labels.alDia}`,
-      valueColor: token.colorSuccess,
-    },
-    {
-      key: "unpaid",
-      icon: (
-        <ClockCircleOutlined
-          style={{ fontSize: 20, color: token.colorWarning }}
-        />
-      ),
-      iconBg: token.colorWarningBg,
-      title: t("services.summary.pendingTitle"),
-      value: totalUnpaid,
-      prefix: "$",
-      suffix: undefined,
-      sub: `${unpaidServices.length} ${labels.pendientes}`,
-      valueColor: token.colorWarning,
-    },
-  ];
+  const accent = allPaid ? token.colorSuccess : token.colorWarning;
+  const accentBg = allPaid ? token.colorSuccessBg : token.colorWarningBg;
+  const accentBorder = allPaid ? token.colorSuccessBorder : token.colorWarningBorder;
 
   return (
-    <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-      {stats.map((stat) => (
-        <Col key={stat.key} xs={24} sm={8}>
-          <Card
-            loading={isFetching}
-            style={{
-              borderRadius: token.borderRadiusLG,
-              borderColor: token.colorBorder,
-            }}
-            styles={{ body: { padding: "16px 20px" } }}
+    <div
+      className="fade-in-up"
+      style={{
+        borderRadius: token.borderRadiusLG,
+        padding: "22px 28px",
+        marginBottom: 24,
+        background: accentBg,
+        border: `1px solid ${accentBorder}`,
+      }}
+    >
+      {isFetching ? (
+        <Skeleton active title={{ width: 220 }} paragraph={{ rows: 1, width: "60%" }} />
+      ) : allPaid ? (
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <CheckCircleFilled style={{ fontSize: 30, color: accent, flexShrink: 0 }} />
+          <div>
+            <Title level={4} style={{ margin: 0, color: token.colorTextHeading }}>
+              {t("services.summary.allPaidTitle")}
+            </Title>
+            <Text type="secondary">
+              {t("services.summary.allPaidDescription", {
+                count: services.length,
+                plural: labels.pluralLower,
+              })}
+            </Text>
+          </div>
+        </div>
+      ) : (
+        <>
+          <Text
+            type="secondary"
+            style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase" }}
           >
-            <Flex align="center" gap={14}>
-              <div
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: token.borderRadius,
-                  background: stat.iconBg,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                {stat.icon}
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <Text
-                  type="secondary"
-                  style={{ fontSize: 12, display: "block" }}
-                >
-                  {stat.title}
-                </Text>
-                <Statistic
-                  value={stat.value}
-                  prefix={stat.prefix}
-                  precision={stat.prefix ? 2 : 0}
-                  styles={{
-                    content: {
-                      fontSize: 22,
-                      fontWeight: 700,
-                      color: stat.valueColor,
-                      lineHeight: 1.2,
-                    },
-                  }}
-                  style={{ marginBottom: 2 }}
-                />
-                <Text type="secondary" style={{ fontSize: 11 }}>
-                  {stat.sub}
-                </Text>
-              </div>
-            </Flex>
-          </Card>
-        </Col>
-      ))}
-    </Row>
+            {t("services.summary.periodLabel")}
+          </Text>
+          <Title level={2} style={{ margin: "2px 0 14px", color: token.colorTextHeading }}>
+            <span style={{ color: accent }}>
+              ${formatAmount(totalUnpaid)} {t("services.summary.pendingSuffix")}
+            </span>{" "}
+            <Text type="secondary" style={{ fontSize: 16, fontWeight: 400 }}>
+              {t("services.summary.ofTotal", { total: `$${formatAmount(total)}` })}
+            </Text>
+          </Title>
+          <Progress
+            percent={paidPercent}
+            showInfo={false}
+            strokeColor={token.colorSuccess}
+            railColor={token.colorWarningBorder}
+            strokeLinecap="round"
+            size={["100%", 10]}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8 }}>
+            <Text style={{ fontSize: 12, color: token.colorSuccess, fontWeight: 600 }}>
+              {paidServices.length} {labels.alDia}
+            </Text>
+            <Text style={{ fontSize: 12, color: accent, fontWeight: 600 }}>
+              {unpaidServices.length} {labels.pendientes}
+            </Text>
+          </div>
+        </>
+      )}
+    </div>
   );
 }

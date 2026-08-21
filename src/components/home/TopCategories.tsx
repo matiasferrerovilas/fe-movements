@@ -1,4 +1,4 @@
-import { Card, Empty, Flex, List, Skeleton, theme, Typography } from "antd";
+import { Card, Empty, Flex, Skeleton, theme, Typography } from "antd";
 import TagOutlined from "@ant-design/icons/TagOutlined";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -113,10 +113,10 @@ export default function TopCategories() {
         animationDelay: "240ms",
       }}
     >
-      <List
-        dataSource={topCategories}
-        renderItem={(item, index) => (
-          <List.Item
+      <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+        {topCategories.map((item, index) => (
+          <li
+            key={item.category}
             style={{
               padding: "10px 0",
               borderBottom:
@@ -174,9 +174,9 @@ export default function TopCategories() {
                 </Text>
               </Flex>
             </Flex>
-          </List.Item>
-        )}
-      />
+          </li>
+        ))}
+      </ul>
     </Card>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Badge, Button, Divider, Empty, List, Popover, Typography, theme } from "antd";
+import { Badge, Button, Divider, Empty, Flex, Popover, Typography, theme } from "antd";
 import BellOutlined from "@ant-design/icons/BellOutlined";
 import CheckCircleOutlined from "@ant-design/icons/CheckCircleOutlined";
 import CloseCircleOutlined from "@ant-design/icons/CloseCircleOutlined";
@@ -53,37 +53,38 @@ export default function NotificationBell() {
           style={{ padding: 24 }}
         />
       ) : (
-        <List
-          style={{ maxHeight: 360, overflowY: "auto" }}
-          dataSource={notifications}
-          renderItem={(n) => (
-            <List.Item
+        <ul
+          style={{ maxHeight: 360, overflowY: "auto", listStyle: "none", margin: 0, padding: 0 }}
+        >
+          {notifications.map((n, index) => (
+            <li
+              key={n.id}
               style={{
                 padding: "10px 16px",
                 background: n.read ? "transparent" : token.colorFillTertiary,
+                borderBottom:
+                  index < notifications.length - 1
+                    ? `1px solid ${token.colorBorderSecondary}`
+                    : undefined,
               }}
             >
-              <List.Item.Meta
-                avatar={
-                  <span style={{ color: severityColor[n.severity], fontSize: 16 }}>
-                    {SEVERITY_ICON[n.severity]}
-                  </span>
-                }
-                title={<Text style={{ fontSize: 13 }}>{n.title}</Text>}
-                description={
-                  <>
-                    <Text type="secondary" style={{ fontSize: 12, display: "block" }}>
-                      {n.message}
-                    </Text>
-                    <Text type="secondary" style={{ fontSize: 11 }}>
-                      {dayjs(n.createdAt).fromNow()}
-                    </Text>
-                  </>
-                }
-              />
-            </List.Item>
-          )}
-        />
+              <Flex gap={12} align="flex-start">
+                <span style={{ color: severityColor[n.severity], fontSize: 16, marginTop: 2 }}>
+                  {SEVERITY_ICON[n.severity]}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={{ fontSize: 13 }}>{n.title}</Text>
+                  <Text type="secondary" style={{ fontSize: 12, display: "block" }}>
+                    {n.message}
+                  </Text>
+                  <Text type="secondary" style={{ fontSize: 11 }}>
+                    {dayjs(n.createdAt).fromNow()}
+                  </Text>
+                </div>
+              </Flex>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

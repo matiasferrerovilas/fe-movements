@@ -56,7 +56,7 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
               style={{ width: "100%" }}
               loading={isLoading}
               suffixIcon={<SwapOutlined />}
-              dropdownRender={(menu) => (
+              popupRender={(menu) => (
                 <>
                   {menu}
                   <Divider style={{ margin: "8px 0" }} />
@@ -109,7 +109,7 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
             loading={isLoading}
             suffixIcon={<SwapOutlined />}
             variant="borderless"
-            dropdownRender={(menu) => (
+            popupRender={(menu) => (
               <>
                 {menu}
                 <Divider style={{ margin: "8px 0" }} />

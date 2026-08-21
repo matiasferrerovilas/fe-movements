@@ -7,7 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — `/services` visual redesign
+- `ServiceSummary`: replaced the 3 identical stat cards (Total/Pagados/Pendientes) with one
+  composed panel — a sentence-style headline ("$X pendientes de $Y en total"), a progress bar
+  showing paid vs. pending proportion, and paid/pending counts below it. A celebratory "¡Estás al
+  día!" state replaces the panel entirely once nothing is pending.
+
+  The rest of the redesign (amber `ServiceCard` styling, the collapsible ghost-card
+  `ServiceCardForm`, and the pending/paid section split on `/services`) didn't land well and was
+  reverted — those three files and the page route are back to how they were before this round,
+  only `ServiceSummary` stayed.
+
 ### Fixed
+
+- Console warning surfaced while testing the new `ServiceSummary`: antd v6 deprecated
+  `Progress.trailColor` in favor of `railColor` (also renamed `WorkspaceSelector`'s pre-existing
+  `Select.dropdownRender` → `popupRender` while in the area).
+- Removed every remaining use of antd's deprecated `List`/`List.Item`/`List.Item.Meta` across the
+  project (`SettingCurrentWorkspace`, `GoalsPanel`, `InsightsPanel`, `NotificationBell`,
+  `TopCategories`) — antd has no direct replacement component, so each was hand-rolled as a
+  semantic `<ul>`/`<li>` with the same borders/padding/spacing `List` used to apply via CSS
+  (`role="listitem"` preserved for accessibility and for `TopCategories`' existing test, which
+  asserts on it). `NotificationBell` additionally lost `List.Item.Meta`'s avatar/title/description
+  layout, rebuilt with a plain `Flex`.
+- Replaced the only use of antd's deprecated `Dropdown.Button` (the CSV/PDF export split button in
+  `MovementFilters`) with the recommended `Space.Compact + Dropdown + Button` — a plain `Button`
+  (CSV export, unchanged `onClick`/`loading`) compact-joined with a `Dropdown` wrapping an
+  icon-only `Button` as the menu trigger, same `menu.items`/`onClick` for the PDF option.
 
 - `useInvitationSubscription` subscribed to `/topic/invitation/{userId}/new` (singular, keyed by
   numeric user id), but api-movements publishes new invitations to `/topic/invitations/{email}/new`

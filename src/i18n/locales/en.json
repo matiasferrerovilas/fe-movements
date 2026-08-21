@@ -758,8 +758,11 @@
       "emptyStateSubtitle_company": "You haven't added any recurring expense yet. Add your first one to keep track of the business's operating payments."
     },
     "summary": {
-      "paidTitle": "Paid",
-      "pendingTitle": "Pending"
+      "periodLabel": "This month",
+      "pendingSuffix": "pending",
+      "ofTotal": "of {{total}} total",
+      "allPaidTitle": "You're all caught up!",
+      "allPaidDescription": "You've paid all {{count}} {{plural}} this month."
     },
     "card": {
       "amountMustBePositive": "The amount must be greater than 0",

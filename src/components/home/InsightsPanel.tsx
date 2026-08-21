@@ -1,7 +1,7 @@
 import ArrowDownOutlined from "@ant-design/icons/ArrowDownOutlined";
 import ArrowUpOutlined from "@ant-design/icons/ArrowUpOutlined";
 import BulbOutlined from "@ant-design/icons/BulbOutlined";
-import { Card, Flex, List, Tag, theme, Typography } from "antd";
+import { Card, Flex, Tag, theme, Typography } from "antd";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useInsights } from "@/apis/hooks/useInsights";
@@ -22,7 +22,7 @@ function InsightRow({ insight }: { insight: CategoryInsight }) {
   const Icon = isAbove ? ArrowUpOutlined : ArrowDownOutlined;
 
   return (
-    <List.Item style={{ padding: "10px 0", border: "none" }}>
+    <li style={{ padding: "10px 0" }}>
       <Flex align="center" gap={10} style={{ width: "100%" }}>
         <div
           style={{
@@ -58,7 +58,7 @@ function InsightRow({ insight }: { insight: CategoryInsight }) {
           {insight.percentDeviation.toFixed(0)}%
         </Tag>
       </Flex>
-    </List.Item>
+    </li>
   );
 }
 
@@ -103,14 +103,11 @@ export default function InsightsPanel({ onVisibilityChange }: InsightsPanelProps
       <Text type="secondary" style={{ fontSize: 12 }}>
         {t("home.insights.subtitle")}
       </Text>
-      <List
-        dataSource={insights}
-        renderItem={(insight) => (
+      <ul style={{ listStyle: "none", margin: "8px 0 0", padding: 0 }}>
+        {insights.map((insight) => (
           <InsightRow key={`${insight.currency}-${insight.category}`} insight={insight} />
-        )}
-        split
-        style={{ marginTop: 8 }}
-      />
+        ))}
+      </ul>
     </Card>
   );
 }

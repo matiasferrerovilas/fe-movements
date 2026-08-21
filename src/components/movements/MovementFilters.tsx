@@ -1,4 +1,4 @@
-import { App, Card, Col, Collapse, Dropdown, Flex, Grid, Input, Row, Segmented, Select, Typography } from "antd";
+import { App, Button, Card, Col, Collapse, Dropdown, Flex, Grid, Input, Row, Segmented, Select, Space, Typography } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { MovementFilters } from "@/routes/movements";
@@ -6,6 +6,7 @@ import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
 import { CurrencyEnum } from "@/enums/CurrencyEnum";
 import { useCategory } from "@/apis/hooks/useCategory";
 import { exportMovementsToCsv, exportMovementsToPdf } from "@/apis/movement/exportMovements";
+import DownOutlined from "@ant-design/icons/DownOutlined";
 import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
 import FilePdfOutlined from "@ant-design/icons/FilePdfOutlined";
 import FilterOutlined from "@ant-design/icons/FilterOutlined";
@@ -135,19 +136,25 @@ export default function MovementFilters({
           block={isMobile}
         />
         <Flex gap={12} vertical={isMobile}>
-          <Dropdown.Button
-            size="large"
-            icon={<DownloadOutlined />}
-            loading={exporting}
-            onClick={() => handleExport("csv")}
-            style={isMobile ? { width: "100%" } : undefined}
-            menu={{
-              items: [{ key: "pdf", icon: <FilePdfOutlined />, label: t("movements.exportPdf") }],
-              onClick: () => handleExport("pdf"),
-            }}
-          >
-            {t("movements.exportCsv")}
-          </Dropdown.Button>
+          <Space.Compact style={isMobile ? { width: "100%" } : undefined}>
+            <Button
+              size="large"
+              icon={<DownloadOutlined />}
+              loading={exporting}
+              onClick={() => handleExport("csv")}
+              style={isMobile ? { flex: 1 } : undefined}
+            >
+              {t("movements.exportCsv")}
+            </Button>
+            <Dropdown
+              menu={{
+                items: [{ key: "pdf", icon: <FilePdfOutlined />, label: t("movements.exportPdf") }],
+                onClick: () => handleExport("pdf"),
+              }}
+            >
+              <Button size="large" icon={<DownOutlined />} />
+            </Dropdown>
+          </Space.Compact>
           {Modal}
         </Flex>
       </div>

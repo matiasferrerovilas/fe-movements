@@ -32,7 +32,7 @@ interface UseUndoableDeleteResult<T> {
   isPending: (item: T) => boolean;
 }
 
-const DEFAULT_DELAY_MS = 7000;
+const DEFAULT_DELAY_MS = 3000;
 
 /**
  * Hook reutilizable para borrados "deshacibles": en lugar de disparar el DELETE inmediatamente,

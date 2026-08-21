@@ -758,8 +758,11 @@
       "emptyStateSubtitle_company": "Todavía no cargaste ningún gasto recurrente. Agregá el primero para llevar el control de los pagos operativos."
     },
     "summary": {
-      "paidTitle": "Pagados",
-      "pendingTitle": "Pendientes"
+      "periodLabel": "Este mes",
+      "pendingSuffix": "pendientes",
+      "ofTotal": "de {{total}} en total",
+      "allPaidTitle": "¡Estás al día!",
+      "allPaidDescription": "Ya pagaste tus {{count}} {{plural}} de este mes."
     },
     "card": {
       "amountMustBePositive": "El monto debe ser mayor que 0",
