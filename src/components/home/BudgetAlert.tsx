@@ -75,7 +75,7 @@ export default function BudgetAlert() {
           type="link"
           size="small"
           icon={<ArrowRightOutlined />}
-          iconPosition="end"
+          iconPlacement="end"
           onClick={() => navigate({ to: "/budgets" })}
           style={{ padding: 0, fontSize: 13 }}
           data-testid="ver-todos-link"

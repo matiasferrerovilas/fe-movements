@@ -196,7 +196,7 @@ export function CategoryEditModal({
       onCancel={onClose}
       footer={null}
       width={600}
-      destroyOnClose
+      destroyOnHidden
       key={category?.id} // Force re-mount cuando cambia la categoría
     >
       {category && (

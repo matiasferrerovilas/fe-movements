@@ -177,11 +177,13 @@ export function RecoveryTimeCalculator() {
                 value={result.ahorroPromedioMensual}
                 precision={2}
                 suffix={result.moneda}
-                valueStyle={{
-                  color:
-                    result.ahorroPromedioMensual > 0
-                      ? token.colorSuccess
-                      : token.colorError,
+                styles={{
+                  content: {
+                    color:
+                      result.ahorroPromedioMensual > 0
+                        ? token.colorSuccess
+                        : token.colorError,
+                  },
                 }}
               />
             </Col>
@@ -192,7 +194,7 @@ export function RecoveryTimeCalculator() {
                   value={result.mesesParaRecuperar ?? 0}
                   precision={1}
                   suffix={t("utilities.recoveryTime.monthsSuffix")}
-                  valueStyle={{ color: token.colorSuccess }}
+                  styles={{ content: { color: token.colorSuccess } }}
                 />
               ) : (
                 <Alert

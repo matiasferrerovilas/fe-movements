@@ -130,7 +130,7 @@ export function GoalCard({
             <Progress
               percent={goal.progressPercent}
               strokeColor={progressColor}
-              trailColor={token.colorFillSecondary}
+              railColor={token.colorFillSecondary}
               showInfo={false}
               size="small"
               style={{ marginBottom: 4 }}

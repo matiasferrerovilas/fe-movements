@@ -194,7 +194,7 @@ function RouteComponent() {
             items={steps.map((s) => ({ title: s.title }))}
             style={{ marginBottom: 40 }}
             size="small"
-            labelPlacement="vertical"
+            titlePlacement="vertical"
             responsive
           />
 

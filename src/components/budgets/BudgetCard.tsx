@@ -139,7 +139,7 @@ export function BudgetCard({
             <Progress
               percent={Math.min(budget.percentage, 100)}
               strokeColor={progressColor}
-              trailColor={token.colorFillSecondary}
+              railColor={token.colorFillSecondary}
               showInfo={false}
               size="small"
               style={{ marginBottom: 4 }}

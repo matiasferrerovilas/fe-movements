@@ -167,7 +167,7 @@ export function HelpPage() {
         <Collapse
           accordion
           defaultActiveKey={["workspace"]}
-          expandIconPosition="end"
+          expandIconPlacement="end"
           style={{
             background: token.colorBgContainer,
             borderRadius: 12,
