@@ -6,6 +6,8 @@ import { RoleEnum } from "@/enums/RoleEnum";
 import MonthlySummary from "@/components/home/MonthlySummary";
 import InsightsPanel from "@/components/home/InsightsPanel";
 import GoalsPanel from "@/components/home/GoalsPanel";
+import BadgesPanel from "@/components/home/BadgesPanel";
+import StreakBanner from "@/components/home/StreakBanner";
 import TopCategories from "@/components/home/TopCategories";
 import FirstMovementCta from "@/components/home/FirstMovementCta";
 import BalanceFiltersCollapsible from "@/components/home/BalanceFiltersCollapsible";
@@ -123,6 +125,9 @@ function RouteComponent() {
         Bienvenido{displayName ? `, ${displayName}` : ""}
       </Title>
 
+      {/* 1.1. Racha de registro — refuerza el hábito diario */}
+      <StreakBanner />
+
       {/* 1.5. CTA para cargar el primer movimiento — solo cuando no hay ningún gasto este año */}
       {!fetchingCategory && categoryData.length === 0 && <FirstMovementCta />}
 
@@ -140,6 +145,9 @@ function RouteComponent() {
           <GoalsPanel />
         </Col>
       </Row>
+
+      {/* 3.5. Badges de presupuesto cumplido — el propio componente se oculta si todavía no hay ninguno */}
+      <BadgesPanel />
 
       {/* 4-8. Top categorías, filtros y gráficos — ocultos por completo si no hay gastos por categoría */}
       {(fetchingCategory || categoryData.length > 0) && (

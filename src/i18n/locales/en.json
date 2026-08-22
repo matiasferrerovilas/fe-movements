@@ -324,6 +324,20 @@
     "budgetAlert": {
       "title": "Budgets on alert",
       "viewAllButton": "View all"
+    },
+    "streak": {
+      "active_one": "{{count}} day in a row logging movements",
+      "active_other": "{{count}} days in a row logging movements",
+      "record_one": "record: {{count}} day",
+      "record_other": "record: {{count}} days",
+      "brokenWithRecord_one": "Your streak broke — your record is {{count}} day. Start a new one today!",
+      "brokenWithRecord_other": "Your streak broke — your record is {{count}} days. Start a new one today!",
+      "startNudge": "Log a movement today to start a streak"
+    },
+    "badges": {
+      "title": "Badges",
+      "subtitle": "Achievements for meeting your budgets month after month",
+      "budgetMet": "You met your {{category}} budget"
     }
   },
   "movements": {

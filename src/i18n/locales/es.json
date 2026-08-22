@@ -324,6 +324,20 @@
     "budgetAlert": {
       "title": "Presupuestos en alerta",
       "viewAllButton": "Ver todos"
+    },
+    "streak": {
+      "active_one": "{{count}} día seguido registrando movimientos",
+      "active_other": "{{count}} días seguidos registrando movimientos",
+      "record_one": "récord: {{count}} día",
+      "record_other": "récord: {{count}} días",
+      "brokenWithRecord_one": "Se cortó tu racha — tu récord es {{count}} día. ¡Arrancá una nueva hoy!",
+      "brokenWithRecord_other": "Se cortó tu racha — tu récord es {{count}} días. ¡Arrancá una nueva hoy!",
+      "startNudge": "Registrá un movimiento hoy para empezar una racha"
+    },
+    "badges": {
+      "title": "Badges",
+      "subtitle": "Logros por cumplir tus presupuestos mes a mes",
+      "budgetMet": "Cumpliste tu presupuesto de {{category}}"
     }
   },
   "movements": {

@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Gamification UI: the backend's `GET /v1/gamification/streak` and `GET /v1/gamification/badges`
+  had no frontend caller anywhere — the streak/badges data existed but pushed nothing.
+  - `StreakBanner`: a small pill under the "Bienvenido" header showing days logged in a row
+    (fire icon), with distinct copy for an active streak, a broken one that still shows the
+    record, and a first-time nudge when there's no streak yet at all.
+  - `BadgesPanel`: a new home-dashboard card listing budget-met badges (category + month earned),
+    self-hiding when there are none yet — mirrors `InsightsPanel`'s visibility pattern rather than
+    `GoalsPanel`'s always-shown-with-empty-state one, since there's no action to take from an
+    empty badges list.
+  - New `src/models/Gamification.ts`, `src/apis/GamificationApi.ts`,
+    `src/apis/hooks/useGamification.ts` (`useStreak`, `useBadges`) — both endpoints resolve the
+    workspace server-side, same implicit pattern as Budgets, so neither hook takes a `workspaceId`.
+  - Annual budgets (fixed year, no month) are intentionally excluded from the badge count on the
+    backend, to avoid awarding a redundant one every month — no frontend copy claims otherwise.
+
+### Changed
+- `AppsGrid` no longer links to Keep for a GUEST user — Keep is a family-scoped app (matching the
+  new `ADMIN`/`FAMILY`-only access gate added on api-keep and fe-keep this round); the link only
+  used to lead to a 403 for that role, now it's just not shown.
+
 ### Changed — `/services` visual redesign
 - `ServiceSummary`: replaced the 3 identical stat cards (Total/Pagados/Pendientes) with one
   composed panel — a sentence-style headline ("$X pendientes de $Y en total"), a progress bar

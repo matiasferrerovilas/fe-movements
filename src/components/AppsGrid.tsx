@@ -1,4 +1,5 @@
 import { Flex, Typography, theme } from "antd";
+import { useUserRoles } from "@/apis/hooks/useUserRoles";
 
 const { Text } = Typography;
 
@@ -15,12 +16,17 @@ const EXTERNAL_APPS: ExternalApp[] = [
 
 export function AppsGrid() {
   const { token } = theme.useToken();
+  const { hasAnyRole } = useUserRoles();
 
-  if (EXTERNAL_APPS.length === 0) return null;
+  // Keep es exclusivo de familias — un usuario GUEST no tiene workspace ahí, así que mostrarle
+  // el link solo lleva a un 403 del otro lado.
+  const visibleApps = EXTERNAL_APPS.filter((app) => (app.key === "keep" ? hasAnyRole("FAMILY", "ADMIN") : true));
+
+  if (visibleApps.length === 0) return null;
 
   return (
     <Flex gap={8} wrap style={{ maxWidth: 168 }}>
-      {EXTERNAL_APPS.map((app) => (
+      {visibleApps.map((app) => (
         <a
           key={app.key}
           href={app.url}
