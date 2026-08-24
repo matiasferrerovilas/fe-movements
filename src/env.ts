@@ -16,8 +16,6 @@ declare global {
       environment: string;
       keycloak: KeycloakConfig;
       backend: BackendConfig;
-      /** DSN de Sentry para crash reporting — undefined lo deja desactivado (self-host sin cuenta). */
-      sentryDsn?: string;
     };
   }
 }
