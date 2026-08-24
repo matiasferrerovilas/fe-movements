@@ -16,14 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `scheduler`, which `react-dom` also calls into synchronously) now merge into a single `react`
   chunk.
 
-### Added
-- Production crash reporting via Sentry (`@sentry/react`), opt-in through a new `window.env.sentryDsn`
-  (`config/config.prod.js`, unset by default — a self-host without a Sentry project simply doesn't
-  report anywhere). Previously a render crash only called `logger.error`, which is a no-op outside
-  `import.meta.env.DEV` — a production crash left zero trace anywhere, unlike movements-mobile which
-  already had `@sentry/react-native` since 1.6.0. `ErrorBoundary.componentDidCatch` now also calls
-  `Sentry.captureException`, alongside the existing dev-only `logger.error`.
-
 ### Changed
 - `CategoryInsight.currency` is now `CurrencySymbol {symbol, id}` instead of a bare `string`,
   matching `GoalRecord`/`BudgetRecord` — the backend (`GET /v1/insights`) now returns a resolved

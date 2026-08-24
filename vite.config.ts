@@ -64,7 +64,12 @@ export default defineConfig({
     target: "es2022",
     minify: "esbuild",
     cssCodeSplit: true,
-    sourcemap: false,
+    // Temporalmente activado para diagnosticar el crash "Cannot set properties of undefined
+    // (setting 'Activity')" en producción — la búsqueda en el bundle minificado no encontró el
+    // string "Activity" en ningún lado (la clave se arma dinámicamente en runtime), así que sin
+    // stack real no hay forma de identificar qué librería la dispara. Volver a `false` una vez
+    // resuelto.
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks(id) {
