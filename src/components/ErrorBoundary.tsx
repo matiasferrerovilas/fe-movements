@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import * as Sentry from "@sentry/react";
 import { logger } from "@/utils/logger";
 import { ErrorFallback } from "@/components/ErrorFallback";
 
@@ -25,6 +26,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     logger.error("Error no controlado en el árbol de React:", error, errorInfo.componentStack);
+    // No-op si Sentry no está inicializado (sin sentryDsn configurado) — ver config/sentry.ts.
+    // A diferencia de logger.error, esto se reporta también en producción, que es el único
+    // momento en que un crash sin rastro le pasa a un usuario real en vez de a alguien mirando
+    // la consola de dev.
+    Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } });
   }
 
   render() {

@@ -8,6 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Production crash reporting via Sentry (`@sentry/react`), opt-in through a new `window.env.sentryDsn`
+  (`config/config.prod.js`, unset by default — a self-host without a Sentry project simply doesn't
+  report anywhere). Previously a render crash only called `logger.error`, which is a no-op outside
+  `import.meta.env.DEV` — a production crash left zero trace anywhere, unlike movements-mobile which
+  already had `@sentry/react-native` since 1.6.0. `ErrorBoundary.componentDidCatch` now also calls
+  `Sentry.captureException`, alongside the existing dev-only `logger.error`.
+
+### Changed
+- `CategoryInsight.currency` is now `CurrencySymbol {symbol, id}` instead of a bare `string`,
+  matching `GoalRecord`/`BudgetRecord` — the backend (`GET /v1/insights`) now returns a resolved
+  currency object rather than a raw symbol string. `InsightsPanel.tsx` updated to read
+  `insight.currency.symbol`.
+
+### Fixed
+- Swept the whole codebase for remaining antd v6 deprecated-prop console warnings, beyond the
+  `Progress.trailColor`/`Select.dropdownRender`/`List` cleanups done earlier this round:
+  `BudgetAlert`'s `Button.iconPosition` → `iconPlacement`, `BudgetCard`/`GoalCard`'s
+  `Progress.trailColor` → `railColor`, onboarding's `Steps.labelPlacement` → `titlePlacement`,
+  `RecoveryTimeCalculator`'s two `Statistic.valueStyle` → `styles.content`, `HelpPage`'s
+  `Collapse.expandIconPosition` → `expandIconPlacement`, and `CategoryEditModal`'s
+  `Modal.destroyOnClose` → `destroyOnHidden`. Cross-checked against antd's own source
+  (`node_modules/antd/es/**`) for the full list of deprecated-prop pairs rather than fixing only
+  the ones that happened to log during manual testing, so this should be the complete set.
+
+### Added
 - Gamification UI: the backend's `GET /v1/gamification/streak` and `GET /v1/gamification/badges`
   had no frontend caller anywhere — the streak/badges data existed but pushed nothing.
   - `StreakBanner`: a small pill under the "Bienvenido" header showing days logged in a row

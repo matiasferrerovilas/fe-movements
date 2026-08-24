@@ -48,8 +48,8 @@ function InsightRow({ insight }: { insight: CategoryInsight }) {
           <br />
           <Text type="secondary" style={{ fontSize: 11 }}>
             {t("home.insights.detail", {
-              current: `${insight.currency} ${formatAmount(insight.currentAmount)}`,
-              average: `${insight.currency} ${formatAmount(insight.averageAmount)}`,
+              current: `${insight.currency.symbol} ${formatAmount(insight.currentAmount)}`,
+              average: `${insight.currency.symbol} ${formatAmount(insight.averageAmount)}`,
             })}
           </Text>
         </div>
@@ -105,7 +105,7 @@ export default function InsightsPanel({ onVisibilityChange }: InsightsPanelProps
       </Text>
       <ul style={{ listStyle: "none", margin: "8px 0 0", padding: 0 }}>
         {insights.map((insight) => (
-          <InsightRow key={`${insight.currency}-${insight.category}`} insight={insight} />
+          <InsightRow key={`${insight.currency.symbol}-${insight.category}`} insight={insight} />
         ))}
       </ul>
     </Card>
