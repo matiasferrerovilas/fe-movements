@@ -85,9 +85,19 @@ export default defineConfig({
             // Fechas
             if (id.includes("dayjs")) return "dayjs";
 
-            // React core
-            if (id.includes("react-dom")) return "react-dom";
-            if (id.includes("/react/") || id.includes("/react@")) return "react";
+            // React core — react-dom must stay in the SAME chunk as react. Splitting them into
+            // separate async chunks doesn't guarantee react's module finishes initializing
+            // before react-dom's top-level code runs against it, which threw
+            // "Cannot set properties of undefined (setting 'Activity')" in production (react-dom
+            // trying to write onto React's shared internals before that module was ready).
+            if (
+              id.includes("react-dom") ||
+              id.includes("/react/") ||
+              id.includes("/react@") ||
+              id.includes("scheduler")
+            ) {
+              return "react";
+            }
 
             // TanStack (routing y data fetching)
             if (id.includes("@tanstack")) return "tanstack";

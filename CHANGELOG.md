@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Production crashed with `Uncaught TypeError: Cannot set properties of undefined (setting
+  'Activity')`, thrown from inside React's own minified code. `vite.config.ts`'s `manualChunks`
+  split `react` and `react-dom` into two separate output chunks — `react-dom`'s top-level code
+  needs to attach directly to the same live `react` module instance, and splitting them into
+  independently-loaded chunks doesn't guarantee `react` finishes initializing first. Both (plus
+  `scheduler`, which `react-dom` also calls into synchronously) now merge into a single `react`
+  chunk.
+
 ### Added
 - Production crash reporting via Sentry (`@sentry/react`), opt-in through a new `window.env.sentryDsn`
   (`config/config.prod.js`, unset by default — a self-host without a Sentry project simply doesn't
