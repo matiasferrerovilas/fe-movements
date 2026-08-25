@@ -64,14 +64,22 @@ export default defineConfig({
     target: "es2022",
     minify: "esbuild",
     cssCodeSplit: true,
-    // Temporalmente activado para diagnosticar el crash "Cannot set properties of undefined
-    // (setting 'Activity')" en producción — la búsqueda en el bundle minificado no encontró el
-    // string "Activity" en ningún lado (la clave se arma dinámicamente en runtime), así que sin
-    // stack real no hay forma de identificar qué librería la dispara. Volver a `false` una vez
-    // resuelto.
-    sourcemap: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
+        // No separar react/react-dom/scheduler en su propio chunk: cualquier paquete de
+        // node_modules que no calce en los buckets de abajo (p.ej. use-sync-external-store,
+        // o dependencias internas de rc-component que antd arrastra) cae en "vendor" — y como
+        // esos paquetes sí importan react directamente, un chunk "react" separado termina siendo
+        // importado *por* vendor y a la vez importando *desde* vendor (algún módulo agrupado ahí
+        // por matching de substring que a su vez depende de algo de vendor). Ese ciclo entre
+        // chunks de Rollup no respeta el orden de inicialización de módulos ES: el chunk que
+        // queda "del lado de atrás" del ciclo corre su código de nivel superior antes de que el
+        // otro termine de inicializarse, lo que tiraba "Cannot set properties of undefined
+        // (setting 'Activity')" en producción (use-sync-external-store llamando a la factory de
+        // React antes de que el chunk de React hubiera terminado de crear su objeto de exports).
+        // Fusionar react en el bucket "vendor" (mismo chunk, sin límite entre ambos) elimina la
+        // posibilidad del ciclo sin tener que auditar cada dependencia transitiva.
         manualChunks(id) {
           if (id.includes("node_modules")) {
             // UI - Ant Design (separado para mejor caching)
@@ -90,20 +98,6 @@ export default defineConfig({
             // Fechas
             if (id.includes("dayjs")) return "dayjs";
 
-            // React core — react-dom must stay in the SAME chunk as react. Splitting them into
-            // separate async chunks doesn't guarantee react's module finishes initializing
-            // before react-dom's top-level code runs against it, which threw
-            // "Cannot set properties of undefined (setting 'Activity')" in production (react-dom
-            // trying to write onto React's shared internals before that module was ready).
-            if (
-              id.includes("react-dom") ||
-              id.includes("/react/") ||
-              id.includes("/react@") ||
-              id.includes("scheduler")
-            ) {
-              return "react";
-            }
-
             // TanStack (routing y data fetching)
             if (id.includes("@tanstack")) return "tanstack";
 
@@ -113,7 +107,8 @@ export default defineConfig({
             // WebSocket
             if (id.includes("stomp") || id.includes("sockjs")) return "websocket";
 
-            // El resto de dependencias menores
+            // React (+ react-dom, scheduler, use-sync-external-store, y todo lo demás que no
+            // calzó arriba) — ver comentario de arriba sobre por qué esto va todo junto.
             return "vendor";
           }
 

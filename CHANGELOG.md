@@ -8,13 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- Production crashed with `Uncaught TypeError: Cannot set properties of undefined (setting
-  'Activity')`, thrown from inside React's own minified code. `vite.config.ts`'s `manualChunks`
-  split `react` and `react-dom` into two separate output chunks — `react-dom`'s top-level code
-  needs to attach directly to the same live `react` module instance, and splitting them into
-  independently-loaded chunks doesn't guarantee `react` finishes initializing first. Both (plus
-  `scheduler`, which `react-dom` also calls into synchronously) now merge into a single `react`
-  chunk.
+- Production crashed on load with `Uncaught TypeError: Cannot set properties of undefined
+  (setting 'Activity')`. The earlier attempt at this fix (merging `react`+`react-dom`+`scheduler`
+  into one `manualChunks` bucket) didn't address the actual cause and the crash kept happening —
+  confirmed against the deployed bundle itself: comparing the real production `react-*.js` and
+  `vendor-*.js` chunks showed each one statically `import`-ing from the other, a genuine circular
+  dependency between the two Rollup output chunks. In a module cycle, the chunk on the "far side"
+  of the cycle runs its own top-level code before the other one finishes initializing; here that
+  meant `use-sync-external-store` (bundled into `vendor`, used internally by TanStack
+  Query/Router) called into React's module factory before `react`'s chunk had finished setting up
+  its own exports object, which is exactly where `.Activity` got written onto `undefined`. The
+  cycle existed because the `manualChunks` substring matching (`id.includes("/react/")` etc.) was
+  loose enough to also sweep in unrelated packages (e.g. antd's `rc-pagination` locale files
+  turned up inside the `react` chunk) that depend on things bucketed into `vendor`, while `vendor`
+  also depends on `react` directly — two edges between the same pair of chunks. Fix: stop carving
+  `react` into its own chunk; it now merges into the general `vendor` bucket, so there's no second
+  chunk left for it to cycle with. Verified by walking the full chunk import graph of a fresh
+  build for cycles of any length — none found.
 
 ### Changed
 - `CategoryInsight.currency` is now `CurrencySymbol {symbol, id}` instead of a bare `string`,
