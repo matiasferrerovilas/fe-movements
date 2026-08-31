@@ -19,6 +19,18 @@ vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => mockNavigate,
 }));
 
+// Por defecto no-READ_ONLY, para no tener que tocar el resto de los tests de este archivo —
+// solo el describe de más abajo lo pisa con mockReturnValueOnce.
+const mockUseCurrentWorkspace = vi.fn(() => ({
+  currentWorkspace: null,
+  workspaces: [],
+  setCurrentWorkspace: vi.fn(),
+  isLoading: false,
+}));
+vi.mock("@/apis/workspace/WorkspaceContext", () => ({
+  useCurrentWorkspace: () => mockUseCurrentWorkspace(),
+}));
+
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
 const mockMemberships: Workspace[] = [
@@ -121,7 +133,9 @@ describe("AddMovementModal", () => {
     expect(allButtons.find((b) => b.textContent?.trim() === "Importar")).toBeUndefined();
   });
 
-  it("shows 'Importar' button after switching to the 'Importar PDF' tab", async () => {
+  // PDF_IMPORT_ENABLED = false in AddMovementModal.tsx — la pestaña no se renderiza mientras
+  // esté desactivada, así que no hay ningún tab "importar pdf" al que hacer click.
+  it.skip("shows 'Importar' button after switching to the 'Importar PDF' tab", async () => {
     render(<AddMovementModal />, { wrapper: makeWrapper() });
     await openModal();
 
@@ -142,7 +156,8 @@ describe("AddMovementModal", () => {
     expect(allButtons.find((b) => b.textContent?.trim() === "Agregar")).toBeUndefined();
   });
 
-  it("shows 'Agregar' button after switching back to the 'Manual' tab", async () => {
+  // Mismo motivo: sin la pestaña "Importar PDF" no hay a qué volver.
+  it.skip("shows 'Agregar' button after switching back to the 'Manual' tab", async () => {
     render(<AddMovementModal />, { wrapper: makeWrapper() });
     await openModal();
 
@@ -234,5 +249,20 @@ describe("AddMovementModal sin monedas cargadas", () => {
     expect(
       await screen.findByText("Necesitás un banco para continuar"),
     ).toBeInTheDocument();
+  });
+});
+
+describe("AddMovementModal con rol READ_ONLY", () => {
+  it("no renderiza ningún trigger para crear un movimiento", () => {
+    mockUseCurrentWorkspace.mockReturnValueOnce({
+      currentWorkspace: { metadata: { role: "READ_ONLY" } },
+      workspaces: [],
+      setCurrentWorkspace: vi.fn(),
+      isLoading: false,
+    });
+
+    const { container } = render(<AddMovementModal />, { wrapper: makeWrapper() });
+
+    expect(container).toBeEmptyDOMElement();
   });
 });

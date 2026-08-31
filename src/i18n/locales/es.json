@@ -609,7 +609,11 @@
       "sendInvitationButton": "Enviar invitación",
       "emailRequired": "Por favor ingresa un correo",
       "emailInvalid": "Ingresa un correo válido",
-      "emailPlaceholder": "usuario@ejemplo.com"
+      "emailPlaceholder": "usuario@ejemplo.com",
+      "roleLabel": "Rol",
+      "roleRequired": "Por favor elegí un rol",
+      "roleCollaborator": "Colaborador — puede crear y editar",
+      "roleReadOnly": "Solo lectura — solo puede ver"
     },
     "sentInvitations": {
       "title": "Invitaciones Enviadas",

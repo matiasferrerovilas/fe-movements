@@ -11,9 +11,15 @@ import ImportMovementTab from "@/components/modals/movements/ImportMovementTab";
 import AddMovementExpenseTab from "@/components/modals/movements/AddMovementExpenseTab";
 import { useBanks } from "@/apis/hooks/useBank";
 import { useCurrency } from "@/apis/hooks/useCurrency";
+import { useIsReadOnly } from "@/apis/workspace/useIsReadOnly";
 
 const TAB_INDIVIDUAL = "1";
 const TAB_ARCHIVO = "2";
+
+// Desactivado a pedido del usuario: el import de PDF quedó desactualizado y no anda bien — se
+// oculta la pestaña en vez de borrar el código, para poder reactivarlo con un solo flip acá
+// cuando esté listo. Item relacionado en el roadmap: "Import de PDF sin validar tipo ni tamaño".
+const PDF_IMPORT_ENABLED = false;
 
 interface AddMovementModalProps {
   block?: boolean;
@@ -24,6 +30,7 @@ interface AddMovementModalProps {
 export default function AddMovementModal({ block, trigger }: AddMovementModalProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const isReadOnly = useIsReadOnly();
   const { data: banks = [], isLoading: isLoadingBanks } = useBanks();
   const { data: currencies = [], isLoading: isLoadingCurrencies } = useCurrency();
   const isLoadingSetup = isLoadingBanks || isLoadingCurrencies;
@@ -60,6 +67,12 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
       : t("movements.modal.confirmAdd");
   const confirmIcon =
     activeTab === TAB_ARCHIVO ? <UploadOutlined /> : <PlusOutlined />;
+
+  // Un READ_ONLY no tiene ninguna acción de crear disponible — ni el botón trigger por defecto
+  // ni el custom (si alguien lo pasa igual, no se invoca).
+  if (isReadOnly) {
+    return null;
+  }
 
   return (
     <>
@@ -114,7 +127,7 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
               </Button>
             }
           />
-        ) : (
+        ) : PDF_IMPORT_ENABLED ? (
           <Tabs
             activeKey={activeTab}
             onChange={setActiveTab}
@@ -138,6 +151,10 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
               },
             ]}
           />
+        ) : (
+          // Con el import de PDF desactivado, no queda más que una forma de cargar un
+          // movimiento — se salta el wrapper de Tabs en vez de mostrar una sola pestaña sola.
+          <AddMovementExpenseTab ref={expenseRef} onSuccess={handleCloseModal} />
         )}
       </ModalComponent>
     </>

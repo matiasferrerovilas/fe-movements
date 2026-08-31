@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.0] - 2026-08-31
+
+### Added
+- `InviteUserToWorkspace` now has a role selector (Colaborador / Solo lectura, defaulting to
+  Colaborador) alongside the email field — the chosen role is sent to the backend and applied to
+  the membership when the invitee accepts. New `WorkspaceRoleEnum`-typed `role` field on
+  `CreateInvitationForm`/`Invitations`/`SentInvitation`.
+
+## [2.10.0] - 2026-08-31
+
+### Added
+- READ_ONLY workspace members no longer see any create action: `AddMovementModal` (the "Agregar
+  Movimiento" trigger, on every screen it's used from) and `ServiceCardForm` (the inline "new
+  service" card, main and empty-state) now render nothing when the caller's role in the active
+  workspace is `READ_ONLY`. New `useIsReadOnly()` hook, deriving from `currentWorkspace` (already
+  in memory via `WorkspaceContext`, updates instantly on workspace switch) rather than `/users/me`
+  (which has `staleTime: Infinity` and wouldn't reflect a workspace switch without extra
+  invalidation). `CurrentUserMetadata` also gained `workspaceRole` (now returned by the backend),
+  for future consumers that want it straight from `/me`.
+
+### Changed
+- `WorkspaceMetadata` dropped `members: string[]` — the backend removed the field (redundant with
+  `memberDetails`, which already has every member's email plus userId/role). The one consumer
+  (`SettingCurrentWorkspace`'s member count) now reads `memberDetails.length`.
+- The "Importar PDF" tab in `AddMovementModal` is temporarily hidden — the bank-statement import
+  flow is outdated and not working well right now. New `PDF_IMPORT_ENABLED` flag in the component
+  (currently `false`); flipping it back to `true` restores the tab, no other code removed. The
+  "Agregar" (manual entry) flow is unaffected — it now renders directly instead of inside a
+  single-tab `Tabs` wrapper.
+
 ## [2.9.0] - 2026-08-30
 
 ### Fixed

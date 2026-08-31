@@ -1,5 +1,6 @@
 import type { User } from "@/models/User";
 import type { InvitationStatusEnum } from "@/enums/InvitationStatusEnum";
+import type { WorkspaceRoleEnum } from "@/enums/WorkspaceRoleEnum";
 
 export interface AccountWithoutMembers {
   id: number;
@@ -19,7 +20,6 @@ export interface WorkspaceMemberDetail {
 }
 
 export interface WorkspaceMetadata {
-  members: string[];
   memberDetails: WorkspaceMemberDetail[];
   role: string;
   joinedAt: string;
@@ -46,6 +46,9 @@ export interface CreateWorkspaceForm {
 export interface CreateInvitationForm {
   emails: string[];
   workspaceId: number;
+  // Rol con el que se une el invitado si acepta — api-identity lo setea en el membership recién
+  // en ese momento (ver WorkspaceMembershipService.addMembership).
+  role: WorkspaceRoleEnum;
 }
 
 export interface Invitations {
@@ -54,6 +57,7 @@ export interface Invitations {
   workspaceName: string;
   invitedByEmail: string;
   status: InvitationStatusEnum;
+  role: WorkspaceRoleEnum;
   createdAt: string;
 }
 
@@ -63,6 +67,7 @@ export interface SentInvitation {
   workspaceName: string;
   invitedUserEmail: string;
   status: InvitationStatusEnum;
+  role: WorkspaceRoleEnum;
   createdAt: string;
 }
 

@@ -92,7 +92,7 @@ export function SettingCurrentWorkspace() {
               }}
             >
               {t("settings.currentWorkspace.memberCount", {
-                count: currentWorkspace.metadata.members.length,
+                count: currentWorkspace.metadata.memberDetails.length,
               })}
             </span>
           </Flex>

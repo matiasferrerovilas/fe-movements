@@ -28,6 +28,7 @@ import type { ServiceToAdd } from "@/apis/SubscriptionApi";
 import { useCurrency } from "@/apis/hooks/useCurrency";
 import { useUserDefault } from "@/apis/hooks/useSettings";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import { useIsReadOnly } from "@/apis/workspace/useIsReadOnly";
 import { getServiceLabels } from "@/utils/serviceLabels";
 
 const { Text } = Typography;
@@ -51,6 +52,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
   const { data: defaultCurrency } = useUserDefault("DEFAULT_CURRENCY");
   const { token } = theme.useToken();
   const navigate = useNavigate();
+  const isReadOnly = useIsReadOnly();
 
   const { data: currentUser } = useCurrentUser();
   const { t } = useTranslation();
@@ -83,6 +85,11 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
       isPaid: false,
     });
   }, [defaultCurrency, currencies, form]);
+
+  // Un READ_ONLY no tiene ninguna acción de crear disponible.
+  if (isReadOnly) {
+    return null;
+  }
 
   if (hasNoCurrencies) {
     return (

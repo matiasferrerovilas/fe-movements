@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ModalComponent from "@/components/modals/Modal";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Select } from "antd";
 import PlusCircleOutlined from "@ant-design/icons/PlusCircleOutlined";
 import UserAddOutlined from "@ant-design/icons/UserAddOutlined";
 import { useMutation } from "@tanstack/react-query";
@@ -11,6 +11,7 @@ import type {
 } from "@/models/UserWorkspace";
 import { addInvitationWorkspaceApi } from "@/apis/WorkspaceApi";
 import { ColorEnum } from "@/enums/ColorEnum";
+import { WorkspaceRoleEnum } from "@/enums/WorkspaceRoleEnum";
 import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
 import { getEntityLabels } from "@/utils/entityLabels";
 
@@ -38,10 +39,11 @@ export default function InviteUserToWorkspace({ group }: InviteUserToWorkspacePr
     },
   });
 
-  const handleSubmit = (values: { email: string }) => {
+  const handleSubmit = (values: { email: string; role: WorkspaceRoleEnum }) => {
     addInvitationMutation.mutate({
       emails: [values.email],
       workspaceId: group.workspaceId,
+      role: values.role,
     });
   };
 
@@ -80,6 +82,7 @@ export default function InviteUserToWorkspace({ group }: InviteUserToWorkspacePr
           layout="vertical"
           onFinish={handleSubmit}
           disabled={addInvitationMutation.isPending}
+          initialValues={{ role: WorkspaceRoleEnum.COLLABORATOR }}
         >
           <Form.Item
             label={labels.miembroEmail}
@@ -90,6 +93,26 @@ export default function InviteUserToWorkspace({ group }: InviteUserToWorkspacePr
             ]}
           >
             <Input placeholder={t("settings.inviteWorkspace.emailPlaceholder")} />
+          </Form.Item>
+          <Form.Item
+            label={t("settings.inviteWorkspace.roleLabel")}
+            name="role"
+            rules={[
+              { required: true, message: t("settings.inviteWorkspace.roleRequired") },
+            ]}
+          >
+            <Select
+              options={[
+                {
+                  value: WorkspaceRoleEnum.COLLABORATOR,
+                  label: t("settings.inviteWorkspace.roleCollaborator"),
+                },
+                {
+                  value: WorkspaceRoleEnum.READ_ONLY,
+                  label: t("settings.inviteWorkspace.roleReadOnly"),
+                },
+              ]}
+            />
           </Form.Item>
         </Form>
       </ModalComponent>
