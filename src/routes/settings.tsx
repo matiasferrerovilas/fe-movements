@@ -4,6 +4,7 @@ import { SettingIncome } from "@/components/settings/SettingIncome";
 import { Col, Flex, Grid, Row, Tabs } from "antd";
 import { SettingCurrentWorkspace } from "@/components/settings/SettingCurrentWorkspace";
 import { SettingInviteWorkspaces } from "@/components/settings/SettingInviteWorkspaces";
+import { SettingSentInvitations } from "@/components/settings/SettingSentInvitations";
 import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
 import { RoleEnum } from "@/enums/RoleEnum";
 import SettingAccount from "@/components/settings/SettingAccount";
@@ -61,6 +62,7 @@ function RouteComponent() {
       children: (
         <Flex vertical gap={16}>
           <SettingInviteWorkspaces />
+          <SettingSentInvitations />
           <SettingCurrentWorkspace />
           <SettingCategory />
         </Flex>

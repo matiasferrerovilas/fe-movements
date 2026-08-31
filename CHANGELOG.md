@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.0] - 2026-08-30
+
 ### Fixed
 - Production crashed on load with `Uncaught TypeError: Cannot set properties of undefined
   (setting 'Activity')`. The earlier attempt at this fix (merging `react`+`react-dom`+`scheduler`
@@ -44,6 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the ones that happened to log during manual testing, so this should be the complete set.
 
 ### Added
+- "Invitaciones Enviadas" card in Settings → Workspace: lists pending invitations the authenticated
+  user sent, with a cancel button per row (`SettingSentInvitations`/`SettingSentInvitationCard`,
+  mirroring the existing "Invitaciones Pendientes" received-invitations card). Backed by
+  api-movements' new `GET/DELETE /v1/workspace/invitations/sent|{id}`.
 - Gamification UI: the backend's `GET /v1/gamification/streak` and `GET /v1/gamification/badges`
   had no frontend caller anywhere — the streak/badges data existed but pushed nothing.
   - `StreakBanner`: a small pill under the "Bienvenido" header showing days logged in a row

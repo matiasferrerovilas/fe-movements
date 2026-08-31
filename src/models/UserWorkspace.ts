@@ -57,6 +57,15 @@ export interface Invitations {
   createdAt: string;
 }
 
+export interface SentInvitation {
+  id: number;
+  workspaceId: number;
+  workspaceName: string;
+  invitedUserEmail: string;
+  status: InvitationStatusEnum;
+  createdAt: string;
+}
+
 export interface ConfirmInvitations {
   status: boolean;
   id: number;

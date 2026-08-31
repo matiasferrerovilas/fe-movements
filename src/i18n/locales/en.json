@@ -611,6 +611,17 @@
       "emailInvalid": "Enter a valid email",
       "emailPlaceholder": "user@example.com"
     },
+    "sentInvitations": {
+      "title": "Sent Invitations",
+      "invitedUserLabel": "Invited",
+      "cancelButton": "Cancel",
+      "cancelConfirmTitle": "Cancel this invitation?",
+      "cancelConfirmDescription": "{{email}} will no longer be able to accept it.",
+      "cancelConfirmOk": "Yes, cancel",
+      "cancelConfirmCancel": "No",
+      "cancelSuccessMessage": "Invitation cancelled",
+      "cancelErrorMessage": "Couldn't cancel the invitation"
+    },
     "currentWorkspace": {
       "noWorkspaceSelected": "No workspace selected",
       "memberCount_one": "{{count}} member",

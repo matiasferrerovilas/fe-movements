@@ -3,6 +3,7 @@ import type {
   CreateWorkspaceForm,
   CreateInvitationForm,
   Invitations,
+  SentInvitation,
   Workspace,
 } from "@/models/UserWorkspace";
 import { api } from "@/apis/axios";
@@ -37,3 +38,13 @@ export const acceptRejectWorkspaceInvitationApi = (
 
 export const getAllUserWorkspaces = () =>
   api.get<Workspace[]>(baseUrl).then((response) => response.data);
+
+export const getSentWorkspaceInvitations = () =>
+  api
+    .get<SentInvitation[]>(`${baseUrl}/invitations/sent`)
+    .then((response) => response.data);
+
+export const cancelWorkspaceInvitationApi = (invitationId: number) =>
+  api
+    .delete(`${baseUrl}/invitations/${invitationId}`)
+    .then((response) => response.data);
