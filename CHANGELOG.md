@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.1] - 2026-09-01
+
+### Fixed
+- `antd@6` renamed `Alert`'s `message` prop to `title`, logging a deprecation warning at every
+  `Alert` render (`RecoveryTimeCalculator`, `ServiceCardForm`, `SettingBank`, `SettingCurrency`,
+  `AdminUserType`, `AddMovementModal`, `AddMovementExpenseTab`). Renamed the prop at all 8 call
+  sites — `description`/other props untouched, this only affects the deprecated `Alert` prop.
+
 ## [2.12.0] - 2026-09-01
 
 ### Added
