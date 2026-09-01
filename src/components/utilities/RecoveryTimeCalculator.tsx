@@ -161,7 +161,7 @@ export function RecoveryTimeCalculator() {
           style={{ marginTop: 16 }}
           type="error"
           showIcon
-          message={t("utilities.recoveryTime.errorMessage")}
+          title={t("utilities.recoveryTime.errorMessage")}
         />
       )}
 
@@ -200,7 +200,7 @@ export function RecoveryTimeCalculator() {
                 <Alert
                   type="warning"
                   showIcon
-                  message={t("utilities.recoveryTime.notRecoverableTitle")}
+                  title={t("utilities.recoveryTime.notRecoverableTitle")}
                   description={t("utilities.recoveryTime.notRecoverableDescription", {
                     months: result.mesesConsiderados,
                   })}

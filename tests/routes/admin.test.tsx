@@ -19,6 +19,10 @@ vi.mock("@/components/admin/AdminUserType", () => ({
   default: () => <div>Mocked AdminUserType Component</div>,
 }));
 
+vi.mock("@/components/admin/AdminMaintenance", () => ({
+  default: () => <div>Mocked AdminMaintenance Component</div>,
+}));
+
 // ── Import después de mocks ────────────────────────────────────────────────
 
 const { Route } = await import("@/routes/admin");
@@ -99,14 +103,14 @@ describe("Admin route", () => {
   });
 
   describe("tab switch", () => {
-    it("al hacer click en 'Mantenimiento' sigue mostrando el placeholder", async () => {
+    it("al hacer click en 'Mantenimiento' muestra el componente AdminMaintenance", async () => {
       const user = userEvent.setup();
       renderAdmin();
 
       await user.click(screen.getByText("Mantenimiento"));
 
       expect(
-        screen.getByText("Sin acciones configuradas"),
+        screen.getByText("Mocked AdminMaintenance Component"),
       ).toBeInTheDocument();
     });
   });

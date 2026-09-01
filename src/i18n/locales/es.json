@@ -843,8 +843,35 @@
       "maintenance": "Mantenimiento"
     },
     "maintenance": {
-      "emptyTitle": "Sin acciones configuradas",
-      "emptyDescription": "Agregá acciones de mantenimiento acá."
+      "title": "Ejecución manual de crons",
+      "subtitle": "Disparar manualmente los jobs programados del sistema",
+      "runButton": "Ejecutar",
+      "runningButton": "Ejecutando...",
+      "successMessage": "{{job}} ejecutado correctamente",
+      "errorForbidden": "No tenés permisos para ejecutar este job",
+      "errorGeneric": "Error al ejecutar el job",
+      "jobs": {
+        "recurringIncome": {
+          "title": "Ingresos recurrentes",
+          "description": "Genera los ingresos recurrentes del mes (normalmente corre el 1° de cada mes a las 6:00)."
+        },
+        "creditInstallments": {
+          "title": "Cuotas de crédito",
+          "description": "Genera la próxima cuota de cada compra en cuotas pendiente (normalmente corre el 1° de cada mes a las 6:30)."
+        },
+        "subscriptionOverdue": {
+          "title": "Servicios vencidos",
+          "description": "Notifica las suscripciones vencidas (normalmente corre todos los días a las 9:00)."
+        },
+        "monthlySummary": {
+          "title": "Resumen mensual",
+          "description": "Genera el resumen mensual de cada workspace (normalmente corre el último día del mes a las 23:00)."
+        },
+        "budgetBadges": {
+          "title": "Badges de presupuesto",
+          "description": "Evalúa los presupuestos cerrados del mes y otorga badges (normalmente corre el último día del mes a las 23:00)."
+        }
+      }
     },
     "userType": {
       "changeSuccess": "Tipo de usuario cambiado a {{type}}",

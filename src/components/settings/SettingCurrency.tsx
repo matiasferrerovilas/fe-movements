@@ -267,7 +267,7 @@ export function SettingCurrency() {
         <Alert
           type="warning"
           showIcon
-          message={t("settings.currency.requiredNoticeTitle")}
+          title={t("settings.currency.requiredNoticeTitle")}
           description={t("settings.currency.requiredNoticeDescription")}
           style={{ borderRadius: 12, marginBottom: 16 }}
         />

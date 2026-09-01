@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.0] - 2026-09-01
+
+### Added
+- New "Admin" tab **Mantenimiento** (`AdminMaintenance`, in `/admin`) lets an ADMIN trigger every
+  api-movements cron manually — one card per job (ingresos recurrentes, cuotas de crédito,
+  servicios vencidos, resumen mensual, badges de presupuesto), calling the new
+  `POST /v1/admin/crons/{jobId}` endpoints via `useRunCronJob`.
+- The "Admin" nav entry moved from the profile-popover tile grid to its own row **below** the Apps
+  section (desktop only — the mobile drawer, which has no Apps section, keeps it in its normal
+  place in the menu list).
+
 ## [2.11.1] - 2026-09-01
 
 ### Fixed

@@ -843,8 +843,35 @@
       "maintenance": "Maintenance"
     },
     "maintenance": {
-      "emptyTitle": "No actions configured",
-      "emptyDescription": "Add maintenance actions here."
+      "title": "Manual cron execution",
+      "subtitle": "Manually trigger the system's scheduled jobs",
+      "runButton": "Run",
+      "runningButton": "Running...",
+      "successMessage": "{{job}} ran successfully",
+      "errorForbidden": "You don't have permission to run this job",
+      "errorGeneric": "Error running the job",
+      "jobs": {
+        "recurringIncome": {
+          "title": "Recurring income",
+          "description": "Generates this month's recurring income entries (normally runs on the 1st of each month at 6:00)."
+        },
+        "creditInstallments": {
+          "title": "Credit installments",
+          "description": "Generates the next installment for each pending credit-card purchase (normally runs on the 1st of each month at 6:30)."
+        },
+        "subscriptionOverdue": {
+          "title": "Overdue subscriptions",
+          "description": "Notifies overdue subscriptions (normally runs every day at 9:00)."
+        },
+        "monthlySummary": {
+          "title": "Monthly summary",
+          "description": "Generates each workspace's monthly summary (normally runs on the last day of the month at 23:00)."
+        },
+        "budgetBadges": {
+          "title": "Budget badges",
+          "description": "Evaluates the month's closed budgets and awards badges (normally runs on the last day of the month at 23:00)."
+        }
+      }
     },
     "userType": {
       "changeSuccess": "User type changed to {{type}}",

@@ -367,6 +367,11 @@ export default function NavHeader() {
   const userMenuVisible = userMenuItems.filter(
     (item) => !item.roles?.length || hasAnyRole(...(item.roles ?? [])),
   );
+  // En el popover de perfil (desktop), "admin" se muestra en su propia fila debajo de
+  // Apps en vez de junto con el resto de los tiles — en el drawer mobile (sin sección de
+  // Apps) sigue yendo mezclado con el resto de userMenuVisible.
+  const desktopUserMenuTiles = userMenuVisible.filter((item) => item.key !== "admin");
+  const adminMenuItem = userMenuVisible.find((item) => item.key === "admin");
 
   const isHome = currentPath === "/";
   const activeKey = visibleItems.find((i) => i.path === currentPath)?.key ?? "";
@@ -421,7 +426,7 @@ export default function NavHeader() {
       </div>
       <Divider style={{ margin: 0 }} />
       <Flex gap={8} wrap style={{ padding: "8px 16px" }}>
-        {userMenuVisible.map((item) => (
+        {desktopUserMenuTiles.map((item) => (
           <ProfileTile
             key={item.key}
             icon={item.icon}
@@ -459,6 +464,21 @@ export default function NavHeader() {
           <AppsGrid />
         </div>
       </div>
+      {adminMenuItem && (
+        <>
+          <Divider style={{ margin: 0 }} />
+          <div style={{ padding: "4px 0" }}>
+            <ProfileMenuItem
+              icon={adminMenuItem.icon}
+              label={adminMenuItem.label}
+              onClick={() => {
+                router.navigate({ to: adminMenuItem.path });
+                closeProfile();
+              }}
+            />
+          </div>
+        </>
+      )}
       <Divider style={{ margin: 0 }} />
       <div style={{ padding: "4px 0" }}>
         <ProfileMenuItem

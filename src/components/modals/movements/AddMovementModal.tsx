@@ -106,7 +106,7 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
           <Alert
             type="warning"
             showIcon
-            message={
+            title={
               hasNoBanks
                 ? t("movements.modal.noBankTitle")
                 : t("movements.modal.noCurrencyTitle")

@@ -259,7 +259,7 @@ export function SettingBank() {
         <Alert
           type="warning"
           showIcon
-          message={t("settings.bank.requiredNoticeTitle")}
+          title={t("settings.bank.requiredNoticeTitle")}
           description={t("settings.bank.requiredNoticeDescription")}
           style={{ borderRadius: 12, marginBottom: 16 }}
         />

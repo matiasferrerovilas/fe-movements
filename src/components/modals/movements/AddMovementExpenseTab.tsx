@@ -220,7 +220,7 @@ const AddMovementExpenseTab = forwardRef<
             <Alert
               type="info"
               showIcon
-              message={
+              title={
                 <Row gutter={[12, 0]} style={{ marginTop: 8 }}>
                   <Col xs={24} sm={12}>
                     <Form.Item

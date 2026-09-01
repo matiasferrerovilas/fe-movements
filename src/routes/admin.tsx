@@ -8,6 +8,7 @@ import type { TFunction } from "i18next";
 import { protectedRouteGuard } from "@/apis/auth/protectedRouteGuard";
 import { RoleEnum } from "@/enums/RoleEnum";
 import AdminUserType from "@/components/admin/AdminUserType";
+import AdminMaintenance from "@/components/admin/AdminMaintenance";
 
 const { useBreakpoint } = Grid;
 const { Title, Text } = Typography;
@@ -18,45 +19,6 @@ export const Route = createFileRoute("/admin")({
   }),
   component: RouteComponent,
 });
-
-// ── Mantenimiento ─────────────────────────────────────────────────────────────
-
-function MantenimientoPanel() {
-  const { token } = theme.useToken();
-  const { t } = useTranslation();
-
-  return (
-    <Flex
-      vertical
-      align="center"
-      justify="center"
-      gap={12}
-      style={{ paddingTop: 48, paddingBottom: 48 }}
-    >
-      <div
-        style={{
-          width: 56,
-          height: 56,
-          borderRadius: token.borderRadiusLG,
-          background: token.colorFillSecondary,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <ToolOutlined style={{ fontSize: 26, color: token.colorTextTertiary }} />
-      </div>
-      <div style={{ textAlign: "center" }}>
-        <Title level={5} style={{ margin: 0, fontWeight: 600 }}>
-          {t("admin.maintenance.emptyTitle")}
-        </Title>
-        <Text type="secondary" style={{ fontSize: 13 }}>
-          {t("admin.maintenance.emptyDescription")}
-        </Text>
-      </div>
-    </Flex>
-  );
-}
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
@@ -72,7 +34,7 @@ function getAdminTabs(t: TFunction) {
       key: "mantenimiento",
       label: t("admin.tabs.maintenance"),
       icon: <ToolOutlined />,
-      children: <MantenimientoPanel />,
+      children: <AdminMaintenance />,
     },
   ];
 }

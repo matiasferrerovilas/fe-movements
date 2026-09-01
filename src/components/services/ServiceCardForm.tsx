@@ -96,7 +96,7 @@ export const ServiceCardForm = ({ handleAddService }: ServiceCardFormProps) => {
       <Alert
         type="warning"
         showIcon
-        message={t("services.form.noCurrencyTitle")}
+        title={t("services.form.noCurrencyTitle")}
         description={t("services.form.noCurrencyDescription")}
         action={
           <Button

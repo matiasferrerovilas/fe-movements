@@ -83,7 +83,7 @@ export default function AdminUserType() {
         <Alert
           type="info"
           showIcon
-          message={t("admin.userType.alertMessage")}
+          title={t("admin.userType.alertMessage")}
           description={
             <ul style={{ margin: "8px 0 0 0", paddingLeft: 20 }}>
               <li>
