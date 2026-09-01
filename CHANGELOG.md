@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.1] - 2026-09-01
+
+### Fixed
+- The "no movements yet" empty state on the home page said "este año"/"this year" — the default
+  filter it actually reflects (`DEFAULT_DATES`, `FirstMovementCta`'s trigger condition) is the
+  current month, not the year. Copy now says "este mes"/"this month" in both locales.
+
 ## [2.11.0] - 2026-08-31
 
 ### Added

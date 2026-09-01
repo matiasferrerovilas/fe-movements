@@ -252,7 +252,7 @@
   "home": {
     "firstMovement": {
       "title": "Ready to start?",
-      "subtitle": "You haven't logged any expense this year yet. Add your first one to see your charts, budgets, and insights in action.",
+      "subtitle": "You haven't logged any expense this month yet. Add your first one to see your charts, budgets, and insights in action.",
       "cta": "Log my first expense"
     },
     "filtersAdvanced": "Advanced Analysis Filters",

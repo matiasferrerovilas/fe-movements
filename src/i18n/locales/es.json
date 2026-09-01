@@ -252,7 +252,7 @@
   "home": {
     "firstMovement": {
       "title": "¿Empezamos?",
-      "subtitle": "Todavía no cargaste ningún gasto este año. Registrá el primero para ver tus gráficos, presupuestos e insights en acción.",
+      "subtitle": "Todavía no cargaste ningún gasto este mes. Registrá el primero para ver tus gráficos, presupuestos e insights en acción.",
       "cta": "Cargar mi primer gasto"
     },
     "filtersAdvanced": "Filtros de Análisis Avanzado",
