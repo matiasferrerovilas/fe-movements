@@ -13,6 +13,7 @@ import {
   Result,
   Skeleton,
   Statistic,
+  Tabs,
   Tag,
   Typography,
   theme,
@@ -23,7 +24,11 @@ import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import RightOutlined from "@ant-design/icons/RightOutlined";
 import { useUserDefault } from "@/apis/hooks/useSettings";
 import { usePayService, useUnpaidSubscriptions } from "@/apis/hooks/useService";
-import { useWorkspaceSummary, useMarkMonthlySummarySeen } from "@/apis/hooks/useWorkspaceSummary";
+import {
+  useWorkspaceSummary,
+  useWorkspaceSummaryByUser,
+  useMarkMonthlySummarySeen,
+} from "@/apis/hooks/useWorkspaceSummary";
 import AddMovementModal from "@/components/modals/movements/AddMovementModal";
 import type { Service } from "@/models/Service";
 import type { WorkspaceSummaryPerCurrency } from "@/models/WorkspaceSummary";
@@ -148,7 +153,7 @@ function ReconcileStep({
 
 // ── Paso 2: recap ─────────────────────────────────────────────────────────────
 
-// Un bloque por moneda — solo se rinden las que tuvieron actividad (ver el filtro en RecapStep).
+// Un bloque por moneda — solo se rinden las que tuvieron actividad (ver el filtro en WorkspaceTab).
 function CurrencyRecap({ data }: { data: WorkspaceSummaryPerCurrency }) {
   const { t } = useTranslation();
   const { token } = theme.useToken();
@@ -156,9 +161,14 @@ function CurrencyRecap({ data }: { data: WorkspaceSummaryPerCurrency }) {
 
   return (
     <div>
-      <Text strong style={{ display: "block", marginBottom: 8, letterSpacing: "0.02em" }}>
-        {data.currency}
-      </Text>
+      <Flex align="baseline" gap={8} style={{ marginBottom: 8 }}>
+        <Text strong style={{ letterSpacing: "0.02em" }}>
+          {data.currency}
+        </Text>
+        <Text type="secondary" style={{ fontSize: 12 }}>
+          {t("home.monthClose.movementsCount", { count: data.movementCount })}
+        </Text>
+      </Flex>
 
       <Flex gap={24} wrap="wrap" style={{ marginBottom: 8 }}>
         <Statistic
@@ -196,6 +206,96 @@ function CurrencyRecap({ data }: { data: WorkspaceSummaryPerCurrency }) {
   );
 }
 
+function WorkspaceTab({
+  workspaceId,
+  year,
+  month,
+}: {
+  workspaceId: number | null;
+  year: number;
+  month: number;
+}) {
+  const { t } = useTranslation();
+  const { data, isLoading, isError } = useWorkspaceSummary(workspaceId, year, month);
+
+  const visibleCurrencies = (data?.perCurrency ?? []).filter(
+    (c) => c.totalSpent > 0 || c.totalIncome > 0,
+  );
+
+  if (isLoading) return <Skeleton active paragraph={{ rows: 4 }} />;
+  if (isError)
+    return <Alert type="error" showIcon title={t("home.monthClose.errorMessage")} />;
+  if (visibleCurrencies.length === 0)
+    return <Empty description={t("home.monthClose.noData")} image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+
+  return (
+    <>
+      {visibleCurrencies.map((currency, idx) => (
+        <div key={currency.currency}>
+          {idx > 0 && <Divider style={{ margin: "16px 0" }} />}
+          <CurrencyRecap data={currency} />
+        </div>
+      ))}
+    </>
+  );
+}
+
+function UserBreakdownTab({
+  workspaceId,
+  year,
+  month,
+  active,
+}: {
+  workspaceId: number | null;
+  year: number;
+  month: number;
+  active: boolean;
+}) {
+  const { t } = useTranslation();
+  const { token } = theme.useToken();
+  const { data, isLoading, isError } = useWorkspaceSummaryByUser(
+    workspaceId,
+    year,
+    month,
+    active,
+  );
+
+  if (isLoading) return <Skeleton active paragraph={{ rows: 3 }} />;
+  if (isError)
+    return <Alert type="error" showIcon title={t("home.monthClose.errorMessage")} />;
+  if (!data || data.length === 0)
+    return (
+      <Empty
+        description={t("home.monthClose.byUserEmpty")}
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+      />
+    );
+
+  return (
+    <List
+      size="small"
+      dataSource={data}
+      renderItem={(user) => (
+        <List.Item>
+          <Flex vertical gap={4} style={{ width: "100%" }}>
+            <Text strong>{user.name}</Text>
+            {user.perCurrency.map((c) => (
+              <Flex key={c.currency} justify="space-between" wrap="wrap" gap={8}>
+                <Text type="secondary" style={{ fontSize: 13 }}>
+                  {c.currency} · {t("home.monthClose.movementsCount", { count: c.movementCount })}
+                </Text>
+                <Text style={{ fontSize: 13, color: token.colorError }}>
+                  {money(c.totalSpent, c.currency)}
+                </Text>
+              </Flex>
+            ))}
+          </Flex>
+        </List.Item>
+      )}
+    />
+  );
+}
+
 function RecapStep({
   workspaceId,
   year,
@@ -212,11 +312,7 @@ function RecapStep({
   dismissing: boolean;
 }) {
   const { t } = useTranslation();
-  const { data, isLoading, isError } = useWorkspaceSummary(workspaceId, year, month);
-
-  const visibleCurrencies = (data?.perCurrency ?? []).filter(
-    (c) => c.totalSpent > 0 || c.totalIncome > 0,
-  );
+  const [tab, setTab] = useState<"workspace" | "byUser">("workspace");
 
   return (
     <>
@@ -224,24 +320,29 @@ function RecapStep({
         {t("home.monthClose.recapTitle")}
       </Title>
 
-      {isLoading && <Skeleton active paragraph={{ rows: 4 }} />}
-
-      {isError && (
-        <Alert type="error" showIcon title={t("home.monthClose.errorMessage")} style={{ marginBottom: 16 }} />
-      )}
-
-      {!isLoading && !isError && visibleCurrencies.length === 0 && (
-        <Empty description={t("home.monthClose.noData")} style={{ marginBottom: 16 }} />
-      )}
-
-      {!isLoading &&
-        !isError &&
-        visibleCurrencies.map((currency, idx) => (
-          <div key={currency.currency}>
-            {idx > 0 && <Divider style={{ margin: "16px 0" }} />}
-            <CurrencyRecap data={currency} />
-          </div>
-        ))}
+      <Tabs
+        activeKey={tab}
+        onChange={(key) => setTab(key as "workspace" | "byUser")}
+        items={[
+          {
+            key: "workspace",
+            label: t("home.monthClose.tabWorkspace"),
+            children: <WorkspaceTab workspaceId={workspaceId} year={year} month={month} />,
+          },
+          {
+            key: "byUser",
+            label: t("home.monthClose.tabByUser"),
+            children: (
+              <UserBreakdownTab
+                workspaceId={workspaceId}
+                year={year}
+                month={month}
+                active={tab === "byUser"}
+              />
+            ),
+          },
+        ]}
+      />
 
       <Flex justify="space-between" align="center" style={{ marginTop: 24 }}>
         <Button icon={<ArrowLeftOutlined />} onClick={onBack} disabled={dismissing}>

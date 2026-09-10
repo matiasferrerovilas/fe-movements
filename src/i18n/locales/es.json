@@ -340,7 +340,12 @@
       "noData": "No hubo movimientos ese mes.",
       "done": "Listo, ir a la app",
       "back": "Volver",
-      "errorMessage": "No se pudo cargar el cierre de mes."
+      "errorMessage": "No se pudo cargar el cierre de mes.",
+      "tabWorkspace": "Workspace",
+      "tabByUser": "Por usuario",
+      "movementsCount_one": "{{count}} movimiento",
+      "movementsCount_other": "{{count}} movimientos",
+      "byUserEmpty": "Nadie cargó movimientos este mes."
     },
     "budgetAlert": {
       "title": "Presupuestos en alerta",

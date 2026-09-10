@@ -340,7 +340,12 @@
       "noData": "No movements that month.",
       "done": "Done, go to the app",
       "back": "Back",
-      "errorMessage": "Could not load the month wrap-up."
+      "errorMessage": "Could not load the month wrap-up.",
+      "tabWorkspace": "Workspace",
+      "tabByUser": "By user",
+      "movementsCount_one": "{{count}} movement",
+      "movementsCount_other": "{{count}} movements",
+      "byUserEmpty": "Nobody logged movements this month."
     },
     "budgetAlert": {
       "title": "Budgets on alert",

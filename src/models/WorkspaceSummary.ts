@@ -7,6 +7,7 @@ export interface WorkspaceSummaryComparison {
 
 export interface WorkspaceSummaryPerCurrency {
   currency: string;
+  movementCount: number;
   totalIncome: number;
   totalSpent: number;
   totalSpentDebit: number;
@@ -14,6 +15,19 @@ export interface WorkspaceSummaryPerCurrency {
   net: number;
   topSpendingCategory: string | null;
   vsPreviousMonth: WorkspaceSummaryComparison;
+}
+
+export interface WorkspaceSummaryUserPerCurrency {
+  currency: string;
+  movementCount: number;
+  totalSpent: number;
+}
+
+// Espeja MonthlySummaryUserRecord (api-movements). Solo trae usuarios con al menos un movimiento.
+export interface WorkspaceSummaryUser {
+  userId: number;
+  name: string;
+  perCurrency: WorkspaceSummaryUserPerCurrency[];
 }
 
 export interface WorkspaceSummaryTotalUsd {

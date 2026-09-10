@@ -1,4 +1,7 @@
-import type { WorkspaceSummary } from "@/models/WorkspaceSummary";
+import type {
+  WorkspaceSummary,
+  WorkspaceSummaryUser,
+} from "@/models/WorkspaceSummary";
 import { api } from "@/apis/axios";
 
 export const getWorkspaceMonthlySummary = (
@@ -10,6 +13,19 @@ export const getWorkspaceMonthlySummary = (
     .get<WorkspaceSummary>(`/workspaces/${workspaceId}/summary/monthly`, {
       params: { year, month },
     })
+    .then((r) => r.data);
+
+// Desglose "por usuario" — solo miembros con al menos un movimiento ese mes.
+export const getWorkspaceMonthlySummaryByUser = (
+  workspaceId: number,
+  year: number,
+  month: number,
+): Promise<WorkspaceSummaryUser[]> =>
+  api
+    .get<WorkspaceSummaryUser[]>(
+      `/workspaces/${workspaceId}/summary/monthly/by-user`,
+      { params: { year, month } },
+    )
     .then((r) => r.data);
 
 // Marca el cierre de ese mes como visto para el usuario autenticado. A partir de acá,

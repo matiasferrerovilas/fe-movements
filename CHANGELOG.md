@@ -17,9 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   1. **Conciliación**: lista los servicios que quedaron sin pagar en el mes cerrado
      (`GET /v1/subscriptions/unpaid`), con un botón "Pagar" por fila y el modal de cargar
      movimiento embebido, así el recap sale con los números reales.
-  2. **Recap** ("Tu mes en números"): un bloque **por moneda** (solo las que tuvieron actividad,
-     `totalSpent > 0 || totalIncome > 0`) con gastaste / ahorraste, desglose débito vs crédito
-     (`totalSpentDebit`/`totalSpentCredit`) y la categoría donde más se fue la plata.
+  2. **Recap** ("Tu mes en números") con dos pestañas:
+     - **Workspace**: un bloque por moneda (solo las que tuvieron actividad,
+       `totalSpent > 0 || totalIncome > 0`) con la cantidad de movimientos, gastaste / ahorraste,
+       desglose débito vs crédito y la categoría donde más se fue la plata.
+     - **Por usuario**: cada miembro con movimientos ese mes, cuántos cargó y cuánto de gasto
+       suman, por moneda (`GET .../summary/monthly/by-user`, se pide recién al abrir la pestaña).
+       Los miembros sin movimientos no aparecen.
   Al cerrarlo, `POST /v1/workspaces/{id}/summary/monthly/{year}/{month}/seen` marca el mes como
   visto e invalida `/users/me` — el guard re-evalúa y deja pasar a la app.
 
