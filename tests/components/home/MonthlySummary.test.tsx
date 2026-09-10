@@ -30,50 +30,50 @@ vi.mock("@tanstack/react-router", () => ({
 const mockSummary: WorkspaceSummary = {
   year: dayjs().year(),
   month: dayjs().month() + 1,
-  porMoneda: [
+  perCurrency: [
     {
       currency: "ARS",
-      totalIngresado: 500000,
-      totalGastado: 320000,
-      diferencia: 180000,
-      categoriaConMayorGasto: "HOGAR",
-      comparacionVsMesAnterior: {
-        totalIngresadoMesAnterior: 450000,
-        totalGastadoMesAnterior: 300000,
-        diferenciaIngreso: 50000,
-        diferenciaGasto: 20000,
+      totalIncome: 500000,
+      totalSpent: 320000,
+      net: 180000,
+      topSpendingCategory: "HOGAR",
+      vsPreviousMonth: {
+        previousMonthIncome: 450000,
+        previousMonthSpent: 300000,
+        incomeDelta: 50000,
+        spentDelta: 20000,
       },
     },
     {
       currency: "USD",
-      totalIngresado: 1000,
-      totalGastado: 750,
-      diferencia: 250,
-      categoriaConMayorGasto: "TRANSPORTE",
-      comparacionVsMesAnterior: {
-        totalIngresadoMesAnterior: 1000,
-        totalGastadoMesAnterior: 800,
-        diferenciaIngreso: 0,
-        diferenciaGasto: -50,
+      totalIncome: 1000,
+      totalSpent: 750,
+      net: 250,
+      topSpendingCategory: "TRANSPORTE",
+      vsPreviousMonth: {
+        previousMonthIncome: 1000,
+        previousMonthSpent: 800,
+        incomeDelta: 0,
+        spentDelta: -50,
       },
     },
   ],
-  totalUnificadoUSD: {
-    totalIngresado: 1383.08,
-    totalGastado: 995.4,
-    diferencia: 387.68,
-    comparacionVsMesAnterior: {
-      totalIngresadoMesAnterior: 0,
-      totalGastadoMesAnterior: 0,
-      diferenciaIngreso: 0,
-      diferenciaGasto: 0,
+  totalUsd: {
+    totalIncome: 1383.08,
+    totalSpent: 995.4,
+    net: 387.68,
+    vsPreviousMonth: {
+      previousMonthIncome: 0,
+      previousMonthSpent: 0,
+      incomeDelta: 0,
+      spentDelta: 0,
     },
   },
 };
 
 const mockSummaryOneMoneda: WorkspaceSummary = {
   ...mockSummary,
-  porMoneda: [mockSummary.porMoneda[0]],
+  perCurrency: [mockSummary.perCurrency[0]],
 };
 
 // ── MSW server ────────────────────────────────────────────────────────────────
@@ -200,10 +200,10 @@ describe("MonthlySummary", () => {
       expect(await screen.findByText("Mayor gasto del mes:")).toBeInTheDocument();
     });
 
-    it("does not show category strip when categoriaConMayorGasto is null", async () => {
+    it("does not show category strip when topSpendingCategory is null", async () => {
       const noCategory: WorkspaceSummary = {
         ...mockSummaryOneMoneda,
-        porMoneda: [{ ...mockSummaryOneMoneda.porMoneda[0], categoriaConMayorGasto: null }],
+        perCurrency: [{ ...mockSummaryOneMoneda.perCurrency[0], topSpendingCategory: null }],
       };
       server.use(
         http.get("http://localhost:8080/workspaces/:workspaceId/summary/monthly", () =>
@@ -237,10 +237,10 @@ describe("MonthlySummary", () => {
   });
 
   describe("empty state", () => {
-    it("renders nothing when porMoneda is empty", async () => {
+    it("renders nothing when perCurrency is empty", async () => {
       server.use(
         http.get("http://localhost:8080/workspaces/:workspaceId/summary/monthly", () =>
-          HttpResponse.json({ ...mockSummary, porMoneda: [] }),
+          HttpResponse.json({ ...mockSummary, perCurrency: [] }),
         ),
       );
 

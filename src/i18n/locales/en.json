@@ -321,6 +321,27 @@
       "expenseLabel": "Expenses",
       "netDifferenceLabel": "Net difference"
     },
+    "monthClose": {
+      "title": "Wrap-up for",
+      "subtitle": "Before the new month kicks off, a quick look back at the last one.",
+      "reconcileTitle": "Any service left unpaid?",
+      "reconcileHelp": "Mark what you already paid or add the missing movement so the numbers below come out right.",
+      "reconcileAllPaid": "Nothing pending from that month.",
+      "pay": "Pay",
+      "addMovement": "Add a movement",
+      "continue": "Continue",
+      "recapTitle": "Your month in numbers",
+      "spent": "You spent",
+      "saved": "You saved",
+      "overspent": "You overspent",
+      "inDebit": "In debit",
+      "inCredit": "In credit",
+      "topCategory": "Where most of it went",
+      "noData": "No movements that month.",
+      "done": "Done, go to the app",
+      "back": "Back",
+      "errorMessage": "Could not load the month wrap-up."
+    },
     "budgetAlert": {
       "title": "Budgets on alert",
       "viewAllButton": "View all"
@@ -862,10 +883,6 @@
         "subscriptionOverdue": {
           "title": "Overdue subscriptions",
           "description": "Notifies overdue subscriptions (normally runs every day at 9:00)."
-        },
-        "monthlySummary": {
-          "title": "Monthly summary",
-          "description": "Generates each workspace's monthly summary (normally runs on the last day of the month at 23:00)."
         },
         "budgetBadges": {
           "title": "Budget badges",

@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.13.0] - 2026-09-10
+
+### Added
+- **Cierre de mes**: la primera vez que abrís la app en un mes nuevo, una compuerta a pantalla
+  completa (`MonthCloseFlow`, montada desde `__root.tsx` cuando `metadata.pendingMonthlySummary`
+  viene en `/users/me`) reemplaza cualquier ruta hasta que la terminás o la saltás — mismo lugar
+  que el gate de `firstLogin`. Dos pasos:
+  1. **Conciliación**: lista los servicios que quedaron sin pagar en el mes cerrado
+     (`GET /v1/subscriptions/unpaid`), con un botón "Pagar" por fila y el modal de cargar
+     movimiento embebido, así el recap sale con los números reales.
+  2. **Recap** ("Tu mes en números"): un bloque **por moneda** (solo las que tuvieron actividad,
+     `totalSpent > 0 || totalIncome > 0`) con gastaste / ahorraste, desglose débito vs crédito
+     (`totalSpentDebit`/`totalSpentCredit`) y la categoría donde más se fue la plata.
+  Al cerrarlo, `POST /v1/workspaces/{id}/summary/monthly/{year}/{month}/seen` marca el mes como
+  visto e invalida `/users/me` — el guard re-evalúa y deja pasar a la app.
+
+### Changed
+- El resumen mensual (`WorkspaceSummary`, `MonthlySummary.tsx`, `MonthCloseFlow.tsx`) sigue el
+  contrato renombrado a inglés de api-movements: `porMoneda`→`perCurrency`,
+  `totalUnificadoUSD`→`totalUsd`, `totalIngresado/Gastado`→`totalIncome/Spent`,
+  `diferencia`→`net`, `categoriaConMayorGasto`→`topSpendingCategory`,
+  `comparacionVsMesAnterior`→`vsPreviousMonth`.
+
 ## [2.12.1] - 2026-09-01
 
 ### Fixed

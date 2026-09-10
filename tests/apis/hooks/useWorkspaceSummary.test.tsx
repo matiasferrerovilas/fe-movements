@@ -13,43 +13,43 @@ import {
 const mockSummary: WorkspaceSummary = {
   year: 2026,
   month: 4,
-  porMoneda: [
+  perCurrency: [
     {
       currency: "ARS",
-      totalIngresado: 500000,
-      totalGastado: 320000,
-      diferencia: 180000,
-      categoriaConMayorGasto: "HOGAR",
-      comparacionVsMesAnterior: {
-        totalIngresadoMesAnterior: 450000,
-        totalGastadoMesAnterior: 300000,
-        diferenciaIngreso: 50000,
-        diferenciaGasto: 20000,
+      totalIncome: 500000,
+      totalSpent: 320000,
+      net: 180000,
+      topSpendingCategory: "HOGAR",
+      vsPreviousMonth: {
+        previousMonthIncome: 450000,
+        previousMonthSpent: 300000,
+        incomeDelta: 50000,
+        spentDelta: 20000,
       },
     },
     {
       currency: "USD",
-      totalIngresado: 1000,
-      totalGastado: 750,
-      diferencia: 250,
-      categoriaConMayorGasto: "TRANSPORTE",
-      comparacionVsMesAnterior: {
-        totalIngresadoMesAnterior: 1000,
-        totalGastadoMesAnterior: 800,
-        diferenciaIngreso: 0,
-        diferenciaGasto: -50,
+      totalIncome: 1000,
+      totalSpent: 750,
+      net: 250,
+      topSpendingCategory: "TRANSPORTE",
+      vsPreviousMonth: {
+        previousMonthIncome: 1000,
+        previousMonthSpent: 800,
+        incomeDelta: 0,
+        spentDelta: -50,
       },
     },
   ],
-  totalUnificadoUSD: {
-    totalIngresado: 1383.08,
-    totalGastado: 995.4,
-    diferencia: 387.68,
-    comparacionVsMesAnterior: {
-      totalIngresadoMesAnterior: 0,
-      totalGastadoMesAnterior: 0,
-      diferenciaIngreso: 0,
-      diferenciaGasto: 0,
+  totalUsd: {
+    totalIncome: 1383.08,
+    totalSpent: 995.4,
+    net: 387.68,
+    vsPreviousMonth: {
+      previousMonthIncome: 0,
+      previousMonthSpent: 0,
+      incomeDelta: 0,
+      spentDelta: 0,
     },
   },
 };
@@ -85,7 +85,7 @@ describe("useWorkspaceSummary", () => {
     expect(result.current.data).toEqual(mockSummary);
   });
 
-  it("returns the full summary shape including porMoneda and totalUnificadoUSD", async () => {
+  it("returns the full summary shape including perCurrency and totalUsd", async () => {
     const { result } = renderHook(() => useWorkspaceSummary(42, 2026, 4), {
       wrapper: makeWrapper(),
     });
@@ -93,17 +93,17 @@ describe("useWorkspaceSummary", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     const data = result.current.data!;
-    expect(data.porMoneda).toHaveLength(2);
-    expect(data.porMoneda[0].currency).toBe("ARS");
-    expect(data.porMoneda[0].totalIngresado).toBe(500000);
-    expect(data.porMoneda[0].totalGastado).toBe(320000);
-    expect(data.porMoneda[0].diferencia).toBe(180000);
-    expect(data.porMoneda[0].categoriaConMayorGasto).toBe("HOGAR");
-    expect(data.porMoneda[0].comparacionVsMesAnterior.diferenciaIngreso).toBe(50000);
-    expect(data.porMoneda[0].comparacionVsMesAnterior.diferenciaGasto).toBe(20000);
-    expect(data.totalUnificadoUSD.totalIngresado).toBe(1383.08);
-    expect(data.totalUnificadoUSD.totalGastado).toBe(995.4);
-    expect(data.totalUnificadoUSD.diferencia).toBe(387.68);
+    expect(data.perCurrency).toHaveLength(2);
+    expect(data.perCurrency[0].currency).toBe("ARS");
+    expect(data.perCurrency[0].totalIncome).toBe(500000);
+    expect(data.perCurrency[0].totalSpent).toBe(320000);
+    expect(data.perCurrency[0].net).toBe(180000);
+    expect(data.perCurrency[0].topSpendingCategory).toBe("HOGAR");
+    expect(data.perCurrency[0].vsPreviousMonth.incomeDelta).toBe(50000);
+    expect(data.perCurrency[0].vsPreviousMonth.spentDelta).toBe(20000);
+    expect(data.totalUsd.totalIncome).toBe(1383.08);
+    expect(data.totalUsd.totalSpent).toBe(995.4);
+    expect(data.totalUsd.net).toBe(387.68);
   });
 
   it("uses the correct query key", () => {

@@ -1,29 +1,33 @@
-export interface WorkspaceSummaryComparacion {
-  totalIngresadoMesAnterior: number;
-  totalGastadoMesAnterior: number;
-  diferenciaIngreso: number;
-  diferenciaGasto: number;
+export interface WorkspaceSummaryComparison {
+  previousMonthIncome: number;
+  previousMonthSpent: number;
+  spentDelta: number;
+  incomeDelta: number;
 }
 
-export interface WorkspaceSummaryPorMoneda {
+export interface WorkspaceSummaryPerCurrency {
   currency: string;
-  totalIngresado: number;
-  totalGastado: number;
-  diferencia: number;
-  categoriaConMayorGasto: string | null;
-  comparacionVsMesAnterior: WorkspaceSummaryComparacion;
+  totalIncome: number;
+  totalSpent: number;
+  totalSpentDebit: number;
+  totalSpentCredit: number;
+  net: number;
+  topSpendingCategory: string | null;
+  vsPreviousMonth: WorkspaceSummaryComparison;
 }
 
-export interface WorkspaceSummaryTotalUSD {
-  totalIngresado: number;
-  totalGastado: number;
-  diferencia: number;
-  comparacionVsMesAnterior: WorkspaceSummaryComparacion;
+export interface WorkspaceSummaryTotalUsd {
+  totalIncome: number;
+  totalSpent: number;
+  totalSpentDebit: number;
+  totalSpentCredit: number;
+  net: number;
+  vsPreviousMonth: WorkspaceSummaryComparison;
 }
 
 export interface WorkspaceSummary {
   year: number;
   month: number;
-  porMoneda: WorkspaceSummaryPorMoneda[];
-  totalUnificadoUSD: WorkspaceSummaryTotalUSD;
+  perCurrency: WorkspaceSummaryPerCurrency[];
+  totalUsd: WorkspaceSummaryTotalUsd;
 }

@@ -321,6 +321,27 @@
       "expenseLabel": "Gastos",
       "netDifferenceLabel": "Diferencia neta"
     },
+    "monthClose": {
+      "title": "Cierre de",
+      "subtitle": "Antes de arrancar el mes nuevo, un repaso rápido del anterior.",
+      "reconcileTitle": "¿Quedó algún servicio sin pagar?",
+      "reconcileHelp": "Marcá lo que ya pagaste o cargá el movimiento que falte, así los números de abajo salen bien.",
+      "reconcileAllPaid": "No hay servicios pendientes de ese mes.",
+      "pay": "Pagar",
+      "addMovement": "Cargar un movimiento",
+      "continue": "Continuar",
+      "recapTitle": "Tu mes en números",
+      "spent": "Gastaste",
+      "saved": "Ahorraste",
+      "overspent": "Gastaste de más",
+      "inDebit": "En débito",
+      "inCredit": "En crédito",
+      "topCategory": "Donde más se te fue",
+      "noData": "No hubo movimientos ese mes.",
+      "done": "Listo, ir a la app",
+      "back": "Volver",
+      "errorMessage": "No se pudo cargar el cierre de mes."
+    },
     "budgetAlert": {
       "title": "Presupuestos en alerta",
       "viewAllButton": "Ver todos"
@@ -862,10 +883,6 @@
         "subscriptionOverdue": {
           "title": "Servicios vencidos",
           "description": "Notifica las suscripciones vencidas (normalmente corre todos los días a las 9:00)."
-        },
-        "monthlySummary": {
-          "title": "Resumen mensual",
-          "description": "Genera el resumen mensual de cada workspace (normalmente corre el último día del mes a las 23:00)."
         },
         "budgetBadges": {
           "title": "Badges de presupuesto",

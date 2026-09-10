@@ -8,6 +8,8 @@ import { QueryLoadingBoundary } from "@/components/QueryLoadingBoundary";
 import NotFound from "@/components/NotFound";
 import type { AuthContextState } from "@/apis/auth/AuthContext";
 import { ColorEnum } from "@/enums/ColorEnum";
+import { useCurrentUser } from "@/apis/hooks/useCurrentUser";
+import MonthCloseFlow from "@/components/monthclose/MonthCloseFlow";
 import type Keycloak from "keycloak-js";
 const { useBreakpoint } = Grid;
 import module from "../../package.json";
@@ -42,7 +44,20 @@ const ContentWrapper: React.FC = () => {
 
 function RootComponent() {
   const { auth } = Route.useRouteContext();
+  const { data: currentUser } = useCurrentUser();
   const showChrome = !auth.firstLogin;
+
+  // Compuerta a pantalla completa: mientras haya un cierre de mes pendiente (metadata.
+  // pendingMonthlySummary, que api-movements computa en /users/me), no importa en qué ruta
+  // esté el usuario — se muestra el flujo de cierre en lugar de cualquier otra cosa. Después
+  // del onboarding (firstLogin) para no pisar ese flujo.
+  const pendingMonthClose = !auth.firstLogin
+    ? currentUser?.metadata?.pendingMonthlySummary ?? null
+    : null;
+
+  if (pendingMonthClose) {
+    return <MonthCloseFlow year={pendingMonthClose.year} month={pendingMonthClose.month} />;
+  }
 
   return (
     <Layout style={{ minHeight: "100vh" }}>

@@ -39,23 +39,23 @@ const mockCurrencies = [
 const mockUserDefault = { value: "1" };
 
 const mockWorkspaceSummary = {
-  porMoneda: [
+  perCurrency: [
     {
       currency: "ARS",
-      totalIngresado: 100000,
-      totalGastado: 80000,
-      diferencia: 20000,
-      categoriaConMayorGasto: "Vivienda",
-      comparacionVsMesAnterior: {
-        diferenciaIngreso: 5000,
-        diferenciaGasto: 3000,
+      totalIncome: 100000,
+      totalSpent: 80000,
+      net: 20000,
+      topSpendingCategory: "Vivienda",
+      vsPreviousMonth: {
+        incomeDelta: 5000,
+        spentDelta: 3000,
       },
     },
   ],
-  totalUnificadoUSD: {
-    totalIngresado: 500,
-    totalGastado: 400,
-    diferencia: 100,
+  totalUsd: {
+    totalIncome: 500,
+    totalSpent: 400,
+    net: 100,
   },
 };
 

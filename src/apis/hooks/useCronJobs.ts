@@ -5,7 +5,6 @@ export type CronJobId =
   | "recurring-income"
   | "credit-installments"
   | "subscription-overdue"
-  | "monthly-summary"
   | "budget-badges";
 
 /**

@@ -19,7 +19,7 @@ import {
 } from "antd";
 import { useUserDefault } from "@/apis/hooks/useSettings";
 import { useWorkspaceSummary } from "@/apis/hooks/useWorkspaceSummary";
-import type { WorkspaceSummaryPorMoneda } from "@/models/WorkspaceSummary";
+import type { WorkspaceSummaryPerCurrency } from "@/models/WorkspaceSummary";
 import BudgetAlert from "@/components/home/BudgetAlert";
 
 dayjs.locale("es");
@@ -143,22 +143,22 @@ function KpiCard({
 // ── CurrencyPanel ─────────────────────────────────────────────────────────────
 
 interface CurrencyPanelProps {
-  data: WorkspaceSummaryPorMoneda;
+  data: WorkspaceSummaryPerCurrency;
   loading: boolean;
 }
 
 function CurrencyPanel({ data, loading }: CurrencyPanelProps) {
   const { token } = theme.useToken();
   const { t } = useTranslation();
-  const { totalIngresado, totalGastado, diferencia, categoriaConMayorGasto, comparacionVsMesAnterior } = data;
+  const { totalIncome, totalSpent, net, topSpendingCategory, vsPreviousMonth } = data;
 
   return (
     <>
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
         <KpiCard
           title={t("home.monthlySummary.incomeTitle")}
-          amount={totalIngresado}
-          delta={comparacionVsMesAnterior.diferenciaIngreso}
+          amount={totalIncome}
+          delta={vsPreviousMonth.incomeDelta}
           deltaLabel={t("home.monthlySummary.deltaVsLastMonth")}
           icon={<ArrowUpOutlined style={{ color: token.colorSuccess }} />}
           iconBg={token.colorSuccessBg}
@@ -167,8 +167,8 @@ function CurrencyPanel({ data, loading }: CurrencyPanelProps) {
         />
         <KpiCard
           title={t("home.monthlySummary.expenseTitle")}
-          amount={-totalGastado}
-          delta={-comparacionVsMesAnterior.diferenciaGasto}
+          amount={-totalSpent}
+          delta={-vsPreviousMonth.spentDelta}
           deltaLabel={t("home.monthlySummary.deltaVsLastMonth")}
           icon={<ArrowDownOutlined style={{ color: token.colorError }} />}
           iconBg={token.colorErrorBg}
@@ -177,17 +177,17 @@ function CurrencyPanel({ data, loading }: CurrencyPanelProps) {
         />
         <KpiCard
           title={t("home.monthlySummary.differenceTitle")}
-          amount={diferencia}
-          delta={comparacionVsMesAnterior.diferenciaIngreso - comparacionVsMesAnterior.diferenciaGasto}
+          amount={net}
+          delta={vsPreviousMonth.incomeDelta - vsPreviousMonth.spentDelta}
           deltaLabel={t("home.monthlySummary.deltaVsLastMonth")}
           icon={
-            diferencia >= 0 ? (
+            net >= 0 ? (
               <ArrowUpOutlined style={{ color: token.colorSuccess }} />
             ) : (
               <ArrowDownOutlined style={{ color: token.colorError }} />
             )
           }
-          iconBg={diferencia >= 0 ? token.colorSuccessBg : token.colorErrorBg}
+          iconBg={net >= 0 ? token.colorSuccessBg : token.colorErrorBg}
           loading={loading}
           animationDelay="180ms"
         />
@@ -195,7 +195,7 @@ function CurrencyPanel({ data, loading }: CurrencyPanelProps) {
 
       {loading ? (
         <Skeleton.Input active style={{ width: 200, height: 22 }} />
-      ) : categoriaConMayorGasto ? (
+      ) : topSpendingCategory ? (
         <Flex
           align="center"
           gap={8}
@@ -212,7 +212,7 @@ function CurrencyPanel({ data, loading }: CurrencyPanelProps) {
             color="default"
             style={{ margin: 0, fontWeight: 600, letterSpacing: "0.02em" }}
           >
-            {categoriaConMayorGasto}
+            {topSpendingCategory}
           </Tag>
         </Flex>
       ) : null}
@@ -248,16 +248,16 @@ export default function MonthlySummary() {
   }
 
   const loading = isFetching && !data;
-  const porMoneda = data?.porMoneda ?? [];
-  const totalUSD = data?.totalUnificadoUSD;
+  const perCurrency = data?.perCurrency ?? [];
+  const totalUSD = data?.totalUsd;
 
   // Sin ingresos ni gastos este mes — no tiene sentido mostrar el resumen
-  if (!loading && porMoneda.length === 0) {
+  if (!loading && perCurrency.length === 0) {
     return null;
   }
 
   // ── Tabs items ──────────────────────────────────────────────────────────────
-  const tabItems = porMoneda.map((moneda) => ({
+  const tabItems = perCurrency.map((moneda) => ({
     key: moneda.currency,
     label: moneda.currency,
     children: <CurrencyPanel data={moneda} loading={loading} />,
@@ -307,13 +307,13 @@ export default function MonthlySummary() {
             </Col>
           ))}
         </Row>
-      ) : porMoneda.length === 1 ? (
+      ) : perCurrency.length === 1 ? (
         /* Una sola moneda — sin tabs */
-        <CurrencyPanel data={porMoneda[0]} loading={false} />
+        <CurrencyPanel data={perCurrency[0]} loading={false} />
       ) : (
         /* Múltiples monedas — tabs */
         <Tabs
-          defaultActiveKey={porMoneda[0].currency}
+          defaultActiveKey={perCurrency[0].currency}
           items={tabItems}
           style={{ marginBottom: 8 }}
         />
@@ -341,18 +341,18 @@ export default function MonthlySummary() {
               <ArrowUpOutlined style={{ color: token.colorSuccess, fontSize: 12 }} />
               <Text type="secondary" style={{ fontSize: 12 }}>{t("home.monthlySummary.incomeLabel")}</Text>
               <Text strong style={{ fontSize: 13 }}>
-                ${(totalUSD.totalIngresado).toLocaleString("es-AR", { maximumFractionDigits: 2 })}
+                ${(totalUSD.totalIncome).toLocaleString("es-AR", { maximumFractionDigits: 2 })}
               </Text>
             </Flex>
             <Flex align="center" gap={6}>
               <ArrowDownOutlined style={{ color: token.colorError, fontSize: 12 }} />
               <Text type="secondary" style={{ fontSize: 12 }}>{t("home.monthlySummary.expenseLabel")}</Text>
               <Text strong style={{ fontSize: 13 }}>
-                ${(totalUSD.totalGastado).toLocaleString("es-AR", { maximumFractionDigits: 2 })}
+                ${(totalUSD.totalSpent).toLocaleString("es-AR", { maximumFractionDigits: 2 })}
               </Text>
             </Flex>
             <Flex align="center" gap={6}>
-              {totalUSD.diferencia >= 0 ? (
+              {totalUSD.net >= 0 ? (
                 <ArrowUpOutlined style={{ color: token.colorSuccess, fontSize: 12 }} />
               ) : (
                 <ArrowDownOutlined style={{ color: token.colorError, fontSize: 12 }} />
@@ -362,11 +362,11 @@ export default function MonthlySummary() {
                 strong
                 style={{
                   fontSize: 13,
-                  color: totalUSD.diferencia >= 0 ? token.colorSuccess : token.colorError,
+                  color: totalUSD.net >= 0 ? token.colorSuccess : token.colorError,
                 }}
               >
-                {totalUSD.diferencia >= 0 ? "" : "-"}$
-                {Math.abs(totalUSD.diferencia).toLocaleString("es-AR", { maximumFractionDigits: 2 })}
+                {totalUSD.net >= 0 ? "" : "-"}$
+                {Math.abs(totalUSD.net).toLocaleString("es-AR", { maximumFractionDigits: 2 })}
               </Text>
             </Flex>
           </Flex>

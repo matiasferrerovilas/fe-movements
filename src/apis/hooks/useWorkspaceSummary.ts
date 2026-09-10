@@ -1,5 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { getWorkspaceMonthlySummary } from "@/apis/workspace/WorkspaceSummaryApi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getWorkspaceMonthlySummary,
+  markMonthlySummarySeen,
+} from "@/apis/workspace/WorkspaceSummaryApi";
+import { CURRENT_USER_QUERY_KEY } from "@/apis/hooks/useCurrentUser";
 
 export const WORKSPACE_SUMMARY_QUERY_KEY = "workspace-monthly-summary" as const;
 
@@ -14,3 +18,23 @@ export const useWorkspaceSummary = (
     staleTime: 1000 * 60,
     enabled: workspaceId !== null,
   });
+
+// Descarta el cierre de mes. Al invalidar /users/me, el guard del root re-evalúa
+// pendingMonthlySummary (ahora null) y deja pasar a la app normal.
+export const useMarkMonthlySummarySeen = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      workspaceId,
+      year,
+      month,
+    }: {
+      workspaceId: number;
+      year: number;
+      month: number;
+    }) => markMonthlySummarySeen(workspaceId, year, month),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+    },
+  });
+};

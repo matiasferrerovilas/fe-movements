@@ -3,7 +3,6 @@ import ToolOutlined from "@ant-design/icons/ToolOutlined";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import CreditCardOutlined from "@ant-design/icons/CreditCardOutlined";
 import BellOutlined from "@ant-design/icons/BellOutlined";
-import BarChartOutlined from "@ant-design/icons/BarChartOutlined";
 import TrophyOutlined from "@ant-design/icons/TrophyOutlined";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
@@ -36,12 +35,6 @@ const CRON_JOBS: CronJobConfig[] = [
     icon: <BellOutlined />,
     titleKey: "admin.maintenance.jobs.subscriptionOverdue.title",
     descriptionKey: "admin.maintenance.jobs.subscriptionOverdue.description",
-  },
-  {
-    id: "monthly-summary",
-    icon: <BarChartOutlined />,
-    titleKey: "admin.maintenance.jobs.monthlySummary.title",
-    descriptionKey: "admin.maintenance.jobs.monthlySummary.description",
   },
   {
     id: "budget-badges",

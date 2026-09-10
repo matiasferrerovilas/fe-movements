@@ -3,6 +3,7 @@ import {
   addSubscriptionApi,
   deleteSubscriptionApi,
   getSubscriptionsApi,
+  getUnpaidSubscriptionsApi,
   paySubscriptionApi,
   updateSubscriptionApi,
   type ServiceToAdd,
@@ -10,12 +11,21 @@ import {
 import type { Service, ServiceToUpdate } from "@/models/Service";
 
 const SERVICE_KEY = ["service-history"] as const;
+const UNPAID_SERVICE_KEY = ["service-unpaid"] as const;
 
 export const useSubscription = () =>
   useQuery({
     queryKey: SERVICE_KEY,
     queryFn: () => getSubscriptionsApi(),
     staleTime: 5 * 60 * 1000,
+  });
+
+// Servicios sin pagar de un mes puntual — usado por el paso de conciliación del cierre de mes.
+export const useUnpaidSubscriptions = (year: number, month: number) =>
+  useQuery({
+    queryKey: [...UNPAID_SERVICE_KEY, year, month],
+    queryFn: () => getUnpaidSubscriptionsApi(year, month),
+    staleTime: 0,
   });
 
 export const usePayService = () =>

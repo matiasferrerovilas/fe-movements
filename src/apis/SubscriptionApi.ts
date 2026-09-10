@@ -16,6 +16,13 @@ export interface ServiceToAdd {
 export const getSubscriptionsApi = () =>
   api.get<Service[]>(BASE_PATH).then((response) => response.data);
 
+// Servicios del workspace activo que quedaron sin pagar en ese mes — el paso de conciliación
+// del cierre de mes los muestra antes de los números del recap.
+export const getUnpaidSubscriptionsApi = (year: number, month: number) =>
+  api
+    .get<Service[]>(`${BASE_PATH}/unpaid`, { params: { year, month } })
+    .then((response) => response.data);
+
 export const paySubscriptionApi = (service: Service) =>
   api.patch(`${BASE_PATH}/${service.id}/payment`).then((response) => response.data);
 
