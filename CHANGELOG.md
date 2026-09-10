@@ -30,6 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `diferencia`→`net`, `categoriaConMayorGasto`→`topSpendingCategory`,
   `comparacionVsMesAnterior`→`vsPreviousMonth`.
 
+### Removed
+- Card "Resumen mensual" del panel de Mantenimiento (`AdminMaintenance`) y el `CronJobId`
+  `"monthly-summary"` — api-movements eliminó ese cron: el resumen se calcula on-demand, ya no
+  hay snapshot que generar.
+
 ## [2.12.1] - 2026-09-01
 
 ### Fixed
