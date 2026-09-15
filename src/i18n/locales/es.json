@@ -391,7 +391,8 @@
     "type": {
       "DEBITO": "Débito",
       "CREDITO": "Crédito",
-      "INGRESO": "Ingreso"
+      "INGRESO": "Ingreso",
+      "REINTEGRO": "Reintegro"
     },
     "columnDate": "Fecha",
     "columnCategory": "Categoría",

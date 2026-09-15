@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.0] - 2026-09-15
+
+### Added
+- New movement type **Reintegro** (`TypeEnum.REINTEGRO`) — selectable in the add/edit movement
+  form and the movements filter, since both already render off `Object.values(TypeEnum)`. Shows
+  green with a "+" sign in the movements table (`MovementTable`'s `isDebit` check only flags
+  DEBITO/CREDITO, so a reintegro falls into the same styling as INGRESO automatically). Backend
+  counts it as income everywhere balance/projections/monthly-summary sum "money in" — see
+  api-movements' CHANGELOG.
+
 ## [2.13.0] - 2026-09-10
 
 ### Added
