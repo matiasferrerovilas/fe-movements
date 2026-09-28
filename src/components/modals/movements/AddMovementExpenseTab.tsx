@@ -1,6 +1,7 @@
-import { forwardRef, useEffect, useImperativeHandle } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import {
   Alert,
+  Button,
   Col,
   DatePicker,
   Divider,
@@ -9,6 +10,7 @@ import {
   InputNumber,
   Row,
   Select,
+  Switch,
   theme,
   Typography,
 } from "antd";
@@ -16,10 +18,16 @@ import BankOutlined from "@ant-design/icons/BankOutlined";
 import CalendarOutlined from "@ant-design/icons/CalendarOutlined";
 import CreditCardOutlined from "@ant-design/icons/CreditCardOutlined";
 import DollarOutlined from "@ant-design/icons/DollarOutlined";
+import MinusCircleOutlined from "@ant-design/icons/MinusCircleOutlined";
+import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import TagOutlined from "@ant-design/icons/TagOutlined";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
+import {
+  MovementItemUnitEnum,
+  getMovementItemUnitLabel,
+} from "@/enums/MovementItemUnitEnum";
 import {
   MAX_MOVEMENT_CATEGORIES,
   type CreateMovementForm,
@@ -52,10 +60,14 @@ const AddMovementExpenseTab = forwardRef<
   const [form] = Form.useForm<CreateMovementForm>();
   const { t } = useTranslation();
   const typeEnumLabel = getTypeEnumLabel(t);
+  const unitLabel = getMovementItemUnitLabel(t);
+  // null = todavía no lo tocó el usuario: se muestra según si el movimiento ya tiene items
+  // cargados. Una vez que el usuario lo toca, su elección manda (ver Switch más abajo).
+  const [userToggledBreakdown, setUserToggledBreakdown] = useState<boolean | null>(null);
 
   // Las categorías se obtienen del workspace activo del usuario (DEFAULT_WORKSPACE)
   const { data: categories = [] } = useCategory();
-  
+
   const { data: currencies = [] } = useCurrency();
   const { data: banks = [] } = useBanks();
   const { data: defaultBank } = useUserDefault("DEFAULT_BANK");
@@ -73,8 +85,11 @@ const AddMovementExpenseTab = forwardRef<
       categories: movementToEdit.categories.map((c) => c.description),
       currency: movementToEdit.currency?.symbol,
       date: dayjs(movementToEdit.date),
+      items: movementToEdit.items,
     });
   }, [movementToEdit, form]);
+
+  const showBreakdown = userToggledBreakdown ?? (movementToEdit?.items.length ?? 0) > 0;
 
   useEffect(() => {
     if (movementToEdit) return;
@@ -114,7 +129,11 @@ const AddMovementExpenseTab = forwardRef<
     handleConfirm: async () => {
       try {
         const values = await form.validateFields();
-        uploadMutation.mutate(values as CreateMovementForm);
+        // Con el toggle apagado no se manda desglose: en alta simplemente no viaja (nunca hubo
+        // items); en edición viaja como [] para que el backend borre el desglose que pudiera
+        // existir — ver ExpenseToUpdate.items en api-movements (null = no tocar, [] = vaciar).
+        const items = showBreakdown ? (values.items ?? []) : (movementToEdit ? [] : undefined);
+        uploadMutation.mutate({ ...values, items } as CreateMovementForm);
       } catch (err) {
         console.warn("❌ Validación fallida:", err);
       }
@@ -122,6 +141,12 @@ const AddMovementExpenseTab = forwardRef<
   }));
 
   const isCreditType = Form.useWatch("type", form) === TypeEnum.CREDITO;
+  const watchedItems = Form.useWatch("items", form);
+  const watchedAmount = Form.useWatch("amount", form);
+  const itemsSum = (watchedItems ?? []).reduce(
+    (sum: number, item: { price?: number }) => sum + (item?.price ?? 0),
+    0,
+  );
 
   return (
     <Form
@@ -357,6 +382,131 @@ const AddMovementExpenseTab = forwardRef<
           </Form.Item>
         </Col>
       </Row>
+
+      {/* ── Sección 3: Desglose ───────────────────────────────────────── */}
+      <Divider
+        titlePlacement="left"
+        style={{ marginTop: 4, marginBottom: 16, borderColor: token.colorBorderSecondary }}
+      >
+        <Text type="secondary" style={{ fontSize: 12, fontWeight: 500 }}>
+          {t("movements.form.sectionItems")}
+        </Text>
+      </Divider>
+
+      <Row style={{ marginBottom: showBreakdown ? 12 : 0 }}>
+        <Col span={24}>
+          <Switch
+            checked={showBreakdown}
+            onChange={setUserToggledBreakdown}
+            aria-label={t("movements.form.items.toggle")}
+          />
+          <Text style={{ marginLeft: 8 }}>{t("movements.form.items.toggle")}</Text>
+        </Col>
+      </Row>
+
+      {showBreakdown && (
+        <Form.List name="items">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map(({ key, name, ...restField }) => (
+                <Row key={key} gutter={[8, 4]} align="middle">
+                  <Col xs={11} sm={5}>
+                    <Form.Item
+                      {...restField}
+                      name={[name, "quantity"]}
+                      rules={[
+                        { required: true, message: t("movements.form.items.quantityRequired") },
+                      ]}
+                    >
+                      <InputNumber
+                        style={{ width: "100%" }}
+                        controls={false}
+                        min={0.001}
+                        placeholder={t("movements.form.items.quantityLabel")}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={13} sm={6}>
+                    <Form.Item
+                      {...restField}
+                      name={[name, "unit"]}
+                      rules={[
+                        { required: true, message: t("movements.form.items.unitRequired") },
+                      ]}
+                    >
+                      <Select placeholder={t("movements.form.items.unitLabel")}>
+                        {Object.values(MovementItemUnitEnum).map((unit) => (
+                          <Select.Option key={unit} value={unit}>
+                            {unitLabel[unit]}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col xs={17} sm={8}>
+                    <Form.Item
+                      {...restField}
+                      name={[name, "description"]}
+                      rules={[
+                        {
+                          required: true,
+                          message: t("movements.form.items.descriptionRequired"),
+                        },
+                      ]}
+                    >
+                      <Input placeholder={t("movements.form.items.descriptionPlaceholder")} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={17} sm={4}>
+                    <Form.Item
+                      {...restField}
+                      name={[name, "price"]}
+                      rules={[
+                        { required: true, message: t("movements.form.items.priceRequired") },
+                      ]}
+                    >
+                      <InputNumber
+                        style={{ width: "100%" }}
+                        controls={false}
+                        min={0}
+                        precision={2}
+                        placeholder={t("movements.form.items.priceLabel")}
+                        prefix={<DollarOutlined style={{ color: token.colorTextTertiary }} />}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={7} sm={1} style={{ textAlign: "center" }}>
+                    <MinusCircleOutlined
+                      onClick={() => remove(name)}
+                      title={t("movements.form.items.remove")}
+                      style={{ color: token.colorTextTertiary, cursor: "pointer" }}
+                    />
+                  </Col>
+                </Row>
+              ))}
+              <Form.Item style={{ marginBottom: fields.length > 0 ? 4 : 0 }}>
+                <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />} block>
+                  {t("movements.form.items.add")}
+                </Button>
+              </Form.Item>
+              {fields.length > 0 && (
+                <Text
+                  type={
+                    watchedAmount != null && Math.abs(itemsSum - watchedAmount) > 0.01
+                      ? "warning"
+                      : "secondary"
+                  }
+                  style={{ fontSize: 12 }}
+                >
+                  {t("movements.form.items.sum", { sum: itemsSum.toFixed(2) })}
+                  {watchedAmount != null && Math.abs(itemsSum - watchedAmount) > 0.01 &&
+                    ` — ${t("movements.form.items.sumMismatch", { amount: watchedAmount.toFixed(2) })}`}
+                </Text>
+              )}
+            </>
+          )}
+        </Form.List>
+      )}
     </Form>
   );
 });

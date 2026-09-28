@@ -71,6 +71,7 @@ const mockMovementToEdit: Movement = {
     exchangeRate: 1,
     amountUsd: null,
   },
+  items: [],
 };
 
 // ── MSW server ─────────────────────────────────────────────────────────────
@@ -311,6 +312,50 @@ describe("AddMovementExpenseTab", () => {
       );
       expect(screen.queryByText("Cuota Actual")).not.toBeInTheDocument();
       expect(screen.queryByText("Cuotas Totales")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("desglose de movimiento", () => {
+    it("no muestra los campos de ítems hasta activar el switch", async () => {
+      renderTab();
+      await waitFor(() =>
+        expect(screen.getByText("Desglosar compra")).toBeInTheDocument(),
+      );
+      expect(screen.queryByText("Agregar ítem")).not.toBeInTheDocument();
+    });
+
+    it("al activar el switch permite agregar una línea de desglose", async () => {
+      const user = userEvent.setup();
+      renderTab();
+      await waitFor(() =>
+        expect(screen.getByText("Desglosar compra")).toBeInTheDocument(),
+      );
+
+      await user.click(screen.getByRole("switch"));
+      await waitFor(() =>
+        expect(screen.getByText("Agregar ítem")).toBeInTheDocument(),
+      );
+
+      await user.click(screen.getByText("Agregar ítem"));
+      await waitFor(() =>
+        expect(
+          screen.getByPlaceholderText("Cantidad"),
+        ).toBeInTheDocument(),
+      );
+      expect(screen.getByPlaceholderText("Ej: Papa")).toBeInTheDocument();
+    });
+
+    it("precarga y muestra el desglose existente al editar un movimiento que ya lo tiene", async () => {
+      renderTab({
+        movementToEdit: {
+          ...mockMovementToEdit,
+          items: [{ id: 1, quantity: 1, unit: "KILOGRAMO", description: "Papa", price: 500 }],
+        },
+      });
+
+      await waitFor(() =>
+        expect(screen.getByDisplayValue("Papa")).toBeInTheDocument(),
+      );
     });
   });
 });

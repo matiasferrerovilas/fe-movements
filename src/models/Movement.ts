@@ -10,6 +10,14 @@ export interface MovementMetadata {
   amountUsd: number | null;
 }
 
+export interface MovementItem {
+  id?: number;
+  quantity: number;
+  unit: string;
+  description: string;
+  price: number;
+}
+
 export interface Movement {
   id: number;
   amount: number;
@@ -24,6 +32,7 @@ export interface Movement {
   cuotasTotales: number | null;
   cuotaActual: number | null;
   metadata: MovementMetadata;
+  items: MovementItem[];
 }
 
 export const MAX_MOVEMENT_CATEGORIES = 2;
@@ -38,4 +47,5 @@ export interface CreateMovementForm {
   cuotaActual?: number;
   cuotasTotales?: number;
   categories?: string[];
+  items?: MovementItem[];
 }

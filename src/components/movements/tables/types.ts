@@ -17,4 +17,6 @@ export interface MovementTableViewProps {
   getCardStyle: (record: FormattedMovement) => React.CSSProperties;
   selectedIds: Set<number>;
   onToggleSelect: (id: number) => void;
+  expandedIds: Set<number>;
+  onToggleExpand: (id: number) => void;
 }

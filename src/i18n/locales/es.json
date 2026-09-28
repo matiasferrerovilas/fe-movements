@@ -411,6 +411,11 @@
     "no": "No",
     "deleteTooltip": "Eliminar el movimiento",
     "installmentsTag": "{{installments}} cuotas",
+    "items": {
+      "modalTitle": "Desglose · {{description}}",
+      "empty": "Este movimiento no tiene desglose cargado",
+      "total": "Total"
+    },
     "bulk": {
       "selectRowAriaLabel": "Seleccionar movimiento",
       "selectedCount": "{{count}} seleccionados",
@@ -468,7 +473,29 @@
       "descriptionPlaceholder": "Ej: Supermercado, Nafta...",
       "categoryLabel": "Categoría",
       "categoryRequired": "Seleccione al menos una categoría",
-      "categoryPlaceholder": "Seleccionar categoría"
+      "categoryPlaceholder": "Seleccionar categoría",
+      "sectionItems": "Desglose",
+      "items": {
+        "toggle": "Desglosar compra",
+        "quantityLabel": "Cantidad",
+        "quantityRequired": "Ingrese la cantidad",
+        "unitLabel": "Unidad",
+        "unitRequired": "Seleccione una unidad",
+        "unit": {
+          "KILOGRAMO": "Kilogramos",
+          "LITRO": "Litros",
+          "UNIDAD": "Unidad"
+        },
+        "descriptionLabel": "Descripción",
+        "descriptionRequired": "Ingrese una descripción",
+        "descriptionPlaceholder": "Ej: Papa",
+        "priceLabel": "Precio",
+        "priceRequired": "Ingrese el precio",
+        "add": "Agregar ítem",
+        "remove": "Quitar ítem",
+        "sum": "Suma del desglose: {{sum}}",
+        "sumMismatch": "No coincide con el monto total ({{amount}})"
+      }
     },
     "modal": {
       "movementButton": "Movimiento",

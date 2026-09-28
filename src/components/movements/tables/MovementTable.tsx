@@ -98,9 +98,19 @@ export default function MovementTable({ filters, onStateChange }: MovementTableP
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [isBulkCategorizing, setIsBulkCategorizing] = useState(false);
   const [categorizeModalOpen, setCategorizeModalOpen] = useState(false);
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
 
   const handleToggleSelect = (id: number) => {
     setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleToggleExpand = (id: number) => {
+    setExpandedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -183,6 +193,8 @@ export default function MovementTable({ filters, onStateChange }: MovementTableP
     getCardStyle,
     selectedIds,
     onToggleSelect: handleToggleSelect,
+    expandedIds,
+    onToggleExpand: handleToggleExpand,
   };
 
   if (isLoading) {

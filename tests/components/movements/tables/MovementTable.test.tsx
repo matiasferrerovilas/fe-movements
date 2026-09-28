@@ -87,6 +87,7 @@ function makeMovement(id: number): Movement {
       exchangeRate: 1,
       amountUsd: null,
     },
+    items: [],
   };
 }
 
@@ -195,6 +196,48 @@ describe("MovementTable", () => {
       await waitFor(() =>
         expect(screen.getAllByText(/Movimiento \d/).length).toBeGreaterThanOrEqual(2),
       );
+    });
+  });
+
+  describe("desglose (acordeón)", () => {
+    const movementWithItems: Movement = {
+      ...makeMovement(3),
+      items: [{ id: 1, quantity: 1, unit: "KILOGRAMO", description: "Papa", price: 500 }],
+    };
+
+    it("despliega el desglose al hacer click en cualquier parte de la card, no solo en la flecha", async () => {
+      server.use(
+        http.get("http://localhost:8080/expenses", () =>
+          HttpResponse.json(makePageResponse([movementWithItems])),
+        ),
+      );
+      const user = userEvent.setup();
+      render(<MovementTable filters={defaultFilters} />, { wrapper: makeWrapper() });
+
+      await waitFor(() =>
+        expect(screen.getAllByText("Movimiento 3").length).toBeGreaterThan(0),
+      );
+      expect(screen.queryByText("Papa")).not.toBeInTheDocument();
+
+      await user.click(screen.getAllByText("Movimiento 3")[0]);
+
+      await waitFor(() => expect(screen.getByText("Papa")).toBeInTheDocument());
+    });
+
+    it("un movimiento sin items no muestra ninguna flecha de desglose ni reacciona con contenido extra al click", async () => {
+      server.use(
+        http.get("http://localhost:8080/expenses", () =>
+          HttpResponse.json(filledPageResponse),
+        ),
+      );
+      const user = userEvent.setup();
+      render(<MovementTable filters={defaultFilters} />, { wrapper: makeWrapper() });
+
+      await waitFor(() =>
+        expect(screen.getAllByText(/Movimiento 1/).length).toBeGreaterThan(0),
+      );
+      await user.click(screen.getAllByText(/Movimiento 1/)[0]);
+      expect(screen.queryByText("Total")).not.toBeInTheDocument();
     });
   });
 

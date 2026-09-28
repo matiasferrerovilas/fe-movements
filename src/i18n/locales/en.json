@@ -411,6 +411,11 @@
     "no": "No",
     "deleteTooltip": "Delete the movement",
     "installmentsTag": "{{installments}} installments",
+    "items": {
+      "modalTitle": "Breakdown · {{description}}",
+      "empty": "This movement has no breakdown yet",
+      "total": "Total"
+    },
     "bulk": {
       "selectRowAriaLabel": "Select movement",
       "selectedCount": "{{count}} selected",
@@ -468,7 +473,29 @@
       "descriptionPlaceholder": "E.g: Supermarket, Gas...",
       "categoryLabel": "Category",
       "categoryRequired": "Select at least one category",
-      "categoryPlaceholder": "Select category"
+      "categoryPlaceholder": "Select category",
+      "sectionItems": "Breakdown",
+      "items": {
+        "toggle": "Break down purchase",
+        "quantityLabel": "Quantity",
+        "quantityRequired": "Enter the quantity",
+        "unitLabel": "Unit",
+        "unitRequired": "Select a unit",
+        "unit": {
+          "KILOGRAMO": "Kilograms",
+          "LITRO": "Liters",
+          "UNIDAD": "Unit"
+        },
+        "descriptionLabel": "Description",
+        "descriptionRequired": "Enter a description",
+        "descriptionPlaceholder": "E.g: Potato",
+        "priceLabel": "Price",
+        "priceRequired": "Enter the price",
+        "add": "Add item",
+        "remove": "Remove item",
+        "sum": "Breakdown total: {{sum}}",
+        "sumMismatch": "Doesn't match the total amount ({{amount}})"
+      }
     },
     "modal": {
       "movementButton": "Movement",

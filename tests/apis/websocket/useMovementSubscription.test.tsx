@@ -85,6 +85,7 @@ function makeMovement(id: number): Movement {
       exchangeRate: 1,
       amountUsd: null,
     },
+    items: [],
   };
 }
 
