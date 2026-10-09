@@ -16,10 +16,9 @@ import { useIsReadOnly } from "@/apis/workspace/useIsReadOnly";
 const TAB_INDIVIDUAL = "1";
 const TAB_ARCHIVO = "2";
 
-// Desactivado a pedido del usuario: el import de PDF quedó desactualizado y no anda bien — se
-// oculta la pestaña en vez de borrar el código, para poder reactivarlo con un solo flip acá
-// cuando esté listo. Item relacionado en el roadmap: "Import de PDF sin validar tipo ni tamaño".
-const PDF_IMPORT_ENABLED = false;
+// Reactivado con el parser de Santander España (cuenta y tarjeta). Sigue siendo un flag para
+// poder apagarlo con un solo cambio si un formato de extracto deja de parsear.
+const PDF_IMPORT_ENABLED = true;
 
 interface AddMovementModalProps {
   block?: boolean;

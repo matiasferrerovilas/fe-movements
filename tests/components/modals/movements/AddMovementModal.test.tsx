@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll, afterEach, afterAll } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
@@ -133,9 +133,7 @@ describe("AddMovementModal", () => {
     expect(allButtons.find((b) => b.textContent?.trim() === "Importar")).toBeUndefined();
   });
 
-  // PDF_IMPORT_ENABLED = false in AddMovementModal.tsx — la pestaña no se renderiza mientras
-  // esté desactivada, así que no hay ningún tab "importar pdf" al que hacer click.
-  it.skip("shows 'Importar' button after switching to the 'Importar PDF' tab", async () => {
+  it("shows 'Importar' button after switching to the 'Importar PDF' tab", async () => {
     render(<AddMovementModal />, { wrapper: makeWrapper() });
     await openModal();
 
@@ -156,8 +154,7 @@ describe("AddMovementModal", () => {
     expect(allButtons.find((b) => b.textContent?.trim() === "Agregar")).toBeUndefined();
   });
 
-  // Mismo motivo: sin la pestaña "Importar PDF" no hay a qué volver.
-  it.skip("shows 'Agregar' button after switching back to the 'Manual' tab", async () => {
+  it("shows 'Agregar' button after switching back to the 'Manual' tab", async () => {
     render(<AddMovementModal />, { wrapper: makeWrapper() });
     await openModal();
 
@@ -173,6 +170,39 @@ describe("AddMovementModal", () => {
       const buttons = screen.getAllByRole("button");
       expect(buttons.find((b) => b.textContent?.trim() === "Agregar")).toBeDefined();
     });
+  });
+});
+
+describe("AddMovementModal import de PDF", () => {
+  it("sube el PDF como SANTANDER sin pedir banco", async () => {
+    let receivedBank: FormDataEntryValue | null = null;
+    let receivedFile: FormDataEntryValue | null = null;
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", async ({ request }) => {
+        const body = await request.formData();
+        receivedBank = body.get("bank");
+        receivedFile = body.get("file");
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+    await userEvent.click(await screen.findByRole("tab", { name: /importar pdf/i }));
+
+    const importPanel = screen.getByRole("tabpanel", { name: /importar pdf/i });
+    expect(within(importPanel).queryByLabelText(/banco/i)).not.toBeInTheDocument();
+    expect(within(importPanel).getByText(/solo santander/i)).toBeInTheDocument();
+
+    const pdf = new File(["%PDF-1.4"], "extracto.pdf", { type: "application/pdf" });
+    const input = importPanel.querySelector<HTMLInputElement>('input[type="file"]');
+    await userEvent.upload(input!, pdf);
+
+    const importar = screen.getAllByRole("button").find((b) => b.textContent?.trim() === "Importar");
+    await userEvent.click(importar!);
+
+    await waitFor(() => expect(receivedBank).toBe("SANTANDER"));
+    expect(receivedFile).not.toBeNull();
   });
 });
 

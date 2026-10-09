@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Vuelve la pestaña **Importar PDF** en "Agregar movimiento" (`PDF_IMPORT_ENABLED = true`), ahora
+  solo para **Santander España**: sin selector de banco, siempre envía `bank=SANTANDER` y el
+  backend detecta si el PDF es el export de movimientos de cuenta o el extracto de la tarjeta
+  (requiere api-movements con el parser de Santander). Se quitó el texto de BBVA/Galicia y las
+  claves `creditCardOnly*` de i18n.
+
 ## [2.14.0] - 2026-09-15
 
 ### Added
