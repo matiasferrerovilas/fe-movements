@@ -37,6 +37,7 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
   const hasNoCurrencies = !isLoadingSetup && currencies.length === 0;
   const hasMissingSetup = hasNoBanks || hasNoCurrencies;
   const [modalOpen, setModalOpen] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const handleCloseModal = () => {
     setModalOpen(false);
   };
@@ -92,10 +93,16 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
       <ModalComponent
         open={modalOpen}
         onClose={handleCloseModal}
+        closable={!isImporting}
         title={t("movements.modal.addTitle")}
         footer={
           hasMissingSetup ? null : (
-            <Button type="primary" icon={confirmIcon} onClick={handleConfirm}>
+            <Button
+              type="primary"
+              icon={confirmIcon}
+              onClick={handleConfirm}
+              loading={isImporting}
+            >
               {confirmLabel}
             </Button>
           )
@@ -129,7 +136,9 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
         ) : PDF_IMPORT_ENABLED ? (
           <Tabs
             activeKey={activeTab}
-            onChange={setActiveTab}
+            onChange={(key) => {
+              if (!isImporting) setActiveTab(key);
+            }}
             items={[
               {
                 key: TAB_INDIVIDUAL,
@@ -145,7 +154,11 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
                 key: TAB_ARCHIVO,
                 label: t("movements.modal.tabImportPdf"),
                 children: (
-                  <ImportMovementTab ref={uploadRef} onSuccess={handleCloseModal} />
+                  <ImportMovementTab
+                    ref={uploadRef}
+                    onSuccess={handleCloseModal}
+                    onPendingChange={setIsImporting}
+                  />
                 ),
               },
             ]}

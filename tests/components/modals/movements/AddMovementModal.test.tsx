@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
+import { App as AntdApp } from "antd";
 import type { Workspace } from "@/models/UserWorkspace";
 import type { BankRecord } from "@/models/Bank";
 import type { UserSetting } from "@/models/UserSetting";
@@ -98,7 +99,9 @@ function makeWrapper() {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   return ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <AntdApp>{children}</AntdApp>
+    </QueryClientProvider>
   );
 }
 
@@ -173,6 +176,18 @@ describe("AddMovementModal", () => {
   });
 });
 
+async function selectPdfAndImport() {
+  await userEvent.click(await screen.findByRole("tab", { name: /importar pdf/i }));
+  const importPanel = screen.getByRole("tabpanel", { name: /importar pdf/i });
+  const pdf = new File(["%PDF-1.4"], "extracto.pdf", { type: "application/pdf" });
+  const input = importPanel.querySelector<HTMLInputElement>('input[type="file"]');
+  await userEvent.upload(input!, pdf);
+  await within(importPanel).findByText("extracto.pdf");
+  const importar = screen.getAllByRole("button").find((b) => b.textContent?.trim() === "Importar");
+  await userEvent.click(importar!);
+  return importar!;
+}
+
 describe("AddMovementModal import de PDF", () => {
   it("sube el PDF como SANTANDER sin pedir banco", async () => {
     let receivedBank: FormDataEntryValue | null = null;
@@ -206,6 +221,69 @@ describe("AddMovementModal import de PDF", () => {
 
     await waitFor(() => expect(receivedBank).toBe("SANTANDER"), { timeout: 5000 });
     expect(receivedFile).not.toBeNull();
+  });
+
+  it("muestra el botón cargando y bloquea el cierre mientras se importa", async () => {
+    let release: () => void = () => {};
+    const pending = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", async () => {
+        await pending;
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+    const importar = await selectPdfAndImport();
+
+    await waitFor(() => expect(importar).toHaveClass("ant-btn-loading"), { timeout: 5000 });
+    expect(screen.queryByRole("button", { name: /close/i })).not.toBeInTheDocument();
+
+    release();
+    expect(await screen.findByText("Movimientos importados")).toBeInTheDocument();
+  });
+
+  it("muestra el detalle del error que devuelve el backend", async () => {
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", () =>
+        HttpResponse.json(
+          { statusCode: "400", title: "Bad Request", detail: "El PDF no parece un extracto de Santander" },
+          { status: 400 },
+        ),
+      ),
+    );
+
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+    const importar = await selectPdfAndImport();
+
+    expect(
+      await screen.findByText(
+        "No se pudo importar el archivo: El PDF no parece un extracto de Santander",
+        {},
+        { timeout: 5000 },
+      ),
+    ).toBeInTheDocument();
+    expect(importar).not.toHaveClass("ant-btn-loading");
+  });
+
+  it("muestra un error genérico si el backend no manda detalle", async () => {
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", () =>
+        new HttpResponse(null, { status: 500 }),
+      ),
+    );
+
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+    await selectPdfAndImport();
+
+    expect(
+      await screen.findByText("No se pudo importar el archivo", {}, { timeout: 5000 }),
+    ).toBeInTheDocument();
   });
 });
 
@@ -296,6 +374,7 @@ describe("AddMovementModal con rol READ_ONLY", () => {
 
     const { container } = render(<AddMovementModal />, { wrapper: makeWrapper() });
 
-    expect(container).toBeEmptyDOMElement();
+    // El wrapper de AntdApp agrega su propio div; adentro no tiene que haber nada.
+    expect(container.querySelector(".ant-app")).toBeEmptyDOMElement();
   });
 });
