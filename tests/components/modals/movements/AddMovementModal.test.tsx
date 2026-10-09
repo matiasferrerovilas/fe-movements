@@ -219,9 +219,14 @@ describe("AddMovementModal import de PDF", () => {
     const importar = screen.getAllByRole("button").find((b) => b.textContent?.trim() === "Importar");
     await userEvent.click(importar!);
 
-    await waitFor(() => expect(receivedBank).toBe("SANTANDER"), { timeout: 5000 });
+    // El primer import del archivo es el más lento en CI (carga en frío de la pestaña y del
+    // parseo de multipart en msw): se espera el mensaje de éxito con más margen.
+    expect(
+      await screen.findByText("Movimientos importados", {}, { timeout: 15000 }),
+    ).toBeInTheDocument();
+    expect(receivedBank).toBe("SANTANDER");
     expect(receivedFile).not.toBeNull();
-  });
+  }, 20000);
 
   it("muestra el botón cargando y bloquea el cierre mientras se importa", async () => {
     let release: () => void = () => {};
