@@ -12,6 +12,7 @@ import type { UserSetting } from "@/models/UserSetting";
 import type { Category } from "@/models/Category";
 import type { Currency } from "@/apis/currency/CurrencyApi";
 import AddMovementModal from "@/components/modals/movements/AddMovementModal";
+import { uploadExpenseApi } from "@/apis/movement/MovementApi";
 
 // ── Mocks ─────────────────────────────────────────────────────────────────
 
@@ -31,6 +32,13 @@ const mockUseCurrentWorkspace = vi.fn(() => ({
 vi.mock("@/apis/workspace/WorkspaceContext", () => ({
   useCurrentWorkspace: () => mockUseCurrentWorkspace(),
 }));
+
+// Espía sobre la función real: el request sigue pasando por msw, pero el payload se verifica acá.
+// Leer el multipart con request.formData() dentro del handler de msw no resuelve en Node 24 (CI).
+vi.mock("@/apis/movement/MovementApi", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/apis/movement/MovementApi")>();
+  return { ...actual, uploadExpenseApi: vi.fn(actual.uploadExpenseApi) };
+});
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -190,15 +198,10 @@ async function selectPdfAndImport() {
 
 describe("AddMovementModal import de PDF", () => {
   it("sube el PDF como SANTANDER sin pedir banco", async () => {
-    let receivedBank: FormDataEntryValue | null = null;
-    let receivedFile: FormDataEntryValue | null = null;
     server.use(
-      http.post("http://localhost:8080/expenses/import-file", async ({ request }) => {
-        const body = await request.formData();
-        receivedBank = body.get("bank");
-        receivedFile = body.get("file");
-        return new HttpResponse(null, { status: 204 });
-      }),
+      http.post("http://localhost:8080/expenses/import-file", () =>
+        new HttpResponse(null, { status: 204 }),
+      ),
     );
 
     render(<AddMovementModal />, { wrapper: makeWrapper() });
@@ -209,24 +212,16 @@ describe("AddMovementModal import de PDF", () => {
     expect(within(importPanel).queryByLabelText(/banco/i)).not.toBeInTheDocument();
     expect(within(importPanel).getByText(/solo santander/i)).toBeInTheDocument();
 
-    const pdf = new File(["%PDF-1.4"], "extracto.pdf", { type: "application/pdf" });
-    const input = importPanel.querySelector<HTMLInputElement>('input[type="file"]');
-    await userEvent.upload(input!, pdf);
-    // Esperar a que antd registre el archivo en el form antes de confirmar: en CI el click
-    // puede llegar antes y validateFields rechaza por fileList vacío.
-    await within(importPanel).findByText("extracto.pdf");
+    await selectPdfAndImport();
 
-    const importar = screen.getAllByRole("button").find((b) => b.textContent?.trim() === "Importar");
-    await userEvent.click(importar!);
-
-    // El primer import del archivo es el más lento en CI (carga en frío de la pestaña y del
-    // parseo de multipart en msw): se espera el mensaje de éxito con más margen.
     expect(
-      await screen.findByText("Movimientos importados", {}, { timeout: 15000 }),
+      await screen.findByText("Movimientos importados", {}, { timeout: 5000 }),
     ).toBeInTheDocument();
-    expect(receivedBank).toBe("SANTANDER");
-    expect(receivedFile).not.toBeNull();
-  }, 20000);
+    expect(vi.mocked(uploadExpenseApi)).toHaveBeenCalledWith({
+      bank: "SANTANDER",
+      file: expect.objectContaining({ name: "extracto.pdf" }),
+    });
+  });
 
   it("muestra el botón cargando y bloquea el cierre mientras se importa", async () => {
     let release: () => void = () => {};
