@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mientras se importa un PDF el botón **Importar** queda cargando y el modal no se puede cerrar ni
   cambiar de pestaña. Al terminar se muestra un mensaje de éxito o de error (con el `detail` del
   backend si viene); antes un error del import no se mostraba. Versión 2.15.0.
+- El mensaje de éxito del import dice cuántos movimientos se importaron y cuántos se saltearon por
+  estar ya cargados (requiere api-movements con dedupe; con un backend viejo sigue mostrando
+  "Movimientos importados").
 
 ## [2.14.0] - 2026-09-15
 

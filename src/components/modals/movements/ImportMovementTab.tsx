@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import type { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { uploadExpenseApi } from "@/apis/movement/MovementApi";
+import type { ImportResult } from "@/models/ImportResult";
 const { Text } = Typography;
 
 // Único banco con parser en api-movements: el backend detecta solo si el PDF es el export de
@@ -42,8 +43,23 @@ const ImportMovementTab = forwardRef<unknown, ImportMovementTabProps>(
 
     const uploadMutation = useMutation({
       mutationFn: (form: UploadPayload) => uploadExpenseApi(form),
-      onSuccess: () => {
-        void message.success(t("movements.import.success"));
+      onSuccess: (result: ImportResult | null) => {
+        if (result == null) {
+          void message.success(t("movements.import.success"));
+        } else if (result.imported === 0) {
+          void message.info(
+            t("movements.import.nothingNew", { duplicated: result.duplicated }),
+          );
+        } else if (result.duplicated > 0) {
+          void message.success(t("movements.import.successWithDuplicates", {
+              imported: result.imported,
+              duplicated: result.duplicated,
+            }));
+        } else {
+          void message.success(
+            t("movements.import.successCount", { imported: result.imported }),
+          );
+        }
         onSuccess?.();
       },
       onError: (err) => {

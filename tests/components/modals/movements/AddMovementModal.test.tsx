@@ -223,6 +223,24 @@ describe("AddMovementModal import de PDF", () => {
     });
   });
 
+  it.each([
+    [{ imported: 5, duplicated: 0 }, "Se importaron 5 movimientos"],
+    [{ imported: 3, duplicated: 2 }, "Se importaron 3 movimientos (2 ya estaban cargados y se saltearon)"],
+    [{ imported: 0, duplicated: 4 }, "No hay movimientos nuevos: los 4 del archivo ya estaban cargados"],
+  ])("informa cuántos movimientos se importaron y cuántos eran duplicados %o", async (result, text) => {
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", () =>
+        HttpResponse.json(result, { status: 201 }),
+      ),
+    );
+
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+    await selectPdfAndImport();
+
+    expect(await screen.findByText(text, {}, { timeout: 5000 })).toBeInTheDocument();
+  });
+
   it("muestra el botón cargando y bloquea el cierre mientras se importa", async () => {
     let release: () => void = () => {};
     const pending = new Promise<void>((resolve) => {

@@ -521,7 +521,10 @@
       "selectFileButton": "Seleccionar archivo",
       "success": "Movimientos importados",
       "error": "No se pudo importar el archivo",
-      "errorWithDetail": "No se pudo importar el archivo: {{detail}}"
+      "errorWithDetail": "No se pudo importar el archivo: {{detail}}",
+      "successCount": "Se importaron {{imported}} movimientos",
+      "successWithDuplicates": "Se importaron {{imported}} movimientos ({{duplicated}} ya estaban cargados y se saltearon)",
+      "nothingNew": "No hay movimientos nuevos: los {{duplicated}} del archivo ya estaban cargados"
     }
   },
   "budgets": {
