@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - El mensaje de éxito del import dice cuántos movimientos se importaron y cuántos se saltearon por
   estar ya cargados (requiere api-movements con dedupe; con un backend viejo sigue mostrando
   "Movimientos importados").
+- Al guardar la edición de un movimiento se refresca el historial: si cambiaste la categoría, el
+  backend recategoriza otros movimientos del mismo comercio y la lista los muestra al toque.
 
 ## [2.14.0] - 2026-09-15
 
