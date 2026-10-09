@@ -515,13 +515,13 @@
     },
     "import": {
       "introPrefix": "Podés importar tu resumen bancario en formato",
-      "supportedBanks": "Bancos soportados actualmente: BBVA, Galicia.",
-      "creditCardOnlyPrefix": "Solo se admiten",
-      "creditCardOnlyBold": "resúmenes de tarjeta de crédito",
-      "creditCardOnlySuffix": "por el momento.",
+      "supportedBanks": "Por ahora solo Santander: el PDF de movimientos de la cuenta o el extracto de la tarjeta de crédito.",
       "fileLabel": "Archivo",
       "fileRequired": "Seleccione un archivo",
-      "selectFileButton": "Seleccionar archivo"
+      "selectFileButton": "Seleccionar archivo",
+      "success": "Movimientos importados",
+      "error": "No se pudo importar el archivo",
+      "errorWithDetail": "No se pudo importar el archivo: {{detail}}"
     }
   },
   "budgets": {

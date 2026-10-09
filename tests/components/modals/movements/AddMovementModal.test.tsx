@@ -1,16 +1,18 @@
 import { describe, it, expect, vi, beforeAll, afterEach, afterAll } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { ReactNode } from "react";
+import { App as AntdApp } from "antd";
 import type { Workspace } from "@/models/UserWorkspace";
 import type { BankRecord } from "@/models/Bank";
 import type { UserSetting } from "@/models/UserSetting";
 import type { Category } from "@/models/Category";
 import type { Currency } from "@/apis/currency/CurrencyApi";
 import AddMovementModal from "@/components/modals/movements/AddMovementModal";
+import { uploadExpenseApi } from "@/apis/movement/MovementApi";
 
 // ── Mocks ─────────────────────────────────────────────────────────────────
 
@@ -30,6 +32,13 @@ const mockUseCurrentWorkspace = vi.fn(() => ({
 vi.mock("@/apis/workspace/WorkspaceContext", () => ({
   useCurrentWorkspace: () => mockUseCurrentWorkspace(),
 }));
+
+// Espía sobre la función real: el request sigue pasando por msw, pero el payload se verifica acá.
+// Leer el multipart con request.formData() dentro del handler de msw no resuelve en Node 24 (CI).
+vi.mock("@/apis/movement/MovementApi", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/apis/movement/MovementApi")>();
+  return { ...actual, uploadExpenseApi: vi.fn(actual.uploadExpenseApi) };
+});
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -98,7 +107,9 @@ function makeWrapper() {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   return ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <AntdApp>{children}</AntdApp>
+    </QueryClientProvider>
   );
 }
 
@@ -133,9 +144,7 @@ describe("AddMovementModal", () => {
     expect(allButtons.find((b) => b.textContent?.trim() === "Importar")).toBeUndefined();
   });
 
-  // PDF_IMPORT_ENABLED = false in AddMovementModal.tsx — la pestaña no se renderiza mientras
-  // esté desactivada, así que no hay ningún tab "importar pdf" al que hacer click.
-  it.skip("shows 'Importar' button after switching to the 'Importar PDF' tab", async () => {
+  it("shows 'Importar' button after switching to the 'Importar PDF' tab", async () => {
     render(<AddMovementModal />, { wrapper: makeWrapper() });
     await openModal();
 
@@ -156,8 +165,7 @@ describe("AddMovementModal", () => {
     expect(allButtons.find((b) => b.textContent?.trim() === "Agregar")).toBeUndefined();
   });
 
-  // Mismo motivo: sin la pestaña "Importar PDF" no hay a qué volver.
-  it.skip("shows 'Agregar' button after switching back to the 'Manual' tab", async () => {
+  it("shows 'Agregar' button after switching back to the 'Manual' tab", async () => {
     render(<AddMovementModal />, { wrapper: makeWrapper() });
     await openModal();
 
@@ -173,6 +181,109 @@ describe("AddMovementModal", () => {
       const buttons = screen.getAllByRole("button");
       expect(buttons.find((b) => b.textContent?.trim() === "Agregar")).toBeDefined();
     });
+  });
+});
+
+async function selectPdfAndImport() {
+  await userEvent.click(await screen.findByRole("tab", { name: /importar pdf/i }));
+  const importPanel = screen.getByRole("tabpanel", { name: /importar pdf/i });
+  const pdf = new File(["%PDF-1.4"], "extracto.pdf", { type: "application/pdf" });
+  const input = importPanel.querySelector<HTMLInputElement>('input[type="file"]');
+  await userEvent.upload(input!, pdf);
+  await within(importPanel).findByText("extracto.pdf");
+  const importar = screen.getAllByRole("button").find((b) => b.textContent?.trim() === "Importar");
+  await userEvent.click(importar!);
+  return importar!;
+}
+
+describe("AddMovementModal import de PDF", () => {
+  it("sube el PDF como SANTANDER sin pedir banco", async () => {
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", () =>
+        new HttpResponse(null, { status: 204 }),
+      ),
+    );
+
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+    await userEvent.click(await screen.findByRole("tab", { name: /importar pdf/i }));
+
+    const importPanel = screen.getByRole("tabpanel", { name: /importar pdf/i });
+    expect(within(importPanel).queryByLabelText(/banco/i)).not.toBeInTheDocument();
+    expect(within(importPanel).getByText(/solo santander/i)).toBeInTheDocument();
+
+    await selectPdfAndImport();
+
+    expect(
+      await screen.findByText("Movimientos importados", {}, { timeout: 5000 }),
+    ).toBeInTheDocument();
+    expect(vi.mocked(uploadExpenseApi)).toHaveBeenCalledWith({
+      bank: "SANTANDER",
+      file: expect.objectContaining({ name: "extracto.pdf" }),
+    });
+  });
+
+  it("muestra el botón cargando y bloquea el cierre mientras se importa", async () => {
+    let release: () => void = () => {};
+    const pending = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", async () => {
+        await pending;
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+    const importar = await selectPdfAndImport();
+
+    await waitFor(() => expect(importar).toHaveClass("ant-btn-loading"), { timeout: 5000 });
+    expect(screen.queryByRole("button", { name: /close/i })).not.toBeInTheDocument();
+
+    release();
+    expect(await screen.findByText("Movimientos importados")).toBeInTheDocument();
+  });
+
+  it("muestra el detalle del error que devuelve el backend", async () => {
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", () =>
+        HttpResponse.json(
+          { statusCode: "400", title: "Bad Request", detail: "El PDF no parece un extracto de Santander" },
+          { status: 400 },
+        ),
+      ),
+    );
+
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+    const importar = await selectPdfAndImport();
+
+    expect(
+      await screen.findByText(
+        "No se pudo importar el archivo: El PDF no parece un extracto de Santander",
+        {},
+        { timeout: 5000 },
+      ),
+    ).toBeInTheDocument();
+    expect(importar).not.toHaveClass("ant-btn-loading");
+  });
+
+  it("muestra un error genérico si el backend no manda detalle", async () => {
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", () =>
+        new HttpResponse(null, { status: 500 }),
+      ),
+    );
+
+    render(<AddMovementModal />, { wrapper: makeWrapper() });
+    await openModal();
+    await selectPdfAndImport();
+
+    expect(
+      await screen.findByText("No se pudo importar el archivo", {}, { timeout: 5000 }),
+    ).toBeInTheDocument();
   });
 });
 
@@ -263,6 +374,7 @@ describe("AddMovementModal con rol READ_ONLY", () => {
 
     const { container } = render(<AddMovementModal />, { wrapper: makeWrapper() });
 
-    expect(container).toBeEmptyDOMElement();
+    // El wrapper de AntdApp agrega su propio div; adentro no tiene que haber nada.
+    expect(container.querySelector(".ant-app")).toBeEmptyDOMElement();
   });
 });

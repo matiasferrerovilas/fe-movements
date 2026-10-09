@@ -16,10 +16,9 @@ import { useIsReadOnly } from "@/apis/workspace/useIsReadOnly";
 const TAB_INDIVIDUAL = "1";
 const TAB_ARCHIVO = "2";
 
-// Desactivado a pedido del usuario: el import de PDF quedó desactualizado y no anda bien — se
-// oculta la pestaña en vez de borrar el código, para poder reactivarlo con un solo flip acá
-// cuando esté listo. Item relacionado en el roadmap: "Import de PDF sin validar tipo ni tamaño".
-const PDF_IMPORT_ENABLED = false;
+// Reactivado con el parser de Santander España (cuenta y tarjeta). Sigue siendo un flag para
+// poder apagarlo con un solo cambio si un formato de extracto deja de parsear.
+const PDF_IMPORT_ENABLED = true;
 
 interface AddMovementModalProps {
   block?: boolean;
@@ -38,6 +37,7 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
   const hasNoCurrencies = !isLoadingSetup && currencies.length === 0;
   const hasMissingSetup = hasNoBanks || hasNoCurrencies;
   const [modalOpen, setModalOpen] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const handleCloseModal = () => {
     setModalOpen(false);
   };
@@ -93,10 +93,16 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
       <ModalComponent
         open={modalOpen}
         onClose={handleCloseModal}
+        closable={!isImporting}
         title={t("movements.modal.addTitle")}
         footer={
           hasMissingSetup ? null : (
-            <Button type="primary" icon={confirmIcon} onClick={handleConfirm}>
+            <Button
+              type="primary"
+              icon={confirmIcon}
+              onClick={handleConfirm}
+              loading={isImporting}
+            >
               {confirmLabel}
             </Button>
           )
@@ -130,7 +136,9 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
         ) : PDF_IMPORT_ENABLED ? (
           <Tabs
             activeKey={activeTab}
-            onChange={setActiveTab}
+            onChange={(key) => {
+              if (!isImporting) setActiveTab(key);
+            }}
             items={[
               {
                 key: TAB_INDIVIDUAL,
@@ -146,7 +154,11 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
                 key: TAB_ARCHIVO,
                 label: t("movements.modal.tabImportPdf"),
                 children: (
-                  <ImportMovementTab ref={uploadRef} onSuccess={handleCloseModal} />
+                  <ImportMovementTab
+                    ref={uploadRef}
+                    onSuccess={handleCloseModal}
+                    onPendingChange={setIsImporting}
+                  />
                 ),
               },
             ]}
