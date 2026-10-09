@@ -197,11 +197,14 @@ describe("AddMovementModal import de PDF", () => {
     const pdf = new File(["%PDF-1.4"], "extracto.pdf", { type: "application/pdf" });
     const input = importPanel.querySelector<HTMLInputElement>('input[type="file"]');
     await userEvent.upload(input!, pdf);
+    // Esperar a que antd registre el archivo en el form antes de confirmar: en CI el click
+    // puede llegar antes y validateFields rechaza por fileList vacío.
+    await within(importPanel).findByText("extracto.pdf");
 
     const importar = screen.getAllByRole("button").find((b) => b.textContent?.trim() === "Importar");
     await userEvent.click(importar!);
 
-    await waitFor(() => expect(receivedBank).toBe("SANTANDER"));
+    await waitFor(() => expect(receivedBank).toBe("SANTANDER"), { timeout: 5000 });
     expect(receivedFile).not.toBeNull();
   });
 });
