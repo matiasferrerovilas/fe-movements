@@ -4,6 +4,7 @@ import type { PageResponse } from "@/models/BaseMode";
 import type { CreateMovementForm, Movement } from "@/models/Movement";
 import type { UploadPayload } from "@/components/modals/movements/ImportMovementTab";
 import { api, LONG_OPERATION_TIMEOUT_MS } from "@/apis/axios";
+import type { ImportResult } from "@/models/ImportResult";
 
 type ParamsValue = string | number | boolean | undefined | null;
 type ParamsObject = Record<string, ParamsValue | ParamsValue[]>;
@@ -45,7 +46,9 @@ export const getExpenseApi = ({
     .then((res) => res.data);
 };
 
-export const uploadExpenseApi = async (form: UploadPayload) => {
+export const uploadExpenseApi = async (
+  form: UploadPayload,
+): Promise<ImportResult | null> => {
   if (form.file == null || form.bank == null) {
     throw new Error("Missing required fields: file or bank");
   }
@@ -61,7 +64,8 @@ export const uploadExpenseApi = async (form: UploadPayload) => {
     timeout: LONG_OPERATION_TIMEOUT_MS,
   });
 
-  return response.data;
+  // Un backend anterior al dedupe responde 201 sin body.
+  return (response.data as ImportResult | "") || null;
 };
 
 const toCategoriesPayload = (categories?: string[]) =>

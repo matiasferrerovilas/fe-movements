@@ -21,7 +21,7 @@ import DollarOutlined from "@ant-design/icons/DollarOutlined";
 import MinusCircleOutlined from "@ant-design/icons/MinusCircleOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import TagOutlined from "@ant-design/icons/TagOutlined";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { TypeEnum, getTypeEnumLabel } from "@/enums/TypeEnum";
 import {
@@ -113,6 +113,7 @@ const AddMovementExpenseTab = forwardRef<
     movementToEdit,
   ]);
 
+  const queryClient = useQueryClient();
   const uploadMutation = useMutation({
     mutationFn: (values: CreateMovementForm) =>
       movementToEdit
@@ -120,6 +121,11 @@ const AddMovementExpenseTab = forwardRef<
         : uploadExpense(values),
     onSuccess: () => {
       console.debug("✅ Movimiento cargado correctamente");
+      // Al corregir la categoría el backend aprende la regla del comercio y recategoriza los
+      // demás movimientos de ese comercio que seguían "Sin categoría": hay que refrescar la lista.
+      if (movementToEdit) {
+        void queryClient.invalidateQueries({ queryKey: ["movement-history"] });
+      }
       onSuccess?.();
     },
     onError: (err) => console.error("❌ Error cargando el movimiento", err),

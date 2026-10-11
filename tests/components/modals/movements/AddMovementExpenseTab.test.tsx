@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { describe, it, expect, beforeAll, afterEach, afterAll, vi } from "vitest";
+import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import type { ReactNode } from "react";
+import { createRef, type ReactNode } from "react";
 import type { Workspace } from "@/models/UserWorkspace";
 import type { Category } from "@/models/Category";
 import type { UserSetting } from "@/models/UserSetting";
@@ -356,6 +356,32 @@ describe("AddMovementExpenseTab", () => {
       await waitFor(() =>
         expect(screen.getByDisplayValue("Papa")).toBeInTheDocument(),
       );
+    });
+  });
+
+  describe("refresco de la lista al editar", () => {
+    it("invalida el historial de movimientos al guardar una edición", async () => {
+      server.use(
+        http.patch("http://localhost:8080/expenses/99", () => new HttpResponse(null, { status: 204 })),
+      );
+      const ref = createRef<{ handleConfirm: () => Promise<void> }>();
+      const onSuccess = vi.fn();
+      const { wrapper, queryClient } = makeWrapper();
+      const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+      render(
+        <AddMovementExpenseTab ref={ref} movementToEdit={mockMovementToEdit} onSuccess={onSuccess} />,
+        { wrapper },
+      );
+      await waitFor(() =>
+        expect(screen.getByDisplayValue("Supermercado Dia")).toBeInTheDocument(),
+      );
+
+      await act(async () => {
+        await ref.current?.handleConfirm();
+      });
+
+      await waitFor(() => expect(onSuccess).toHaveBeenCalled(), { timeout: 5000 });
+      expect(invalidate).toHaveBeenCalledWith({ queryKey: ["movement-history"] });
     });
   });
 });

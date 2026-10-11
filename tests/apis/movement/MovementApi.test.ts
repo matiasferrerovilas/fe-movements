@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import dayjs from "dayjs";
-import { uploadExpense, updateExpense } from "@/apis/movement/MovementApi";
+import { uploadExpense, updateExpense, uploadExpenseApi } from "@/apis/movement/MovementApi";
 import type { CreateMovementForm } from "@/models/Movement";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -149,5 +149,32 @@ describe("ExpenseApi — serialización de categorías", () => {
     await uploadExpense(form);
 
     expect(capturedCreateBody.categories).toBeUndefined();
+  });
+});
+
+describe("uploadExpenseApi — resultado del import", () => {
+  const pdf = new File(["%PDF-1.4"], "extracto.pdf", { type: "application/pdf" });
+
+  it("devuelve los contadores de importados y duplicados", async () => {
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", () =>
+        HttpResponse.json({ imported: 3, duplicated: 2 }, { status: 201 }),
+      ),
+    );
+
+    await expect(uploadExpenseApi({ file: pdf, bank: "SANTANDER" })).resolves.toEqual({
+      imported: 3,
+      duplicated: 2,
+    });
+  });
+
+  it("devuelve null si el backend responde sin body", async () => {
+    server.use(
+      http.post("http://localhost:8080/expenses/import-file", () =>
+        new HttpResponse(null, { status: 201 }),
+      ),
+    );
+
+    await expect(uploadExpenseApi({ file: pdf, bank: "SANTANDER" })).resolves.toBeNull();
   });
 });
