@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - README con video demo (`docs/template.mp4`) y miniatura.
+- README reescrito: demo en GIF (se reproduce dentro de GitHub), tutorial de uso de la app y guía para correr el proyecto.
 
 ### Changed
 - Vuelve la pestaña **Importar PDF** en "Agregar movimiento" (`PDF_IMPORT_ENABLED = true`), ahora
