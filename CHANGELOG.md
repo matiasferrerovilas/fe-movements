@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- README con video demo (`docs/template.mp4`) y miniatura.
+
 ### Changed
 - Vuelve la pestaña **Importar PDF** en "Agregar movimiento" (`PDF_IMPORT_ENABLED = true`), ahora
   solo para **Santander España**: sin selector de banco, siempre envía `bank=SANTANDER` y el

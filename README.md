@@ -1,3 +1,15 @@
+# Movements
+
+Aplicación de gestión financiera personal: dashboard, servicios a pagar, presupuestos y movimientos.
+
+<a href="docs/template.mp4">
+  <img src="docs/template.jpg" alt="Video demo de Movements" width="720" />
+</a>
+
+▶ [Ver el video](docs/template.mp4)
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

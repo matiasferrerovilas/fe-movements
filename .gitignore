@@ -29,3 +29,6 @@ dist-ssr/
 # Mac / Linux / Windows
 .DS_Store
 Thumbs.db
+
+# Brag video project
+brag-output*/
