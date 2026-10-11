@@ -22,6 +22,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Al guardar la edición de un movimiento se refresca el historial: si cambiaste la categoría, el
   backend recategoriza otros movimientos del mismo comercio y la lista los muestra al toque.
 
+### Fixed
+- Tocar dos veces **Agregar** (o **Guardar** al editar) creaba el movimiento dos veces: el botón
+  solo mostraba "cargando" en la pestaña de importar PDF, y `handleConfirm` espera la validación
+  del formulario antes de llamar a la mutación, así que dos clics seguidos entraban los dos.
+  `AddMovementExpenseTab` ahora bloquea el reingreso en forma síncrona y le avisa al modal
+  (`onPendingChange`) para que el botón quede cargando y el modal no se pueda cerrar mientras
+  se guarda. Aplica al alta y a la edición.
+
 ## [2.14.0] - 2026-09-15
 
 ### Added

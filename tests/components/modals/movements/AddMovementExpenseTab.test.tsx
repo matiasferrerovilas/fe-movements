@@ -359,6 +359,61 @@ describe("AddMovementExpenseTab", () => {
     });
   });
 
+  describe("doble envío", () => {
+    it("guarda una sola vez si se confirma dos veces seguidas y avisa el estado de guardado", async () => {
+      let saves = 0;
+      server.use(
+        http.patch("http://localhost:8080/expenses/99", async () => {
+          saves += 1;
+          // Lento a propósito: la segunda confirmación llega con la primera todavía en curso.
+          await new Promise((resolve) => setTimeout(resolve, 150));
+          return new HttpResponse(null, { status: 204 });
+        }),
+      );
+      const ref = createRef<{ handleConfirm: () => Promise<void> }>();
+      const onSuccess = vi.fn();
+      const onPendingChange = vi.fn();
+      const { wrapper } = makeWrapper();
+      render(
+        <AddMovementExpenseTab
+          ref={ref}
+          movementToEdit={mockMovementToEdit}
+          onSuccess={onSuccess}
+          onPendingChange={onPendingChange}
+        />,
+        { wrapper },
+      );
+      await waitFor(() =>
+        expect(screen.getByDisplayValue("Supermercado Dia")).toBeInTheDocument(),
+      );
+
+      // Sin esperar la primera: reproduce el doble clic antes de que termine la validación.
+      await act(async () => {
+        await Promise.all([ref.current?.handleConfirm(), ref.current?.handleConfirm()]);
+      });
+
+      await waitFor(() => expect(onSuccess).toHaveBeenCalledTimes(1), { timeout: 5000 });
+      expect(saves).toBe(1);
+      expect(onPendingChange).toHaveBeenCalledWith(true);
+      await waitFor(() => expect(onPendingChange).toHaveBeenLastCalledWith(false));
+    });
+
+    it("permite volver a guardar cuando la validación falla", async () => {
+      const ref = createRef<{ handleConfirm: () => Promise<void> }>();
+      const onPendingChange = vi.fn();
+      const { wrapper } = makeWrapper();
+      render(<AddMovementExpenseTab ref={ref} onPendingChange={onPendingChange} />, { wrapper });
+      await waitFor(() => expect(screen.getByText("Descripción")).toBeInTheDocument());
+
+      // Alta sin completar: la validación falla y el botón no tiene que quedar bloqueado.
+      await act(async () => {
+        await ref.current?.handleConfirm();
+      });
+
+      await waitFor(() => expect(onPendingChange).toHaveBeenLastCalledWith(false));
+    });
+  });
+
   describe("refresco de la lista al editar", () => {
     it("invalida el historial de movimientos al guardar una edición", async () => {
       server.use(

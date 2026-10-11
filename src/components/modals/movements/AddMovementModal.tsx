@@ -38,8 +38,13 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
   const hasMissingSetup = hasNoBanks || hasNoCurrencies;
   const [modalOpen, setModalOpen] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  // Guardando un movimiento a mano (pestaña individual). Aparte de isImporting porque lo reporta
+  // otra pestaña; ambos bloquean el botón de confirmar y el cierre del modal.
+  const [isSaving, setIsSaving] = useState(false);
+  const isBusy = isImporting || isSaving;
   const handleCloseModal = () => {
     setModalOpen(false);
+    setIsSaving(false);
   };
   const handleGoToSettings = () => {
     handleCloseModal();
@@ -93,7 +98,7 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
       <ModalComponent
         open={modalOpen}
         onClose={handleCloseModal}
-        closable={!isImporting}
+        closable={!isBusy}
         title={t("movements.modal.addTitle")}
         footer={
           hasMissingSetup ? null : (
@@ -101,7 +106,7 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
               type="primary"
               icon={confirmIcon}
               onClick={handleConfirm}
-              loading={isImporting}
+              loading={isBusy}
             >
               {confirmLabel}
             </Button>
@@ -137,7 +142,7 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
           <Tabs
             activeKey={activeTab}
             onChange={(key) => {
-              if (!isImporting) setActiveTab(key);
+              if (!isBusy) setActiveTab(key);
             }}
             items={[
               {
@@ -147,6 +152,7 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
                   <AddMovementExpenseTab
                     ref={expenseRef}
                     onSuccess={handleCloseModal}
+                    onPendingChange={setIsSaving}
                   />
                 ),
               },
@@ -166,7 +172,11 @@ export default function AddMovementModal({ block, trigger }: AddMovementModalPro
         ) : (
           // Con el import de PDF desactivado, no queda más que una forma de cargar un
           // movimiento — se salta el wrapper de Tabs en vez de mostrar una sola pestaña sola.
-          <AddMovementExpenseTab ref={expenseRef} onSuccess={handleCloseModal} />
+          <AddMovementExpenseTab
+            ref={expenseRef}
+            onSuccess={handleCloseModal}
+            onPendingChange={setIsSaving}
+          />
         )}
       </ModalComponent>
     </>

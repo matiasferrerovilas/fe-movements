@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -48,6 +48,8 @@ const { Text } = Typography;
 interface AddMovementExpenseTabProps {
   onSuccess?: () => void;
   movementToEdit?: Movement;
+  /** Avisa al modal cuando se está guardando, para que su botón de confirmar muestre el loading. */
+  onPendingChange?: (pending: boolean) => void;
 }
 
 const dateFormat = "DD/MM/YYYY";
@@ -55,7 +57,7 @@ const dateFormat = "DD/MM/YYYY";
 const AddMovementExpenseTab = forwardRef<
   { handleConfirm: () => void },
   AddMovementExpenseTabProps
->(({ onSuccess, movementToEdit }, ref) => {
+>(({ onSuccess, movementToEdit, onPendingChange }, ref) => {
   const { token } = theme.useToken();
   const [form] = Form.useForm<CreateMovementForm>();
   const { t } = useTranslation();
@@ -113,6 +115,23 @@ const AddMovementExpenseTab = forwardRef<
     movementToEdit,
   ]);
 
+  // handleConfirm hace `await form.validateFields()` antes de llamar a mutate, así que
+  // uploadMutation.isPending tarda en pasar a true: dos clics seguidos entran los dos y crean el
+  // movimiento dos veces. La ref bloquea en forma síncrona; el estado pinta el loading del botón.
+  const [isSaving, setIsSaving] = useState(false);
+  const submitting = useRef(false);
+  const finishSubmit = () => {
+    submitting.current = false;
+    setIsSaving(false);
+  };
+
+  useEffect(() => {
+    onPendingChange?.(isSaving);
+  }, [isSaving, onPendingChange]);
+  // Si el modal se cierra (se desmonta la pestaña) con el guardado en curso, el padre no se
+  // puede quedar con el botón en loading para la próxima vez que se abra.
+  useEffect(() => () => onPendingChange?.(false), [onPendingChange]);
+
   const queryClient = useQueryClient();
   const uploadMutation = useMutation({
     mutationFn: (values: CreateMovementForm) =>
@@ -129,10 +148,14 @@ const AddMovementExpenseTab = forwardRef<
       onSuccess?.();
     },
     onError: (err) => console.error("❌ Error cargando el movimiento", err),
+    onSettled: finishSubmit,
   });
 
   useImperativeHandle(ref, () => ({
     handleConfirm: async () => {
+      if (submitting.current) return;
+      submitting.current = true;
+      setIsSaving(true);
       try {
         const values = await form.validateFields();
         // Con el toggle apagado no se manda desglose: en alta simplemente no viaja (nunca hubo
@@ -142,6 +165,7 @@ const AddMovementExpenseTab = forwardRef<
         uploadMutation.mutate({ ...values, items } as CreateMovementForm);
       } catch (err) {
         console.warn("❌ Validación fallida:", err);
+        finishSubmit();
       }
     },
   }));

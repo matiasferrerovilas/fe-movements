@@ -15,8 +15,10 @@ export default function EditMovementModal({
 }: EditMovementModalProps) {
   const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const handleCloseModal = () => {
     setModalOpen(false);
+    setIsSaving(false);
   };
 
   const updateRef = useRef<{ handleConfirm: () => void } | null>(null);
@@ -51,9 +53,10 @@ export default function EditMovementModal({
       <ModalComponent
         open={modalOpen}
         onClose={handleCloseModal}
+        closable={!isSaving}
         title={t("movements.modal.editTitle")}
         footer={
-          <Button type="primary" onClick={handleConfirm}>
+          <Button type="primary" onClick={handleConfirm} loading={isSaving}>
             {t("movements.modal.saveButton")}
           </Button>
         }
@@ -61,6 +64,7 @@ export default function EditMovementModal({
         <AddMovementExpenseTab
           ref={updateRef}
           onSuccess={handleCloseModal}
+          onPendingChange={setIsSaving}
           movementToEdit={movement}
         />
       </ModalComponent>
